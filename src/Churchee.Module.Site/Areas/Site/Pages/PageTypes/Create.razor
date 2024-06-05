@@ -1,0 +1,38 @@
+﻿@page "/management/pagetypes/create"
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.PageTypes.Commands.CreatePageType
+@using Churchee.Module.UI.Components
+@using MediatR
+@using Radzen
+@inject IMediator Mediator
+@inject NotificationService _notificationService
+@inject NavigationManager NavigationManager
+
+<PageName Name="Create Page Type"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    [SupplyParameterFromForm]
+    public CreatePageTypeModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        InputModel = new CreatePageTypeModel();
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new CreatePageTypeCommand(InputModel.Name), default);
+
+        if (result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/pagetypes");
+        }
+    }
+}

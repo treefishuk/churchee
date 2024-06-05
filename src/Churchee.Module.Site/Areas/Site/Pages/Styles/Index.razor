@@ -1,0 +1,36 @@
+﻿@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.Styles.Commands
+@using Churchee.Module.Site.Features.Styles.Queries
+@using MediatR
+@using Microsoft.Extensions.Logging
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Module.UI.Components
+@page "/management/styles"
+@inject ILogger<Index> Logger
+@inject IMediator Mediator
+
+<PageName></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+
+    [SupplyParameterFromForm]
+    public StylesInputModel InputModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        string result = await Mediator.Send(new GetStylesQuery());
+
+        InputModel = new StylesInputModel(result);
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new UpdateStylesCommand(InputModel.Styles));
+    }
+}

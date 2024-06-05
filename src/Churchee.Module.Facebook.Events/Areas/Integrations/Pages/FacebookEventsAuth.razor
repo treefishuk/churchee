@@ -1,0 +1,42 @@
+﻿@page "/management/integrations/facebook-events/auth"
+@using Churchee.Module.Events.Features.Commands
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Churchee.Module.Facebook.Events.Areas.Integrations.Models
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Facebook.Events.Features.Queries
+@using Churchee.Module.Facebook.Events.Features.Commands
+@inject IMediator Mediator
+@inject ICurrentUser _currentUser
+@inject IHttpContextAccessor _httpContextAccessor
+@inject NavigationManager NavigationManager
+
+
+<h1>Auth Redirect</h1>
+
+@code {
+
+
+    [SupplyParameterFromQuery]
+    public string Code { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string State { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var request = _httpContextAccessor.HttpContext.Request;
+
+        await Mediator.Send(new EnableFacebookIntegrationCommand(Code, $"{request.Scheme}://{request.Host}"));
+
+        NavigationManager.NavigateTo("/management/integrations/facebook-events");
+    }
+
+}

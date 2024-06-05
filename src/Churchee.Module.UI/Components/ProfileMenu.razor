@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Radzen.Blazor
+@using System.Security.Claims
+<RadzenProfileMenu>
+    <Template>
+        <RadzenGravatar Email=@Email></RadzenGravatar>
+    </Template>
+    <ChildContent>
+            <RadzenProfileMenuItem Text="Profile" Path="/management/profile/email" Icon="account_circle"></RadzenProfileMenuItem>
+            <RadzenProfileMenuItem Text="Log Out" Path="/account/logout" Icon="logout"></RadzenProfileMenuItem>
+        </ChildContent>
+</RadzenProfileMenu>
+
+
+
+@code{
+
+    [Inject]
+    private IHttpContextAccessor _context { get; set; }
+
+    public string Email { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Email = _context.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+    }
+}

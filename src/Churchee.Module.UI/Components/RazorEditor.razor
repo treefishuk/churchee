@@ -1,0 +1,74 @@
+﻿@using BlazorMonaco.Editor
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Web
+
+
+<ErrorBoundary>
+    <ChildContent>
+            <StandaloneCodeEditor @ref=_editorRef Id="@Id" ConstructionOptions="RazorEditorConstructionOptions" OnKeyUp="@(async () => await OnEditorChange())" OnDidInit="@(async () => await OnEditorDidInit())" />
+    </ChildContent>
+    <ErrorContent>
+        Failed to load Editor
+    </ErrorContent>
+</ErrorBoundary>
+
+
+@code {
+
+    private string Id { get; set; }
+
+    [Parameter]
+    public string Value { get; set; }
+
+    private StandaloneCodeEditor _editorRef;
+
+    private StandaloneEditorConstructionOptions RazorEditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+            {
+                AutomaticLayout = true,
+                Language = "razor"
+            };
+    }
+
+    public async Task OnEditorChange()
+    {
+        try
+        {
+            var value = await _editorRef.GetValue();
+
+            await Change.InvokeAsync(value);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Id = Guid.NewGuid().ToString();
+    }
+
+    public async Task OnEditorDidInit()
+    {
+        try
+        {
+            await _editorRef.SetValue(Value);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> Change { get; set; }
+
+
+}
+
+

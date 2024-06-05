@@ -1,0 +1,47 @@
+﻿@using Churchee.Module.Identity.Components
+@using Churchee.Module.UI.Components
+@using Microsoft.AspNetCore.Http
+@inherits LayoutComponentBase
+<RadzenComponents />
+
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" Gap="0">
+            <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+            <Logo />
+            <Breadcrumb>
+                <SectionOutlet SectionName="top-bar" />
+            </Breadcrumb>
+         
+        <ProfileMenu></ProfileMenu>    
+
+        </RadzenStack>
+
+
+    </RadzenHeader>
+    <RadzenSidebar Responsive="true" @bind-Expanded="@sidebarExpanded">
+            <ProfileNav />
+    </RadzenSidebar>
+    <RadzenBody>
+        <ErrorBoundary>
+            <ChildContent>
+                @Body
+            </ChildContent>
+            <ErrorContent>
+                <p class="alert alert-danger" role="alert">
+                    Oh, dear! Oh, my! - George Takei
+                </p>
+            </ErrorContent>
+        </ErrorBoundary>
+    </RadzenBody>
+    <RadzenFooter>
+        <SectionOutlet SectionName="footer-bar"/>
+    </RadzenFooter>
+</RadzenLayout>
+
+@code {
+    bool sidebarExpanded = true;
+
+    [Inject]
+    private IHttpContextAccessor _context { get; set; }
+}

@@ -1,0 +1,69 @@
+﻿@using Churchee.Module.Events.Features.Queries
+@using Churchee.Module.Site.Features.CDN.Queries
+@using Churchee.Module.UI.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Radzen.Blazor
+@using Radzen
+@page "/management/events"
+
+<PageName></PageName>
+
+<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=employees LoadData="@LoadData" ShowEdit="false" ImagePrefix="@(imagePrefix)"></Grid>
+
+@code {
+
+    string imagePrefix = "";
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        imagePrefix = await Mediator.Send(new GetCDNPathQuery());
+    }
+
+    int count;
+
+    IEnumerable<GetListingQueryResponseItem> employees;
+
+    bool isLoading = false;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        string orderBy = "CreatedDate";
+        string orderByDirection = "desc";
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            var split = args.OrderBy.Split(" ");
+            orderBy = split[0];
+            orderByDirection = split[1];
+
+        }
+
+    var result = await Mediator.Send(new GetListingQuery(
+        skip: args.Skip.Value,
+        take: args.Top.Value,
+        searchText: args.Filter,
+        orderBy: orderBy,
+        orderByDirection: orderByDirection,
+        draw: args.Top.Value), default);
+
+    // Important!!! Make sure the Count property of RadzenDataGrid is set.
+    count = result.RecordsTotal;
+
+    // Perform paging via Skip and Take.
+    employees = result.Data;
+
+    isLoading = false;
+    }
+
+}

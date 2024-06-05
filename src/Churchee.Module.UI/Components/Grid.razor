@@ -1,0 +1,127 @@
+﻿@using MediatR
+@using Microsoft.Extensions.Configuration
+@using Radzen
+@using Radzen.Blazor
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@typeparam TItem
+@inject NavigationManager _navigationManager
+@inject IConfiguration Config
+
+<RadzenDataGrid Data="Data" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem">
+    <Columns>
+
+        @if (ShowEdit)
+        {
+
+            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                <Template Context="data">
+                    <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/edit/@(((dynamic)data).Id)">
+                        <span class="rz-button-box">
+                            <i class="rz-button-icon-left rzi">edit</i>
+                        </span>
+                    </a>
+                </Template>
+            </RadzenDataGridColumn>
+        }
+
+        @foreach (var prop in typeof(TItem).GetProperties().Where(x => x.CanWrite))
+        {
+            string dataType = prop.PropertyType.Name;
+
+            var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
+
+            if (dataTypeAttribute != null)
+            {
+                dataType = dataTypeAttribute.CustomDataType;
+            }
+
+            if (dataTypeAttribute == null && dataType == typeof(string).Name)
+            {
+                dataType = DataTypes.Text;
+            }
+
+            if (dataType == DataTypes.Text)
+            {
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" />
+            }
+
+            if (dataType == typeof(bool).Name)
+            {
+                <RadzenDataGridColumn TItem="TItem" Title="@prop.Name.ToSentence()" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center">
+                    <Template Context="data">
+                        @{
+                            if (prop.GetValue(data).ToString().ToUpperInvariant() == "TRUE")
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Success" IsPill="@true" Text="True" />
+                            }
+                            else
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Warning" IsPill="@true" Text="False" />
+                            }
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+            }
+
+            if (dataType == DataTypes.Date || (dataTypeAttribute == null && dataType == typeof(DateTime).Name))
+            {
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy}" Width="200px" />
+            }
+
+            if (dataType == DataTypes.DateTime)
+            {
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" />
+            }
+
+            if (dataType == DataTypes.ImageUrl)
+            {
+                <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                    <Template Context="data">
+                        <RadzenImage Path="@(ImagePrefix + prop.GetValue(data).ToString())" />
+                    </Template>
+                </RadzenDataGridColumn>
+            }
+
+
+        }
+        
+    </Columns>
+</RadzenDataGrid>
+
+
+
+
+
+
+@code {
+
+    protected override void OnParametersSet()
+    {
+        prefix = _navigationManager.Uri;
+    }
+
+    string prefix;
+
+    [Parameter]
+    public string ImagePrefix { get; set; }
+
+    [Parameter]
+    public int Count { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public IEnumerable<TItem> Data { get; set; }
+
+    [Parameter]
+    public bool ShowEdit { get; set; }
+
+    [Parameter]
+    public bool ShowDelete { get; set; }
+
+    [Parameter]
+    public EventCallback<LoadDataArgs> LoadData { get; set; }
+
+}

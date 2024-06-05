@@ -1,0 +1,110 @@
+﻿@page "/management/integrations/facebook-events"
+@using Churchee.Module.Events.Features.Commands
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Churchee.Module.Facebook.Events.Areas.Integrations.Models
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Facebook.Events.Features.Queries
+@using Churchee.Module.Facebook.Events.Features.Commands
+@inject ILogger<FacebookEvents> Logger
+@inject IMediator Mediator
+@inject ICurrentUser _currentUser
+@inject IHttpContextAccessor _httpContextAccessor
+@inject NavigationManager NavigationManager
+
+
+
+@if (!Linked)
+{
+        <SectionContent SectionName="footer-bar">
+            <input type="submit" class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default" name="submit" form="enableFacebookForm" value="Link With Facebook" />
+        </SectionContent>
+
+        <EditForm Model=@InputModel OnValidSubmit=@(async () => await ValidSubmitForm("Enable")) FormName="enableFacebookForm" id="enableFacebookForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+                <RadzenFormField Text="Facebook Page ID*" Style="width: 100%;">
+                    <ChildContent>
+                        <RadzenTextBox @bind-Value="@InputModel.FacebookPageId" Style="width: 100%;" />
+                    </ChildContent>
+                    <Helper>
+                    </Helper>
+                </RadzenFormField>
+    </EditForm>
+}
+else
+{
+    <SectionContent SectionName="footer-bar">
+        <RadzenButton Click=@(args => SyncWithFacebook()) Icon="sync" ButtonStyle="ButtonStyle.Primary" />
+    </SectionContent>
+
+
+
+}
+
+
+
+@code {
+
+    [SupplyParameterFromForm]
+    public InputModel InputModel { get; set; } = new();
+
+
+    public bool Linked { get; set; } = false;
+
+    // Valid Handler
+    private Task InvalidSubmitForm()
+    {
+        Logger.LogDebug($"Invalid Form Submitted at :{DateTime.Now.ToLongTimeString()}");
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Linked = await Mediator.Send(new FacebookConfiguredQuery());
+    }
+
+    private async Task ValidSubmitForm(string submit)
+    {
+        if (submit == "Enable")
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+
+            string redirectUrl = await Mediator.Send(new GetAuthUrlQuery($"{request.Scheme}://{request.Host}", InputModel.FacebookPageId));
+
+            NavigationManager.NavigateTo(redirectUrl, true);
+        }
+        else
+        {
+            var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await _currentUser.GetApplicationTenantId()));
+
+            if (createEventsResult.IsSuccess)
+            {
+                await Mediator.Send(new SyncFacebookEventsToEventsTableCommand());
+            }
+
+        }
+
+
+        Logger.LogDebug("wacka");
+    }
+
+    private async Task SyncWithFacebook()
+    {
+        var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await _currentUser.GetApplicationTenantId()));
+
+        if (createEventsResult.IsSuccess)
+        {
+            await Mediator.Send(new SyncFacebookEventsToEventsTableCommand());
+        }
+
+        Logger.LogDebug("wacka");
+    }
+
+}

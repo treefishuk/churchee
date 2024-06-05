@@ -1,0 +1,60 @@
+﻿@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.Templates.Queries.GetTemplatesListing;
+@using Churchee.Module.Site.Features.Templates.Responses;
+@using MediatR
+@using Microsoft.Extensions.Logging
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Module.UI.Components
+@page "/management/templates"
+@inject ILogger<Index> Logger
+@inject IMediator Mediator
+
+<PageName></PageName>
+
+<Grid TItem="TemplateListingResponse" IsLoading=isLoading Data=employees LoadData="@LoadData" ShowEdit="true"></Grid>
+
+@code {
+
+    int count;
+
+    IEnumerable<TemplateListingResponse> employees;
+
+    bool isLoading = false;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        string orderBy = "Location";
+        string orderByDirection = "asc";
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            var split = args.OrderBy.Split(" ");
+            orderBy = split[0];
+            orderByDirection = split[1];
+
+        }
+
+        var result = await Mediator.Send(new GetTemplatesListingQuery(
+            skip: args.Skip.Value,
+            take: args.Top.Value,
+            searchText: args.Filter,
+            orderBy: orderBy,
+            orderByDirection: orderByDirection,
+            draw: args.Top.Value), default);
+
+        // Important!!! Make sure the Count property of RadzenDataGrid is set.
+        count = result.RecordsTotal;
+
+        // Perform paging via Skip and Take.
+        employees = result.Data;
+
+        isLoading = false;
+    }
+
+}

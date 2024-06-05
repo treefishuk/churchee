@@ -1,0 +1,289 @@
+﻿@page "/management/profile/mfa"
+@using System.Globalization
+@using Microsoft.AspNetCore.Identity.UI
+@using Microsoft.Extensions.Logging
+
+<h3>MultiFactorAuthentication</h3>
+
+<PageName Name="MFA"></PageName>
+
+@if (!Is2faEnabled)
+{
+    
+    <div>
+        <p>To use an authenticator app go through the following steps:</p>
+        <ol class="list">
+            <li>
+                <p>
+                    Download a two-factor authenticator app like Microsoft Authenticator for
+                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
+                    <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
+                    Google Authenticator for
+                    <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
+                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
+                </p>
+            </li>
+            <li>
+                <p>Scan the QR Code or enter this key <kbd>@SharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
+                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
+                <div @ref=QrCode id="qrCode"></div>
+                <div id="qrCodeData" data-url="@AuthenticatorUri"></div>
+            </li>
+            <li>
+                <p>
+                    Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
+                    with a unique code. Enter the code in the confirmation box below.
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+
+
+                        <EditForm Model="model" OnValidSubmit="SubmitCode">
+                            <RadzenTextBox class="w-100" @bind-Value=@model.Code />
+                            <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
+                        </EditForm>
+
+                    </div>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+}
+
+@if (Is2faEnabled)
+{
+    if (RecoveryCodesLeft == 0)
+    {
+        <div class="alert alert-danger my-4">
+            <strong>You have no recovery codes left.</strong>
+            <p>
+                You must <RadzenButton Text="Generate New Recovery Codes" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" />
+            </p>
+        </div>
+    }
+    else if (RecoveryCodesLeft == 1)
+    {
+        <div class="alert alert-danger my-4">
+            <strong>You have 1 recovery code left.</strong>
+            You can <RadzenButton Text="Generate New Recovery Codes" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" />
+        </div>
+    }
+    else if (RecoveryCodesLeft <= 3)
+    {
+        <div class="alert alert-warning my-4">
+            <strong>You have @RecoveryCodesLeft recovery codes left.</strong>
+            You should <RadzenButton Text="Generate New Recovery Codes" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" />
+        </div>
+    }
+
+@*     if (IsMachineRemembered)
+    {
+        <RadzenButton Text="Forget this browser" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" />
+    } *@
+
+    <RadzenButton Text="Disable 2FA" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" Click="Disable2FA" />
+    <RadzenButton Text="Reset recovery codes" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" />
+
+    @if (RecoveryCodes != null && RecoveryCodes.Length > 0)
+    {
+
+        <div class="alert alert-warning my-4" role="alert">
+            <p>
+                <strong>Put these codes in a safe place.</strong>
+            </p>
+            <p>
+                If you lose your device and don't have the recovery codes you will lose access to your account.
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @foreach (var recoveryCode in RecoveryCodes)
+                {
+                    <code class="recovery-code">@recoveryCode</code>
+
+                    <br />                
+                }
+            </div>
+        </div>
+    }
+}
+
+@code {
+
+    [Inject]
+    private ILogger<MultiFactorAuthentication> _logger { get; set; }
+
+    [Inject]
+    private UrlEncoder UrlEncoder { get; set; }
+
+    [Inject]
+    private ChurcheeUserManager _userManager { get; set; }
+
+    [Inject]
+    private ChurcheeSignInManager _churcheeSignInManager { get; set; }
+
+    [Inject]
+    private IHttpContextAccessor _context { get; set; }
+
+    [Inject]
+    private IJSRuntime _js { get; set; }
+
+    [Inject]
+    private NotificationService _notificationService { get; set; }
+
+    private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
+
+    public bool HasAuthenticator { get; set; }
+
+    public int RecoveryCodesLeft { get; set; }
+
+    public bool Is2faEnabled { get; set; }
+
+    public bool IsMachineRemembered { get; set; }
+
+    public string[] RecoveryCodes { get; set; }
+
+    public EnableMultiFactorModel model = new();
+
+    private ApplicationUser _user;
+
+    public string SharedKey { get; set; }
+
+    public string AuthenticatorUri { get; set; }
+
+    ElementReference QrCode;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SetUser();
+
+            if (_user != null)
+            {
+                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(_user) != null;
+                Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(_user);
+                // IsMachineRemembered = await _churcheeSignInManager.IsTwoFactorClientRememberedAsync(_user);
+                RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(_user);
+            }
+
+            if (!Is2faEnabled)
+            {
+                await SetProperties();
+
+                await _js.InvokeVoidAsync("enableQrCode", QrCode, AuthenticatorUri);
+            }
+
+            StateHasChanged();
+
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task SetProperties()
+    {
+        var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(_user);
+
+        if (string.IsNullOrEmpty(unformattedKey))
+        {
+            await _userManager.ResetAuthenticatorKeyAsync(_user);
+
+            unformattedKey = await _userManager.GetAuthenticatorKeyAsync(_user);
+        }
+
+        SharedKey = FormatKey(unformattedKey!);
+
+        var email = await _userManager.GetEmailAsync(_user);
+
+        AuthenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
+    }
+
+    private async Task SetUser()
+    {
+        var id = _context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var user = await _userManager.FindByIdAsync(id);
+
+        _user = user;
+    }
+
+    private string GenerateQrCodeUri(string email, string unformattedKey) => string.Format(
+            CultureInfo.InvariantCulture,
+            AuthenticatorUriFormat,
+            UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
+            UrlEncoder.Encode(email),
+            unformattedKey);
+
+    private static string FormatKey(string unformattedKey)
+    {
+        var result = new StringBuilder();
+        int currentPosition = 0;
+        while (currentPosition + 4 < unformattedKey.Length)
+        {
+            result.Append(unformattedKey.AsSpan(currentPosition, 4)).Append(' ');
+            currentPosition += 4;
+        }
+        if (currentPosition < unformattedKey.Length)
+        {
+            result.Append(unformattedKey.AsSpan(currentPosition));
+        }
+
+        return result.ToString().ToLowerInvariant();
+    }
+
+    private async Task SubmitCode()
+    {
+        // Strip spaces and hyphens
+        var verificationCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
+
+        var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
+            _user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
+
+        if (!is2faTokenValid)
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Verification code is invalid.");
+
+            return;
+        }
+
+        await _userManager.SetTwoFactorEnabledAsync(_user, true);
+
+        await _userManager.GetUserIdAsync(_user);
+
+        _logger.LogInformation(LoggerEventIds.TwoFAEnabled, "User has enabled 2FA with an authenticator app.");
+
+        _notificationService.Notify(NotificationSeverity.Success, "Your authenticator app has been verified.");
+
+        var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(_user, 10);
+
+        RecoveryCodes = recoveryCodes!.ToArray();
+
+        Is2faEnabled = true;
+
+        StateHasChanged();
+
+    }
+
+    private async Task Disable2FA()
+    {
+        var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(_user, false);
+
+        if (disable2faResult.Succeeded)
+        {
+            Is2faEnabled = false;
+
+            _notificationService.Notify(NotificationSeverity.Success, "2fa has been disabled. You can reenable 2fa when you setup an authenticator app.");
+
+            StateHasChanged();
+        }
+        else
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Unexpected error occurred disabling 2FA.");
+        }
+    }
+}

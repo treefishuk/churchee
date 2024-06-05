@@ -1,0 +1,158 @@
+﻿@page "/management/configuration/churches"
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Identity.Managers
+@using Churchee.Module.Tenancy.Features.Churches.Queries
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using System.Text.Json
+@using Microsoft.AspNetCore.Http
+@using Radzen
+@using Radzen.Blazor
+@using System.Net.Http.Json
+@using System.Security.Claims
+
+
+
+<PageName Name="Churches"></PageName>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/configuration/churches/create">Create</a>
+    </div> 
+</SectionContent>
+
+<RadzenDataGrid @ref="grid" AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+                Data="@churches" TItem="GetListingQueryResponseItem">
+    <Columns>
+
+        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+            <Template Context="data">
+                <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="/management/churches/edit/@(data.Id)">
+                    <span class="rz-button-box">
+                        <i class="rz-button-icon-left rzi">edit</i>
+                    </span>
+                </a>
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Property="Name" Title="Name" />
+
+        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Title="" Sortable="false" Filterable="false" Width="200px" TextAlign="TextAlign.Center">
+            <Template Context="data">
+
+                @{
+                    if (_activeTenant != data.Id)
+                    {
+                        <RadzenButton Click=@(args => OnClick(data.Id)) Text="Switch To" ButtonStyle="ButtonStyle.Primary" Icon="input" />
+                    }
+                }
+
+
+            </Template>
+        </RadzenDataGridColumn>
+
+
+        
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    [Inject]
+    private NotificationService _notificationService { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager _navigationManager { get; set; } = default!;
+
+    [Inject]
+    private IHttpClientFactory ClientFactory { get; set; } = default!;
+
+    [Inject]
+    private IHttpContextAccessor _httpContextAccessor { get; set; } = default!;
+
+    [Inject]
+    private ChurcheeUserManager _userManager { get; set; } = default!;
+
+    private Guid _activeTenant { get; set; } = default!;
+
+    IEnumerable<GetListingQueryResponseItem> churches = default!;
+
+    RadzenDataGrid<GetListingQueryResponseItem> grid = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _activeTenant = await CurrentUser.GetApplicationTenantId();
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+
+        var result = await Mediator.Send(new GetListingQuery(), default);
+
+        churches = result;
+    }
+
+    private async Task OnClick(Guid newId)
+    {
+
+        var id = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if(id == null)
+        {
+            return;
+        }
+
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user == null)
+        {
+            return;
+        }
+
+        var claims = await _userManager.GetClaimsAsync(user);
+
+        var oldClaim = claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
+
+        if (oldClaim == null)
+        {
+            return;
+        }
+
+        var newClaim = new Claim("ActiveTenantId", newId.ToString());
+
+        var replaceResult = await _userManager.ReplaceClaimAsync(user, oldClaim, newClaim);
+
+        if (!replaceResult.Succeeded)
+        {
+            return;
+        }
+
+        var updateResult = await _userManager.UpdateAsync(user);
+
+        if (!updateResult.Succeeded)
+        {
+            return;
+        }
+
+        _navigationManager.NavigateTo($"/account/relogin?returnUrl=/management/configuration/churches", true);
+
+    }
+
+}
+
+
+
+
+

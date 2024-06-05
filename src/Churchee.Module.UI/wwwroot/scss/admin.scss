@@ -1,0 +1,33 @@
+//----Variables -------------------------------------------|
+
+@import "_variable-overrides";
+
+//----Razden Base-------------------------------------------|
+
+@import "themes/material-base";
+ 
+//----Overrides-------------------------------------------|
+
+@import "overrides/components/breadcrumb"; 
+@import "overrides/components/images"; 
+
+
+.monaco-editor-container { /* for all editor instances */
+    height: 750px;
+}
+
+.sticky-formButtons {
+    position: sticky;
+    z-index: 3;
+    width: 100%;
+    top: -1rem;
+    background: #e0e9f2;
+    padding: 1rem;
+}
+
+
+.pageEdit-tabs .rz-tabview-nav {
+    margin-top: -3rem;
+    z-index: 4;
+    width: 50%;
+}

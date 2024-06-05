@@ -1,0 +1,196 @@
+﻿@page "/management/pages/edit/{Id:guid}"
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.Pages.Commands.UpdatePage
+@using Churchee.Module.Site.Features.Pages.Queries
+@using Churchee.Module.Site.Features.Pages.Queries.GetPageContent
+@using Churchee.Module.Site.Features.Templates.Commands.UpdateTemplateContent
+@using Churchee.Module.Site.Features.Templates.Queries.GetTemplateById
+@using Churchee.Module.Site.Helpers
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using MediatR
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
+@using Radzen
+@using Radzen.Blazor
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using System.Linq.Expressions
+
+@inject ILogger<Index> Logger
+@inject IMediator Mediator
+@inject NotificationService _notificationService
+@inject NavigationManager _navigationManager
+
+<PageName Name="@Title"></PageName>
+
+<RadzenStack Orientation="Orientation.Vertical">
+
+@if (_editContext != null)
+{
+        <EditForm EditContext="@_editContext" OnValidSubmit="ValidContentSubmitForm">
+
+            <div class="sticky-formButtons">
+
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+                    <RadzenButton Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+                    <RadzenButton Disabled="_formInvalid" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Click="@(()=> Submit = " Save")">Save</RadzenButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Click="@(()=> Submit = "Publish")">Publish</RadzenButton>
+                </RadzenStack>
+
+            </div>
+
+        <DataAnnotationsValidator />
+
+        <RadzenTabs RenderMode="TabRenderMode.Client" class="pageEdit-tabs">
+            <Tabs>
+                    <RadzenTabsItem Text="Info">
+                        <FormFields FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "ContentItems")" OnValueChanged=UpdateFormState></FormFields>
+                    </RadzenTabsItem>
+
+                    <RadzenTabsItem Text="Content">
+
+                        <RadzenStack>
+
+                            @foreach (var item in InputModel.ContentItems)
+                            {
+                                <RadzenFormField Text="@($"{item.Title} ({item.DevName})")">
+                                    <ChildContent>
+                                        @if (item.Type == EditorType.RichTextEditor)
+                                        {
+                                            <RadzenHtmlEditor @bind-Value=@item.Value style="height: 300px;" />
+                                        }
+                                        @if (item.Type == EditorType.Number)
+                                        {
+                                            <RadzenNumeric @bind-Value=@item.Value />
+                                        }
+
+                                        @if (item.Type == EditorType.MultilineText)
+                                        {
+                                            <RadzenTextArea @bind-Value=@item.Value />
+                                        }
+
+                                        @if (item.Type == EditorType.SimpleText)
+                                        {
+                                            <RadzenTextBox @bind-Value=@item.Value />
+                                        }
+                                    </ChildContent>
+                                </RadzenFormField>
+                            }
+
+                         </RadzenStack>
+
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+
+        </EditForm>
+    }
+
+
+
+</RadzenStack>
+
+
+
+
+@code {
+    private bool _formInvalid;
+
+    private EditContext _editContext;
+
+    [SupplyParameterFromForm]
+    public PageEditModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    public string Submit { get; set; }
+
+    public string Title { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _editContext = new EditContext(InputModel);
+    }
+
+    private void UpdateFormState()
+    {
+        _formInvalid = !_editContext.Validate();
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var result = await Mediator.Send(new GetPageDetailsRequest(Id), default);
+
+        Title = result.Title;
+
+        var dropdownData = await GetParentOptions();
+
+        InputModel = new PageEditModel
+        {
+            Title = result.Title,
+            Description = result.Description,
+            Parent = new DropdownInput
+            {
+                Title = result.ParentName,
+                Value = result.ParentId?.ToString(),
+                Data = dropdownData ?? new List<DropdownInput>(),
+            },
+            ContentItems = result.ContentItems.ToList()
+
+        };
+
+
+    }
+
+
+    private async Task<List<DropdownInput>> GetParentOptions()
+    {
+        var data = await Mediator.Send(new GetListingQuery(null, string.Empty), default);
+
+        return data.Select(s => new DropdownInput
+        {
+            Title = s.Title,
+            Value = s.Id.ToString()
+        }).ToList();
+    }
+
+    private async Task ValidContentSubmitForm()
+    {
+        var content = InputModel.ContentItems.Select(s => new KeyValuePair<Guid, string>(s.PageTypeContentId, s.Value)).ToList();
+
+        var properties = new List<KeyValuePair<Guid, string>>();
+
+        bool publish = (Submit == "Publish");
+
+        var result = await Mediator.Send(new UpdatePageCommand(InputModel.Title, InputModel.Description, InputModel.Parent.Value, publish, Id, content, properties), default);
+
+        _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+
+    }
+
+    public void CancelForm()
+    {
+        var currentUrl = _navigationManager.Uri;
+
+        currentUrl = currentUrl.Replace("/edit", "");
+
+        Uri uri = new Uri(currentUrl);
+
+        var parent = uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
+
+        int lastSlash = parent.LastIndexOf('/');
+
+        parent = (lastSlash > -1) ? parent.Substring(0, lastSlash) : parent;
+
+        _navigationManager.NavigateTo(parent);
+
+    }
+
+}

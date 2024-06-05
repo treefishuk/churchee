@@ -1,0 +1,70 @@
+﻿@page "{id:guid?}"
+@model Churchee.Module.Site.Areas.Management.Pages.Blog.EditModel
+@{
+}
+
+
+@section subNav{
+
+      <input type="submit" class="btn-update" name="submit" form="blogEditForm" value="Update"/>
+      <input type="submit" class="btn-create" name="submit" form="blogEditForm" value="Publish"/>
+
+}
+
+
+  <form method="post" id="blogEditForm">
+
+                @Html.AntiForgeryToken()
+
+
+<ejs-tab id="blogEditTabs">
+    <e-tab-tabitems>
+        <e-tab-tabitem>
+            <e-content-template>
+                <div>
+                    <div class="e-tab-header">
+                        <div>Details</div>
+                        <div>Content</div>
+                    </div>
+                    <div class="e-content">
+                        <div>
+                            <div class="pad">
+
+		                    <div class="form-floating mb-3">
+                                  @Html.EditorFor(m => m.InputModel.Title)
+                                  @Html.LabelFor(m => m.InputModel.Title)
+                                  @Html.ValidationMessageFor(m => m.InputModel.Title)
+		                    </div>
+		                    <div class="form-floating mb-3">
+                                  @Html.EditorFor(m => m.InputModel.Slug)
+                                  @Html.LabelFor(m => m.InputModel.Slug)
+                                  @Html.ValidationMessageFor(m => m.InputModel.Slug)
+		                    </div>
+		                    <div class="form-floating mb-3">
+                                  @Html.EditorFor(m => m.InputModel.Description)
+                                  @Html.LabelFor(m => m.InputModel.Description)
+                                  @Html.ValidationMessageFor(m => m.InputModel.Description)
+		                    </div>
+
+                            </div>
+                        </div>
+                        <div>
+                            <div class="code-form">
+                                @Html.EditorFor(m => m.InputModel.Content)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </e-content-template>
+        </e-tab-tabitem>
+    </e-tab-tabitems>
+</ejs-tab>
+
+
+            </form>
+
+            <script>
+
+
+
+            </script>

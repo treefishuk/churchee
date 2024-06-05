@@ -1,0 +1,80 @@
+[class^="btn"] {
+    display: inline-block;
+    font-family: $btn-font-family;
+    font-weight: $btn-font-weight;
+    line-height: $btn-line-height;
+    color: $body-color;
+    text-align: center;
+    text-decoration: if($link-decoration == none, null, none);
+    white-space: $btn-white-space;
+    vertical-align: middle;
+    cursor: if($enable-button-pointers, pointer, null);
+    user-select: none;
+    background-color: transparent;
+    border: $btn-border-width solid transparent;
+    @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-border-radius);
+    @include transition($btn-transition);
+    white-space: nowrap;
+
+    &:hover {
+        color: $body-color;
+        text-decoration: if($link-hover-decoration == underline, none, null);
+    }
+
+    .btn-check:focus + &,
+    &:focus {
+        outline: 0;
+        box-shadow: $btn-focus-box-shadow;
+    }
+
+    .btn-check:checked + &,
+    .btn-check:active + &,
+    &:active,
+    &.active {
+        @include box-shadow($btn-active-box-shadow);
+
+        &:focus {
+            @include box-shadow($btn-focus-box-shadow, $btn-active-box-shadow);
+        }
+    }
+
+    &:disabled,
+    &.disabled,
+    fieldset:disabled & {
+        pointer-events: none;
+        opacity: $btn-disabled-opacity;
+        @include box-shadow(none);
+    }
+}
+
+
+.btn-create {
+
+    @include button-variant($success, $success);
+    margin: 0px 0.5rem;
+}
+
+
+.btn-update {
+
+    @include button-variant($primary, $primary);
+}
+
+.btn-disable {
+
+    @include button-variant($danger, $danger);
+}
+
+.button-row {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: #333;
+    height: 3.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    z-index: 3;
+    padding-left: 260px;
+    flex-direction: row-reverse;
+}

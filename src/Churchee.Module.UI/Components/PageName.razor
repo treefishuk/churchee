@@ -1,0 +1,25 @@
+﻿@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Web
+@inject CurrentPage currentPage;
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Name</PageTitle>
+
+    @code {
+    [Parameter]
+    public string Name { get; set; }
+
+
+    protected override void OnParametersSet()
+    {
+
+        if (string.IsNullOrEmpty(Name))
+        {
+            var urlParts = NavigationManager.Uri.Split('/');
+
+            Name = urlParts.Last().ToTitleCase();
+        }
+
+        currentPage.SetCurrentPageName(Name);
+    }
+}

@@ -1,0 +1,93 @@
+﻿@using BlazorMonaco.Editor
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Logging
+@using Radzen
+@using Radzen.Blazor
+@inject ILogger<Form> _logger
+@inject NotificationService _notificationService
+
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components.Rendering
+
+@if (_editContext != null)
+{
+
+    <EditForm EditContext="@_editContext" OnSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+
+     <FormButtons FormInvalid="_formInvalid">
+            @ChildContent
+     </FormButtons>
+
+     <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=UpdateFormState EditContext="_editContext"></FormFields>
+
+</EditForm>
+
+
+}
+
+@code {
+
+    private bool _formInvalid;
+
+    private bool _submitClicked;
+
+    private EditContext _editContext { get; set; }
+
+    [Parameter]
+    public object InputModel { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _formInvalid = true;
+        _editContext = new EditContext(InputModel);
+    }
+
+    private void UpdateFormState()
+    {
+        _formInvalid = !_editContext.Validate();
+
+
+        StateHasChanged();
+    }
+
+
+    private async Task HandleSubmit()
+    {
+
+        try
+        {
+            _submitClicked = true;
+
+            if (_editContext.Validate())
+            {
+                _logger.LogInformation("HandleValidSubmit");
+
+                await OnSave.InvokeAsync(null);
+
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+            }
+
+
+
+
+
+        }
+        catch (Exception ex)
+        {
+            _logger.Log(LogLevel.Error, ex, "Error Submitting form");
+        }
+
+    }
+
+    [Parameter]
+    public EventCallback<object> OnSave { get; set; }
+
+}

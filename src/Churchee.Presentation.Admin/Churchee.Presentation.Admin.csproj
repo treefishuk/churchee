@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	<TargetFramework>net8.0</TargetFramework>
+	<Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>2fcbd0d8-ca42-4843-b9d7-1fa2e45907f3</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.7" />
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+		<PackageReference Include="Radzen.Blazor" Version="4.24.1" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+    <ProjectReference Include="..\Churchee.Blobstorage.Providers\Churchee.Blobstorage.Providers.csproj" />
+    <ProjectReference Include="..\Churchee.Data.EntityFramework\Churchee.Data.EntityFramework.csproj" />
+    <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Events\Churchee.Module.Events.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Facebook.Events\Churchee.Module.Facebook.Events.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Podcasts.Anchor\Churchee.Module.Podcasts.Anchor.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Podcasts\Churchee.Module.Podcasts.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Settings\Churchee.Module.Settings.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Site\Churchee.Module.Site.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Tokens\Churchee.Module.Tokens.csproj" />
+  </ItemGroup>
+
+</Project>

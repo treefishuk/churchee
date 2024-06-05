@@ -1,0 +1,86 @@
+﻿@using BlazorMonaco.Editor
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Web
+@using Radzen
+@using Radzen.Blazor
+@using System.Linq.Expressions
+
+
+<RadzenFormField Text=@PropertyInfo.Name.ToSentence()>
+    <ChildContent>
+        <RadzenTextBox Value="@Value" Change=@((value) => OnChange(value)) />
+    </ChildContent>
+    <Helper>
+        <small class="rz-color-base-600">slug: @Slug</small>
+        <ValidationMessage For="GetExpression(PropertyInfo, InputModel)" />
+    </Helper>
+</RadzenFormField>
+
+
+@code {
+
+    private string Id { get; set; }
+
+    [Parameter]
+    public PropertyInfo PropertyInfo { get; set; }
+
+    [Parameter]
+    public object InputModel { get; set; }
+
+    [Parameter]
+    public string Value { get; set; }
+
+
+    public string Slug { 
+        get
+        {
+
+            if(Value == "Home")
+            {
+                return "/";
+            }
+
+            return Value.ToURL();
+        }
+        private set { }
+    }
+
+
+    public async Task OnChange(string value)
+    {
+        try
+        {
+            Value = value;
+
+            StateHasChanged();
+
+            await Change.InvokeAsync(Value);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+
+
+    }
+
+    private Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
+    {
+        // Create an expression to set the ValueExpression-attribute.
+        var constant = System.Linq.Expressions.Expression.Constant(inputModel, inputModel.GetType());
+        var exp = System.Linq.Expressions.MemberExpression.Property(constant, info.Name);
+        var lamb = System.Linq.Expressions.Expression.Lambda<Func<object>>(exp);
+
+        return lamb;
+    }
+
+    [Parameter]
+    public EventCallback<string> Change { get; set; }
+
+}
+
+
+
+
+

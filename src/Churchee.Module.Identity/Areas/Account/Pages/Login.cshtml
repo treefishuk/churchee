@@ -1,0 +1,48 @@
+﻿@page
+@model Churchee.Module.Identity.Areas.Account.Pages.LoginModel
+@{
+    ViewData["Title"] = "Login To Churchee";
+    Layout = "./_LoginLayout";
+}
+
+<main role="main" class="pb-3">
+
+    <section class="login-section bg-gradient-primary-to-secondary">
+        <form id="account" method="post">
+            <h1>Log in to: <strong>Churchee</strong></h1>
+            <hr />
+
+            @Html.AntiForgeryToken()
+
+            <div class="field">
+                @Html.LabelFor(m => m.Input.Email)
+                @Html.EditorFor(m => m.Input.Email)
+                @Html.ValidationMessageFor(m => m.Input.Email)
+            </div>
+            <div class="field">
+                @Html.LabelFor(m => m.Input.Password)
+                @Html.EditorFor(m => m.Input.Password)
+                @Html.ValidationMessageFor(m => m.Input.Password)
+            </div>
+            <div class="field">
+                <div class="checkbox-wrap">
+                    @Html.CheckBoxFor(m => m.Input.RememberMe)
+                    @Html.LabelFor(m => m.Input.RememberMe)
+                    @Html.ValidationMessageFor(m => m.Input.RememberMe)
+                </div>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div>
+                <button type="submit">Log in</button>
+            </div>
+            <div>
+            </div>
+        </form>
+    </section>
+
+
+</main>
+
+

@@ -1,0 +1,126 @@
+﻿@using Churchee.Module.Podcasts.Features.Commands
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Churchee.Module.Podcasts.AnchorIntegration.Areas.Integrations.Models
+@using Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
+@using Churchee.Module.Podcasts.Anchor.Features.Podcasts.Queries
+@using Churchee.Module.UI.Components
+@using Radzen.Blazor
+@using Radzen
+@page "/management/integrations/anchor"
+@inject ILogger<Anchor> Logger
+@inject IMediator Mediator
+
+
+@if (anchorConfigued)
+{
+    <div>
+
+        @if (lastRun != null)
+        {
+            <b>Last Run: @lastRun.Value.ToShortDateString()</b>
+        }
+
+        <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+            <h1>Spotify podcasts is set up!</h1>
+
+            <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+            <RadzenButton Click=@(args => SyncNow()) Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" />
+
+        </RadzenStack>
+
+    </div>
+
+}
+
+else
+{
+    <RadzenRow Gap="1rem">
+        <RadzenColumn class="rz-p-5">
+            <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm())>
+            </Form>
+        </RadzenColumn>
+        <RadzenColumn class="rz-p-5">
+            Column 2 of 4
+        </RadzenColumn>
+    </RadzenRow>
+}
+
+
+@code{
+
+    [Inject]
+    private NotificationService _notificationService { get; set; }
+
+    bool anchorConfigued = false;
+
+    DateTime? lastRun = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Mediator.Send(new GetPodcastSettingsRequest());
+
+        InputModel = new InputModel(result.AnchorUrl, result.NameForContent);
+
+        lastRun = result.LastRun;
+
+        anchorConfigued = !string.IsNullOrEmpty(result.AnchorUrl);
+    }
+
+    private async Task DisableSync()
+    {
+        var result = await Mediator.Send(new DisableAnchorPodcastSyncCommand());
+
+        if (result.IsSuccess)
+        {
+            anchorConfigued = false;
+
+            _notificationService.Notify(NotificationSeverity.Success, "Integration Disabled");
+
+            InputModel = new InputModel();
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task SyncNow()
+    {
+        var result = await Mediator.Send(new EnableAnchorPodcastSyncCommand(InputModel?.AnchorRSSFeedUrl));
+
+        if (result.IsSuccess)
+        {
+            _notificationService.Notify(NotificationSeverity.Success, "Sync Scheduled");
+        }
+    }
+
+    [SupplyParameterFromForm]
+    public InputModel InputModel { get; set; } = new();
+
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new PodcastsEnabledCommand(InputModel.NameForContent));
+
+        if (!result.IsSuccess)
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Failed to enable Podcasts");
+        }
+
+        var result2 = await Mediator.Send(new EnableAnchorPodcastSyncCommand(InputModel?.AnchorRSSFeedUrl));
+
+        if (result.IsSuccess)
+        {
+            Logger.LogDebug("anchorrssfeedurl = {anchorrssfeedurl}", InputModel.AnchorRSSFeedUrl);
+
+            _notificationService.Notify(NotificationSeverity.Success, "Spotify Podcasts configured, Syncing will being shortly");
+
+            anchorConfigued = true;
+
+            StateHasChanged();
+
+        }
+    }
+
+}

@@ -1,0 +1,92 @@
+﻿@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
+@inject CurrentPage currentPage;
+
+<div class="rz-breadcrumb">
+
+            <div class="rz-breadcrumb-item"><a href="/management"><i class="fa fa-home"></i></a></div>
+
+            @foreach(var item in GetLoop()){
+
+            <div class="rz-breadcrumb-item"><a href="@(item.Key ?? "/")">@item.Value</a></div>
+
+            }
+
+    <div class="rz-breadcrumb-item">@currentPage.CurrentPageName</div>
+
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+
+</div>
+
+
+
+@code {
+
+    private List<KeyValuePair<string, string>> crumbs = new List<KeyValuePair<string, string>>();
+
+    private List<KeyValuePair<string, string>> GetLoop()
+    {
+        var count = crumbs.Count();
+
+        return crumbs.Take(count - 1).ToList();
+
+    }
+
+    private KeyValuePair<string, string> Last => crumbs.Last();
+
+    [Parameter] 
+    public RenderFragment ChildContent { get; set; }
+
+    void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        SetBreadCrumbs();
+    }
+
+    void SetBreadCrumbs()
+    {
+        crumbs.Clear();
+
+        var url = NavigationManager.Uri;
+
+        var relativeUrl = url.Replace(NavigationManager.BaseUri, "");
+
+        var parts = relativeUrl.Split('/');
+
+        var count = 1;
+
+        foreach (var link in parts)
+        {
+            if (link == "" || link == "edit")
+            {
+                continue;
+            }
+
+            count++;
+
+            string lastLink = "";
+
+            if (crumbs.Any())
+            {
+                lastLink = crumbs.Last().Key;
+            }
+
+            crumbs.Add(new KeyValuePair<string, string>($"{lastLink}/{link}", link.ToTitleCase()));
+        }
+
+        StateHasChanged();
+
+    }
+
+
+    protected override void OnInitialized()
+    {
+        SetBreadCrumbs();
+
+        NavigationManager.LocationChanged += LocationChanged;
+        base.OnInitialized();
+    }
+}

@@ -1,0 +1,44 @@
+﻿@page "/management/templates/edit/{Id:guid}"
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.Templates.Commands.UpdateTemplateContent
+@using Churchee.Module.Site.Features.Templates.Queries.GetTemplateById
+@using Churchee.Module.UI.Components
+@using MediatR
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
+@using Radzen
+@inject ILogger<Index> Logger
+@inject IMediator Mediator
+@inject NotificationService _notificationService
+
+<PageName Name="Edit Template"></PageName>
+
+<PageTitle>@InputModel.Content.Split('/').Last().Replace(".cshtml", "")</PageTitle>
+
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    [SupplyParameterFromForm]
+    public TemplatesInputModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var response = await Mediator.Send(new GetTemplateByIdQuery(Id));
+
+        InputModel = new TemplatesInputModel(response.Id, response.Content);
+
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new UpdateTemplateContentComand(InputModel.Id, InputModel.Content));
+       
+        _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+    }
+}
