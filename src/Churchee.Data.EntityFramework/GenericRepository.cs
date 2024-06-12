@@ -33,7 +33,8 @@ namespace Churchee.Data.EntityFramework
         {
             _dbContext.Set<T>().Attach(entity);
         }
-        public virtual T GetById(object id)
+
+        public virtual T GetById(params object[] id)
         {
             return _dbSet.Find(id);
         }

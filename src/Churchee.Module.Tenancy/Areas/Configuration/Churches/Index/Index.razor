@@ -1,5 +1,6 @@
 ﻿@page "/management/configuration/churches"
 @using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Identity.Entities
 @using Churchee.Module.Identity.Managers
 @using Churchee.Module.Tenancy.Features.Churches.Queries
 @using Churchee.Module.UI.Components
@@ -118,24 +119,20 @@
 
         if (user == null)
         {
+            _notificationService.Notify(NotificationSeverity.Error, "Failed to Switch Church Context");
+
             return;
         }
 
         var claims = await _userManager.GetClaimsAsync(user);
 
-        var oldClaim = claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
+        bool replaceNameResult = await ReplaceApplicationTenenatId(claims, newId, user);
+        bool replaceIdResult = await ReplaceApplicationTenenatName(claims, newId, user);
 
-        if (oldClaim == null)
+        if(!replaceIdResult || !replaceIdResult)
         {
-            return;
-        }
+            _notificationService.Notify(NotificationSeverity.Error, "Failed to Switch Church Context");
 
-        var newClaim = new Claim("ActiveTenantId", newId.ToString());
-
-        var replaceResult = await _userManager.ReplaceClaimAsync(user, oldClaim, newClaim);
-
-        if (!replaceResult.Succeeded)
-        {
             return;
         }
 
@@ -143,11 +140,57 @@
 
         if (!updateResult.Succeeded)
         {
+            _notificationService.Notify(NotificationSeverity.Error, "Failed to Switch Church Context");
+
             return;
         }
 
         _navigationManager.NavigateTo($"/account/relogin?returnUrl=/management/configuration/churches", true);
 
+    }
+
+    private async Task<bool> ReplaceApplicationTenenatId(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
+    {
+        var oldActiveTenantIdClaim = claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
+
+        if (oldActiveTenantIdClaim == null)
+        {
+            return false;
+        }
+
+        var newActiveTenantIdClaim = new Claim("ActiveTenantId", newTenantId.ToString());
+
+        var replaceIdResult = await _userManager.ReplaceClaimAsync(user, oldActiveTenantIdClaim, newActiveTenantIdClaim);
+
+        if (!replaceIdResult.Succeeded)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task<bool> ReplaceApplicationTenenatName(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
+    {
+        var oldActiveTenantNameClaim = claims.Where(w => w.Type == "ActiveTenantName").FirstOrDefault();
+
+        if (oldActiveTenantNameClaim == null)
+        {
+            return false;
+        }
+
+        var applicationTenantName = await Mediator.Send(new GetApplicationNameByIdQuery(newTenantId));
+
+        var newActiveTenantNameClaim = new Claim("ActiveTenantName", applicationTenantName);
+
+        var replaceNameResult = await _userManager.ReplaceClaimAsync(user, oldActiveTenantNameClaim, newActiveTenantNameClaim);
+
+        if (!replaceNameResult.Succeeded)
+        {
+            return false;
+        }
+
+        return true;
     }
 
 }

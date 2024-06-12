@@ -143,7 +143,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
                 var newListingPageType = new PageType(_podcastListingPageTypeId, applicationTenantId, true, "Podcast Listing", false);
 
-                newListingPageType.ChildrenTypes.Add(new WebContentTypeTypeMapping() { ParentWebContentTypeId = _podcastListingPageTypeId, ChildWebContentTypeId = _podcastDetailPageTypeId });
+                newListingPageType.ChildrenTypes.Add(new PageTypeTypeMapping() { ParentPageTypeId = _podcastListingPageTypeId, ChildPageTypeId = _podcastDetailPageTypeId });
 
                 pageTypeRepo.Create(newDetailPageType);
 

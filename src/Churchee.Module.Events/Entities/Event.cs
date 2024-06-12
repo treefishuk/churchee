@@ -7,7 +7,16 @@ namespace Churchee.Module.Events.Entities
     {
         private Event()
         {
-
+            Title = string.Empty;
+            Description = string.Empty;
+            ImageUrl = string.Empty;
+            LocationName = string.Empty;
+            City = string.Empty;
+            Street = string.Empty;
+            PostCode = string.Empty;
+            Country = string.Empty;
+            Content = string.Empty;
+            EventDates = new List<EventDate>();
         }
 
         public Event(Guid applicationTenantId, string sourceName, string sourceId, string title, string description, string content, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude, DateTime? start, DateTime? end, string imageUrl)
@@ -30,12 +39,15 @@ namespace Churchee.Module.Events.Entities
             Country = country;
             Latitude = latitude;
             Longitude = longitude;
-            Start = start;
-            End = end;
             ImageUrl = imageUrl;
             Url = $"/events/{eventId}";
             IsSystem = true;
             PageTypeId = PageTypes.EventDetailPageTypeId;
+
+            EventDates = new List<EventDate>
+            {
+                new EventDate { EventId = eventId, Start = start, End = end }
+            };
         }
 
         public string Content { get; private set; }
@@ -54,16 +66,14 @@ namespace Churchee.Module.Events.Entities
 
         public decimal? Longitude { get; private set; }
 
-        public DateTime? Start { get; private set; }
-
-        public DateTime? End { get; private set; }
-
         public string ImageUrl { get; private set; }
 
         public void SetImageUrl(string imageUrl)
         {
             ImageUrl = imageUrl;
         }
+
+        public ICollection<EventDate> EventDates { get; set; }
 
     }
 }

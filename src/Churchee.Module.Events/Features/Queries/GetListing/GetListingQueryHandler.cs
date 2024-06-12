@@ -46,7 +46,7 @@ namespace Churchee.Module.Events.Features.Queries
                     ImageUri = s.ImageUrl,
                     Title = s.Title,
                     CreatedDate = s.CreatedDate ?? DateTime.Now,
-                    Source = s.Source
+                    Source = s.SourceName
                 })
                 .ToListAsync(cancellationToken);
 

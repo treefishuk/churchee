@@ -33,7 +33,7 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
 
             _recurringJobManager.RemoveIfExists($"{await _currentUser.GetApplicationTenantId()}_AnchorPodcasts");
 
-            var anchorPodcasts = _dataStore.GetRepository<Podcast>().GetQueryable().Where(w => w.Source == "anchor.fm").ToList();
+            var anchorPodcasts = _dataStore.GetRepository<Podcast>().GetQueryable().Where(w => w.SourceName == "Spotify").ToList();
 
             foreach (var item in anchorPodcasts)
             {

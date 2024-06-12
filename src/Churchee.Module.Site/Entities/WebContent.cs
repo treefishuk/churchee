@@ -19,7 +19,7 @@ namespace Churchee.Module.Site.Entities
             Title = title;
             Description = description;
             Children = new HashSet<WebContent>();
-            Source = source;
+            SourceName = source;
         }
 
         protected WebContent(Guid applicationTenantId, string title, string url, string description) : base(applicationTenantId)
@@ -29,11 +29,8 @@ namespace Churchee.Module.Site.Entities
             Title = title;
             Description = description;
             Children = new HashSet<WebContent>();
-            Source = "Admin";
+            SourceName = "Admin";
         }
-
-        public string Source { get; protected set; }
-
         public string Title { get; protected set; }
 
         public virtual string Description { get; protected set; }

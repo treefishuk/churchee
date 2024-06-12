@@ -7,14 +7,13 @@ namespace Churchee.Module.Podcasts.Entities
         public Podcast() : base()
         {
             AudioUri = string.Empty;
-            Source = string.Empty;
+            SourceName = string.Empty;
             ImageUrl = string.Empty;
             ThumbnailUrl = string.Empty;
-            Source = string.Empty;
         }
 
-        public Podcast(Guid applicationTenantId, string audioUri, DateTime publishedDate, string source, string title, string description, string imageUrl, string thumbnailUrl, string podcastsUrl)
-            : base(applicationTenantId, source, title, title.ToURL(), description)
+        public Podcast(Guid applicationTenantId, string audioUri, DateTime publishedDate, string sourceName, string sourceId, string title, string description, string imageUrl, string thumbnailUrl, string podcastsUrl)
+            : base(applicationTenantId, sourceName, title, title.ToURL(), description)
         {
             AudioUri = audioUri;
             PublishedDate = publishedDate;
@@ -24,6 +23,9 @@ namespace Churchee.Module.Podcasts.Entities
             IsSystem = true;
             PageTypeId = Guid.Parse("f88412e5-9647-4232-8389-4edf685ecf4e");
             Url = $"/{podcastsUrl.ToLowerInvariant()}/{title.ToURL()}";
+            SourceName = sourceName;
+            SourceId = sourceId;
+
         }
 
         public string AudioUri { get; private set; }

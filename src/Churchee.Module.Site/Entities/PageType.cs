@@ -15,8 +15,8 @@ namespace Churchee.Module.Site.Entities
             AllowInRoot = allowInRoot;
             Name = name;
             DevName = name.Replace(" ", "");
-            ParentTypes = new List<WebContentTypeTypeMapping>();
-            ChildrenTypes = new List<WebContentTypeTypeMapping>();
+            ParentTypes = new List<PageTypeTypeMapping>();
+            ChildrenTypes = new List<PageTypeTypeMapping>();
             PageTypeProperties = new List<WebContentTypeProperty>();
             PageTypeContent = new List<WebContentTypeContent>();
             Pages = new List<WebContent>();
@@ -37,9 +37,9 @@ namespace Churchee.Module.Site.Entities
 
         public ICollection<WebContent> Pages { get; set; }
 
-        public ICollection<WebContentTypeTypeMapping> ParentTypes { get; set; }
+        public ICollection<PageTypeTypeMapping> ParentTypes { get; set; }
 
-        public ICollection<WebContentTypeTypeMapping> ChildrenTypes { get; set; }
+        public ICollection<PageTypeTypeMapping> ChildrenTypes { get; set; }
 
         public ICollection<WebContentTypeProperty> PageTypeProperties { get; set; }
 
@@ -54,6 +54,11 @@ namespace Churchee.Module.Site.Entities
 
             AddDomainEvent(new PageTypeContentCreatedEvent(ApplicationTenantId, newPageTypeContent.Id, Id));
 
+        }
+
+        public void AddChildType(PageType pageType)
+        {
+            ChildrenTypes.Add(new PageTypeTypeMapping { ParentPageType = this, ChildPageType = pageType });
         }
 
     }

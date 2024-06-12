@@ -18,7 +18,7 @@ namespace Churchee.Common.Abstractions.Storage
 
         IQueryable<T> ApplySpecification(ISpecification<T> specification, bool evaluateCriteriaOnly = false);
 
-        T GetById(object id);
+        T GetById(params object[] keyValues);
 
         Task<T> GetByIdAsync(object id);
 

@@ -46,7 +46,7 @@ namespace Churchee.Module.Podcasts.Features.Queries
                     ImageUri = s.ThumbnailUrl,
                     Title = s.Title,
                     PublishedDate = s.PublishedDate,
-                    Source = s.Source
+                    Source = s.SourceName
                 })
                 .ToListAsync(cancellationToken);
 

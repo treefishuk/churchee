@@ -1,0 +1,70 @@
+﻿@page "/management/events/create"
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Events.Areas.Website.Models
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Churchee.Module.Events.Features.Commands
+@using MediatR
+@using Radzen
+
+<PageName Name="Create Event"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    [SupplyParameterFromForm]
+    public CreateEventModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    [Inject]
+    private NotificationService NotificationService { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        InputModel = new CreateEventModel();
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await CurrentUser.GetApplicationTenantId()));
+
+        if (createEventsResult.IsSuccess)
+        {
+            var command = new CreateEventCommand(
+                title: InputModel.Title,
+                description: InputModel.Description,
+                start: InputModel.Start,
+                end: InputModel.End,
+                content: InputModel.Content,
+                imageFileName: InputModel.ImageUpload.FileName,
+                base64Image: InputModel.ImageUpload.Value,
+                locationName: InputModel.LocationName,
+                city: InputModel.City,
+                street: InputModel.Street,
+                postCode: InputModel.PostCode,
+                country: InputModel.Country,
+                latitude: InputModel.Latitude,
+                longitude: InputModel.Longitude);
+
+            var result = await Mediator.Send(command, default);
+
+            if (result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/management/events");
+            }
+        }
+    }
+}

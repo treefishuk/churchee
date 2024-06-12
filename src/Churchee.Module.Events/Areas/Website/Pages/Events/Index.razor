@@ -12,7 +12,14 @@
 
 <PageName></PageName>
 
-<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=employees LoadData="@LoadData" ShowEdit="false" ImagePrefix="@(imagePrefix)"></Grid>
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/events/create">Create</a>
+    </div>
+</SectionContent>
+
+
+<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=employees LoadData="@LoadData" ShowEdit="true" ImagePrefix="@(imagePrefix)"></Grid>
 
 @code {
 

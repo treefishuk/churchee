@@ -91,12 +91,6 @@
 
     private async Task LoadData()
     {
-        // string host = _httpContextAccessor.HttpContext.Request.Host.Host;
-
-        // var client = ClientFactory.CreateClient();
-
-        // var result = await client.GetFromJsonAsync<IEnumerable<GetListingQueryResponseItem>>($"https://{host}/api/pages");
-        
         var result = await Mediator.Send(new GetListingQuery(null, string.Empty), default);
 
         employees = result;
