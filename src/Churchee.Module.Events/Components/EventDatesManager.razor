@@ -1,0 +1,75 @@
+﻿@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Routing
+@using Radzen
+@using Radzen.Blazor
+@inject NavigationManager NavigationManager
+@inject CurrentPage currentPage;
+
+
+@foreach(var item in Dates)
+{
+    <RadzenStack Orientation="Orientation.Horizontal">
+
+        <div>
+            @if(item.start != null)
+            {
+                <div>@item.start.Value.ToString("dd/MM/yyyy HH:mm")</div>
+            }
+        </div>
+        <div>
+
+            @if (item.end != null)
+            {
+                <div>@item.end.Value.ToString("dd/MM/yyyy HH:mm")</div>
+            }
+        </div>
+
+        <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="() => RemoveEntry(item)"></RadzenButton>
+
+
+    </RadzenStack>
+}
+
+
+    <RadzenStack Orientation="Orientation.Horizontal">
+
+    <RadzenDatePicker Max=End DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=Start />
+    <RadzenDatePicker Min=Start DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=End />
+
+    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add" Click="AddEntry"></RadzenButton>
+
+</RadzenStack>
+
+
+
+@code {
+
+    [Parameter] 
+    public List<(DateTime? start, DateTime? end)> Dates { get; set; }
+
+    public DateTime? Start { get; set; }
+    public DateTime? End { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    public async Task AddEntry()
+    {
+        Dates.Add((Start, End));
+
+        Start = null;
+        End = null;
+
+        StateHasChanged();
+    }
+
+    public async Task RemoveEntry((DateTime? start, DateTime? end) entry)
+    {
+        Dates.Remove(entry);
+
+        StateHasChanged();
+    }
+
+}

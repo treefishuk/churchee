@@ -13,10 +13,7 @@
 
 @code {
     [SupplyParameterFromForm]
-    public CreateEventModel InputModel { get; set; } = new();
-
-    [Parameter]
-    public Guid Id { get; set; }
+    public CreateEventInputModel InputModel { get; set; } = new();
 
     [Inject]
     private ICurrentUser CurrentUser { get; set; } = default!;
@@ -34,7 +31,7 @@
     {
         await base.OnInitializedAsync();
 
-        InputModel = new CreateEventModel();
+        InputModel = new CreateEventInputModel();
     }
 
     private async Task ValidSubmitForm()

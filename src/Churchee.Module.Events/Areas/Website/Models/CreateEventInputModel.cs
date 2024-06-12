@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Churchee.Common.ValueTypes;
+using Churchee.Module.Events.Features.Queries;
 using Churchee.Module.UI.Models;
 
 namespace Churchee.Module.Events.Areas.Website.Models
 {
 
-    public class CreateEventModel
+    public class CreateEventInputModel
     {
-        public CreateEventModel()
+
+        public CreateEventInputModel()
         {
             Title = string.Empty;
             Description = string.Empty;

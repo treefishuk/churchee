@@ -1,0 +1,150 @@
+﻿@page "/management/events/edit/{Id:guid}"
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Events.Areas.Website.Models
+@using Churchee.Module.Events.Components
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Churchee.Module.Events.Features.Queries
+@using Churchee.Module.Events.Features.Commands
+@using MediatR
+@using Microsoft.AspNetCore.Components.Forms
+@using Radzen
+@using Radzen.Blazor
+
+<PageName Name="Edit Event"></PageName>
+
+<RadzenStack Orientation="Orientation.Vertical">
+
+    @if (_editContext != null)
+    {
+        <EditForm EditContext="@_editContext" OnValidSubmit="ValidSubmitForm">
+
+            <div class="sticky-formButtons">
+
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+                    <RadzenButton Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+                    <RadzenButton Disabled="_formInvalid" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit">Save</RadzenButton>
+                </RadzenStack>
+
+            </div>
+
+            <DataAnnotationsValidator />
+
+            <RadzenTabs RenderMode="TabRenderMode.Client" class="pageEdit-tabs">
+                <Tabs>
+                    <RadzenTabsItem Text="Details">
+                        <FormFields FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "Dates")" OnValueChanged=UpdateFormState></FormFields>
+                    </RadzenTabsItem>
+
+                    <RadzenTabsItem Text="Dates">
+
+                        <RadzenStack>
+                            <EventDatesManager Dates="InputModel.Dates"></EventDatesManager>
+                        </RadzenStack>
+
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+
+        </EditForm>
+    }
+
+
+
+</RadzenStack>
+
+
+@code {
+
+    private bool _formInvalid;
+
+    private EditContext _editContext;
+
+    private void UpdateFormState()
+    {
+        _formInvalid = !_editContext.Validate();
+
+        StateHasChanged();
+    }
+
+    [SupplyParameterFromForm]
+    public UpdateEventInputModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    [Inject]
+    private NotificationService NotificationService { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var response = await Mediator.Send(new GetDetailByIdQuery(Id));
+
+        InputModel = new UpdateEventInputModel(response);
+    }
+
+    protected override void OnParametersSet()
+    {
+        _editContext = new EditContext(InputModel);
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        // var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await CurrentUser.GetApplicationTenantId()));
+
+        // if (createEventsResult.IsSuccess)
+        // {
+        //     var command = new CreateEventCommand(
+        //         title: InputModel.Title,
+        //         description: InputModel.Description,
+        //         start: InputModel.Start,
+        //         end: InputModel.End,
+        //         content: InputModel.Content,
+        //         imageFileName: InputModel.ImageUpload.FileName,
+        //         base64Image: InputModel.ImageUpload.Value,
+        //         locationName: InputModel.LocationName,
+        //         city: InputModel.City,
+        //         street: InputModel.Street,
+        //         postCode: InputModel.PostCode,
+        //         country: InputModel.Country,
+        //         latitude: InputModel.Latitude,
+        //         longitude: InputModel.Longitude);
+
+        //     var result = await Mediator.Send(command, default);
+
+        //     if (result.IsSuccess)
+        //     {
+        //         NavigationManager.NavigateTo("/management/events");
+        //     }
+        //}
+    }
+
+    public void CancelForm()
+    {
+        var currentUrl = NavigationManager.Uri;
+
+        currentUrl = currentUrl.Replace("/edit", "");
+
+        Uri uri = new Uri(currentUrl);
+
+        var parent = uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
+
+        int lastSlash = parent.LastIndexOf('/');
+
+        parent = (lastSlash > -1) ? parent.Substring(0, lastSlash) : parent;
+
+        NavigationManager.NavigateTo(parent);
+
+    }
+}

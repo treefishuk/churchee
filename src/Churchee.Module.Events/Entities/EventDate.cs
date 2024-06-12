@@ -1,4 +1,5 @@
-﻿using Churchee.Common.Data;
+﻿using Churchee.Common.Abstractions.Entities;
+using Churchee.Common.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Churchee.Module.Events.Entities
 {
-    public class EventDate
+    public class EventDate : IEntity
     {
         public Guid Id { get; set; }
 
@@ -19,5 +20,6 @@ namespace Churchee.Module.Events.Entities
 
         public DateTime? End { get; set; }
 
+        public bool Deleted { get; set; }
     }
 }
