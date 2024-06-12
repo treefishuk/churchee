@@ -19,7 +19,7 @@ namespace Churchee.Module.Events.Entities
             EventDates = new List<EventDate>();
         }
 
-        public Event(Guid applicationTenantId, string sourceName, string sourceId, string title, string description, string content, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude, DateTime? start, DateTime? end, string imageUrl)
+        public Event(Guid applicationTenantId, Guid pageTypeId, string sourceName, string sourceId, string title, string description, string content, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude, DateTime? start, DateTime? end, string imageUrl)
             : base()
         {
             var eventId = Guid.NewGuid();
@@ -42,7 +42,7 @@ namespace Churchee.Module.Events.Entities
             ImageUrl = imageUrl;
             Url = $"/events/{eventId}";
             IsSystem = true;
-            PageTypeId = PageTypes.EventDetailPageTypeId;
+            PageTypeId = pageTypeId;
 
             EventDates = new List<EventDate>
             {

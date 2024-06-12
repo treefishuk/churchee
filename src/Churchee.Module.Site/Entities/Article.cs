@@ -9,9 +9,9 @@ namespace Churchee.Module.Site.Entities
 
         }
 
-        public Article(Guid applicationTenantId, Guid parentId, string title, string url, string descrition) : base(applicationTenantId, title, url, descrition)
+        public Article(Guid applicationTenantId, Guid pageTypeId, Guid parentId, string title, string url, string descrition) : base(applicationTenantId, title, url, descrition)
         {
-            PageTypeId = PageTypes.BlogDetailPageTypeId;
+            PageTypeId = pageTypeId;
             ParentId = parentId;
             IsSystem = true;
         }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Churchee.Common.Abstractions.Auth;
+﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.Module.Podcasts.Helpers;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Entities;
 using MediatR;
@@ -17,9 +13,6 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
-        private readonly Guid _podcastListingPageTypeId = Guid.Parse("c985a344-f201-4949-b609-bb66144d81a6");
-        private readonly Guid _podcastDetailPageTypeId = Guid.Parse("f88412e5-9647-4232-8389-4edf685ecf4e");
-        private readonly Guid _podcastsNameId = Guid.Parse("4379e3d3-fa40-489b-b80d-01c30835fa9d");
         private readonly ISettingStore _settingStore;
 
         public PodcastsEnabledCommandHandler(IDataStore dataStore, ICurrentUser currentUser, ISettingStore settingStore)
@@ -34,20 +27,24 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string pageNameForPodcasts = await _settingStore.GetSettingValue(_podcastsNameId, applicationTenantId);
+            Guid listingTypeId = Guid.NewGuid();
+
+            Guid detailPageTypeId = Guid.NewGuid();
+
+            string pageNameForPodcasts = await _settingStore.GetSettingValue(Settings.PodcastsNameId, applicationTenantId);
 
             if (string.IsNullOrEmpty(pageNameForPodcasts))
             {
-                await _settingStore.AddSetting(_podcastsNameId, applicationTenantId, "Name for podcasts. i.e sermons/talks/podcasts", request.PageNameForPodcasts);
+                await _settingStore.AddSetting(Settings.PodcastsNameId, applicationTenantId, "Name for podcasts. i.e sermons/talks/podcasts", request.PageNameForPodcasts);
 
                 pageNameForPodcasts = request.PageNameForPodcasts;
             }
 
-            await CreatePageTypes(applicationTenantId);
+            await CreatePageTypes(applicationTenantId, listingTypeId, detailPageTypeId);
 
             var tenant = _dataStore.GetRepository<ApplicationTenant>().GetById(applicationTenantId);
 
-            await CreatePodcastsListingPage(request, tenant);
+            await CreatePodcastsListingPage(request, tenant, listingTypeId);
 
             CreateViewTemplates(pageNameForPodcasts, applicationTenantId);
 
@@ -114,7 +111,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
             }
         }
 
-        private async Task CreatePodcastsListingPage(PodcastsEnabledCommand request, ApplicationTenant tenant)
+        private async Task CreatePodcastsListingPage(PodcastsEnabledCommand request, ApplicationTenant tenant, Guid listingPageTypeId)
         {
             var pageRepo = _dataStore.GetRepository<Page>();
 
@@ -124,7 +121,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
             if (!pageRepo.GetQueryable().Any(a => a.Url == pageUrl))
             {
-                var newListingPage = new Page(applicationTenantId, request.PageNameForPodcasts, pageUrl, $"Talks/Sermons/Podasts from {tenant.Name}", _podcastListingPageTypeId, null, false);
+                var newListingPage = new Page(applicationTenantId, request.PageNameForPodcasts, pageUrl, $"Talks/Sermons/Podasts from {tenant.Name}", listingPageTypeId, null, false);
 
                 pageRepo.Create(newListingPage);
 
@@ -133,17 +130,20 @@ namespace Churchee.Module.Podcasts.Features.Commands
         }
 
 
-        private async Task CreatePageTypes(Guid applicationTenantId)
+        private async Task CreatePageTypes(Guid applicationTenantId, Guid listingPageTypeId, Guid detailsPageTypeId)
         {
             var pageTypeRepo = _dataStore.GetRepository<PageType>();
 
-            if (pageTypeRepo.GetById(_podcastListingPageTypeId) == null)
+            var alreadyExists = pageTypeRepo.AnyWithFiltersDisabled(w => w.SystemKey == PageTypes.PodcastDetailPageTypeId && w.ApplicationTenantId == applicationTenantId);
+
+            if (!alreadyExists)
             {
-                var newDetailPageType = new PageType(_podcastDetailPageTypeId, applicationTenantId, false, "Podcast Detail", false);
 
-                var newListingPageType = new PageType(_podcastListingPageTypeId, applicationTenantId, true, "Podcast Listing", false);
+                var newDetailPageType = new PageType(detailsPageTypeId, PageTypes.PodcastDetailPageTypeId, applicationTenantId, false, "Podcast Detail", false);
 
-                newListingPageType.ChildrenTypes.Add(new PageTypeTypeMapping() { ParentPageTypeId = _podcastListingPageTypeId, ChildPageTypeId = _podcastDetailPageTypeId });
+                var newListingPageType = new PageType(listingPageTypeId, PageTypes.PodcastListingPageTypeId, applicationTenantId, true, "Podcast Listing", false);
+
+                newListingPageType.ChildrenTypes.Add(new PageTypeTypeMapping() { ParentPageTypeId = listingPageTypeId, ChildPageTypeId = detailsPageTypeId });
 
                 pageTypeRepo.Create(newDetailPageType);
 

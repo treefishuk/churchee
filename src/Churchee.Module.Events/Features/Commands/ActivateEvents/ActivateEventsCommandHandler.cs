@@ -4,7 +4,6 @@ using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Tenancy.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Page = Churchee.Module.Site.Entities.Page;
 
 namespace Churchee.Module.Events.Features.Commands
@@ -25,22 +24,26 @@ namespace Churchee.Module.Events.Features.Commands
         {
             var tenant = _dataStore.GetRepository<ApplicationTenant>().GetById(request.ApplicationTenantId);
 
-            await CreatePageTypes(request.ApplicationTenantId);
+            Guid eventListingPageTypeId = Guid.NewGuid();
 
-            await CreateEventsListingPage(request, tenant);
+            Guid eventDetailsPageTypeId = Guid.NewGuid();
+
+            await CreatePageTypes(request.ApplicationTenantId, eventListingPageTypeId, eventDetailsPageTypeId);
+
+            await CreateEventsListingPage(request, tenant, eventListingPageTypeId);
 
             await CreateViewTemplates(request.ApplicationTenantId);
 
             return new CommandResponse();
         }
 
-        private async Task CreateEventsListingPage(ActivateEventsCommand request, ApplicationTenant tenant)
+        private async Task CreateEventsListingPage(ActivateEventsCommand request, ApplicationTenant tenant, Guid eventListingPageTypeId)
         {
             var pageRepo = _dataStore.GetRepository<Page>();
 
             if (!pageRepo.GetQueryable().Any(a => a.Url == "/events"))
             {
-                var newListingPage = new Page(request.ApplicationTenantId, "Events", "/events", $"Upcomging Events for {tenant.Name}", PageTypes.EventListingPageTypeId, null, false);
+                var newListingPage = new Page(request.ApplicationTenantId, "Events", "/events", $"Upcomging Events for {tenant.Name}", eventListingPageTypeId, null, false);
 
                 pageRepo.Create(newListingPage);
 
@@ -48,17 +51,19 @@ namespace Churchee.Module.Events.Features.Commands
             }
         }
 
-        private async Task CreatePageTypes(Guid applicationTenantId)
+        private async Task CreatePageTypes(Guid applicationTenantId, Guid eventListingPageTypeId, Guid eventDetailsPageTypeId)
         {
             var pageTypeRepo = _dataStore.GetRepository<PageType>();
 
-            if (pageTypeRepo.GetById(PageTypes.EventListingPageTypeId) == null)
+            var alreadyExists = pageTypeRepo.AnyWithFiltersDisabled(w => w.SystemKey == PageTypes.EventDetailPageTypeId && w.ApplicationTenantId == applicationTenantId);
+
+            if (!alreadyExists)
             {
-                var newDetailPageType = new PageType(PageTypes.EventDetailPageTypeId, applicationTenantId, false, "Event Detail", false);
+                var newDetailPageType = new PageType(eventDetailsPageTypeId, PageTypes.EventDetailPageTypeId, applicationTenantId, false, "Event Detail", false);
 
-                var newListingPageType = new PageType(PageTypes.EventListingPageTypeId, applicationTenantId, true, "Event Listing", false);
+                var newListingPageType = new PageType(eventListingPageTypeId, PageTypes.EventListingPageTypeId, applicationTenantId, true, "Event Listing", false);
 
-                newListingPageType.ChildrenTypes.Add(new WebContentTypeTypeMapping() { ParentWebContentTypeId = PageTypes.EventListingPageTypeId, ChildWebContentTypeId = PageTypes.EventDetailPageTypeId });
+                newListingPageType.AddChildType(newDetailPageType);
 
                 pageTypeRepo.Create(newDetailPageType);
 

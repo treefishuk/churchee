@@ -70,18 +70,18 @@ namespace Churchee.Module.Site.Registration
                 etb.Property(e => e.Id);
             });
 
-            modelbuilder.Entity<WebContentTypeTypeMapping>(etb =>
+            modelbuilder.Entity<PageTypeTypeMapping>(etb =>
             {
-                etb.HasKey(t => new { t.ParentWebContentTypeId, t.ChildWebContentTypeId });
+                etb.HasKey(t => new { t.ParentPageTypeId, t.ChildPageTypeId });
 
-                etb.HasOne(pt => pt.ParentWebContentType)
+                etb.HasOne(pt => pt.ParentPageType)
                 .WithMany(p => p.ChildrenTypes)
-                .HasForeignKey(pt => pt.ParentWebContentTypeId)
+                .HasForeignKey(pt => pt.ParentPageTypeId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-                etb.HasOne(pt => pt.ChildWebContentType)
+                etb.HasOne(pt => pt.ChildPageType)
                 .WithMany(p => p.ParentTypes)
-                .HasForeignKey(pt => pt.ChildWebContentTypeId)
+                .HasForeignKey(pt => pt.ChildPageTypeId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             });

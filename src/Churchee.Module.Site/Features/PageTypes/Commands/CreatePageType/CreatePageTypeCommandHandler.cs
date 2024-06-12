@@ -24,7 +24,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageType
 
             var repo = _storage.GetRepository<PageType>();
 
-            var newPageType = new PageType(Guid.NewGuid(), applicationTenantId, true, request.Name);
+            var newPageType = new PageType(Guid.NewGuid(), Guid.NewGuid(), applicationTenantId, true, request.Name);
 
             repo.Create(newPageType);
 

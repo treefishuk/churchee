@@ -39,7 +39,7 @@ namespace Churchee.Module.Site.EventHandlers
         {
             var repo = _storage.GetRepository<PageType>();
 
-            var newPageType = new PageType(Guid.NewGuid(), applicationTenantId, true, "Home");
+            var newPageType = new PageType(Guid.NewGuid(), Guid.NewGuid(), applicationTenantId, true, "Home");
 
             repo.Create(newPageType);
 

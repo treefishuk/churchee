@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Storage;
 using Churchee.Module.Events.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace Churchee.Module.Events.Registration
 {
@@ -19,6 +20,14 @@ namespace Churchee.Module.Events.Registration
                 etb.Property(e => e.PostCode).HasMaxLength(20);
 
                 etb.Property(t => t.Content).HasColumnType("nvarchar(max)");
+
+                etb.HasMany(x => x.EventDates).WithOne(o => o.Event).HasForeignKey(x => x.EventId).OnDelete(DeleteBehavior.Cascade);
+
+            });
+
+            modelbuilder.Entity<EventDate>(etb =>
+            {
+                etb.ToTable("EventDates");
 
             });
 

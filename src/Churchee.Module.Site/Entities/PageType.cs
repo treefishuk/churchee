@@ -10,8 +10,9 @@ namespace Churchee.Module.Site.Entities
 
         }
 
-        public PageType(Guid id, Guid applicationTenantId, bool allowInRoot, string name, bool triggerPageTypeCreatedEvent = true) : base(id, applicationTenantId)
+        public PageType(Guid id, Guid systemKey, Guid applicationTenantId, bool allowInRoot, string name, bool triggerPageTypeCreatedEvent = true) : base(id, applicationTenantId)
         {
+            SystemKey = systemKey;
             AllowInRoot = allowInRoot;
             Name = name;
             DevName = name.Replace(" ", "");
@@ -28,6 +29,7 @@ namespace Churchee.Module.Site.Entities
 
         }
 
+        public Guid SystemKey { get; private set; }
 
         public string Name { get; private set; }
 

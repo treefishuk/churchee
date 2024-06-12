@@ -4,6 +4,9 @@ using Churchee.Common.Storage;
 using Churchee.Module.Facebook.Events.API;
 using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Facebook.Events.Specifications;
+using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Helpers;
+using Churchee.Module.Site.Specifications;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
 using Hangfire;
@@ -92,6 +95,8 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             var repo = _dataStore.GetRepository<Event>();
 
+            Guid pageTypeId = _dataStore.GetRepository<PageType>().ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId)).Select(s => s.Id).FirstOrDefault();
+
             foreach (string eventId in eventIds)
             {
                 var dbPost = await repo.ApplySpecification(new GetEventByFacebookIdSpecification(eventId)).FirstOrDefaultAsync(cancellationToken: cancellationToken);
@@ -111,6 +116,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
                 }
 
                 var newEvent = new Event(applicationTenantId,
+                                         pageTypeId: pageTypeId,
                                          sourceName: "Facebook",
                                          sourceId: item.Id,
                                          title: item.Name ?? "",
