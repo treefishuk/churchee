@@ -29,7 +29,7 @@ namespace Churchee.Module.Site.Entities
 
         }
 
-        public Guid SystemKey { get; private set; }
+        public Guid? SystemKey { get; private set; }
 
         public string Name { get; private set; }
 
