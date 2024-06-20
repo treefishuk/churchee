@@ -4,6 +4,12 @@ namespace Churchee.Module.Podcasts.Features.Queries
 {
     public class GetListingQueryResponseItem
     {
+        public GetListingQueryResponseItem()
+        {
+            ImageUri = string.Empty;
+            Title = string.Empty;
+            Source = string.Empty;
+        }
 
         [DataType(DataTypes.Hidden)]
         public Guid Id { get; set; }

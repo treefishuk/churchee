@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Churchee.Module.Podcasts.Helpers
+﻿namespace Churchee.Module.Podcasts.Helpers
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Fine")]
     internal static class Settings

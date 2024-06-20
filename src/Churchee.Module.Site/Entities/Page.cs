@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using Churchee.Module.Site.Events;
+﻿using Churchee.Module.Site.Events;
+using System.Text.Json;
 
 namespace Churchee.Module.Site.Entities
 {
@@ -56,10 +56,9 @@ namespace Churchee.Module.Site.Entities
 
         }
 
-
         public void Publish()
         {
-            if (PageContent.Any())
+            if (PageContent.Count != 0)
             {
                 foreach (var content in PageContent)
                 {
@@ -72,25 +71,19 @@ namespace Churchee.Module.Site.Entities
                 Content = PageContent.Select(s => new { Name = s.PageTypeContent.DevName, s.Value }).ToList(),
             };
 
-            if (versionData != null)
-            {
-                var serializeOptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-
-                };
-
-                PublishedData = JsonSerializer.Serialize(versionData, serializeOptions);
-            }
+            PublishedData = JsonSerializer.Serialize(versionData, jsonSerializerOptions);
 
             LastPublishedDate = DateTime.Now;
 
             Published = true;
         }
 
-
+        private static JsonSerializerOptions jsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
     }
 }
