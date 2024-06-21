@@ -55,7 +55,7 @@ namespace Churchee.Data.EntityFramework.Extensions
 
                 string colTypeNormalized = colType.ToUpperInvariant();
 
-                if(colTypeNormalized == "NVARCHAR(MAX)")
+                if (colTypeNormalized == "NVARCHAR(MAX)")
                 {
                     bool test = true;
                 }
@@ -77,7 +77,7 @@ namespace Churchee.Data.EntityFramework.Extensions
             {
                 object[] attributes = property.PropertyInfo?.GetCustomAttributes(typeof(EncryptPropertyAttribute), false);
 
-                if (attributes != null && attributes.Any())
+                if (attributes != null && attributes.Length != 0)
                 {
                     property.SetValueConverter(converter);
                 }

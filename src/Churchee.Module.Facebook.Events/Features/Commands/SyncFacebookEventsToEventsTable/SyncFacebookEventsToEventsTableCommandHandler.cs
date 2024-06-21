@@ -81,14 +81,14 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             var feedResponseItems = await GetFeedResult(client, pageId, facebookPageAccessToken);
 
-            if (!feedResponseItems.Any())
+            if (feedResponseItems.Count == 0)
             {
                 return;
             }
 
             var eventIds = feedResponseItems.Where(w => !string.IsNullOrEmpty(w.Story) && w.Story.Contains("created an event")).Select(s => s.Id.Replace($"{pageId}_", "")).ToList();
 
-            if (!eventIds.Any())
+            if (eventIds.Count == 0)
             {
                 return;
             }
