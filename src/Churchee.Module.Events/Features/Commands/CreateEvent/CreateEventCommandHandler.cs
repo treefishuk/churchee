@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
@@ -15,12 +16,14 @@ namespace Churchee.Module.Events.Features.Commands
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
         private readonly IBlobStore _blobStore;
+        private readonly IImageProcessor _imageProcessor;
 
-        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore)
+        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IImageProcessor imageProcessor)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
             _blobStore = blobStore;
+            _imageProcessor = imageProcessor;
         }
 
         public async Task<CommandResponse> Handle(CreateEventCommand request, CancellationToken cancellationToken)
@@ -79,7 +82,7 @@ namespace Churchee.Module.Events.Features.Commands
 
                 imagePath = $"/img/events/{fileName.ToDevName()}{extension}";
 
-                await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
+                return await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, false, true, cancellationToken);
 
             }
 

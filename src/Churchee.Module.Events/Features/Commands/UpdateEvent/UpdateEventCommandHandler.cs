@@ -101,7 +101,7 @@ namespace Churchee.Module.Events.Features.Commands
 
                 imagePath = $"/img/events/{fileName.ToDevName()}{extension}";
 
-                await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
+                await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, false, cancellationToken);
 
             }
 

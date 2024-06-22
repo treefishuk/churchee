@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-using System.Xml.Serialization;
-using Churchee.Common.Abstractions.Auth;
+﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
@@ -9,6 +7,8 @@ using Churchee.Module.Podcasts.Entities;
 using Hangfire;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
 {
@@ -83,7 +83,7 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
 
                     string fileName = Path.GetFileName(item.image.href);
 
-                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, default);
+                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, false, default);
 
                     string thumbFileName = $"{Path.GetFileNameWithoutExtension(item.image.href)}_t{Path.GetExtension(item.image.href)}";
 
@@ -91,11 +91,11 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
 
                     var thumbnailImage = _imageProcessor.ResizeImage(originalImgStream, 50, 0);
 
-                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, default);
+                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, false, default);
 
-                    podcasts.Add(new Podcast(applicationTenantId: applicationTenantId, 
-                        audioUri: item.enclosure.url, 
-                        publishedDate: DateTime.Parse(item.pubDate), 
+                    podcasts.Add(new Podcast(applicationTenantId: applicationTenantId,
+                        audioUri: item.enclosure.url,
+                        publishedDate: DateTime.Parse(item.pubDate),
                         sourceName: "Spotify",
                         sourceId: item.guid.Value,
                         title: item.title,

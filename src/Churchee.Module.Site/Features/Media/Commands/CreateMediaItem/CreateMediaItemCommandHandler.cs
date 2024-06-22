@@ -2,8 +2,6 @@
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Helpers;
-using Churchee.Module.Tenancy.Entities;
 using MediatR;
 
 namespace Churchee.Module.Site.Features.Media.Commands
@@ -24,7 +22,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
         public async Task<CommandResponse> Handle(CreateMediaItemCommand request, CancellationToken cancellationToken)
         {
 
-            string folderPath = _dataStore.GetRepository<MediaFolder>().GetQueryable().Where(w => w.Id == request.FolderId).Select(s => s.Path).FirstOrDefault() ?? string.Empty;  
+            string folderPath = _dataStore.GetRepository<MediaFolder>().GetQueryable().Where(w => w.Id == request.FolderId).Select(s => s.Path).FirstOrDefault() ?? string.Empty;
 
             byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
 
@@ -34,7 +32,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             string imagePath = $"/img/{folderPath.ToDevName()}{request.Name.ToDevName()}{request.Extention}";
 
-            await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
+            await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, false, cancellationToken);
 
             var media = new MediaItem(applicationTenantId, request.Name, imagePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl);
 
