@@ -39,7 +39,7 @@ namespace Churchee.Module.Events.Entities
             Latitude = latitude;
             Longitude = longitude;
             ImageUrl = imageUrl;
-            Url = $"/events/{eventId}";
+            Url = $"/events/{title.ToURL()}";
             IsSystem = true;
             PageTypeId = pageTypeId;
 
