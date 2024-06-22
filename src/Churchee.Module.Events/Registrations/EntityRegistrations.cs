@@ -1,7 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Storage;
 using Churchee.Module.Events.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace Churchee.Module.Events.Registration
 {
@@ -13,9 +12,9 @@ namespace Churchee.Module.Events.Registration
             {
                 etb.ToTable("Events");
 
-                etb.Property(e => e.Latitude).HasPrecision(8,6);
+                etb.Property(e => e.Latitude).HasPrecision(8, 6);
 
-                etb.Property(e => e.Longitude).HasPrecision(9,6);
+                etb.Property(e => e.Longitude).HasPrecision(9, 6);
 
                 etb.Property(e => e.PostCode).HasMaxLength(20);
 
@@ -28,6 +27,8 @@ namespace Churchee.Module.Events.Registration
             modelbuilder.Entity<EventDate>(etb =>
             {
                 etb.ToTable("EventDates");
+
+                etb.Property(p => p.Id).ValueGeneratedNever();
 
             });
 

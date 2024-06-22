@@ -46,7 +46,7 @@
         <RadzenTabs RenderMode="TabRenderMode.Client" class="pageEdit-tabs">
             <Tabs>
                     <RadzenTabsItem Text="Info">
-                        <FormFields FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "ContentItems")" OnValueChanged=UpdateFormState></FormFields>
+                        <FormFields EditContext="_editContext" FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "ContentItems")" OnValueChanged=UpdateFormState></FormFields>
                     </RadzenTabsItem>
 
                     <RadzenTabsItem Text="Content">

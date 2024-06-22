@@ -1,7 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Churchee.Common.ValueTypes;
-using Churchee.Module.Events.Features.Queries;
-using Churchee.Module.UI.Models;
+﻿using Churchee.Common.ValueTypes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Events.Areas.Website.Models
 {
@@ -31,12 +29,14 @@ namespace Churchee.Module.Events.Areas.Website.Models
         [DataType(DataTypes.MultilineText)]
         public string Description { get; set; }
 
+        [Required]
         [DataType(DataTypes.DateTime)]
         public DateTime? Start { get; private set; }
 
         [DataType(DataTypes.DateTime)]
         public DateTime? End { get; private set; }
 
+        [Required]
         [DataType(DataTypes.Html)]
         public string Content { get; private set; }
 

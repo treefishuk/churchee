@@ -25,7 +25,7 @@
 </SectionContent>
 
 <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
-                Data="@employees" TItem="GetListingQueryResponseItem" LoadChildData="@LoadChildData" RowRender="@RowRender"
+                Data="@listingData" TItem="GetListingQueryResponseItem" LoadChildData="@LoadChildData" RowRender="@RowRender"
                 RowCollapse="@(args => grid.ColumnsCollection.ToList().ForEach(c => c.ClearFilters()))">
     <Columns>
 
@@ -78,7 +78,7 @@
 
 @code {
 
-    IEnumerable<GetListingQueryResponseItem> employees;
+    IEnumerable<GetListingQueryResponseItem> listingData;
 
     RadzenDataGrid<GetListingQueryResponseItem> grid;
 
@@ -93,7 +93,7 @@
     {
         var result = await Mediator.Send(new GetListingQuery(null, string.Empty), default);
 
-        employees = result;
+        listingData = result;
     }
 
 

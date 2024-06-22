@@ -13,14 +13,14 @@ namespace Churchee.Module.Tenancy.Infrastructure
 
         public Guid GetTenantId()
         {
-            if(_httpContextAccessor.HttpContext == null)
+            if (_httpContextAccessor.HttpContext == null)
             {
                 return Guid.Empty;
             }
 
             var claim = _httpContextAccessor.HttpContext.User.Claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
 
-            if(claim == null)
+            if (claim == null)
             {
                 return Guid.Empty;
             }
@@ -42,7 +42,7 @@ namespace Churchee.Module.Tenancy.Infrastructure
                 return string.Empty;
             }
 
-            return claim.Value;
+            return claim.Value.ToLowerInvariant();
         }
 
     }

@@ -33,7 +33,7 @@
             <RadzenTabs RenderMode="TabRenderMode.Client" class="pageEdit-tabs">
                 <Tabs>
                     <RadzenTabsItem Text="Details">
-                        <FormFields FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "Dates")" OnValueChanged=UpdateFormState></FormFields>
+                        <FormFields EditContext="_editContext" FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "Dates")" OnValueChanged=UpdateFormState></FormFields>
                     </RadzenTabsItem>
 
                     <RadzenTabsItem Text="Dates">
@@ -101,33 +101,27 @@
 
     private async Task ValidSubmitForm()
     {
-        // var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await CurrentUser.GetApplicationTenantId()));
+        var updateEventsResult = await Mediator.Send(new UpdateEventCommand(
+            id: Id, 
+            title: InputModel.Title, 
+            description: InputModel.Description, 
+            content: InputModel.Content, 
+            imageFileName: InputModel.ImageUpload.FileName, 
+            base64Image: InputModel.ImageUpload.Value, 
+            locationName: InputModel.LocationName,
+            city: InputModel.City,
+            street: InputModel.Street,
+            postCode: InputModel.PostCode,
+            country: InputModel.Country,
+            latitude: InputModel.Latitude,
+            longitude: InputModel.Longitude,
+            InputModel.Dates
+        ));
 
-        // if (createEventsResult.IsSuccess)
-        // {
-        //     var command = new CreateEventCommand(
-        //         title: InputModel.Title,
-        //         description: InputModel.Description,
-        //         start: InputModel.Start,
-        //         end: InputModel.End,
-        //         content: InputModel.Content,
-        //         imageFileName: InputModel.ImageUpload.FileName,
-        //         base64Image: InputModel.ImageUpload.Value,
-        //         locationName: InputModel.LocationName,
-        //         city: InputModel.City,
-        //         street: InputModel.Street,
-        //         postCode: InputModel.PostCode,
-        //         country: InputModel.Country,
-        //         latitude: InputModel.Latitude,
-        //         longitude: InputModel.Longitude);
-
-        //     var result = await Mediator.Send(command, default);
-
-        //     if (result.IsSuccess)
-        //     {
-        //         NavigationManager.NavigateTo("/management/events");
-        //     }
-        //}
+        if (updateEventsResult.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/events");
+        }
     }
 
     public void CancelForm()

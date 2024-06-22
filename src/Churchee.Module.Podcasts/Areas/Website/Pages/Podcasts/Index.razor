@@ -12,7 +12,7 @@
 
 <PageName></PageName>
 
-<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=employees LoadData="@LoadData" ShowEdit="false" ImagePrefix="@(imagePrefix)"></Grid>
+<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false" ImagePrefix="@(imagePrefix)"></Grid>
 
 @code {
 
@@ -30,7 +30,7 @@
 
     int count;
 
-    IEnumerable<GetListingQueryResponseItem> employees;
+    IEnumerable<GetListingQueryResponseItem> listingData = Enumerable.Empty<GetListingQueryResponseItem>();
 
     bool isLoading = false;
 
@@ -61,7 +61,7 @@
     count = result.RecordsTotal;
 
     // Perform paging via Skip and Take.
-    employees = result.Data;
+    listingData = result.Data;
 
     isLoading = false;
     }

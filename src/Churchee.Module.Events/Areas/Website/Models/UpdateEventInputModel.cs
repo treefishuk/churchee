@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.ValueTypes;
 using Churchee.Module.Events.Features.Queries;
+using Churchee.Module.Events.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Events.Areas.Website.Models
@@ -70,7 +71,7 @@ namespace Churchee.Module.Events.Areas.Website.Models
         [DataType(DataTypes.GeoCoordinates)]
         public decimal? Longitude { get; private set; }
 
-        public List<(DateTime? start, DateTime? end)> Dates { get; private set; }
+        public List<EventDateModel> Dates { get; private set; }
 
     }
 }

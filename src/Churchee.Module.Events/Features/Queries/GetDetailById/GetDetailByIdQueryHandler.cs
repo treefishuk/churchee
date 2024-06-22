@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
+using Churchee.Module.Events.Models;
 using Churchee.Module.Events.Specifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,17 +19,17 @@ namespace Churchee.Module.Events.Features.Queries
 
         public async Task<GetDetailByIdResponse> Handle(GetDetailByIdQuery request, CancellationToken cancellationToken)
         {
-            var entity = await _dataStore.GetRepository<Event>().GetByIdAsync(request.Id);
+            var entity = await _dataStore.GetRepository<Event>().ApplySpecification(new EventByIdIncludingDatesSpecification(request.Id)).FirstOrDefaultAsync();
 
-            var dateData = await _dataStore.GetRepository<EventDate>().ApplySpecification(new EventDatesForEventSpecification(request.Id)).Select(s => new { s.Start, s.End }).ToListAsync();
+            var dateData = await _dataStore.GetRepository<EventDate>().ApplySpecification(new EventDatesForEventSpecification(request.Id)).Select(s => new { s.Id, s.Start, s.End }).ToListAsync();
 
-            var dateList = new List<(DateTime? start, DateTime? end)>();
+            var dateList = new List<EventDateModel>();
 
             if (dateData != null)
             {
                 foreach (var date in dateData)
                 {
-                    dateList.Add((date.Start, date.End));
+                    dateList.Add(new EventDateModel(date.Id, date.Start, date.End));
                 }
             }
 

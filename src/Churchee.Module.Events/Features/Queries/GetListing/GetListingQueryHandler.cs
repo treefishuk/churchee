@@ -35,6 +35,8 @@ namespace Churchee.Module.Events.Features.Queries
 
             string orderby = $"{request.OrderBy} {request.OrderByDirection}";
 
+            var now = DateTime.Now;
+
             var items = await query
                 .OrderBy(orderby)
                 .Skip(request.Skip)
@@ -46,6 +48,7 @@ namespace Churchee.Module.Events.Features.Queries
                     ImageUri = s.ImageUrl,
                     Title = s.Title,
                     CreatedDate = s.CreatedDate ?? DateTime.Now,
+                    NextDate = s.EventDates.FirstOrDefault(w => w.Start > now).Start,
                     Source = s.SourceName
                 })
                 .ToListAsync(cancellationToken);

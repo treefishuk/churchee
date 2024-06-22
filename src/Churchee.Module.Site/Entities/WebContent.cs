@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Churchee.Common.Abstractions.Entities;
+﻿using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Entities
 {
@@ -43,7 +43,6 @@ namespace Churchee.Module.Site.Entities
         public void AddRedirectUrl(string url)
         {
             RedirectUrls.Add(new RedirectUrl(url));
-
         }
 
         public Guid? PageTypeId { get; set; }

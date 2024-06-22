@@ -18,6 +18,9 @@ namespace Churchee.Module.Events.Features.Queries
         public bool Active { get; set; }
 
         [DataType(DataTypes.Date)]
+        public DateTime? NextDate { get; set; }
+
+        [DataType(DataTypes.Date)]
         public DateTime CreatedDate { get; set; }
 
     }

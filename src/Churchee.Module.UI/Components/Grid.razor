@@ -8,7 +8,7 @@
 @inject NavigationManager _navigationManager
 @inject IConfiguration Config
 
-<RadzenDataGrid Data="Data" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem">
+<RadzenDataGrid @ref="radzenGrid" Data="Data" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem">
     <Columns>
 
         @if (ShowEdit)
@@ -86,6 +86,18 @@
 
         }
         
+
+
+        @if (OnDeleteSet)
+        {
+            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                <Template Context="data">
+                    <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteActions(data)"></RadzenButton>
+               </Template>
+            </RadzenDataGridColumn>
+        }
+
+
     </Columns>
 </RadzenDataGrid>
 
@@ -96,10 +108,18 @@
 
 @code {
 
+    async Task DeleteActions(TItem item)
+    {
+        await OnDelete.InvokeAsync(item);
+        await radzenGrid.Reload();
+    }
+
     protected override void OnParametersSet()
     {
         prefix = _navigationManager.Uri;
     }
+
+    RadzenDataGrid<TItem> radzenGrid;
 
     string prefix;
 
@@ -119,9 +139,10 @@
     public bool ShowEdit { get; set; }
 
     [Parameter]
-    public bool ShowDelete { get; set; }
-
-    [Parameter]
     public EventCallback<LoadDataArgs> LoadData { get; set; }
 
+    [Parameter]
+    public EventCallback<TItem> OnDelete { get; set; }
+
+    private bool OnDeleteSet => OnDelete.HasDelegate;
 }

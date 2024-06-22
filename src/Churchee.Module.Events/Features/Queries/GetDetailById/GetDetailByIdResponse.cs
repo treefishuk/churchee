@@ -1,10 +1,10 @@
-﻿using Churchee.Common.ValueTypes;
+﻿using Churchee.Module.Events.Models;
 
 namespace Churchee.Module.Events.Features.Queries
 {
     public class GetDetailByIdResponse
     {
-        public GetDetailByIdResponse(string title, string description, string content, string imageUrl, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude, List<(DateTime? start, DateTime? end)> dates)
+        public GetDetailByIdResponse(string title, string description, string content, string imageUrl, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude, List<EventDateModel> dates)
         {
             Title = title;
             Description = description;
@@ -42,7 +42,7 @@ namespace Churchee.Module.Events.Features.Queries
 
         public decimal? Longitude { get; private set; }
 
-        public List<(DateTime? start, DateTime? end)> Dates { get; private set; }
+        public List<EventDateModel> Dates { get; private set; }
 
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Helpers;
 
 namespace Churchee.Module.Events.Entities
 {
@@ -46,7 +45,7 @@ namespace Churchee.Module.Events.Entities
 
             EventDates = new List<EventDate>
             {
-                new EventDate { EventId = eventId, Start = start, End = end }
+                new EventDate { Id = Guid.NewGuid(), EventId = eventId, Start = start, End = end }
             };
         }
 
@@ -74,6 +73,33 @@ namespace Churchee.Module.Events.Entities
         }
 
         public ICollection<EventDate> EventDates { get; set; }
+
+        public void UpdateInfo(string title, string description, string content, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude)
+        {
+            Title = title;
+            Description = description;
+            Content = content;
+            LocationName = locationName;
+            City = city;
+            Street = street;
+            PostCode = postCode;
+            Country = country;
+            Latitude = latitude;
+            Longitude = longitude;
+        }
+
+        public void AddDate(Guid id, DateTime? start, DateTime? end)
+        {
+            if (start != null)
+            {
+                EventDates.Add(new EventDate { Id = id, Start = start, End = end, EventId = Id, Event = this, Deleted = false });
+            }
+        }
+
+        public void RemoveDate(EventDate date)
+        {
+            date.Deleted = true;
+        }
 
     }
 }
