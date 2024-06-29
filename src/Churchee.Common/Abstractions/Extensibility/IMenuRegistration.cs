@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using Churchee.Common.Extensibility;
+﻿using Churchee.Common.Extensibility;
+using System.Collections.Generic;
 
 namespace Churchee.Common.Abstractions.Extensibility
 {
     public interface IMenuRegistration
     {
-        List<MenuItem> MenuItems { get; }
+        IEnumerable<MenuItem> MenuItems { get; }
     }
 }
