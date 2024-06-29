@@ -1,7 +1,7 @@
-﻿using System;
-using Churchee.Common.Abstractions.Storage;
+﻿using Churchee.Common.Abstractions.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Churchee.Module.Identity.Registration
 {
@@ -92,6 +92,9 @@ namespace Churchee.Module.Identity.Registration
 
                 // Each Role can have many associated RoleClaims
                 b.HasMany<IdentityRoleClaim<Guid>>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
+
+                b.Property(r => r.Selectable).HasDefaultValueSql("(0)").IsConcurrencyToken();
+
             });
 
             builder.Entity<IdentityRoleClaim<Guid>>(b =>
