@@ -24,5 +24,7 @@
         public const string RazorEditor = "RazorEditor";
         public const string Readonly = "Readonly";
         public const string TextWithSlug = "TextWithSlug";
+        public const string CheckboxList = "CheckboxList";
+
     }
 }
