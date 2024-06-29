@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Churchee.Common.Abstractions.Auth;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Churchee.Common.Abstractions.Auth;
 
 namespace Churchee.Module.Identity.Infrastructure
 {
@@ -20,14 +20,14 @@ namespace Churchee.Module.Identity.Infrastructure
         public async Task<Guid> GetApplicationTenantId()
         {
             string id = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
             var user = await _userManager.FindByIdAsync(id);
 
             var claims = await _userManager.GetClaimsAsync(user);
 
             var claim = claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
 
-            if(claim != null)
+            if (claim != null)
             {
                 return Guid.Parse(claim.Value);
             }
@@ -42,7 +42,7 @@ namespace Churchee.Module.Identity.Infrastructure
 
         public bool HasRole(string roleName)
         {
-            return _httpContextAccessor.HttpContext.User.IsInRole(roleName);
+            return _httpContextAccessor.HttpContext.User.IsInRole(roleName) || _httpContextAccessor.HttpContext.User.IsInRole("SysAdmin");
         }
     }
 }
