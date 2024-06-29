@@ -1,7 +1,8 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Extensibility;
+using System.Collections.Generic;
 
-namespace Churchee.Module.Podcasts.Anchor.Registrations
+namespace Churchee.Module.Identity.Registration
 {
     public class MenuRegistration : IMenuRegistration
     {
@@ -11,8 +12,8 @@ namespace Churchee.Module.Podcasts.Anchor.Registrations
             {
                 var list = new List<MenuItem>
                 {
-                    new MenuItem("Integrations", "/management/integrations", "integration_instructions", 100)
-                    .AddChild(new MenuItem("Anchor", "/management/integrations/anchor", "anchor"))
+                    new MenuItem("Configuration", "/management/configuration", "settings", 1000)
+                    .AddChild(new MenuItem("Contributors", "/management/configuration/contributors", "supervisor_account", 1, "Admin"))
                 };
 
                 return list;

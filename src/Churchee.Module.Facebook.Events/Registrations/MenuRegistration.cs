@@ -5,7 +5,7 @@ namespace Churchee.Module.Facebook.Events.Registrations
 {
     public class MenuRegistration : IMenuRegistration
     {
-        public List<MenuItem> MenuItems
+        public IEnumerable<MenuItem> MenuItems
         {
             get
             {

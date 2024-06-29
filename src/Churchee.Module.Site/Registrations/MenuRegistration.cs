@@ -15,25 +15,25 @@ namespace Churchee.Module.Site.Registration
             _store = store;
         }
 
-        public List<MenuItem> MenuItems
+        public IEnumerable<MenuItem> MenuItems
         {
             get
             {
 
                 if (!_store.GetRepository<ApplicationTenant>().Any())
                 {
-                    return Enumerable.Empty<MenuItem>().ToList();
+                    return Enumerable.Empty<MenuItem>();
                 }
 
                 var list = new List<MenuItem>
                 {
                     new MenuItem("Website", "/management/pages", "devices")
                     .AddChild(new MenuItem("Pages", "/management/pages", "web"))
-                    .AddChild(new MenuItem("Page Types", "/management/pagetypes", "view_quilt"))
+                    .AddChild(new MenuItem("Page Types", "/management/pagetypes", "view_quilt", 1, "developer"))
                     .AddChild(new MenuItem("Feed", "/management/feed", "article"))
                     .AddChild(new MenuItem("Media", "/management/media", "image"))
-                    .AddChild(new MenuItem("Templates", "/management/templates", "code"))
-                    .AddChild(new MenuItem("Styles", "/management/styles", "data_object"))
+                    .AddChild(new MenuItem("Templates", "/management/templates", "code", 1, "developer"))
+                    .AddChild(new MenuItem("Styles", "/management/styles", "data_object", 1, "developer"))
                     .AddChild(new MenuItem("Podcasts", "/management/podcasts", "graphic_eq"))
                     .AddChild(new MenuItem("Events", "/management/events", "event"))
 

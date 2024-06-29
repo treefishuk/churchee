@@ -5,13 +5,13 @@ namespace Churchee.Module.Tenancy.Registration
 {
     public class MenuRegistration : IMenuRegistration
     {
-        public List<MenuItem> MenuItems
+        public IEnumerable<MenuItem> MenuItems
         {
             get
             {
                 var list = new List<MenuItem>
                 {
-                    new MenuItem("Configuration", "/management/cconfiguration", "settings", 1000)
+                    new MenuItem("Configuration", "/management/configuration", "settings", 1000)
                     .AddChild(new MenuItem("Churches", "/management/configuration/churches", "church", 1, "SysAdmin"))
                 };
 
