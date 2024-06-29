@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Churchee.Module.Identity.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Churchee.Module.Identity.Abstractions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Identity
 {
@@ -42,6 +42,8 @@ namespace Churchee.Module.Identity
                 if (createResult.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "SysAdmin");
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                    await _userManager.AddToRoleAsync(user, "Developer");
                 }
             }
         }
