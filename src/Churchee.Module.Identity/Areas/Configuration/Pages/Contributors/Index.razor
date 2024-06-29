@@ -1,0 +1,55 @@
+﻿@page "/management/configuration/contributors"
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Identity.Features.Contributors.Queries
+@using Churchee.Module.UI.Components
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using Radzen
+@using Radzen.Blazor
+
+<PageName Name="Contributors"></PageName>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/configuration/contributors/create">Create</a>
+    </div> 
+</SectionContent>
+
+@if (data != null)
+{
+    <Grid @ref="dataGrid" TItem="ListContributorsForTenantResponseItem" IsLoading=isLoading Data=data LoadData="@LoadData" ShowEdit="true"></Grid>
+}
+
+@code {
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    private Guid _activeTenant { get; set; } = default!;
+
+    bool isLoading = false;
+
+    IEnumerable<ListContributorsForTenantResponseItem> data = default!;
+
+    Grid<ListContributorsForTenantResponseItem> dataGrid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _activeTenant = await CurrentUser.GetApplicationTenantId();
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+
+        var result = await Mediator.Send(new ListContributorsForTenantQuery(), default);
+
+        data = result;
+    }
+}
