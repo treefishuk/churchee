@@ -6,14 +6,13 @@
 @using Radzen
 @using Radzen.Blazor
 @inject ILogger<Form> _logger
-@inject NotificationService _notificationService
 
 @using System.Reflection
 @using System.ComponentModel.DataAnnotations
 @using System.Linq.Expressions
 @using Microsoft.AspNetCore.Components.Rendering
 
-@if (_editContext != null)
+@if (_editContext != null && InputModel != null)
 {
 
     <EditForm EditContext="@_editContext" OnSubmit="HandleSubmit">
@@ -72,13 +71,7 @@
 
                 await OnSave.InvokeAsync(null);
 
-                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
             }
-
-
-
-
-
         }
         catch (Exception ex)
         {
