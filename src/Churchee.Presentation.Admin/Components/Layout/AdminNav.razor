@@ -1,33 +1,36 @@
 ﻿@using Churchee.Common.Abstractions.Auth
 @using Churchee.Common.Abstractions.Extensibility
 @using Churchee.Common.Extensibility;
-@inject IEnumerable<IMenuRegistration> menuRegistrations
+@using Radzen.Blazor
 
-    @foreach(var item in menuItems)
-    {
-        <RadzenPanelMenuItem Text="@item.Name" Icon="@item.Icon">
+@foreach (var item in menuItems)
+{
+    <RadzenPanelMenuItem Text="@item.Name" Icon="@item.Icon">
 
-            @foreach (var child in item.Children)
-            {
-                <RadzenPanelMenuItem Text="@child.Name" Path="@child.Path" Icon="@child.Icon"></RadzenPanelMenuItem>
-            }
+        @foreach (var child in item.Children)
+        {
+            <RadzenPanelMenuItem Text="@child.Name" Path="@child.Path" Icon="@child.Icon"></RadzenPanelMenuItem>
+        }
 
-        </RadzenPanelMenuItem>
-    }
+    </RadzenPanelMenuItem>
+}
 
 @code {
     [Inject]
     private ICurrentUser _currentUser { get; set; } = default!;
 
+    [Inject]
+    private IEnumerable<IMenuRegistration> _menuRegistrations { get; set; } = default!;
+
     private List<MenuItem> menuItems = new ();
 
     protected override void OnInitialized()
     {
-        menuItems = menuRegistrations
+        menuItems = _menuRegistrations
         .SelectMany(m => m.MenuItems)
         .Where(w => w.RequiredRole == string.Empty || _currentUser.HasRole(w.RequiredRole))
         .OrderBy(o => o.Order)
         .GroupBy(g => new { g.Name, g.Path, g.Icon, g.Order })
-        .Select(s => new MenuItem(s.Key.Name, s.Key.Path, s.Key.Icon, s.SelectMany(m => m.Children).ToList())).ToList();
+        .Select(s => new MenuItem(s.Key.Name, s.Key.Path, s.Key.Icon, s.SelectMany(m => m.Children.Where(w => w.RequiredRole == string.Empty || _currentUser.HasRole(w.RequiredRole))).ToList())).ToList();
     }
 }
