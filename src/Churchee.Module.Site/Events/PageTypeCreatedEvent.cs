@@ -7,6 +7,7 @@ namespace Churchee.Module.Site.Events
         public PageTypeCreatedEvent(Guid applicationTenantId, string name)
         {
             Name = name;
+            ApplicationTenantId = applicationTenantId;
         }
 
         public string Name { get; set; }
