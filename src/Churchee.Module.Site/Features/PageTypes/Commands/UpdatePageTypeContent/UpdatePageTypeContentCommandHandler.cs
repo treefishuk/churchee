@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Churchee.Common.ResponseTypes;
+﻿using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Areas.Site.Models;
 using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Features.PageTypes.Queries;
 using Churchee.Module.Site.Specifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -59,7 +52,15 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
 
         private void AddNewItem(Guid pageTypeId, PageTypeContentItemModel item)
         {
-            var pageType = _storage.GetRepository<PageType>().GetById(pageTypeId);
+            var pageType = _storage
+                .GetRepository<PageType>()
+                .ApplySpecification(new PageTypeWithPageTypeContentSpecification(pageTypeId))
+                .FirstOrDefault();
+
+            if (pageType == null)
+            {
+                return;
+            }
 
             pageType.AddPageTypeContent(item.Id, item.Name, item.Type.Value, item.Required);
 
