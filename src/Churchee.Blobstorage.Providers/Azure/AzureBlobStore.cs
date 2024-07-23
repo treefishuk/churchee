@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Churchee.Blobstorage.Providers
+namespace Churchee.Blobstorage.Providers.Azure
 {
     public class AzureBlobStore : IBlobStore
     {

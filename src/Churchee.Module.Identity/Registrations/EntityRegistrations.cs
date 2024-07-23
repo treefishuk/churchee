@@ -93,7 +93,7 @@ namespace Churchee.Module.Identity.Registration
                 // Each Role can have many associated RoleClaims
                 b.HasMany<IdentityRoleClaim<Guid>>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
 
-                b.Property(r => r.Selectable).HasDefaultValueSql("(0)").IsConcurrencyToken();
+                b.Property(r => r.Selectable).HasDefaultValue(false).IsConcurrencyToken();
 
             });
 

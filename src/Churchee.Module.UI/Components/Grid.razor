@@ -8,8 +8,22 @@
 @inject NavigationManager _navigationManager
 @inject IConfiguration Config
 
-<RadzenDataGrid @ref="radzenGrid" Data="Data" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem">
+<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="20" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem">
     <Columns>
+
+        @if (ShowDetail)
+        {
+
+            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                <Template Context="data">
+                    <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/details/@(((dynamic)data).Id)">
+                        <span class="rz-button-box">
+                            <i class="rz-button-icon-left rzi">@(DetailIcon ?? "info")</i>
+                        </span>
+                    </a>
+                </Template>
+            </RadzenDataGridColumn>
+        }
 
         @if (ShowEdit)
         {
@@ -134,6 +148,12 @@
 
     [Parameter]
     public IEnumerable<TItem> Data { get; set; }
+
+    [Parameter]
+    public string DetailIcon { get; set; }
+
+    [Parameter]
+    public bool ShowDetail { get; set; }
 
     [Parameter]
     public bool ShowEdit { get; set; }

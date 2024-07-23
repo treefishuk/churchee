@@ -1,0 +1,19 @@
+﻿section {
+    padding: 1rem;
+}
+
+pre{
+    background: #f7edb3;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+table {
+    width: 100%;
+    background: #fbfbfb;
+    border: 1px solid #ccc;
+}
+
+td, th {
+    padding: 0.3rem 0.5rem;
+}

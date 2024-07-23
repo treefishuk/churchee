@@ -5,14 +5,9 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries
 
     public class GetPageTypesListingQuery : GridQueryRequestBase<GetPageTypesListingResponse>
     {
-        public GetPageTypesListingQuery(int skip, int take, string searchText, string orderBy, string orderByDirection, int draw)
+        internal GetPageTypesListingQuery(int skip, int take, string searchText, string orderBy)
+            : base(skip, take, searchText, orderBy)
         {
-            Skip = skip;
-            Take = take;
-            SearchText = searchText;
-            OrderBy = orderBy;
-            OrderByDirection = orderByDirection;
-            Draw = draw;
         }
     }
 }

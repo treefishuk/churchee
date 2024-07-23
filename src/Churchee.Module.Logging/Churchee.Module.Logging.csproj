@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Areas\Configuration\Logs\Details.razor.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Areas\Configuration\Logs\Details.razor.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+	  <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="6.6.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+	  <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
+	</ItemGroup>
+
+</Project>

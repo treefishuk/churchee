@@ -31,6 +31,6 @@
         .Where(w => w.RequiredRole == string.Empty || _currentUser.HasRole(w.RequiredRole))
         .OrderBy(o => o.Order)
         .GroupBy(g => new { g.Name, g.Path, g.Icon, g.Order })
-        .Select(s => new MenuItem(s.Key.Name, s.Key.Path, s.Key.Icon, s.SelectMany(m => m.Children.Where(w => w.RequiredRole == string.Empty || _currentUser.HasRole(w.RequiredRole))).ToList())).ToList();
+        .Select(s => new MenuItem(s.Key.Name, s.Key.Path, s.Key.Icon, s.SelectMany(m => m.Children.Where(w => w.RequiredRole == string.Empty || _currentUser.HasRole(w.RequiredRole))).OrderBy(o => o.Order).ToList())).ToList();
     }
 }

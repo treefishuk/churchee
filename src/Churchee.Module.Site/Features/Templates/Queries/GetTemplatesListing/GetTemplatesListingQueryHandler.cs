@@ -50,7 +50,7 @@ namespace Churchee.Module.Site.Features.Templates.Queries.GetTemplatesListing
             {
                 RecordsTotal = count,
                 RecordsFiltered = count,
-                Draw = request.Draw,
+                Draw = request.Take,
                 Data = items
             };
         }

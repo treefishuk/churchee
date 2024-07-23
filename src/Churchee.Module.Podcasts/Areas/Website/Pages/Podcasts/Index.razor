@@ -50,12 +50,10 @@
         }
 
     var result = await Mediator.Send(new GetListingQuery(
-        skip: args.Skip.Value,
-        take: args.Top.Value,
-        searchText: args.Filter,
-        orderBy: orderBy,
-        orderByDirection: orderByDirection,
-        draw: args.Top.Value), default);
+            skip: args?.Skip ?? 0,
+            take: args?.Top ?? 20,
+            searchText: args?.Filter ?? string.Empty,
+            orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "PublishedDate desc" : args?.OrderBy), default);
 
     // Important!!! Make sure the Count property of RadzenDataGrid is set.
     count = result.RecordsTotal;

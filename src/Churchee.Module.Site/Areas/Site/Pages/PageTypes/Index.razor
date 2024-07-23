@@ -6,9 +6,8 @@
 @using Microsoft.AspNetCore.Components.Sections
 @using Radzen
 @using Radzen.Blazor
-@inject IMediator Mediator
 
-<PageName Name="Page Types"></PageName>
+<PageName Name="Page Types"/>
 
 <SectionContent SectionName="top-bar">
     <div class="rz-breadcrumb-item">
@@ -20,7 +19,8 @@
 
 @code {
 
-    int count;
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
 
     IEnumerable<GetPageTypesListingResponse> listingData;
 
@@ -30,29 +30,12 @@
     {
         isLoading = true;
 
-        string orderBy = "Name";
-        string orderByDirection = "asc";
-
-        if (!string.IsNullOrEmpty(args.OrderBy))
-        {
-            var split = args.OrderBy.Split(" ");
-            orderBy = split[0];
-            orderByDirection = split[1];
-
-        }
-
         var result = await Mediator.Send(new GetPageTypesListingQuery(
-            skip: args.Skip.Value,
-            take: args.Top.Value,
-            searchText: args.Filter,
-            orderBy: orderBy,
-            orderByDirection: orderByDirection,
-            draw: args.Top.Value), default);
+            skip: args?.Skip ?? 0,
+            take: args?.Top ?? 20,
+            searchText: args?.Filter ?? string.Empty,
+            orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Name asc" : args?.OrderBy), default);
 
-        // Important!!! Make sure the Count property of RadzenDataGrid is set.
-        count = result.RecordsTotal;
-
-        // Perform paging via Skip and Take.
         listingData = result.Data;
 
         isLoading = false;

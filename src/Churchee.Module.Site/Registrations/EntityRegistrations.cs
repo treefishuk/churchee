@@ -1,8 +1,6 @@
-﻿using System.Reflection.Emit;
-using Churchee.Common.Abstractions.Storage;
+﻿using Churchee.Common.Abstractions.Storage;
 using Churchee.Module.Site.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace Churchee.Module.Site.Registration
 {
@@ -25,7 +23,7 @@ namespace Churchee.Module.Site.Registration
                 .WithMany(p => p.Pages)
                 .HasForeignKey(d => d.PageTypeId)
                 .HasPrincipalKey(x => x.Id);
-                
+
                 etb.ToTable("WebContent");
             });
 
@@ -83,6 +81,9 @@ namespace Churchee.Module.Site.Registration
                 .WithMany(p => p.ParentTypes)
                 .HasForeignKey(pt => pt.ChildPageTypeId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+                etb.HasQueryFilter(f => !f.ParentPageType.Deleted);
+                etb.HasQueryFilter(f => !f.ChildPageType.Deleted);
 
             });
 

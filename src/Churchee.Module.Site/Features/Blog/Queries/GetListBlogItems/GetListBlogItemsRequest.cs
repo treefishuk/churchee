@@ -6,14 +6,9 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
 
     public class GetListBlogItemsRequest : GridQueryRequestBase<GetListBlogItemsResponseItem>
     {
-        public GetListBlogItemsRequest(int skip, int take, string searchText, string orderBy, string orderByDirection, int draw)
+        internal GetListBlogItemsRequest(int skip, int take, string searchText, string orderBy)
+            : base(skip, take, searchText, orderBy)
         {
-            Skip = skip;
-            Take = take;
-            SearchText = searchText;
-            OrderBy = orderBy;
-            OrderByDirection = orderByDirection;
-            Draw = draw;
         }
     }
 }

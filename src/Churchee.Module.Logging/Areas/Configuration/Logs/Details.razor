@@ -1,0 +1,73 @@
+﻿@page "/management/configuration/logs/details/{Id:int}"
+@using Churchee.Module.Logging.Entities
+@using Churchee.Module.Logging.Features.Queries
+@using Churchee.Module.Logging.Infrastructure
+@using Churchee.Module.UI.Components
+@using MediatR
+@using Microsoft.EntityFrameworkCore
+@using Radzen
+@using Radzen.Blazor
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "SysAdmin")]
+
+@if(Model != null){
+
+
+    <section>
+        <h1>
+            @Model.Message
+        </h1>
+
+        <div>@Model.Level</div>
+
+        <div>@Model.TimeStamp.ToString("dd/MM/yyyy HH:mm")</div>
+
+        @if (!string.IsNullOrEmpty(Model.Exception))
+        {
+            <div>
+                <pre>
+                    @Model.Exception
+                </pre>
+            </div>
+        }
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var property in Model.Properties)
+                {
+                    <tr>
+                        <td>@property.Key</td>
+                        <td>@property.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </section>
+
+}
+
+
+@code {
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    public GetLogDetailsResponse Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        Model = await Mediator.Send(new GetLogDetailsQuery(Id));
+    }
+}

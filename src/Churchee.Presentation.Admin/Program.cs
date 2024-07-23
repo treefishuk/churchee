@@ -1,4 +1,4 @@
-using Churchee.Blobstorage.Providers;
+using Churchee.Blobstorage.Providers.Azure;
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Utilities;
@@ -10,7 +10,6 @@ using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
 using Churchee.Module.Tenancy.Infrastructure;
 using Churchee.Module.UI.Models;
-using Churchee.Presentation.Admin.Components;
 using Churchee.Presentation.Admin.Filters;
 using Churchee.Presentation.Admin.PipelineBehavoirs;
 using Churchee.Presentation.Admin.Registrations;
@@ -132,7 +131,7 @@ namespace Churchee.Presentation.Admin
             app.UseAuthorization();
             app.UseAntiforgery();
 
-            app.MapRazorComponents<App>()
+            app.MapRazorComponents<Components.App>()
                 .AddInteractiveServerRenderMode()
                 .AddAdditionalAssemblies(AssemblyResolution.GetModuleAssemblies());
 
@@ -142,9 +141,6 @@ namespace Churchee.Presentation.Admin
             {
                 endpoints.MapHangfireDashboard();
             });
-
-            // Add additional endpoints required by the Identity /Account Razor components.
-            //app.MapAdditionalIdentityEndpoints();
 
             app.Run();
         }

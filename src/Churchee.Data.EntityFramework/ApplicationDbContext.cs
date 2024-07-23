@@ -4,6 +4,7 @@ using Churchee.Data.EntityFramework.Extensions;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Tenancy.Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Churchee.Data.EntityFramework
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IDataProtectionKeyContext
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
@@ -33,6 +34,8 @@ namespace Churchee.Data.EntityFramework
         /// The object mutex used for initializing the context.
         /// </summary>
         private static readonly object _mutex = new();
+
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
         public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options, IServiceProvider serviceProvider, IMediator mediator, ITenantResolver tenantResolver, IConfiguration configuration)
             : base(options)
@@ -66,14 +69,14 @@ namespace Churchee.Data.EntityFramework
 
             foreach (var reg in entityRegistrations)
             {
-                _logger.LogInformation("Entity Registration: " + reg.GetType().FullName);
+                _logger.LogInformation("Entity Registration: {Entity}", reg.GetType().FullName);
 
                 reg.RegisterEntities(builder);
             }
 
             builder.ApplyGlobalFilters<ITenantedEntity>(a => a.ApplicationTenantId == _tenantResolver.GetTenantId());
 
-            builder.ApplyGlobalFilters<IEntity>(a => a.Deleted == false);
+            builder.ApplyGlobalFilters<IEntity>(a => !a.Deleted);
 
             builder.SetDefaultStringLengths(256);
 

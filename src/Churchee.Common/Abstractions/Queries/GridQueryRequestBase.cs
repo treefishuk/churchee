@@ -4,7 +4,20 @@ namespace Churchee.Common.Abstractions.Queries
 {
     public abstract class GridQueryRequestBase<TResponseType> : IRequest<DataTableResponse<TResponseType>>
     {
-        public int Draw { get; set; }
+
+        protected GridQueryRequestBase(int skip, int take, string searchText, string orderBy)
+        {
+            Skip = skip;
+            Take = take;
+            SearchText = searchText;
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                var split = orderBy.Split(" ");
+                OrderBy = split[0];
+                OrderByDirection = split[1];
+            }
+        }
 
         public int Skip { get; set; }
 

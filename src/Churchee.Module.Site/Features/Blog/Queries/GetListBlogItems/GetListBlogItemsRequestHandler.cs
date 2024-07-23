@@ -50,7 +50,7 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
             {
                 RecordsTotal = count,
                 RecordsFiltered = count,
-                Draw = request.Draw,
+                Draw = request.Take,
                 Data = items
             };
 

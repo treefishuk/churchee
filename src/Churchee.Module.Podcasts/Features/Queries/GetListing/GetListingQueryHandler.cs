@@ -51,7 +51,7 @@ namespace Churchee.Module.Podcasts.Features.Queries
             {
                 RecordsTotal = count,
                 RecordsFiltered = count,
-                Draw = request.Draw,
+                Draw = request.Take,
                 Data = items
             };
 
