@@ -22,5 +22,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
   </ItemGroup>
-
+	
 </Project>

@@ -5,6 +5,7 @@
 @using Churchee.Module.Site.Features.Templates.Queries.GetTemplatesListing;
 @using Churchee.Module.Site.Features.Templates.Responses;
 @using MediatR
+@using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.Extensions.Logging
 @using Radzen.Blazor
 @using Radzen
@@ -12,6 +13,13 @@
 @page "/management/templates"
 @inject ILogger<Index> Logger
 @inject IMediator Mediator
+
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/templates/create">Create</a>
+    </div> 
+</SectionContent>
 
 <PageName></PageName>
 

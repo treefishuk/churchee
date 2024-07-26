@@ -20,7 +20,7 @@
 
 @code {
     [SupplyParameterFromForm]
-    public TemplatesInputModel InputModel { get; set; } = new();
+    public EditTemplateInputModel InputModel { get; set; } = new();
 
     [Parameter]
     public Guid Id { get; set; }
@@ -31,7 +31,7 @@
 
         var response = await Mediator.Send(new GetTemplateByIdQuery(Id));
 
-        InputModel = new TemplatesInputModel(response.Id, response.Content);
+        InputModel = new EditTemplateInputModel(response.Id, response.Content);
 
     }
 

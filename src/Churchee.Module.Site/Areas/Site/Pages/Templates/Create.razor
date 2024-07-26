@@ -1,0 +1,38 @@
+﻿@page "/management/templates/create"
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.Templates.Commands
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using MediatR
+@using Radzen
+@inject IMediator Mediator
+@inject NotificationService _notificationService
+@inject NavigationManager NavigationManager
+
+<PageName Name="Create Page Type"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    [SupplyParameterFromForm]
+    public CreateTemplatesInputModel InputModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        InputModel = new CreateTemplatesInputModel();
+
+        await base.OnInitializedAsync();
+    }
+
+    
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new CreateTemplateCommand(InputModel.Path, InputModel.Content), default);
+
+        if (result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/templates");
+        }
+
+    }
+}
