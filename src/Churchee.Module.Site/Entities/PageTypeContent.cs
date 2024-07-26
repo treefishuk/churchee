@@ -2,14 +2,14 @@
 
 namespace Churchee.Module.Site.Entities
 {
-    public class WebContentTypeContent : Entity
+    public class PageTypeContent : Entity
     {
-        private WebContentTypeContent()
+        private PageTypeContent()
         {
 
         }
 
-        public WebContentTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name) : base(pageTypeContentId, applicationTenantId)
+        public PageTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name) : base(pageTypeContentId, applicationTenantId)
         {
             Type = type;
             IsRequired = isRequired;
@@ -17,7 +17,7 @@ namespace Churchee.Module.Site.Entities
             DevName = name.ToDevName();
         }
 
-        public WebContentTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name, int order) : base(pageTypeContentId, applicationTenantId)
+        public PageTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name, int order) : base(pageTypeContentId, applicationTenantId)
         {
             Type = type;
             IsRequired = isRequired;
@@ -30,7 +30,7 @@ namespace Churchee.Module.Site.Entities
 
         public string DevName { get; private set; }
 
-        public PageType WebContentType { get; private set; }
+        public PageType PageType { get; private set; }
 
         public string Type { get; private set; }
 

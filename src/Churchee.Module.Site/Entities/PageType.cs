@@ -18,8 +18,8 @@ namespace Churchee.Module.Site.Entities
             DevName = name.Replace(" ", "");
             ParentTypes = new List<PageTypeTypeMapping>();
             ChildrenTypes = new List<PageTypeTypeMapping>();
-            PageTypeProperties = new List<WebContentTypeProperty>();
-            PageTypeContent = new List<WebContentTypeContent>();
+            PageTypeProperties = new List<PageTypeProperty>();
+            PageTypeContent = new List<PageTypeContent>();
             Pages = new List<WebContent>();
 
             if (triggerPageTypeCreatedEvent)
@@ -43,14 +43,14 @@ namespace Churchee.Module.Site.Entities
 
         public ICollection<PageTypeTypeMapping> ChildrenTypes { get; set; }
 
-        public ICollection<WebContentTypeProperty> PageTypeProperties { get; set; }
+        public ICollection<PageTypeProperty> PageTypeProperties { get; set; }
 
-        public ICollection<WebContentTypeContent> PageTypeContent { get; set; }
+        public ICollection<PageTypeContent> PageTypeContent { get; set; }
 
 
         public void AddPageTypeContent(Guid id, string name, string type, bool required)
         {
-            var newPageTypeContent = new WebContentTypeContent(id, ApplicationTenantId, type, required, name);
+            var newPageTypeContent = new PageTypeContent(id, ApplicationTenantId, type, required, name);
 
             PageTypeContent.Add(newPageTypeContent);
 

@@ -14,17 +14,17 @@ namespace Churchee.Module.Site.Entities
         {
             Version = version;
             PageTypeContentId = pageTypeContentId;
-            Id = pageId;
+            PageId = pageId;
             Value = value;
         }
 
-        public Guid Id { get; set; }
+        public Guid PageId { get; set; }
 
         public Page Page { get; set; }
 
         public Guid PageTypeContentId { get; set; }
 
-        public WebContentTypeContent PageTypeContent { get; set; }
+        public PageTypeContent PageTypeContent { get; set; }
 
         public int Version { get; private set; }
 

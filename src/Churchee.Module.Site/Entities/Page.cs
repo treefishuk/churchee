@@ -30,6 +30,7 @@ namespace Churchee.Module.Site.Entities
         public int Version { get; private set; }
 
         public ICollection<PageContent> PageContent { get; set; }
+
         public void AddContent(Guid pageTypeContentId, Guid pageId, string content, int version)
         {
             var newContent = new PageContent(pageTypeContentId, pageId, content, version);

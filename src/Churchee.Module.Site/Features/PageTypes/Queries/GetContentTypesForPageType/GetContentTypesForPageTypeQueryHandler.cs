@@ -17,7 +17,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeConte
 
         public async Task<IEnumerable<GetContentTypesForPageTypeResponse>> Handle(GetContentTypesForPageTypeQuery request, CancellationToken cancellationToken)
         {
-            return await _storage.GetRepository<WebContentTypeContent>()
+            return await _storage.GetRepository<PageTypeContent>()
                 .ApplySpecification(new PageContentTypesForPageType(request.PageTypeId))
                 .Select(s => new GetContentTypesForPageTypeResponse
                 {

@@ -62,7 +62,7 @@ namespace Churchee.Module.Site.Registration
 
             });
 
-            modelbuilder.Entity<WebContentTypeProperty>(etb =>
+            modelbuilder.Entity<PageTypeProperty>(etb =>
             {
                 etb.HasKey(e => e.Id);
                 etb.Property(e => e.Id);
@@ -87,7 +87,7 @@ namespace Churchee.Module.Site.Registration
 
             });
 
-            modelbuilder.Entity<WebContentTypeContent>(etb =>
+            modelbuilder.Entity<PageTypeContent>(etb =>
             {
                 etb.HasKey(t => t.Id);
                 etb.Property(t => t.Id).ValueGeneratedNever();
@@ -97,10 +97,11 @@ namespace Churchee.Module.Site.Registration
             modelbuilder.Entity<PageContent>(etb =>
             {
                 etb.ToTable("PageContent", b => b.IsTemporal());
-                etb.HasKey(t => new { t.Id, t.PageTypeContentId });
+                etb.HasKey(t => new { t.PageId, t.PageTypeContentId });
                 etb.Property(t => t.Value).HasColumnType("nvarchar(max)");
                 etb.HasOne(pt => pt.Page)
                 .WithMany(p => p.PageContent)
+                .HasForeignKey(k => k.PageId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             });

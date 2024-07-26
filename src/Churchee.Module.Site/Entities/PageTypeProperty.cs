@@ -3,9 +3,9 @@
 namespace Churchee.Module.Site.Entities
 {
 
-    public class WebContentTypeProperty : Entity
+    public class PageTypeProperty : Entity
     {
-        public WebContentTypeProperty(Guid id, Guid applicationTenantId) : base(id, applicationTenantId)
+        public PageTypeProperty(Guid id, Guid applicationTenantId) : base(id, applicationTenantId)
         {
 
         }

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Ardalis.Specification;
+using Churchee.Common.Abstractions.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Ardalis.Specification;
-using Churchee.Common.Abstractions.Entities;
 
 namespace Churchee.Common.Abstractions.Storage
 {

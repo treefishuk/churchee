@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
 
         public async Task<CommandResponse> Handle(UpdatePageTypeContentCommand request, CancellationToken cancellationToken)
         {
-            var existingItems = await _storage.GetRepository<WebContentTypeContent>()
+            var existingItems = await _storage.GetRepository<PageTypeContent>()
                 .ApplySpecification(new PageContentTypesForPageType(request.PageTypeId))
                 .ToListAsync();
 
@@ -45,7 +45,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
             return new CommandResponse();
         }
 
-        private void UpdateExistingItem(WebContentTypeContent existing, PageTypeContentItemModel item)
+        private void UpdateExistingItem(PageTypeContent existing, PageTypeContentItemModel item)
         {
             existing.UpdateDetails(item.Required, item.Name, item.Type.Value, item.Order);
         }

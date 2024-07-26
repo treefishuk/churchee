@@ -3,7 +3,7 @@ using Churchee.Module.Site.Entities;
 
 namespace Churchee.Module.Site.Specifications
 {
-    internal class PageTypePropertiesPagingSpecification : Specification<WebContentTypeProperty>
+    internal class PageTypePropertiesPagingSpecification : Specification<PageTypeProperty>
     {
         public PageTypePropertiesPagingSpecification(Guid pageTypeId, string searchText, int take, int skip, string orderByField, string orderDir)
         {

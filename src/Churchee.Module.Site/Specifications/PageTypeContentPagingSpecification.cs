@@ -3,11 +3,11 @@ using Churchee.Module.Site.Entities;
 
 namespace Churchee.Module.Site.Specifications
 {
-    internal class PageTypeContentPagingSpecification : Specification<WebContentTypeContent>
+    internal class PageTypeContentPagingSpecification : Specification<PageTypeContent>
     {
         public PageTypeContentPagingSpecification(Guid pageTypeId, string searchText, int take, int skip, string orderByField, string orderDir)
         {
-            Query.Where(w => w.WebContentType.Id == pageTypeId);
+            Query.Where(w => w.PageType.Id == pageTypeId);
             ApplySearchFilter(searchText);
             ApplyOrdering(orderByField, orderDir);
             ApplyPaging(take, skip);

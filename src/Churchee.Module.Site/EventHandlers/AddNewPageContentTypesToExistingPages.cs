@@ -3,6 +3,7 @@ using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Events;
 using Churchee.Module.Site.Specifications;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.EventHandlers
 {
@@ -18,8 +19,9 @@ namespace Churchee.Module.Site.EventHandlers
 
         public async Task Handle(PageTypeContentCreatedEvent notification, CancellationToken cancellationToken)
         {
-            var pages = _storage.GetRepository<Page>()
-                .ApplySpecification(new PagesWithContentThatImplementPageTypeSpecification(notification.PageTypeId));
+            var pages = await _storage.GetRepository<Page>()
+                .ApplySpecification(new PagesWithContentThatImplementPageTypeSpecification(notification.PageTypeId))
+                .ToListAsync(cancellationToken);
 
             foreach (var page in pages)
             {

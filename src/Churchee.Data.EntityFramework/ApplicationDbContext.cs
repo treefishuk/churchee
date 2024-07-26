@@ -88,9 +88,11 @@ namespace Churchee.Data.EntityFramework
         {
             ChangeTracker.Entries().ApplyTrimOnStringFields();
 
+            var changeCount = await base.SaveChangesAsync(cancellationToken);
+
             await _mediator.DispatchDomainEventsAsync(this);
 
-            return await base.SaveChangesAsync(cancellationToken);
+            return changeCount;
         }
     }
 }
