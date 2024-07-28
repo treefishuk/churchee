@@ -22,7 +22,7 @@
             @ChildContent
      </FormButtons>
 
-     <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=UpdateFormState EditContext="_editContext"></FormFields>
+     <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=SetFormInvalidState EditContext="_editContext"></FormFields>
 
 </EditForm>
 
@@ -43,16 +43,23 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
+    [Inject]
+    public IServiceProvider _serviceProvider { get; set; }
+
+
     protected override void OnParametersSet()
     {
-        _formInvalid = true;
         _editContext = new EditContext(InputModel);
+        SetFormInvalidState();
     }
 
-    private void UpdateFormState()
+    private void SetFormInvalidState()
     {
-        _formInvalid = !_editContext.Validate();
+        var validationResults = new List<ValidationResult>();
+        var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
+        Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
 
+        _formInvalid = validationResults.Any();
 
         StateHasChanged();
     }

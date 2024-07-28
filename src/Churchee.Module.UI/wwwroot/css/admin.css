@@ -21622,3 +21622,7 @@ img {
   z-index: 4;
   width: 50%;
 }
+
+.validation-message {
+  color: #d74a4a;
+}
