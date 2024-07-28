@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands.EnablePodcasts
+namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnablePodcasts
 {
 
     // NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.

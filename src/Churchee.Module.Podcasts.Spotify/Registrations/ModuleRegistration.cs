@@ -1,9 +1,9 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 
-namespace Churchee.Module.Podcasts.Anchor.Registrations
+namespace Churchee.Module.Podcasts.Spotify.Registrations
 {
     public class ModuleRegistration : IModule
     {
-        public string Name => "Anchor";
+        public string Name => "Spofify";
     }
 }

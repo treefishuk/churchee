@@ -2,7 +2,7 @@
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
-using Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands.EnablePodcasts;
+using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnablePodcasts;
 using Churchee.Module.Podcasts.Entities;
 using Hangfire;
 using MediatR;
@@ -10,9 +10,9 @@ using Microsoft.Extensions.Logging;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
+namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 {
-    public class EnableAnchorPodcastsSyncCommandHandler : IRequestHandler<EnableAnchorPodcastSyncCommand, CommandResponse>
+    public class EnableSpotifyPodcastsSyncCommandHandler : IRequestHandler<EnableSpotifyPodcastSyncCommand, CommandResponse>
     {
         private readonly Guid _rssFeedSettingKey = Guid.Parse("a9cd25bb-23b4-45ba-9484-04fc458ad29a");
         private readonly Guid _podcastsNameId = Guid.Parse("4379e3d3-fa40-489b-b80d-01c30835fa9d");
@@ -21,11 +21,11 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly ICurrentUser _currentUser;
-        private readonly ILogger<EnableAnchorPodcastsSyncCommandHandler> _logger;
+        private readonly ILogger<EnableSpotifyPodcastsSyncCommandHandler> _logger;
         private readonly IBlobStore _blobStore;
         private readonly IImageProcessor _imageProcessor;
 
-        public EnableAnchorPodcastsSyncCommandHandler(ISettingStore settingStore, IRecurringJobManager recurringJobManager, ICurrentUser currentUser, ILogger<EnableAnchorPodcastsSyncCommandHandler> logger, IDataStore dataStore, IBackgroundJobClient backgroundJobClient, IBlobStore blobStore, IImageProcessor imageProcessor)
+        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, IRecurringJobManager recurringJobManager, ICurrentUser currentUser, ILogger<EnableSpotifyPodcastsSyncCommandHandler> logger, IDataStore dataStore, IBackgroundJobClient backgroundJobClient, IBlobStore blobStore, IImageProcessor imageProcessor)
         {
             _settingStore = settingStore;
             _recurringJobManager = recurringJobManager;
@@ -37,22 +37,22 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
             _imageProcessor = imageProcessor;
         }
 
-        public async Task<CommandResponse> Handle(EnableAnchorPodcastSyncCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(EnableSpotifyPodcastSyncCommand request, CancellationToken cancellationToken)
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            await _settingStore.AddOrUpdateSetting(_rssFeedSettingKey, applicationTenantId, $"AnchorRSSFeedUrl", request.AnchorFMRSSFeed);
+            await _settingStore.AddOrUpdateSetting(_rssFeedSettingKey, applicationTenantId, $"SpotifyRSSFeedUrl", request.SpotifyFMRSSFeed);
 
             string podcastsUrl = await _settingStore.GetSettingValue(_podcastsNameId, applicationTenantId);
 
-            _recurringJobManager.AddOrUpdate($"{applicationTenantId}_AnchorPodcasts", () => SyncPodcasts(request, applicationTenantId, podcastsUrl), Cron.Daily);
+            _recurringJobManager.AddOrUpdate($"{applicationTenantId}_SpotifyPodcasts", () => SyncPodcasts(request, applicationTenantId, podcastsUrl), Cron.Daily);
 
             _backgroundJobClient.Enqueue(() => SyncPodcasts(request, applicationTenantId, podcastsUrl));
 
             return new CommandResponse();
         }
 
-        public async Task SyncPodcasts(EnableAnchorPodcastSyncCommand request, Guid applicationTenantId, string podcastsUrl)
+        public async Task SyncPodcasts(EnableSpotifyPodcastSyncCommand request, Guid applicationTenantId, string podcastsUrl)
         {
             var podcastShows = await GetAndParseRssFeed(request);
 
@@ -112,11 +112,11 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Commands
             }
         }
 
-        private static async Task<rssChannelItem[]> GetAndParseRssFeed(EnableAnchorPodcastSyncCommand request)
+        private static async Task<rssChannelItem[]> GetAndParseRssFeed(EnableSpotifyPodcastSyncCommand request)
         {
             var client = new HttpClient();
 
-            string xml = await client.GetStringAsync(request.AnchorFMRSSFeed);
+            string xml = await client.GetStringAsync(request.SpotifyFMRSSFeed);
 
             var doc = XDocument.Parse(xml);
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Queries
+namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries
 {
     internal class GetPodcastSettingsRequest : IRequest<GetPodcastSettingsResponse>
     {

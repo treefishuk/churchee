@@ -6,7 +6,7 @@ using Hangfire.Storage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Queries
+namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries
 {
     internal class GetPodcastSettingsRequestHandler : IRequestHandler<GetPodcastSettingsRequest, GetPodcastSettingsResponse>
     {
@@ -26,7 +26,7 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Queries
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string anchorUrl = await _store.GetSettingValue(Guid.Parse("a9cd25bb-23b4-45ba-9484-04fc458ad29a"), applicationTenantId);
+            string spotifyUrl = await _store.GetSettingValue(Guid.Parse("a9cd25bb-23b4-45ba-9484-04fc458ad29a"), applicationTenantId);
 
             string pageNameForPodcasts = await _store.GetSettingValue(_podcastsNameId, applicationTenantId);
 
@@ -36,10 +36,10 @@ namespace Churchee.Module.Podcasts.Anchor.Features.Podcasts.Queries
             {
                 var recurringJobs = connection.GetRecurringJobs();
 
-                lastRun = recurringJobs.Where(w => w.Id == $"{applicationTenantId}_AnchorPodcasts").Select(s => s.LastExecution).FirstOrDefault();
+                lastRun = recurringJobs.Where(w => w.Id == $"{applicationTenantId}_SpotifyPodcasts").Select(s => s.LastExecution).FirstOrDefault();
             }
 
-            return new GetPodcastSettingsResponse(anchorUrl, pageNameForPodcasts, lastRun);
+            return new GetPodcastSettingsResponse(spotifyUrl, pageNameForPodcasts, lastRun);
         }
     }
 }

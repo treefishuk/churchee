@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Extensibility;
 
-namespace Churchee.Module.Podcasts.Anchor.Registrations
+namespace Churchee.Module.Podcasts.Spotify.Registrations
 {
     public class MenuRegistration : IMenuRegistration
     {
@@ -12,7 +12,7 @@ namespace Churchee.Module.Podcasts.Anchor.Registrations
                 var list = new List<MenuItem>
                 {
                     new MenuItem("Integrations", "/management/integrations", "integration_instructions", 100)
-                    .AddChild(new MenuItem("Anchor", "/management/integrations/anchor", "anchor"))
+                    .AddChild(new MenuItem("Spotify Podcasts", "/management/integrations/spotify", "graphic_eq"))
                 };
 
                 return list;
