@@ -12,10 +12,12 @@
 
 <PageName Name="Create Contributor"></PageName>
 
-<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+@if (InputModel != null)
+{
+    <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+}
 
 @code {
-
     [SupplyParameterFromForm]
     public CreateContributorModel InputModel { get; set; }
 
@@ -36,12 +38,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         var roles = await Mediator.Send(new GetAllSelectableRolesQuery());
 
         InputModel = new(new MultiSelect(roles));
-
     }
 
     private async Task ValidSubmitForm()

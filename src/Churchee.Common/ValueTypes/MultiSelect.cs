@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Churchee.Common.ValueTypes
 {
@@ -8,7 +9,7 @@ namespace Churchee.Common.ValueTypes
         public MultiSelect(IEnumerable<MultiSelectItem> items)
         {
             Items = items;
-            SelectedValues = [];
+            SelectedValues = items.Where(w => w.Selected).Select(s => s.Value).ToList();
         }
 
         public IEnumerable<MultiSelectItem> Items { get; set; }
