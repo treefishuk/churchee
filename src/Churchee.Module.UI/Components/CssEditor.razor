@@ -5,8 +5,11 @@
 
 <ErrorBoundary>
     <ChildContent>
-        <StandaloneCodeEditor @ref=_editorRef Id="@Id" ConstructionOptions="CSSEditorConstructionOptions" OnKeyUp="@(async () => await OnEditorChange())" OnDidInit="@(async () => await OnEditorDidInit())" />
-    </ChildContent>
+        @if (rendered)
+        {
+            <StandaloneCodeEditor @ref=_editorRef Id="@Id" ConstructionOptions="CSSEditorConstructionOptions" OnKeyUp="@(async () => await OnEditorChange())" OnDidInit="@(async () => await OnEditorDidInit())" />
+        }
+     </ChildContent>
     <ErrorContent>
         Failed to load Editor
     </ErrorContent>
@@ -14,6 +17,18 @@
 
 
 @code {
+
+    private bool rendered = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            rendered = true;
+            StateHasChanged();
+
+        }
+    }
 
     private string Id { get; set; }
 

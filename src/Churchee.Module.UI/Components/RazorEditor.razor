@@ -6,7 +6,12 @@
 
 <ErrorBoundary>
     <ChildContent>
+
+        @if (rendered)
+        {
             <StandaloneCodeEditor @ref=_editorRef Id="@Id" ConstructionOptions="RazorEditorConstructionOptions" OnKeyUp="@(async () => await OnEditorChange())" OnDidInit="@(async () => await OnEditorDidInit())" />
+        }
+
     </ChildContent>
     <ErrorContent>
         Failed to load Editor
@@ -15,6 +20,17 @@
 
 
 @code {
+
+    private bool rendered = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            rendered = true;
+            StateHasChanged();
+        }
+    }
 
     private string Id { get; set; }
 
