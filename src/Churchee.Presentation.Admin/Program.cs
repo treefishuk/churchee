@@ -119,6 +119,7 @@ namespace Churchee.Presentation.Admin
 
             var app = builder.Build();
 
+            app.UseExceptionHandler("/Error");
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             // Configure the HTTP request pipeline.
