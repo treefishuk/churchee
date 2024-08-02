@@ -30,6 +30,8 @@ namespace Churchee.Presentation.Admin
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.WebHost.UseKestrel(option => option.AddServerHeader = false);
+
             var assemblies = AssemblyResolution.GetModuleAssemblies().Append(typeof(Program).Assembly).ToArray();
 
             string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
