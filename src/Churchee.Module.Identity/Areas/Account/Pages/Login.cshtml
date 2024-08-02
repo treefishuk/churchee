@@ -21,7 +21,7 @@
             </div>
             <div class="field">
                 @Html.LabelFor(m => m.Input.Password)
-                @Html.EditorFor(m => m.Input.Password)
+                @Html.TextBoxFor(m => m.Input.Password, new { autocomplete = "off", type = "password", @class="text-box single-line" })
                 @Html.ValidationMessageFor(m => m.Input.Password)
             </div>
             <div class="field">
