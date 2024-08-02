@@ -88,6 +88,17 @@ namespace Churchee.Presentation.Admin
             });
 
 
+            if (builder.Environment.IsDevelopment() == false)
+            {
+                builder.Services.AddHsts(options =>
+                {
+                    options.Preload = true;
+                    options.IncludeSubDomains = true;
+                    options.MaxAge = TimeSpan.FromDays(365);
+                });
+            }
+
+
             builder.Services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
@@ -116,15 +127,6 @@ namespace Churchee.Presentation.Admin
                 app.UseHangfireDashboard("/hangfire", new DashboardOptions
                 {
                     Authorization = new[] { new HangfireAuthFilter() }
-                });
-            }
-            else
-            {
-                builder.Services.AddHsts(options =>
-                {
-                    options.Preload = true;
-                    options.IncludeSubDomains = true;
-                    options.MaxAge = TimeSpan.FromDays(365);
                 });
             }
 
