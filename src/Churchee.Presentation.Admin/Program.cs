@@ -17,7 +17,6 @@ using FluentValidation;
 using Hangfire;
 using Hangfire.SqlServer;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -54,13 +53,6 @@ namespace Churchee.Presentation.Admin
 
             builder.Services.RegisterSeedActions();
             builder.Services.AddHttpClient();
-
-            builder.Services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
 
             // Add services to the container.
             builder.Services.AddRazorComponents()
@@ -114,10 +106,11 @@ namespace Churchee.Presentation.Admin
 
             var app = builder.Build();
 
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseMigrationsEndPoint();
                 app.UseHangfireDashboard("/hangfire", new DashboardOptions
                 {
                     Authorization = new[] { new HangfireAuthFilter() }
@@ -125,9 +118,12 @@ namespace Churchee.Presentation.Admin
             }
             else
             {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                builder.Services.AddHsts(options =>
+                {
+                    options.Preload = true;
+                    options.IncludeSubDomains = true;
+                    options.MaxAge = TimeSpan.FromDays(365);
+                });
             }
 
             app.UseHttpsRedirection();
