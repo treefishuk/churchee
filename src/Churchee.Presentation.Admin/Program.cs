@@ -87,6 +87,13 @@ namespace Churchee.Presentation.Admin
                 .AddSignInManager<ChurcheeSignInManager>()
                 .AddDefaultTokenProviders();
 
+
+            builder.Services.AddAntiforgery(options =>
+            {
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
+
+
             builder.Services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
