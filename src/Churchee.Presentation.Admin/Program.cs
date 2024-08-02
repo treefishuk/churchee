@@ -129,6 +129,10 @@ namespace Churchee.Presentation.Admin
                     Authorization = new[] { new HangfireAuthFilter() }
                 });
             }
+            else
+            {
+                app.UseHsts();
+            }
 
             app.UseHttpsRedirection();
 
