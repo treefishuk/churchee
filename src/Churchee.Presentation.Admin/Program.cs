@@ -142,6 +142,7 @@ namespace Churchee.Presentation.Admin
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseAntiforgery();
+            app.UseSecurityHeadersMiddleware();
 
             app.MapRazorComponents<Components.App>()
                 .AddInteractiveServerRenderMode()
