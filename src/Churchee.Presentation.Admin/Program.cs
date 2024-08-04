@@ -17,6 +17,7 @@ using FluentValidation;
 using Hangfire;
 using Hangfire.SqlServer;
 using MediatR;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -134,6 +135,12 @@ namespace Churchee.Presentation.Admin
             {
                 app.UseHsts();
             }
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
 
             app.UseHttpsRedirection();
 
