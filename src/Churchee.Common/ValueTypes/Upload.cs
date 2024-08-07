@@ -8,7 +8,6 @@ namespace Churchee.Common.ValueTypes
     {
         public Upload()
         {
-
         }
         public Upload(string path)
         {

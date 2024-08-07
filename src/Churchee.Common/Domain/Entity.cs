@@ -1,5 +1,5 @@
-﻿using System;
-using Churchee.Common.Abstractions.Entities;
+﻿using Churchee.Common.Abstractions.Entities;
+using System;
 
 namespace Churchee.Common.Data
 {
@@ -40,6 +40,5 @@ namespace Churchee.Common.Data
             ModifiedDate = DateTime.Now;
             CreatedDate = DateTime.Now;
         }
-
     }
 }

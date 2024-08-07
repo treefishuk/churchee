@@ -13,6 +13,5 @@ namespace Churchee.Common.Abstractions.Entities
         public List<INotification> DomainEvents { get; }
 
         void ClearDomainEvents();
-
     }
 }

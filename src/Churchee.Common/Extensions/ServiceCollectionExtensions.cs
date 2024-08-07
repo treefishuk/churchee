@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Helpers;
 using Churchee.Common.Storage;
 using System;
 using System.Linq;
@@ -43,7 +44,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 data.SeedData(storage);
             }
-
         }
 
         public static void RegisterAllTypes<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)

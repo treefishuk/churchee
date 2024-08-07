@@ -4,7 +4,6 @@ namespace Churchee.Common.Abstractions.Queries
 {
     public abstract class GridQueryRequestBase<TResponseType> : IRequest<DataTableResponse<TResponseType>>
     {
-
         protected GridQueryRequestBase(int skip, int take, string searchText, string orderBy)
         {
             Skip = skip;
@@ -28,6 +27,5 @@ namespace Churchee.Common.Abstractions.Queries
         public string OrderBy { get; set; }
 
         public string OrderByDirection { get; set; }
-
     }
 }
