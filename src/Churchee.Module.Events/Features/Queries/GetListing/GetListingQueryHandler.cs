@@ -53,6 +53,13 @@ namespace Churchee.Module.Events.Features.Queries
                 })
                 .ToListAsync(cancellationToken);
 
+            foreach (var item in items)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(item.ImageUri);
+
+                item.ImageUri = item.ImageUri.Replace(fileName, $"{fileName}_t");
+            }
+
             return new DataTableResponse<GetListingQueryResponseItem>
             {
                 RecordsTotal = count,
@@ -60,7 +67,6 @@ namespace Churchee.Module.Events.Features.Queries
                 Draw = request.Take,
                 Data = items
             };
-
         }
     }
 }
