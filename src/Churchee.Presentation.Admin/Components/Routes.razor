@@ -1,6 +1,6 @@
 ﻿
 @{
-    var assemblies = AssemblyResolution.GetModuleAssemblies().ToArray();
+    var assemblies = Comgem.Common.Helpers.AssemblyResolution.GetModuleAssemblies().ToArray();
 }
 
 <Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="assemblies">
