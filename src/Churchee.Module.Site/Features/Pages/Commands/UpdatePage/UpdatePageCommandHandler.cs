@@ -25,12 +25,17 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
             page.UpdateInfo(request.Title, request.Description, request.ParentId);
             page.UpdateContent(request.Content);
-          
+
             await _storage.SaveChangesAsync(cancellationToken);
-            
+
             if (request.Publish)
             {
                 page.Publish();
+            }
+
+            if (request.Unpublish)
+            {
+                page.Unpublish();
             }
 
             await _storage.SaveChangesAsync(cancellationToken);

@@ -1,8 +1,6 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
@@ -29,15 +27,16 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                     ParentName = s.Parent.Title,
                     Description = s.Description,
                     Url = s.Url,
+                    Published = s.Published,
                     ContentItems = s.PageContent
                     .OrderBy(o => o.PageTypeContent.Order)
-                    .Select(m => new GetPageDetailsResponseContentItem 
-                    { 
-                     PageTypeContentId = m.PageTypeContentId,
-                     Title = m.PageTypeContent.Name,
-                     Type = m.PageTypeContent.Type,
-                     Value = m.Value,
-                     DevName = m.PageTypeContent.DevName
+                    .Select(m => new GetPageDetailsResponseContentItem
+                    {
+                        PageTypeContentId = m.PageTypeContentId,
+                        Title = m.PageTypeContent.Name,
+                        Type = m.PageTypeContent.Type,
+                        Value = m.Value,
+                        DevName = m.PageTypeContent.DevName
                     })
                 }).FirstOrDefault();
 

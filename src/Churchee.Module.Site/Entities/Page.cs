@@ -79,6 +79,11 @@ namespace Churchee.Module.Site.Entities
             Published = true;
         }
 
+        public void Unpublish()
+        {
+            Published = false;
+        }
+
         private static JsonSerializerOptions jsonSerializerOptions = new()
         {
             WriteIndented = true,

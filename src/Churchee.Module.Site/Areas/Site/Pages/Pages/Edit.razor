@@ -36,7 +36,16 @@
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
                     <RadzenButton Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
                     <RadzenButton Disabled="_formInvalid" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Click="@(()=> Submit = " Save")">Save</RadzenButton>
-                    <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Click="@(()=> Submit = "Publish")">Publish</RadzenButton>
+
+                    @if (_isPublished)
+                    {
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Submit" Click="@(()=> Submit = "Unpublish")">Unpublish</RadzenButton>
+                    }
+                    @if (!_isPublished)
+                    {
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Click="@(()=> Submit = "Publish")">Publish</RadzenButton>
+                    }
+
                 </RadzenStack>
 
             </div>
@@ -98,6 +107,8 @@
 @code {
     private bool _formInvalid;
 
+    private bool _isPublished = false;
+
     private EditContext _editContext;
 
     [SupplyParameterFromForm]
@@ -127,6 +138,8 @@
         await base.OnInitializedAsync();
 
         var result = await Mediator.Send(new GetPageDetailsRequest(Id), default);
+
+        _isPublished = result.Published;
 
         Title = result.Title;
 
@@ -167,11 +180,32 @@
 
         var properties = new List<KeyValuePair<Guid, string>>();
 
+        bool unpublish = (Submit == "Unpublish");
+
         bool publish = (Submit == "Publish");
 
-        var result = await Mediator.Send(new UpdatePageCommand(InputModel.Title, InputModel.Description, InputModel.Parent.Value, publish, Id, content, properties), default);
+        var result = await Mediator.Send(new UpdatePageCommand(InputModel.Title, InputModel.Description, InputModel.Parent.Value, unpublish, publish, Id, content, properties), default);
 
-        _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+        if (result.IsSuccess)
+        {
+            _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+
+            if (publish)
+            {
+                _isPublished = true;
+            }
+
+            if (unpublish)
+            {
+                _isPublished = false;
+            }
+        }
+
+        if (!result.IsSuccess)
+        {
+            _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Somerthing appears to have gone wrong, please check all fields and try again." });
+        }
+
 
     }
 
