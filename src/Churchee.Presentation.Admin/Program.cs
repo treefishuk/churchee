@@ -144,7 +144,16 @@ namespace Churchee.Presentation.Admin
 
             app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = (context) =>
+                {
+                    context.Context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+                    context.Context.Response.Headers.Append("Permissions-Policy", "accelerometer=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(self), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(), gamepad=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), unload=()");
+                }
+            });
+
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
