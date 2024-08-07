@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
@@ -19,16 +18,14 @@ namespace System
 
         public static string ToSentence(this string variableName)
         {
-            var builder = new StringBuilder();
-
             char[] chars = variableName.ToCharArray();
 
-            return new string(chars.SelectMany((c, i) => i != 0 && char.IsUpper(c) && !char.IsUpper(chars[i - 1]) ? new char[] { ' ', c } : new char[] { c }).ToArray());
+            return new string(chars.SelectMany((c, i) => i != 0 && char.IsUpper(c) && !char.IsUpper(chars[i - 1]) ? [' ', c] : new char[] { c }).ToArray());
         }
 
         public static string ToCamelCase(this string str)
         {
-            if(str.Contains(' '))
+            if (str.Contains(' '))
             {
                 str = str.ToPascalCase();
             }
