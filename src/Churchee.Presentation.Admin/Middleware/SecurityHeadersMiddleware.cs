@@ -39,11 +39,11 @@ public class SecurityHeadersMiddleware
         {
             string csp = "base-uri 'self'; " +
                        "default-src 'self'; " +
-                       "img-src data: https:; " +
+                       "img-src 'self'; " +
                        "object-src 'none'; " +
                        "script-src 'self'; " +
-                       "style-src 'self' fonts.googleapis.com;" +
-                       "font-src 'self' fonts.gstatic.com; " +
+                       "style-src 'self';" +
+                       "font-src 'self'; " +
                        "frame-ancestors 'none'; " +
                        "upgrade-insecure-requests; ";
 
