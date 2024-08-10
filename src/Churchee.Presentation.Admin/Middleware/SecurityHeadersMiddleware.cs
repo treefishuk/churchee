@@ -18,7 +18,13 @@ public class SecurityHeadersMiddleware
 
         context.Response.Headers.Append("X-Frame-Options", "DENY");
         context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.Append("X-Permitted-Cross-Domain-Policies", "none");
         context.Response.Headers.Append("Permissions-Policy", "accelerometer=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(self), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(), gamepad=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), unload=()");
+        context.Response.Headers.Append("Referrer-Policy", "no-referrer");
+        context.Response.Headers.Append("Cross-Origin-Embedder-Policy", "require-corp");
+        context.Response.Headers.Append("Cross-Origin-Opener-Policy", "same-origin");
+        context.Response.Headers.Append("Cross-Origin-Resource-Policy", "same-origin");
+
 
         if (isAdmin)
         {
