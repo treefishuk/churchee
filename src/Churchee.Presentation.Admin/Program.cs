@@ -11,12 +11,10 @@ using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
 using Churchee.Module.Tenancy.Infrastructure;
 using Churchee.Module.UI.Models;
-using Churchee.Presentation.Admin.Filters;
 using Churchee.Presentation.Admin.PipelineBehavoirs;
 using Churchee.Presentation.Admin.Registrations;
 using FluentValidation;
 using Hangfire;
-using Hangfire.SqlServer;
 using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
@@ -100,39 +98,13 @@ namespace Churchee.Presentation.Admin
                 });
             }
 
-
-            builder.Services.AddHangfire(configuration => configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .CreateDatabaseIfNotExists(builder.Configuration.GetConnectionString("HangfireConnection"))
-                .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
-                {
-                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                    QueuePollInterval = TimeSpan.Zero,
-                    UseRecommendedIsolationLevel = true,
-                    DisableGlobalLocks = true,
-                }));
-
-
-            builder.Services.AddHangfireServer();
-
-
             var app = builder.Build();
 
             app.UseExceptionHandler("/Error");
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseHangfireDashboard("/hangfire", new DashboardOptions
-                {
-                    Authorization = new[] { new HangfireAuthFilter() }
-                });
-            }
-            else
+            if (!app.Environment.IsDevelopment())
             {
                 app.UseHsts();
             }
@@ -167,10 +139,7 @@ namespace Churchee.Presentation.Admin
 
             app.MapRazorPages();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHangfireDashboard();
-            });
+            app.UseChurcheeHangfireDashboard();
 
             app.Run();
         }

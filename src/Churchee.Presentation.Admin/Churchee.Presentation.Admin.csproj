@@ -33,6 +33,7 @@
     <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
     <ProjectReference Include="..\Churchee.Module.Events\Churchee.Module.Events.csproj" />
     <ProjectReference Include="..\Churchee.Module.Facebook.Events\Churchee.Module.Facebook.Events.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Hangfire\Churchee.Module.Hangfire.csproj" />
     <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
     <ProjectReference Include="..\Churchee.Module.Podcasts.Anchor\Churchee.Module.Podcasts.Anchor.csproj" />
     <ProjectReference Include="..\Churchee.Module.Podcasts\Churchee.Module.Podcasts.csproj" />
