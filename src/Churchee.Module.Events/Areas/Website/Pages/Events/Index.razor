@@ -20,13 +20,11 @@
 </SectionContent>
 
 
-<Grid @ref="dataGrid" TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" ImagePrefix="@(imagePrefix)" OnDelete="OnDelete"></Grid>
+<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" ImagePrefix="@(imagePrefix)" OnDelete="OnDelete"></Grid>
 
 @code {
 
     string imagePrefix = "";
-
-    Grid<GetListingQueryResponseItem> dataGrid;
 
     [Inject]
     private NotificationService _notificationService { get; set; } = default!;
@@ -36,8 +34,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         imagePrefix = await _mediator.Send(new GetCDNPathQuery());
     }
 
@@ -76,19 +72,19 @@
 
         }
 
-    var result = await _mediator.Send(new GetListingQuery(
-                skip: args?.Skip ?? 0,
-                take: args?.Top ?? 20,
-                searchText: args?.Filter ?? string.Empty,
-                orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "CreatedDate desc" : args?.OrderBy), default);
+        var result = await _mediator.Send(new GetListingQuery(
+                    skip: args?.Skip ?? 0,
+                    take: args?.Top ?? 20,
+                    searchText: args?.Filter ?? string.Empty,
+                    orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "CreatedDate desc" : args?.OrderBy), default);
 
-    // Important!!! Make sure the Count property of RadzenDataGrid is set.
-    count = result.RecordsTotal;
+        // Important!!! Make sure the Count property of RadzenDataGrid is set.
+        count = result.RecordsTotal;
 
-    // Perform paging via Skip and Take.
-    listingData = result.Data;
+        // Perform paging via Skip and Take.
+        listingData = result.Data;
 
-    isLoading = false;
+        isLoading = false;
     }
 
 }
