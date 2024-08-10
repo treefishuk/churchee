@@ -12,7 +12,7 @@ namespace Churchee.Module.Podcasts.Entities
             ThumbnailUrl = string.Empty;
         }
 
-        public Podcast(Guid applicationTenantId, string audioUri, DateTime publishedDate, string sourceName, string sourceId, string title, string description, string imageUrl, string thumbnailUrl, string podcastsUrl)
+        public Podcast(Guid applicationTenantId, string audioUri, DateTime publishedDate, string sourceName, string sourceId, string title, string description, string imageUrl, string thumbnailUrl, string podcastsUrl, Guid podcastDetailPageTypeId)
             : base(applicationTenantId, sourceName, title, title.ToURL(), description)
         {
             AudioUri = audioUri;
@@ -21,7 +21,7 @@ namespace Churchee.Module.Podcasts.Entities
             ImageUrl = imageUrl;
             ThumbnailUrl = thumbnailUrl;
             IsSystem = true;
-            PageTypeId = Guid.Parse("f88412e5-9647-4232-8389-4edf685ecf4e");
+            PageTypeId = podcastDetailPageTypeId;
             Url = $"/{podcastsUrl.ToLowerInvariant()}/{title.ToURL()}";
             SourceName = sourceName;
             SourceId = sourceId;

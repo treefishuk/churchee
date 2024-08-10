@@ -23,14 +23,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         imagePrefix = await Mediator.Send(new GetCDNPathQuery());
     }
 
     int count;
 
-    IEnumerable<GetListingQueryResponseItem> listingData = Enumerable.Empty<GetListingQueryResponseItem>();
+    IEnumerable<GetListingQueryResponseItem> listingData;
 
     bool isLoading = false;
 

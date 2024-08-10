@@ -2,10 +2,15 @@
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
-using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnablePodcasts;
 using Churchee.Module.Podcasts.Entities;
+using Churchee.Module.Podcasts.Helpers;
+using Churchee.Module.Podcasts.Spotify.Exceptions;
+using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnablePodcasts;
+using Churchee.Module.Podcasts.Spotify.Specifications;
+using Churchee.Module.Site.Entities;
 using Hangfire;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -91,6 +96,13 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
                     var thumbnailImage = _imageProcessor.ResizeImage(originalImgStream, 50, 0);
 
+                    Guid podcastDetailPageTypeId = await _dataStore.GetRepository<PageType>().ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.PodcastDetailPageTypeId, applicationTenantId)).Select(s => s.Id).FirstOrDefaultAsync();
+
+                    if (podcastDetailPageTypeId == Guid.Empty)
+                    {
+                        throw new PodcastSyncException("podcastDetailPageTypeId is Empty");
+                    }
+
                     await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, false, default);
 
                     podcasts.Add(new Podcast(applicationTenantId: applicationTenantId,
@@ -102,7 +114,8 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
                         description: item.description,
                         imageUrl: $"/img/audio/{fileName}",
                         thumbnailUrl: $"/img/audio/{thumbFileName}",
-                        podcastsUrl: podcastsUrl));
+                        podcastsUrl: podcastsUrl,
+                        podcastDetailPageTypeId: podcastDetailPageTypeId));
                 }
             }
 
