@@ -1,8 +1,13 @@
 ﻿.logo {
-    font-family: 'Pacifico', cursive;
-    font-size: 1.6em;
-    padding: 0 8rem 0 0.5rem;
+    padding: 0 7.3rem 0 0.5rem;
     display: flex;
     align-self: center;
     display: flex;
 }
+
+    .logo img {
+        height: 1.7rem;
+        margin-bottom: 0.1rem;
+        -webkit-filter: invert(1);
+        filter: invert(1);
+    }
