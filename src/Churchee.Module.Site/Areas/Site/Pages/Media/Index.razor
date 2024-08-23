@@ -64,8 +64,11 @@
                         <div class="rz-image-wrap" style="height:100%;">
                             @if (item.MediaUrl.StartsWith("https"))
                             {
-
                                 <img src="@(item.MediaUrl)" alt="@(item.Title)" crossorigin="" style="object-fit: cover; height:100%;" />
+                            }
+                            else if (item.MediaUrl.StartsWith("/_content"))
+                            {
+                                <img src="@($"{item.MediaUrl}")" alt="@(item.Title)" crossorigin="" style="object-fit: cover; height:100%;" />
                             }
                             else
                             {

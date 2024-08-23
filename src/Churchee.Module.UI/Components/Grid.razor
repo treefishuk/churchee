@@ -92,7 +92,31 @@
             {
                 <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
                     <Template Context="data">
-                        <img src="@($"{ImagePrefix}{prop.GetValue(data)}")" crossorigin=""/>
+
+                        @{
+
+                            string imageUrl = string.Empty;
+
+                            var imgObj = prop.GetValue(data);
+
+                            if (imgObj != null)
+                            {
+                                imageUrl = imgObj.ToString();
+                            }
+
+                            if (!string.IsNullOrEmpty(imageUrl) && imageUrl.StartsWith("https"))
+                            {
+                                <img src="@(imageUrl)" crossorigin="" />
+                            }
+
+                            if (!string.IsNullOrEmpty(imageUrl) && !imageUrl.StartsWith("https"))
+                            {
+                                <img src="@($"{ImagePrefix}{imageUrl}")" crossorigin="" />
+
+                            }
+                        }
+
+
                     </Template>
                 </RadzenDataGridColumn>
             }
