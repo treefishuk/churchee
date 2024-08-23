@@ -8,7 +8,14 @@
             <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
             <Logo />
             <Breadcrumb>
+                <ErrorBoundary>
+                    <ChildContent>
                 <SectionOutlet SectionName="top-bar" />
+                    </ChildContent>
+                    <ErrorContent>
+                        ...
+                    </ErrorContent>
+                </ErrorBoundary>
             </Breadcrumb>
             
         <ProfileMenu></ProfileMenu>
