@@ -6,43 +6,38 @@
 
 <PageName Name="Email"></PageName>
 
-<h3>ManageEmail</h3>
-
 ﻿@if (_user == null)
 {
     <div>Loading...</div>
 }
 else
 {
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4">
+     <RadzenRow Gap="2rem" RowGap="2rem" class="rz-m-0 rz-m-md-12">
+
+        <RadzenColumn Size="12" SizeMD="4">
                     <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
                         <DataAnnotationsValidator />
-                        <div class="form-floating mb-3">
-                            <InputText @bind-Value="_user.Email" class="form-control" id="floatingCurrentEmail" placeholder="CurrentEmail" disabled />
-                            <label for="floatingCurrentEmail">CurrentEmail</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <InputText @bind-Value="_model.NewEmail" class="form-control" id="floatingNewEmail" placeholder="NewEmail" />
-                            <label for="floatingNewEmail">NewEmail</label>
-                            <ValidationMessage For="@(() => _model.NewEmail)" />
-                        </div>
-                        <div class="d-grid mb-2">
-                            <button disabled="@_isLoading" class="btn btn-lg btn-primary btn-login fw-bold text-uppercase">
-                                Save
-                                @if (_isLoading)
-                                {
-                                    <span class="spinner-border spinner-border-sm mr-1"></span>
-                                }
-                            </button>
-                        </div>
+
+                        <RadzenStack>
+
+                            <RadzenFormField Text="New Email">
+                                <ChildContent>
+                                    <RadzenTextBox @bind-Value="_model.NewEmail" id="floatingCurrentEmail" />
+                                </ChildContent>
+                                <Helper>
+                                    <ValidationMessage For="@(() => _model.NewEmail)" />
+                                </Helper>
+                            </RadzenFormField>
+
+                            <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Disabled="@_isLoading" />
+
+                        </RadzenStack>
+
                     </EditForm>
-                </div>
-            </div>
-        </div>
-    </div>
+        </RadzenColumn>
+
+    </RadzenRow>
+
 }
 
 
