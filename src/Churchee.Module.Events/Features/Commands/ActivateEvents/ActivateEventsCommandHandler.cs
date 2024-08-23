@@ -41,7 +41,9 @@ namespace Churchee.Module.Events.Features.Commands
         {
             var pageRepo = _dataStore.GetRepository<Page>();
 
-            if (!pageRepo.GetQueryable().Any(a => a.Url == "/events"))
+            var alreadyExists = pageRepo.AnyWithFiltersDisabled(w => w.PageType.SystemKey == PageTypes.EventListingPageTypeId && w.ApplicationTenantId == request.ApplicationTenantId);
+
+            if (!alreadyExists)
             {
                 var newListingPage = new Page(request.ApplicationTenantId, "Events", "/events", $"Upcomging Events for {tenant.Name}", eventListingPageTypeId, null, false);
 

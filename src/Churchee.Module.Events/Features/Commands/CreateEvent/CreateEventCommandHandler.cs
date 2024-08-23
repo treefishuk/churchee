@@ -3,6 +3,7 @@ using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
+using Churchee.Module.Events.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Site.Specifications;
@@ -37,10 +38,24 @@ namespace Churchee.Module.Events.Features.Commands
                 .Select(s => s.Id)
                 .FirstOrDefault();
 
+            string parentSlug = "/events";
+            Guid? parentId = null;
+
+            var parentPage = _dataStore.GetRepository<Page>().ApplySpecification(new EventListingPageSpecification()).FirstOrDefault();
+
+            if (parentPage != null)
+            {
+
+                parentSlug = parentPage.Url;
+                parentId = parentPage.Id;
+            }
+
             var repo = _dataStore.GetRepository<Event>();
 
             var newEvent = new Event(
                 applicationTenantId: applicationTenantId,
+                parentId: parentId,
+                parentSlug: parentSlug,
                 pageTypeId: pageTypeId,
                 sourceName: "Churchee",
                 sourceId: "N/A",

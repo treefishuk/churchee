@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.Module.Events.Specifications;
 using Churchee.Module.Facebook.Events.API;
 using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Facebook.Events.Specifications;
@@ -115,8 +116,22 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
                     continue;
                 }
 
+                string parentSlug = "/events";
+                Guid? parentId = null;
+
+                var parentPage = _dataStore.GetRepository<Page>().ApplySpecification(new EventListingPageSpecification()).FirstOrDefault();
+
+                if (parentPage != null)
+                {
+
+                    parentSlug = parentPage.Url;
+                    parentId = parentPage.Id;
+                }
+
                 var newEvent = new Event(applicationTenantId,
                                          pageTypeId: pageTypeId,
+                                         parentId: parentId,
+                                         parentSlug: parentSlug,
                                          sourceName: "Facebook",
                                          sourceId: item.Id,
                                          title: item.Name ?? "",
