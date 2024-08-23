@@ -29,11 +29,11 @@ namespace Churchee.Module.Site.Registration
                 {
                     new MenuItem("Website", "/management/pages", "devices")
                     .AddChild(new MenuItem("Pages", "/management/pages", "web"))
-                    .AddChild(new MenuItem("Page Types", "/management/pagetypes", "view_quilt", 1, "developer"))
+                    .AddChild(new MenuItem("Page Types", "/management/pagetypes", "view_quilt", 1, "Developer"))
                     .AddChild(new MenuItem("Feed", "/management/feed", "article"))
                     .AddChild(new MenuItem("Media", "/management/media", "image"))
-                    .AddChild(new MenuItem("Templates", "/management/templates", "code", 1, "developer"))
-                    .AddChild(new MenuItem("Styles", "/management/styles", "data_object", 1, "developer"))
+                    .AddChild(new MenuItem("Templates", "/management/templates", "code", 1, "Developer"))
+                    .AddChild(new MenuItem("Styles", "/management/styles", "data_object", 1, "Developer"))
                     .AddChild(new MenuItem("Podcasts", "/management/podcasts", "graphic_eq"))
                     .AddChild(new MenuItem("Events", "/management/events", "event"))
 

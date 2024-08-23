@@ -55,11 +55,6 @@ namespace Churchee.Data.EntityFramework.Extensions
 
                 string colTypeNormalized = colType.ToUpperInvariant();
 
-                if (colTypeNormalized == "NVARCHAR(MAX)")
-                {
-                    bool test = true;
-                }
-
                 if (property.GetMaxLength() == null && colTypeNormalized != "NVARCHAR(MAX)")
                 {
                     property.SetMaxLength(length);

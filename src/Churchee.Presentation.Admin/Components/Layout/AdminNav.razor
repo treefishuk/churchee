@@ -3,7 +3,7 @@
 @using Churchee.Common.Extensibility;
 @using Radzen.Blazor
 
-@foreach (var item in menuItems)
+@foreach (var item in menuItems.Where(w => w.Children.Any(a => a.RequiredRole == string.Empty || _currentUser.HasRole(a.RequiredRole))))
 {
     <RadzenPanelMenuItem Text="@item.Name" Icon="@item.Icon">
 

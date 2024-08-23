@@ -20,6 +20,11 @@ namespace Churchee.Module.Site.Features.Styles.Queries
         {
             var css = await _storage.GetRepository<Css>().GetQueryable().FirstOrDefaultAsync();
 
+            if (css == null)
+            {
+                return string.Empty;
+            }
+
             return css.Styles;
         }
     }
