@@ -1,14 +1,13 @@
 ﻿using Ardalis.Specification;
-using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Helpers;
+using Churchee.Module.Events.Entities;
 
 namespace Churchee.Module.Events.Specifications
 {
-    public class EventListingPageSpecification : Specification<Page>
+    internal class EventByIdIncludingDatesSpecification : Specification<Event>
     {
-        public EventListingPageSpecification()
+        public EventByIdIncludingDatesSpecification(Guid eventId)
         {
-            Query.Where(e => e.PageType.SystemKey == PageTypes.EventListingPageTypeId);
+            Query.Include(e => e.EventDates).Where(x => x.Id == eventId);
         }
     }
 }
