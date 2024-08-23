@@ -92,7 +92,7 @@
             {
                 <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
                     <Template Context="data">
-                        <RadzenImage Path="@(ImagePrefix + prop.GetValue(data).ToString())" />
+                        <img src="@($"{ImagePrefix}{prop.GetValue(data)}")" crossorigin=""/>
                     </Template>
                 </RadzenDataGridColumn>
             }

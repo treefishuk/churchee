@@ -64,13 +64,12 @@
                         <div class="rz-image-wrap" style="height:100%;">
                             @if (item.MediaUrl.StartsWith("https"))
                             {
-                                <RadzenImage Path="@(item.MediaUrl)" AlternateText="@(item.Title)" Style="object-fit: cover; height:100%;" />
+
+                                <img src="@(item.MediaUrl)" alt="@(item.Title)" crossorigin="" style="object-fit: cover; height:100%;" />
                             }
                             else
                             {
-                                string imagePath = $"{imagePrefix}{item.MediaUrl}";
-
-                                <RadzenImage Path="@imagePath" AlternateText="@(item.Title)" Style="object-fit: cover; height:100%;" />
+                                <img src="@($"{imagePrefix}{item.MediaUrl}")" alt="@(item.Title)" crossorigin="" style="object-fit: cover; height:100%;" />
                             }
 
                         </div>
