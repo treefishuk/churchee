@@ -41,10 +41,8 @@
                     {
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Submit" Click="@(()=> Submit = "Unpublish")">Unpublish</RadzenButton>
                     }
-                    @if (!_isPublished)
-                    {
-                        <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Click="@(()=> Submit = "Publish")">Publish</RadzenButton>
-                    }
+
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Click="@(()=> Submit = "Publish")">Publish</RadzenButton>
 
                 </RadzenStack>
 
