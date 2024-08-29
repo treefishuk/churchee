@@ -35,7 +35,6 @@ namespace Churchee.Module.Identity
 
                 await _userManager.ConfirmEmailAsync(user, token);
 
-                await _userManager.AddClaimAsync(user, new Claim("TenantId", Guid.Empty.ToString()));
                 await _userManager.AddClaimAsync(user, new Claim("ActiveTenantId", Guid.Empty.ToString()));
                 await _userManager.AddClaimAsync(user, new Claim("ActiveTenantName", "Default"));
 
