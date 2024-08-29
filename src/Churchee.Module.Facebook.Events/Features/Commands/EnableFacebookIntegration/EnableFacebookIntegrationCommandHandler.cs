@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Churchee.Common.Abstractions.Auth;
+﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Exceptions;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
@@ -8,6 +7,7 @@ using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Tokens.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace Churchee.Module.Facebook.Events.Features.Commands
 {

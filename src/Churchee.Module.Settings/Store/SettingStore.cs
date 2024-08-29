@@ -54,6 +54,11 @@ namespace Churchee.Module.Settings.Store
                 .Where(w => w.Id == id && w.ApplicationTenantId == applicationTenantId)
                 .FirstOrDefaultAsync();
 
+            if (setting == null)
+            {
+                return;
+            }
+
             _dataStore.GetRepository<Setting>().PermenantDelete(setting);
 
             await _dataStore.SaveChangesAsync();

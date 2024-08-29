@@ -96,7 +96,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             var repo = _dataStore.GetRepository<Event>();
 
-            Guid pageTypeId = _dataStore.GetRepository<PageType>().ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId)).Select(s => s.Id).FirstOrDefault();
+            Guid pageTypeId = _dataStore.GetRepository<PageType>().ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId)).Select(s => s.Id).FirstOrDefault();
 
             foreach (string eventId in eventIds)
             {
@@ -117,13 +117,13 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
                 }
 
                 string parentSlug = "/events";
+
                 Guid? parentId = null;
 
                 var parentPage = _dataStore.GetRepository<Page>().ApplySpecification(new EventListingPageSpecification()).FirstOrDefault();
 
                 if (parentPage != null)
                 {
-
                     parentSlug = parentPage.Url;
                     parentId = parentPage.Id;
                 }
@@ -161,7 +161,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
         private async Task<List<FacebookFeedResponseItem>> GetFeedResult(HttpClient client, string pageId, string accessToken)
         {
-            string feedJsonString = await client.GetStringAsync($"{pageId}/feed?access_token={accessToken}");
+            string feedJsonString = await client.GetStringAsync($"{pageId}/feed?access_token={accessToken}&limit=100");
 
             if (string.IsNullOrEmpty(feedJsonString))
             {

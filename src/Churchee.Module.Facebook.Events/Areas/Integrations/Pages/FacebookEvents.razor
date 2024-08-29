@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Sections
 @using MediatR
 @using Churchee.Module.Facebook.Events.Areas.Integrations.Models
+@using Churchee.Module.UI.Components
 @using Radzen.Blazor
 @using Radzen
 @using Churchee.Common.Abstractions.Auth
@@ -21,30 +22,19 @@
 
 @if (!Linked)
 {
-        <SectionContent SectionName="footer-bar">
-            <input type="submit" class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default" name="submit" form="enableFacebookForm" value="Link With Facebook" />
-        </SectionContent>
-
-        <EditForm Model=@InputModel OnValidSubmit=@(async () => await ValidSubmitForm("Enable")) FormName="enableFacebookForm" id="enableFacebookForm">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-                <RadzenFormField Text="Facebook Page ID*" Style="width: 100%;">
-                    <ChildContent>
-                        <RadzenTextBox @bind-Value="@InputModel.FacebookPageId" Style="width: 100%;" />
-                    </ChildContent>
-                    <Helper>
-                    </Helper>
-                </RadzenFormField>
-    </EditForm>
+    <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm("Enable"))>
+    </Form>
 }
 else
 {
-    <SectionContent SectionName="footer-bar">
-        <RadzenButton Click=@(args => SyncWithFacebook()) Icon="sync" ButtonStyle="ButtonStyle.Primary" />
-    </SectionContent>
 
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+        <h1>Facebook Events Sync is set up!</h1>
 
+        <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+        <RadzenButton Click=@(args => SyncWithFacebook()) Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" />
+
+    </RadzenStack>
 
 }
 
@@ -55,6 +45,8 @@ else
     [SupplyParameterFromForm]
     public InputModel InputModel { get; set; } = new();
 
+    [Inject]
+    private NotificationService _notificationService { get; set; }
 
     public bool Linked { get; set; } = false;
 
@@ -90,21 +82,40 @@ else
             }
 
         }
-
-
-        Logger.LogDebug("wacka");
     }
 
     private async Task SyncWithFacebook()
     {
         var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await _currentUser.GetApplicationTenantId()));
 
-        if (createEventsResult.IsSuccess)
+        if (!createEventsResult.IsSuccess)
         {
-            await Mediator.Send(new SyncFacebookEventsToEventsTableCommand());
+            return;
         }
 
-        Logger.LogDebug("wacka");
+        var syncResponse = await Mediator.Send(new SyncFacebookEventsToEventsTableCommand());
+
+        if (!syncResponse.IsSuccess)
+        {
+            _notificationService.Notify(NotificationSeverity.Success, "Sync Completed");
+        }
+    }
+
+
+    private async Task DisableSync()
+    {
+        var result = await Mediator.Send(new DisableFacebookSyncCommand());
+
+        if (result.IsSuccess)
+        {
+            Linked = false;
+
+            _notificationService.Notify(NotificationSeverity.Success, "Integration Disabled");
+
+            InputModel = new InputModel();
+
+            StateHasChanged();
+        }
     }
 
 }

@@ -5,10 +5,9 @@ namespace Churchee.Module.Site.Specifications
 {
     public class PageTypeFromSystemKeySpecification : Specification<PageType>
     {
-        public PageTypeFromSystemKeySpecification(Guid systemKey)
+        public PageTypeFromSystemKeySpecification(Guid systemKey, Guid applicationTenantId)
         {
-            Query.Where(x => x.SystemKey == systemKey);
-
+            Query.IgnoreQueryFilters().Where(x => x.SystemKey == systemKey && x.ApplicationTenantId == applicationTenantId);
         }
     }
 }

@@ -11,9 +11,8 @@ namespace Churchee.Module.Settings.Registration
             modelbuilder.Entity<Setting>(etb =>
             {
                 etb.ToTable("Settings");
-                etb.HasKey(e => e.Id);
+                etb.HasKey(e => new { e.Id, e.ApplicationTenantId });
                 etb.Property(e => e.Id);
-
             });
 
         }

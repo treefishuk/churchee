@@ -34,7 +34,7 @@ namespace Churchee.Module.Events.Features.Commands
             string imagePath = await CreateImageAndReturnPath(request, applicationTenantId, cancellationToken);
 
             Guid pageTypeId = _dataStore.GetRepository<PageType>()
-                .ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId))
+                .ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId))
                 .Select(s => s.Id)
                 .FirstOrDefault();
 
