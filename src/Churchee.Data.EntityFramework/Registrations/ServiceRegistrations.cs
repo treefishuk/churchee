@@ -14,7 +14,13 @@ namespace Churchee.Data.EntityFramework.Registrations
         public int Priority => 5000;
         public void Execute(IServiceCollection serviceCollection, IServiceProvider serviceProvider)
         {
-            serviceCollection.AddTransient<DbContext, ApplicationDbContext>();
+
+            string connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
+
+            serviceCollection.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            serviceCollection.AddTransient<DbContext>(c => c.GetService<ApplicationDbContext>());
 
             serviceCollection.AddTransient<IDataStore, EFStorage>();
 

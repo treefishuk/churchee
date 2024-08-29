@@ -30,11 +30,11 @@ namespace Churchee.Module.Hangfire.Registrations
                     DisableGlobalLocks = true,
                 }));
 
+            if (config.GetSection("Hangfire")["IsService"] != "true")
+            {
+                serviceCollection.AddHangfireServer();
 
-            serviceCollection.AddHangfireServer();
-
-            string connectionString = serviceProvider.GetService<IConfiguration>().GetConnectionString("HangfireConnection");
-
+            }
         }
     }
 }

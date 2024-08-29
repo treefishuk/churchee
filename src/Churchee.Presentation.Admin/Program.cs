@@ -1,11 +1,8 @@
-using Churchee.Blobstorage.Providers.Azure;
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Helpers;
-using Churchee.Common.Storage;
 using Churchee.Data.EntityFramework;
-using Churchee.ImageProcessing;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
@@ -19,7 +16,6 @@ using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Radzen;
 
 namespace Churchee.Presentation.Admin
@@ -34,16 +30,9 @@ namespace Churchee.Presentation.Admin
 
             var assemblies = AssemblyResolution.GetModuleAssemblies().Append(typeof(Program).Assembly).ToArray();
 
-            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-
             builder.Services.AddRazorPages();
             builder.Services.AddRadzenComponents();
 
-            //builder.Services.AddTransient<IEmailSender, ChurcheeEmailSender>();
-            builder.Services.AddScoped<IBlobStore, AzureBlobStore>();
-            builder.Services.AddScoped<IImageProcessor, DefaultImageProcessor>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ITenantResolver, ClaimTenantResolver>();

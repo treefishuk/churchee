@@ -37,7 +37,7 @@ namespace Churchee.Data.EntityFramework
 
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
-        public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options, IServiceProvider serviceProvider, IMediator mediator, ITenantResolver tenantResolver, IConfiguration configuration)
+        public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options, IServiceProvider serviceProvider, IMediator mediator, IConfiguration configuration, ITenantResolver tenantResolver = null)
             : base(options)
         {
             _logger = logger;
@@ -74,7 +74,10 @@ namespace Churchee.Data.EntityFramework
                 reg.RegisterEntities(builder);
             }
 
-            builder.ApplyGlobalFilters<ITenantedEntity>(a => a.ApplicationTenantId == _tenantResolver.GetTenantId());
+            if (_tenantResolver != null)
+            {
+                builder.ApplyGlobalFilters<ITenantedEntity>(a => a.ApplicationTenantId == _tenantResolver.GetTenantId());
+            }
 
             builder.ApplyGlobalFilters<IEntity>(a => !a.Deleted);
 
