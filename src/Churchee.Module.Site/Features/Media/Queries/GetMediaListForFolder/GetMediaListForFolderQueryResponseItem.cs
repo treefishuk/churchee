@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Churchee.Module.Site.Features.Media.Queries
+﻿namespace Churchee.Module.Site.Features.Media.Queries
 {
     public class GetMediaListForFolderQueryResponseItem
     {
@@ -29,6 +23,5 @@ namespace Churchee.Module.Site.Features.Media.Queries
         public string MediaUrl { get; set; }
 
         public string LinkUrl { get; set; }
-
     }
 }

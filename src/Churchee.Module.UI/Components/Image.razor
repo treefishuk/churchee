@@ -1,0 +1,59 @@
+﻿@using Churchee.Module.UI.Models
+@using Radzen
+@using Radzen.Blazor
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components;
+
+
+    @if (isLoading)
+    {
+        <RadzenProgressBarCircular Style="width:100%" ProgressBarStyle="ProgressBarStyle.Primary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"></RadzenProgressBarCircular>
+    }
+
+    <img src="@FullImageUrl" @onload="OnImageLoad" alt="@AltText" style="display:@(isLoading ? "none" : "block"); width:100%; height:auto; @Styles" crossorigin />
+
+
+@code {
+
+    private bool isLoading = true;
+
+    [Parameter]
+    public string Styles { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Prefix { get; set; } = string.Empty;
+
+    [Parameter]
+    public string AltText { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ImageUrl { get; set; } = string.Empty;
+
+
+    private string FullImageUrl 
+    {
+        get
+        {
+            
+            if (ImageUrl.StartsWith("https"))
+            {
+                return ImageUrl;
+            }
+
+            if (ImageUrl.StartsWith("/_content"))
+            {
+                return ImageUrl;
+            }
+
+            return Prefix + ImageUrl;
+
+        }
+
+    }
+
+    private void OnImageLoad()
+    {
+        isLoading = false;
+    }
+}

@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Logging
+@using Microsoft.JSInterop
 @using Radzen.Blazor
 @using Radzen
 @using Churchee.Module.UI.Components
@@ -15,85 +16,68 @@
 <PageName Name="Media"></PageName>
 
 <SectionContent SectionName="top-bar">
+
     <div class="rz-breadcrumb-item">
-        <a class="rz-button rz-button-sm rz-secondary" href="/management/media/create">Create</a>
+
+        <div class="rz-m-3">
+
+            <RadzenSplitButton Click="@FolderAction"
+                               Text="Folder"
+                               ButtonStyle="ButtonStyle.Info">
+
+                <ChildContent>
+
+                    <RadzenSplitButtonItem Text="Add Folder" Value="Add" />
+
+                    <RadzenSplitButtonItem Text="Delete Folder" Value="Delete" />
+
+                    <RadzenSplitButtonItem Text="Clear Selection Folder" Value="Clear" />
+
+                </ChildContent>
+
+            </RadzenSplitButton>
+
+        </div>
+
+        <RadzenButton Click=@(args => AddMediaItem()) Text="Add Media Item" ButtonStyle="ButtonStyle.Secondary" bind-dis Disabled=AddMediaDisabled />
     </div>
+
 </SectionContent>
 
-<div class="d-flex" style="height:100%">
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0" AlignItems="AlignItems.Stretch" Style="height:100%;">
+            <RadzenTree @ref="tree" @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 300px; margin-right: 1rem; min-width: 300px; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; border:1px solid #d9d8d8">
+                <RadzenTreeLevel HasChildren=@HasChildren ChildrenProperty="Children" Text="@GetTextForNode" Template="@FolderTemplate" />
+            </RadzenTree>
+            <RadzenDataList AllowVirtualization=@allowVirtualization Style="height:100%; width:100%; overflow:auto;"
+                        WrapItems="true" AllowPaging="@(!allowVirtualization)"
+                        Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 
-    <div class="me-3">
-        <RadzenTree @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 100%; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; min-width: 340px; border:1px solid #d9d8d8">
-            <RadzenTreeLevel HasChildren=@HasChildren ChildrenProperty="Children" Text="@GetTextForNode" Template="@FolderTemplate" />
-        </RadzenTree>
+            <Template Context="item">
 
-    </div>
+            <div style="width:25%; height: 100%; max-width: 25%; min-width: 150px; padding: 0; margin: 0; background: none; border: none;">
 
-    <div>
+                <RadzenCard Style="margin: 5px">
 
+                                <div class="rz-image-wrap" style="width:100%;">
+                                    <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrl)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
+                               </div>
 
-    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap" class="m-2">
-
-        <RadzenSplitButton Click="(args) => FolderAction(args)"
-                           Text="Folder"
-                           ButtonStyle="ButtonStyle.Info">
-
-            <ChildContent>
-
-                <RadzenSplitButtonItem Text="Add Folder" Value="Add" />
-
-                <RadzenSplitButtonItem Text="Delete Folder" Value="Delete" />
-
-            </ChildContent>
-
-        </RadzenSplitButton>
-
-         <RadzenButton Click=@(args => AddMediaItem()) Text="Add Media Item" ButtonStyle="ButtonStyle.Primary" bind-dis Disabled=AddMediaDisabled />
-
-     </RadzenStack>
+                                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start" Style="padding: 1rem 0 0;">
+                                    <RadzenButton Click=@(args => OnEdit(item.Id)) Icon="edit" ButtonStyle="ButtonStyle.Primary" />
+                                    <RadzenButton Click=@(args => OnDelete(item.Id)) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                                    <RadzenButton Click=@(args => OpenImage(item.MediaUrl, imagePrefix)) Icon="open_in_new" ButtonStyle="ButtonStyle.Secondary" />
+                                </RadzenStack>
 
 
-<RadzenDataList AllowVirtualization=@allowVirtualization Style="@(allowVirtualization ? "height:400px;overflow:auto;" : "")"
-                WrapItems="@(!allowVirtualization)" AllowPaging="@(!allowVirtualization)"
-                Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
-    <Template Context="item">
-        <RadzenCard Style="width: 25%; padding: 0;">
+                </RadzenCard>
 
-                    <RadzenStack Orientation="Orientation.Vertical" Gap="4px" AlignItems="AlignItems.Stretch" Style="height:100%;">
+            </div>
 
-                        <div class="rz-image-wrap" style="height:100%;">
-                            @if (item.MediaUrl.StartsWith("https"))
-                            {
-                                <img src="@(item.MediaUrl)" alt="@(item.Title)" crossorigin="" style="object-fit: cover; height:100%;" />
-                            }
-                            else if (item.MediaUrl.StartsWith("/_content"))
-                            {
-                                <img src="@($"{item.MediaUrl}")" alt="@(item.Title)" crossorigin="" style="object-fit: cover; height:100%;" />
-                            }
-                            else
-                            {
-                                <img src="@($"{imagePrefix}{item.MediaUrl}")" alt="@(item.Title)" crossorigin="" style="object-fit: cover; height:100%;" />
-                            }
+            </Template>
+        </RadzenDataList>  
 
-                        </div>
+        </RadzenStack>
 
-                        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start">
-                            <RadzenButton Click=@(args => OnEdit(item.Id)) Icon="edit" ButtonStyle="ButtonStyle.Primary" />
-                            <RadzenButton Click=@(args => OnDelete(item.Id)) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
-                        </RadzenStack>
-
-
-                    </RadzenStack>
-
-
-
-
-        </RadzenCard>
-    </Template>
-</RadzenDataList>
-
-    </div>
-</div>
 
 @code {
 
@@ -111,6 +95,11 @@
 
     [Inject]
     private NotificationService NotificationService { get; set; } = default!;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    private RadzenTree tree;
 
     string NewFolderName = "";
 
@@ -266,11 +255,8 @@
 
     async Task FolderAction(RadzenSplitButtonItem item)
     {
-
-        if (item != null)
+        if (item == null || item.Value == "Add")
         {
-            if (item.Value == "Add")
-            {
                 var result = await DialogService.OpenAsync("Add Folder", ds =>
                 @<RadzenStack Gap="1.5rem">
 
@@ -286,10 +272,13 @@
 
                 </RadzenStack>
     );
-            }
+        }
 
-            //Delete
-
+        if (item != null && item.Value == "Clear")
+        {
+            tree.ClearSelection();
+            activeFolderId = null;
+            activeFolder = null;
         }
 
     }
@@ -303,9 +292,18 @@
     {
         var result = await Mediator.Send(new CreateMediaFolderCommand(activeFolderId, NewFolderName));
 
-        var parentFolder = activeFolder as GetMediaFoldersQueryResponseItem;
+        if (activeFolder != null)
+        {
+            var parentFolder = activeFolder as GetMediaFoldersQueryResponseItem;
 
-        parentFolder.Children = await Mediator.Send(new GetMediaFoldersQuery(parentFolder.Id));
+            parentFolder.Children = await Mediator.Send(new GetMediaFoldersQuery(parentFolder.Id));
+
+            parentFolder.HasChildren = true;
+        }
+        else
+        {
+            Directories = await Mediator.Send(new GetMediaFoldersQuery(null));
+        }
 
         NewFolderName = string.Empty;
 
@@ -315,7 +313,17 @@
 
     }
 
+    private async Task OpenImage(string prefix, string imageUrl)
+    {
+        string fullPath = imageUrl;
 
+        if (!imageUrl.StartsWith("https") && !imageUrl.StartsWith("/_content"))
+        {
+            fullPath = prefix + imageUrl;
+        }
+
+        await JSRuntime.InvokeVoidAsync("open", fullPath, "_blank");
+    }
 }
 
 
