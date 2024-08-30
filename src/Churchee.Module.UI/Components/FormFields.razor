@@ -44,16 +44,23 @@
                 }
                 if (dataType == DataTypes.Upload)
                 {
-                    var upload = (Upload)prop.GetValue(InputModel);
+                    var upload = prop.GetValue(InputModel) as Upload;
 
-                    <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(args => OnFileChange(args, upload)) Error=@(args => OnFileError(args, "FileInput")) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
+                    if(upload != null)
+                    {
+                         <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(args, upload)) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
+                    }
+
                 }
 
                 if (dataType == DataTypes.ImageUpload)
                 {
-                    var upload = (Upload)prop.GetValue(InputModel);
+                    var upload = prop.GetValue(InputModel) as Upload;
 
-                    <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(args => OnFileChange(args, upload)) Error=@(args => OnFileError(args, "FileInput")) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
+                    if(upload != null)
+                    {
+                        <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(args, upload)) Error=@(args => OnFileError(args, "FileInput")) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
+                    }
                 }
 
                 if (dataType == DataTypes.CheckboxList)
@@ -260,9 +267,11 @@
 
     }
 
-    void OnFileChange(string value, Upload upload)
+    async Task OnFileChangeAsync(string value, Upload upload)
     {
         _logger.LogInformation($"{upload} value changed");
+
+        await OnValueChanged.InvokeAsync(null);
     }
 
     Nullable<T> GetParsed<T>(PropertyInfo info, object inputModel) where T: struct

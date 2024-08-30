@@ -44,7 +44,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
                 var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-                string imagePath = $"/img/{folderPath.ToDevName()}{request.Name.ToDevName()}{request.Extention}";
+                string imagePath = $"/img/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.Extention}";
 
                 await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, false, cancellationToken);
 

@@ -5,10 +5,11 @@ namespace Churchee.Module.Site.Features.Media.Commands
 {
     public class UpdateMediaItemCommand : IRequest<CommandResponse>
     {
-        public UpdateMediaItemCommand(Guid id, string name, string extention, string linkUrl, string description, string additionalContent, string base64Image)
+        public UpdateMediaItemCommand(Guid id, string name, string fileName, string extention, string linkUrl, string description, string additionalContent, string base64Image)
         {
             Id = id;
             Name = name;
+            FileName = fileName;
             Extention = extention;
             LinkUrl = linkUrl;
             Description = description;
@@ -19,6 +20,8 @@ namespace Churchee.Module.Site.Features.Media.Commands
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public string FileName { get; set; }
 
         public string Extention { get; set; }
 

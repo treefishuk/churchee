@@ -45,12 +45,12 @@
 </SectionContent>
 
         <RadzenStack Orientation="Orientation.Horizontal" Gap="0" AlignItems="AlignItems.Stretch" Style="height:100%;">
-            <RadzenTree @ref="tree" @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 300px; margin-right: 1rem; min-width: 300px; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; border:1px solid #d9d8d8">
+            <RadzenTree @ref="tree" @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 500px; margin-right: 1rem; min-width: 500px; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; border:1px solid #d9d8d8">
                 <RadzenTreeLevel HasChildren=@HasChildren ChildrenProperty="Children" Text="@GetTextForNode" Template="@FolderTemplate" />
             </RadzenTree>
             <RadzenDataList AllowVirtualization=@allowVirtualization Style="height:100%; width:100%; overflow:auto;"
                         WrapItems="true" AllowPaging="@(!allowVirtualization)"
-                        Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+                        Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="12" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 
             <Template Context="item">
 
@@ -172,7 +172,7 @@
 
     private async Task ValidCreateSubmitForm()
     {
-        var result = await Mediator.Send(new CreateMediaItemCommand(createModel.Name, Path.GetExtension(createModel.File.FileName), createModel.Description, createModel.AdditionalContent, activeFolderId, createModel.File.Value, createModel.LinkUrl));
+        var result = await Mediator.Send(new CreateMediaItemCommand(createModel.Name, Path.GetFileNameWithoutExtension(createModel.File.FileName), Path.GetExtension(createModel.File.FileName), createModel.Description, createModel.AdditionalContent, activeFolderId, createModel.File.Value, createModel.LinkUrl));
 
         if (result.IsSuccess)
         {
@@ -189,7 +189,7 @@
 
     private async Task ValidEditSubmitForm(Guid id)
     {
-        var result = await Mediator.Send(new UpdateMediaItemCommand(id, editModel.Name, Path.GetExtension(editModel.File.FileName), editModel.LinkUrl, editModel.Description, editModel.AdditionalContent, editModel.File.Value));
+        var result = await Mediator.Send(new UpdateMediaItemCommand(id, editModel.Name, Path.GetFileNameWithoutExtension(editModel.File.FileName), Path.GetExtension(editModel.File.FileName), editModel.LinkUrl, editModel.Description, editModel.AdditionalContent, editModel.File.Value));
 
         if (result.IsSuccess)
         {
@@ -199,6 +199,8 @@
 
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Updated" });
         }
+
+        editModel = new EditMediaItemModel();
     }
 
     bool HasChildren(object data)
