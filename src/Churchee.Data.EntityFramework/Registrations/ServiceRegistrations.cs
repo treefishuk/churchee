@@ -18,7 +18,7 @@ namespace Churchee.Data.EntityFramework.Registrations
             string connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
 
             serviceCollection.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString), ServiceLifetime.Transient);
 
             serviceCollection.AddTransient<DbContext>(c => c.GetService<ApplicationDbContext>());
 
