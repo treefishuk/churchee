@@ -59,22 +59,25 @@
 
     private bool IsNotOriginal(string fileName)
     {
-        return fileName.EndsWith("_t") || fileName.EndsWith("_s") || fileName.EndsWith("_m");
+        return fileName.EndsWith("_t") || fileName.EndsWith("_s") || fileName.EndsWith("_m") || fileName.EndsWith("_l");
     }
 
     private void HandleError()
     {
         string fileName = Path.GetFileNameWithoutExtension(ImageUrl);
-
+        string directory = Path.GetDirectoryName(ImageUrl) ?? string.Empty;
         string fileExt = Path.GetExtension(ImageUrl);
 
         if (IsNotOriginal(fileName))
         {
-            ImageUrl = $"{fileName.Substring(0, fileName.Length - 2)}{fileExt}";
+
+            fileName = fileName.Substring(0, fileName.Length - 2);
+
+            ImageUrl = Path.Combine(directory, fileName + fileExt);
 
             return;
         }
 
-        ImageUrl = "/not-found.png";
+        ImageUrl = "/_content/Churchee.Module.UI/img/not-found.png";
     }
 }

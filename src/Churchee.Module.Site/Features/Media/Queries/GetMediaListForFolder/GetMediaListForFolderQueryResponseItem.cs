@@ -22,6 +22,16 @@
 
         public string MediaUrl { get; set; }
 
+        public string MediaUrlSmall
+        {
+            get
+            {
+                var fileName = Path.GetFileNameWithoutExtension(MediaUrl);
+
+                return MediaUrl.Replace(fileName, $"{fileName}_s");
+            }
+        }
+
         public string LinkUrl { get; set; }
     }
 }
