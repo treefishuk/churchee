@@ -32,7 +32,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             string imagePath = $"/img/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.Extention}";
 
-            await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, false, cancellationToken);
+            await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, true, cancellationToken);
 
             var media = new MediaItem(applicationTenantId, request.Name, imagePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl);
 

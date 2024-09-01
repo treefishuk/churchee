@@ -1,4 +1,4 @@
-﻿@page "/management/media"
+﻿Facebook Events@page "/management/media"
 @using Churchee.Module.Site.Features.CDN.Queries
 @using Churchee.Module.Site.Features.Media.Commands
 @using Churchee.Module.Site.Features.Media.Queries
@@ -65,7 +65,7 @@
                                 <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start" Style="padding: 1rem 0 0;">
                                     <RadzenButton Click=@(args => OnEdit(item.Id)) Icon="edit" ButtonStyle="ButtonStyle.Primary" />
                                     <RadzenButton Click=@(args => OnDelete(item.Id)) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
-                                    <RadzenButton Click=@(args => OpenImage(item.MediaUrl, imagePrefix)) Icon="open_in_new" ButtonStyle="ButtonStyle.Secondary" />
+                                    <RadzenButton Click=@(args => OpenImage(imagePrefix, item.MediaUrl)) Icon="open_in_new" ButtonStyle="ButtonStyle.Secondary" />
                                 </RadzenStack>
 
 

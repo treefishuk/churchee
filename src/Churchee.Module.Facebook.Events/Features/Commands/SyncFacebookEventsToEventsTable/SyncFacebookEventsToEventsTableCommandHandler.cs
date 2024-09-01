@@ -185,7 +185,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             await using var stream = await response.Content.ReadAsStreamAsync();
 
-            await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", stream, true, false, cancellationToken);
+            await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", stream, true, true, cancellationToken);
 
             facebookevent.SetImageUrl($"/img/events/{friendlyFileName}");
         }
