@@ -37,7 +37,7 @@ namespace Churchee.Data.EntityFramework
                 options.AddFilter<SerilogLoggerProvider>(null, LogLevel.Trace);
             });
 
-            serviceCollection.AddDbContext<LogsDBContext>(options => options.UseSqlServer(config.GetConnectionString("LogsConnection")));
+            serviceCollection.AddDbContext<LogsDBContext>(options => options.UseSqlServer(config.GetConnectionString("LogsConnection")), ServiceLifetime.Transient);
 
         }
     }
