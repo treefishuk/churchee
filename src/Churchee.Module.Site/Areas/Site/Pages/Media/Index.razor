@@ -181,10 +181,19 @@
             data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
 
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Added" });
+            
+            createModel = new CreateMediaItemModel();
 
         }
 
-        createModel = new CreateMediaItemModel();
+        if (!result.IsSuccess)
+        {
+            foreach (var error in result.Errors)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description, Duration = 5000 });
+            }
+        }
+
     }
 
     private async Task ValidEditSubmitForm(Guid id)
@@ -198,9 +207,19 @@
             data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
 
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Updated" });
+
+            editModel = new EditMediaItemModel();
+
         }
 
-        editModel = new EditMediaItemModel();
+        if (!result.IsSuccess)
+        {
+            foreach(var error in result.Errors)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description });
+            }
+        }
+
     }
 
     bool HasChildren(object data)

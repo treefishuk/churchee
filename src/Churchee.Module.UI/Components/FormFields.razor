@@ -59,7 +59,7 @@
 
                     if(upload != null)
                     {
-                        <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(args, upload)) Error=@(args => OnFileError(args, "FileInput")) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
+                        <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(args, upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
                     }
                 }
 

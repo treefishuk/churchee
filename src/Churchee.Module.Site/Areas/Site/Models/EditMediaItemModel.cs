@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Churchee.Common.ValueTypes;
+﻿using Churchee.Common.ValueTypes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Areas.Site.Models
 {
@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         [Required]
         public string Description { get; set; }
 
-        [DataType(DataTypes.Upload)]
+        [DataType(DataTypes.ImageUpload)]
         public Upload File { get; set; }
 
         [DataType(DataTypes.Url)]
