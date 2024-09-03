@@ -7,14 +7,19 @@ namespace Churchee.Module.Site.Features.Media.Commands
     {
         public UpdateMediaItemCommandValidator()
         {
-            RuleFor(x => x.Extention).Must(ImageValidation.BeAValidImageExtension).WithMessage("only Jpeg and PNG images are supported");
+            RuleFor(x => x.Name).NotEmpty();
+
+            RuleFor(x => x.Description).NotEmpty();
+
+            RuleFor(x => x.Extention)
+                .Must((command, extension) => string.IsNullOrEmpty(extension) || ImageValidation.BeAValidImageExtension(extension)).WithMessage("only Jpeg and PNG images are supported");
 
             RuleFor(x => x.Base64Image)
-                .Must(ImageValidation.BeValidImage)
+                .Must((command, base64Image) => string.IsNullOrEmpty(base64Image) || ImageValidation.BeValidImage(base64Image))
                 .WithMessage("Uploaded file doesn't appear to be an image.");
 
             RuleFor(x => x.Base64Image)
-                .Must((image, base64Image) => ImageValidation.BeExpectedFormat(base64Image, image.Extention))
+                .Must((command, base64Image) => string.IsNullOrEmpty(base64Image) || ImageValidation.BeExpectedFormat(base64Image, command.Extention))
                 .WithMessage("File extention does not match image format");
         }
 
