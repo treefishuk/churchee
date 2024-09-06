@@ -11,6 +11,6 @@ namespace Churchee.Common.Abstractions.Utilities
         /// <param name="width">Use 0 to keep aspect raitio relative to height</param>
         /// <param name="height">Use 0 to keep aspect raitio relative to height</param>
         /// <returns>Resized Image Stream</returns>
-        Stream ResizeImage(Stream stream, int width, int height);
+        Stream ResizeImage(Stream stream, int width, int height, string fileType);
     }
 }

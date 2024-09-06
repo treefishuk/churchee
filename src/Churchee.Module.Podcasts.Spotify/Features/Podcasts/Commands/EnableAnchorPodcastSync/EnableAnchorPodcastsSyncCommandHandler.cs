@@ -80,11 +80,14 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
                 if (!alreadyExists)
                 {
+
+                    string ext = Path.GetExtension(item.image.href);
+
                     using var httpClient = new HttpClient();
 
                     var imageStream = await httpClient.GetStreamAsync(item.image.href);
 
-                    var resizedImageStream = _imageProcessor.ResizeImage(imageStream, 350, 0);
+                    var resizedImageStream = _imageProcessor.ResizeImage(imageStream, 350, 0, ext);
 
                     string fileName = Path.GetFileName(item.image.href);
 
@@ -94,7 +97,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
                     var originalImgStream = await _blobStore.GetAsync(applicationTenantId, $"/img/audio/{fileName}");
 
-                    var thumbnailImage = _imageProcessor.ResizeImage(originalImgStream, 50, 0);
+                    var thumbnailImage = _imageProcessor.ResizeImage(originalImgStream, 50, 0, ext);
 
                     Guid podcastDetailPageTypeId = await _dataStore.GetRepository<PageType>().ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.PodcastDetailPageTypeId, applicationTenantId)).Select(s => s.Id).FirstOrDefaultAsync();
 

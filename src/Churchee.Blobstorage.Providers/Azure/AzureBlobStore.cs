@@ -111,7 +111,7 @@ namespace Churchee.Blobstorage.Providers.Azure
 
             stream.Position = 0;
 
-            var smallImageStream = _imageProcessor.ResizeImage(stream, width, 0);
+            var smallImageStream = _imageProcessor.ResizeImage(stream, width, 0, extension);
 
             await client.UploadBlobAsync(cropPath, smallImageStream, cancellationToken);
         }
