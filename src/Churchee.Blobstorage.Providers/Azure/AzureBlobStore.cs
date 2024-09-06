@@ -93,10 +93,10 @@ namespace Churchee.Blobstorage.Providers.Azure
 
                 string folderpath = fullPath.Replace(extension, "").Replace(fileName, "");
 
-                await CreateCrop(fileName, folderpath, extension, "t", stream, client, 200, cancellationToken);
-                await CreateCrop(fileName, folderpath, extension, "s", stream, client, 400, cancellationToken);
-                await CreateCrop(fileName, folderpath, extension, "m", stream, client, 800, cancellationToken);
-                await CreateCrop(fileName, folderpath, extension, "l", stream, client, 2000, cancellationToken);
+                await CreateCrop(fileName, folderpath, extension, "t", stream, client, 200, overrideExisting, cancellationToken);
+                await CreateCrop(fileName, folderpath, extension, "s", stream, client, 400, overrideExisting, cancellationToken);
+                await CreateCrop(fileName, folderpath, extension, "m", stream, client, 800, overrideExisting, cancellationToken);
+                await CreateCrop(fileName, folderpath, extension, "l", stream, client, 2000, overrideExisting, cancellationToken);
 
             }
 
@@ -105,9 +105,15 @@ namespace Churchee.Blobstorage.Providers.Azure
             return fullPath;
         }
 
-        private async Task CreateCrop(string fileName, string folderPath, string extension, string suffix, Stream stream, BlobContainerClient client, int width, CancellationToken cancellationToken)
+        private async Task CreateCrop(string fileName, string folderPath, string extension, string suffix, Stream stream, BlobContainerClient client, int width, bool overrideExisting, CancellationToken cancellationToken)
         {
+
             string cropPath = $"{folderPath}{fileName}_{suffix}{extension}";
+
+            if (overrideExisting)
+            {
+                await client.DeleteBlobIfExistsAsync(cropPath, cancellationToken: cancellationToken);
+            }
 
             stream.Position = 0;
 
