@@ -291,7 +291,33 @@
                                   ButtonStyle="ButtonStyle.Success"
                                   Style="margin-bottom: 20px;height: 35px" />
 
-                </RadzenStack>
+                </RadzenStack>);
+        }
+
+        if (item != null && item.Value == "Delete")
+        {
+            var result = await DialogService.OpenAsync("Add Folder", ds =>
+    @<RadzenStack Gap="1.5rem">
+
+
+                @if (activeFolder is GetMediaFoldersQueryResponseItem item)
+                {
+                        <p>Are you sure you want to delete the folder @item.Title ? </p>
+
+                }
+
+                        <RadzenButton Text="Yes, Delete"
+                                          Click="DeleteFolderAsync"
+                                      ButtonStyle="ButtonStyle.Danger"
+                                      Style="margin-bottom: 20px;height: 35px" />
+
+
+                        <RadzenButton Text="Nope, Cancel"
+                                              Click="CloseFolderPopup"
+                                          ButtonStyle="ButtonStyle.Success"
+                                      Style="margin-bottom: 20px;height: 35px" />
+
+                    </RadzenStack>
     );
         }
 
@@ -302,6 +328,7 @@
             activeFolder = null;
         }
 
+
     }
 
     void CloseFolderPopup()
@@ -309,22 +336,53 @@
         DialogService.Close();
     }
 
-    async Task AddFolderNameAsync()
+    async Task DeleteFolderAsync()
     {
-        var result = await Mediator.Send(new CreateMediaFolderCommand(activeFolderId, NewFolderName));
+        if(activeFolderId == null){
 
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: No Folder Selected" });
+
+            return;
+        }
+
+        var result = await Mediator.Send(new DeleteMediaFolderCommand(activeFolderId.Value));
+
+        if(result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Folder Removed" });
+        }
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Media Folder was not remmoved." });
+        }
+
+        Directories = await Mediator.Send(new GetMediaFoldersQuery(null));
+
+        DialogService.Close();
+
+    }
+
+    async Task RefreshActiveFolderAsync()
+    {
         if (activeFolder != null)
         {
-            var parentFolder = activeFolder as GetMediaFoldersQueryResponseItem;
+            var folder = activeFolder as GetMediaFoldersQueryResponseItem;
 
-            parentFolder.Children = await Mediator.Send(new GetMediaFoldersQuery(parentFolder.Id));
+            folder.Children = await Mediator.Send(new GetMediaFoldersQuery(folder.Id));
 
-            parentFolder.HasChildren = true;
+            folder.HasChildren = true;
         }
         else
         {
             Directories = await Mediator.Send(new GetMediaFoldersQuery(null));
         }
+    }
+
+    async Task AddFolderNameAsync()
+    {
+        var result = await Mediator.Send(new CreateMediaFolderCommand(activeFolderId, NewFolderName));
+
+        await RefreshActiveFolderAsync();
 
         NewFolderName = string.Empty;
 
