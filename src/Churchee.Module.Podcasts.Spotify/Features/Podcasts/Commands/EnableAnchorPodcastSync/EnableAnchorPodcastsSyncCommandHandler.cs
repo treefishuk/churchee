@@ -91,7 +91,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
                     string fileName = Path.GetFileName(item.image.href);
 
-                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, false, default);
+                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, default);
 
                     string thumbFileName = $"{Path.GetFileNameWithoutExtension(item.image.href)}_t{Path.GetExtension(item.image.href)}";
 
@@ -106,7 +106,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
                         throw new PodcastSyncException("podcastDetailPageTypeId is Empty");
                     }
 
-                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, false, default);
+                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, default);
 
                     podcasts.Add(new Podcast(applicationTenantId: applicationTenantId,
                         audioUri: item.enclosure.url,

@@ -2,11 +2,13 @@
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Site.Specifications;
+using Hangfire;
 using MediatR;
 
 namespace Churchee.Module.Events.Features.Commands
@@ -18,13 +20,15 @@ namespace Churchee.Module.Events.Features.Commands
         private readonly ICurrentUser _currentUser;
         private readonly IBlobStore _blobStore;
         private readonly IImageProcessor _imageProcessor;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IImageProcessor imageProcessor)
+        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IImageProcessor imageProcessor, IBackgroundJobClient backgroundJobClient)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
             _blobStore = blobStore;
             _imageProcessor = imageProcessor;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<CommandResponse> Handle(CreateEventCommand request, CancellationToken cancellationToken)
@@ -97,8 +101,13 @@ namespace Churchee.Module.Events.Features.Commands
 
                 imagePath = $"/img/events/{fileName.ToDevName()}{extension}";
 
-                return await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, false, true, cancellationToken);
+                string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, false, cancellationToken);
 
+                var bytes = ms.ConvertStreamToByteArray();
+
+                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
+
+                return finalImagePath;
             }
 
             return imagePath;

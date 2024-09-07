@@ -1,7 +1,9 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
+using Hangfire;
 using MediatR;
 
 namespace Churchee.Module.Site.Features.Media.Commands
@@ -11,12 +13,14 @@ namespace Churchee.Module.Site.Features.Media.Commands
         private readonly IBlobStore _blobStore;
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public CreateMediaItemCommandHandler(IBlobStore blobStore, IDataStore dataStore, ICurrentUser currentUser)
+        public CreateMediaItemCommandHandler(IBlobStore blobStore, IDataStore dataStore, ICurrentUser currentUser, IBackgroundJobClient backgroundJobClient)
         {
             _blobStore = blobStore;
             _dataStore = dataStore;
             _currentUser = currentUser;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<CommandResponse> Handle(CreateMediaItemCommand request, CancellationToken cancellationToken)
@@ -32,13 +36,17 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             string imagePath = $"/img/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.Extention}";
 
-            await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, true, cancellationToken);
+            string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
 
             var media = new MediaItem(applicationTenantId, request.Name, imagePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl);
 
             _dataStore.GetRepository<MediaItem>().Create(media);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
+
+            var bytes = ms.ConvertStreamToByteArray();
+
+            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
 
             return new CommandResponse();
         }

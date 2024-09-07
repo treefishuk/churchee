@@ -11,7 +11,7 @@ namespace Churchee.Common.Storage
         /// Save Image Stream
         /// </summary>
         /// <returns>The fullPath as it may have been changed</returns>
-        Task<string> SaveAsync(Guid applicationTenantId, string fullPath, Stream stream, bool overrideExisting = false, bool createCrops = false, CancellationToken cancellationToken = default);
+        Task<string> SaveAsync(Guid applicationTenantId, string fullPath, Stream stream, bool overrideExisting = false, CancellationToken cancellationToken = default);
 
         Task<Stream> GetAsync(Guid applicationTenantId, string fullPath, CancellationToken cancellationToken = default);
     }

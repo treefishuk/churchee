@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Facebook.Events.API;
 using Churchee.Module.Facebook.Events.Helpers;
@@ -185,9 +186,13 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             await using var stream = await response.Content.ReadAsStreamAsync();
 
-            await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", stream, true, true, cancellationToken);
+            string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", stream, true, cancellationToken);
 
             facebookevent.SetImageUrl($"/img/events/{friendlyFileName}");
+
+            var bytes = stream.ConvertStreamToByteArray();
+
+            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
         }
     }
 }
