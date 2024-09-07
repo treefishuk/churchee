@@ -9,7 +9,20 @@ namespace Churchee.ImageProcessing
 {
     public class DefaultImageProcessor : IImageProcessor
     {
+
+        public Stream CreateCrop(Stream stream, int width, string extension)
+        {
+            var image = Image.Load(stream);
+
+            return Process(stream, image.Height, width, extension);
+        }
+
         public Stream ResizeImage(Stream stream, int width, int height, string extension)
+        {
+            return Process(stream, height, width, extension);
+        }
+
+        private static Stream Process(Stream stream, int width, int height, string extension)
         {
             var image = Image.Load(stream);
 
@@ -18,7 +31,15 @@ namespace Churchee.ImageProcessing
                 return stream;
             }
 
-            image.Mutate(x => x.Resize(width, height));
+            if (height == 0)
+            {
+                ProportionalMutation(width, height, image);
+            }
+
+            if (height != 0)
+            {
+                CropMutation(width, image);
+            }
 
             var returnStream = new MemoryStream();
 
@@ -51,6 +72,23 @@ namespace Churchee.ImageProcessing
             returnStream.Position = 0;
 
             return returnStream;
+        }
+
+        private static void ProportionalMutation(int width, int height, Image image)
+        {
+            image.Mutate(x => x.Resize(width, height));
+        }
+
+        private static void CropMutation(int width, Image image)
+        {
+            int originalWidth = image.Width;
+            int originalHeight = image.Height;
+
+            // Calculate the crop rectangle to focus on the center
+            int cropWidth = (int)((double)originalHeight / originalHeight * width);
+            int cropX = (originalWidth - cropWidth) / 2;
+
+            image.Mutate(x => x.Crop(new Rectangle(cropX, 0, cropWidth, originalHeight)));
         }
     }
 }

@@ -93,19 +93,28 @@ namespace Churchee.Blobstorage.Providers.Azure
 
                 string folderpath = fullPath.Replace(extension, "").Replace(fileName, "");
 
-                await CreateCrop(fileName, folderpath, extension, "t", stream, client, 200, overrideExisting, cancellationToken);
-                await CreateCrop(fileName, folderpath, extension, "s", stream, client, 400, overrideExisting, cancellationToken);
-                await CreateCrop(fileName, folderpath, extension, "m", stream, client, 800, overrideExisting, cancellationToken);
-                await CreateCrop(fileName, folderpath, extension, "l", stream, client, 2000, overrideExisting, cancellationToken);
+                await CreateImageSize(fileName, folderpath, extension, "t", stream, client, 200, overrideExisting, cancellationToken);
+                await CreateImageSize(fileName, folderpath, extension, "s", stream, client, 576, overrideExisting, cancellationToken);
+                await CreateImageSize(fileName, folderpath, extension, "m", stream, client, 768, overrideExisting, cancellationToken);
+                await CreateImageSize(fileName, folderpath, extension, "l", stream, client, 992, overrideExisting, cancellationToken);
+                await CreateImageSize(fileName, folderpath, extension, "xl", stream, client, 1200, overrideExisting, cancellationToken);
+                await CreateImageSize(fileName, folderpath, extension, "xxl", stream, client, 1400, overrideExisting, cancellationToken);
+                await CreateImageSize(fileName, folderpath, extension, "hd", stream, client, 1920, overrideExisting, cancellationToken);
+
+                await CreateImageCrop(fileName, folderpath, extension, "ct", stream, client, 200, overrideExisting, cancellationToken);
+                await CreateImageCrop(fileName, folderpath, extension, "cs", stream, client, 576, overrideExisting, cancellationToken);
+                await CreateImageCrop(fileName, folderpath, extension, "cm", stream, client, 768, overrideExisting, cancellationToken);
+                await CreateImageCrop(fileName, folderpath, extension, "cl", stream, client, 992, overrideExisting, cancellationToken);
+                await CreateImageCrop(fileName, folderpath, extension, "cxl", stream, client, 1200, overrideExisting, cancellationToken);
+                await CreateImageCrop(fileName, folderpath, extension, "cxxl", stream, client, 1400, overrideExisting, cancellationToken);
+                await CreateImageCrop(fileName, folderpath, extension, "chd", stream, client, 1920, overrideExisting, cancellationToken);
 
             }
-
-
 
             return fullPath;
         }
 
-        private async Task CreateCrop(string fileName, string folderPath, string extension, string suffix, Stream stream, BlobContainerClient client, int width, bool overrideExisting, CancellationToken cancellationToken)
+        private async Task CreateImageSize(string fileName, string folderPath, string extension, string suffix, Stream stream, BlobContainerClient client, int width, bool overrideExisting, CancellationToken cancellationToken)
         {
 
             string cropPath = $"{folderPath}{fileName}_{suffix}{extension}";
@@ -118,6 +127,22 @@ namespace Churchee.Blobstorage.Providers.Azure
             stream.Position = 0;
 
             var smallImageStream = _imageProcessor.ResizeImage(stream, width, 0, extension);
+
+            await client.UploadBlobAsync(cropPath, smallImageStream, cancellationToken);
+        }
+
+        private async Task CreateImageCrop(string fileName, string folderPath, string extension, string suffix, Stream stream, BlobContainerClient client, int width, bool overrideExisting, CancellationToken cancellationToken)
+        {
+            string cropPath = $"{folderPath}{fileName}_{suffix}{extension}";
+
+            if (overrideExisting)
+            {
+                await client.DeleteBlobIfExistsAsync(cropPath, cancellationToken: cancellationToken);
+            }
+
+            stream.Position = 0;
+
+            var smallImageStream = _imageProcessor.CreateCrop(stream, width, extension);
 
             await client.UploadBlobAsync(cropPath, smallImageStream, cancellationToken);
         }
