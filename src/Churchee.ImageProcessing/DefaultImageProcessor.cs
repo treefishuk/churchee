@@ -14,12 +14,16 @@ namespace Churchee.ImageProcessing
         {
             var image = Image.Load(stream);
 
-            return Process(stream, image.Height, width, extension);
+            int height = image.Height;
+
+            stream.Position = 0;
+
+            return Process(stream, width, height, extension);
         }
 
         public Stream ResizeImage(Stream stream, int width, int height, string extension)
         {
-            return Process(stream, height, width, extension);
+            return Process(stream, width, height, extension);
         }
 
         private static Stream Process(Stream stream, int width, int height, string extension)
@@ -83,12 +87,9 @@ namespace Churchee.ImageProcessing
         {
             int originalWidth = image.Width;
             int originalHeight = image.Height;
+            int cropX = (originalWidth - width) / 2;
 
-            // Calculate the crop rectangle to focus on the center
-            int cropWidth = (int)((double)originalHeight / originalHeight * width);
-            int cropX = (originalWidth - cropWidth) / 2;
-
-            image.Mutate(x => x.Crop(new Rectangle(cropX, 0, cropWidth, originalHeight)));
+            image.Mutate(x => x.Crop(new Rectangle(cropX, 0, width, originalHeight)));
         }
     }
 }
