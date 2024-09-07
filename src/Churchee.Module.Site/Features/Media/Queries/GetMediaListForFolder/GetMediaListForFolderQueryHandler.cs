@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Azure;
-using Churchee.Common.Storage;
+﻿using Churchee.Common.Storage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +19,7 @@ namespace Churchee.Module.Site.Features.Media.Queries
             var response = await _storage.GetRepository<Entities.MediaItem>()
                 .GetQueryable()
                 .Where(w => w.MediaFolderId == request.MediaFolderId)
-                .Select(s => new GetMediaListForFolderQueryResponseItem(s.Id, s.Title, s.Description, s.Html ,s.MediaUrl, s.LinkUrl)).ToListAsync(cancellationToken);
+                .Select(s => new GetMediaListForFolderQueryResponseItem(s.Id, s.Title, s.Description, s.Html, s.MediaUrl, s.LinkUrl, s.CssClass)).ToListAsync(cancellationToken);
 
             return response;
 

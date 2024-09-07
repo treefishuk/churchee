@@ -18,7 +18,7 @@ namespace Churchee.Module.Site.Entities
             MediaFolderId = mediaFolderId;
         }
 
-        public MediaItem(Guid applicationTenantId, string title, string mediaUrl, string description, string html, Guid? mediaFolderId = null, string linkUrl = "") : base(applicationTenantId)
+        public MediaItem(Guid applicationTenantId, string title, string mediaUrl, string description, string html, Guid? mediaFolderId = null, string linkUrl = "", string cssClass = "") : base(applicationTenantId)
         {
             Title = title;
             Description = description;
@@ -26,6 +26,7 @@ namespace Churchee.Module.Site.Entities
             Html = html;
             MediaFolderId = mediaFolderId;
             LinkUrl = linkUrl;
+            CssClass = cssClass;
         }
 
         public void UpdateMediaUrl(string mediaUrl)
@@ -36,9 +37,9 @@ namespace Churchee.Module.Site.Entities
             }
         }
 
-        public void UpdateDetails(string title, string description, string html, string linkUrl)
+        public void UpdateDetails(string title, string description, string html, string linkUrl, string cssClass)
         {
-            if(!string.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(title))
             {
                 Title = title;
             }
@@ -58,7 +59,13 @@ namespace Churchee.Module.Site.Entities
                 LinkUrl = linkUrl;
             }
 
-        } 
+
+            if (!string.IsNullOrEmpty(cssClass))
+            {
+                CssClass = cssClass;
+            }
+
+        }
 
         public string Title { get; protected set; }
 
@@ -69,6 +76,8 @@ namespace Churchee.Module.Site.Entities
         public string MediaUrl { get; protected set; }
 
         public string LinkUrl { get; protected set; }
+
+        public string CssClass { get; protected set; }
 
         public Guid? MediaFolderId { get; protected set; }
 

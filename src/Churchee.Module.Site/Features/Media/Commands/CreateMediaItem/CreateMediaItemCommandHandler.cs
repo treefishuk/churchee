@@ -38,7 +38,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
 
-            var media = new MediaItem(applicationTenantId, request.Name, imagePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl);
+            var media = new MediaItem(applicationTenantId, request.Name, imagePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl, request.CssClass);
 
             _dataStore.GetRepository<MediaItem>().Create(media);
 

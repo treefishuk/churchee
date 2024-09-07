@@ -2,7 +2,7 @@
 {
     public class GetMediaListForFolderQueryResponseItem
     {
-        public GetMediaListForFolderQueryResponseItem(Guid id, string title, string description, string additionalContent, string mediaUrl, string linkUrl)
+        public GetMediaListForFolderQueryResponseItem(Guid id, string title, string description, string additionalContent, string mediaUrl, string linkUrl, string cssClass)
         {
             Id = id;
             Title = title;
@@ -10,6 +10,7 @@
             Description = description;
             AdditionalContent = additionalContent;
             LinkUrl = linkUrl;
+            CssClass = cssClass;
         }
 
         public Guid Id { get; set; }
@@ -33,5 +34,8 @@
         }
 
         public string LinkUrl { get; set; }
+
+        public string CssClass { get; set; }
+
     }
 }

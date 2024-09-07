@@ -59,7 +59,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
                 _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
             }
 
-            entity.UpdateDetails(request.Name, request.Description, request.AdditionalContent, request.LinkUrl);
+            entity.UpdateDetails(request.Name, request.Description, request.AdditionalContent, request.LinkUrl, request.CssClass);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
