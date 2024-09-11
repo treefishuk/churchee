@@ -3,6 +3,7 @@
 @using Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
 @using Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent
 @using Churchee.Module.Site.Helpers
+@using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
 @using MediatR
 @using Microsoft.AspNetCore.Components.Forms
@@ -12,6 +13,7 @@
 @inject NotificationService _notificationService
 @inject NavigationManager NavigationManager
 
+<PageName Name="Edit Page Type"/>
 
 @if (Content != null)
 {

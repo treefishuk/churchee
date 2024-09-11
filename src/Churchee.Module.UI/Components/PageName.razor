@@ -1,25 +1,34 @@
 ﻿@using Churchee.Module.UI.Models
 @using Microsoft.AspNetCore.Components.Web
-@inject CurrentPage currentPage;
-@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Routing;
+<PageTitle>@(Name ?? "Management") | Churchee</PageTitle>
 
-<PageTitle>@Name</PageTitle>
-
-    @code {
+@code {
     [Parameter]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+
+    // protected override void OnInitialized()
+    // {
+    //     SetDynamic();
+    // }
 
     protected override void OnParametersSet()
     {
-
         if (string.IsNullOrEmpty(Name))
         {
-            var urlParts = NavigationManager.Uri.Split('/');
-
-            Name = urlParts.Last().ToTitleCase();
+            SetDynamic();
         }
 
-        currentPage.SetCurrentPageName(Name);
+    }
+
+    private void SetDynamic()
+    {
+        var urlParts = NavigationManager.Uri.Split('/');
+
+        Name = urlParts.Last().ToTitleCase();
     }
 }
