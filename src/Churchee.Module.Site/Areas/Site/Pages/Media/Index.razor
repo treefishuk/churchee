@@ -24,13 +24,13 @@
 
             <RadzenSplitButton Click="@FolderAction"
                                Text="Folder"
-                               ButtonStyle="ButtonStyle.Info">
+                               ButtonStyle="ButtonStyle.Info" Disabled=AddMediaDisabled>
 
                 <ChildContent>
 
-                    <RadzenSplitButtonItem Text="Add Folder" Value="Add" />
+                    <RadzenSplitButtonItem Text="Add Folder" Value="Add"/>
 
-                    <RadzenSplitButtonItem Text="Delete Folder" Value="Delete" />
+                    <RadzenSplitButtonItem Text="Delete Folder" Value="Delete" Disabled="DeleteFolderDisabled" />
 
                     <RadzenSplitButtonItem Text="Clear Selection Folder" Value="Clear" />
 
@@ -81,12 +81,34 @@
 
 
 @code {
-    
+
     [Inject]
     private DialogService DialogService { get; set; } = default!;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; }
+
+    string[] ProtectedPaths = new string[] { "Banners/", "Images/", "Fonts/", "Video/" };
+
+    bool DeleteFolderDisabled
+    {
+        get
+        {
+            if (activeFolder == null)
+            {
+                return true;
+            }
+
+            var active = (GetMediaFoldersQueryResponseItem)activeFolder;
+
+            if (ProtectedPaths.Contains(active.Path))
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     private RadzenTree tree;
 

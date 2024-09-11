@@ -22,19 +22,12 @@ namespace Churchee.Module.Site.Features.Media.Commands
         {
 
             var repo = _dataStore.GetRepository<MediaFolder>();
-            
+
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            if (request.ParentId != null)
-            {
-                var parent = repo.GetById(request.ParentId);
+            var parent = repo.GetById(request.ParentId);
 
-                repo.Create(new MediaFolder(applicationTenantId, request.Name, parent));
-            }
-            else
-            {
-                repo.Create(new MediaFolder(applicationTenantId, request.Name));
-            }
+            repo.Create(new MediaFolder(applicationTenantId, request.Name, parent));
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 

@@ -25,7 +25,6 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public async Task<CommandResponse> Handle(CreateMediaItemCommand request, CancellationToken cancellationToken)
         {
-
             string folderPath = _dataStore.GetRepository<MediaFolder>().GetQueryable().Where(w => w.Id == request.FolderId).Select(s => s.Path).FirstOrDefault() ?? string.Empty;
 
             byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
@@ -34,7 +33,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string imagePath = $"/img/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.Extention}";
+            string imagePath = $"/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.Extention}";
 
             string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
 
