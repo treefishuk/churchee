@@ -1,4 +1,6 @@
-﻿@using Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
+﻿@page "/management/feed"
+@inherits BasePage
+@using Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
 @using Churchee.Module.Site.Features.Blog.Responses
 @using MediatR
 @using Microsoft.AspNetCore.Components.Sections
@@ -6,9 +8,6 @@
 @using Radzen.Blazor
 @using Radzen
 @using Churchee.Module.UI.Components
-@page "/management/feed"
-@inject ILogger<Index> Logger
-@inject IMediator Mediator
 
 <PageName></PageName>
 

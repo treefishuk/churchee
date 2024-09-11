@@ -1,4 +1,5 @@
 ﻿@page "/management/pages/edit/{Id:guid}"
+@inherits BasePage
 @using Churchee.Module.Site.Areas.Site.Models
 @using Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 @using Churchee.Module.Site.Features.Pages.Queries
@@ -8,7 +9,6 @@
 @using Churchee.Module.Site.Helpers
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
-@using MediatR
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Logging
@@ -17,11 +17,6 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Reflection
 @using System.Linq.Expressions
-
-@inject ILogger<Index> Logger
-@inject IMediator Mediator
-@inject NotificationService _notificationService
-@inject NavigationManager _navigationManager
 
 <PageName Name="@Title"></PageName>
 
@@ -186,7 +181,7 @@
 
         if (result.IsSuccess)
         {
-            _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
 
             if (publish)
             {
@@ -201,7 +196,7 @@
 
         if (!result.IsSuccess)
         {
-            _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Somerthing appears to have gone wrong, please check all fields and try again." });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Somerthing appears to have gone wrong, please check all fields and try again." });
         }
 
 
@@ -209,7 +204,7 @@
 
     public void CancelForm()
     {
-        var currentUrl = _navigationManager.Uri;
+        var currentUrl = NavigationManager.Uri;
 
         currentUrl = currentUrl.Replace("/edit", "");
 
@@ -221,7 +216,7 @@
 
         parent = (lastSlash > -1) ? parent.Substring(0, lastSlash) : parent;
 
-        _navigationManager.NavigateTo(parent);
+        NavigationManager.NavigateTo(parent);
 
     }
 

@@ -1,4 +1,5 @@
 ﻿@page "/management/configuration/contributors"
+@inherits BasePage
 @using Churchee.Common.Abstractions.Auth
 @using Churchee.Module.Identity.Features.Contributors.Queries
 @using Churchee.Module.UI.Components
@@ -24,9 +25,6 @@
 
     [Inject]
     private ICurrentUser CurrentUser { get; set; } = default!;
-
-    [Inject]
-    private IMediator Mediator { get; set; } = default!;
 
     private Guid _activeTenant { get; set; } = default!;
 

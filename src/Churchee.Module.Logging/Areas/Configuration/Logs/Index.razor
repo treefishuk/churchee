@@ -1,4 +1,5 @@
 ﻿@page "/management/configuration/logs"
+@inherits SystemAdminPage
 @using Churchee.Module.Logging.Entities
 @using Churchee.Module.Logging.Features.Queries
 @using Churchee.Module.Logging.Infrastructure
@@ -8,16 +9,12 @@
 @using Radzen
 @using Radzen.Blazor
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "SysAdmin")]
 
 <PageName Name="Logging"></PageName>
 
 <Grid TItem="GetLogListingResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowDetail="true" DetailIcon="article"></Grid>
 
 @code {
-
-    [Inject]
-    private IMediator Mediator { get; set; } = default!;
 
     bool isLoading = false;
 

@@ -1,4 +1,6 @@
-﻿@using BlazorMonaco
+﻿@page "/management/templates"
+@inherits BasePage
+@using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
 @using Churchee.Module.Site.Areas.Site.Models
@@ -10,9 +12,6 @@
 @using Radzen.Blazor
 @using Radzen
 @using Churchee.Module.UI.Components
-@page "/management/templates"
-@inject ILogger<Index> Logger
-@inject IMediator Mediator
 
 <PageName></PageName>
 
@@ -21,7 +20,6 @@
         <a class="rz-button rz-button-sm rz-success" href="/management/templates/create">Create</a>
     </div> 
 </SectionContent>
-
 
 <Grid TItem="TemplateListingResponse" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
 

@@ -1,4 +1,6 @@
-﻿@using Churchee.Module.Podcasts.Features.Queries
+﻿@page "/management/podcasts"
+@inherits BasePage
+@using Churchee.Module.Podcasts.Features.Queries
 @using Churchee.Module.Site.Features.CDN.Queries
 @using Churchee.Module.UI.Components
 @using Microsoft.AspNetCore.Components.Forms
@@ -8,7 +10,7 @@
 @using MediatR
 @using Radzen.Blazor
 @using Radzen
-@page "/management/podcasts"
+
 
 <PageName></PageName>
 
@@ -17,9 +19,6 @@
 @code {
 
     string imagePrefix = "";
-
-    [Inject]
-    private IMediator Mediator { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

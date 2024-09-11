@@ -1,18 +1,16 @@
-﻿@using BlazorMonaco
+﻿@page "/management/styles"
+@inherits BasePage
+@using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
 @using Churchee.Module.Site.Areas.Site.Models
 @using Churchee.Module.Site.Features.Styles.Commands
 @using Churchee.Module.Site.Features.Styles.Queries
-@using MediatR
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Logging
 @using Radzen.Blazor
 @using Radzen
 @using Churchee.Module.UI.Components
-@page "/management/styles"
-@inject ILogger<Index> Logger
-@inject IMediator Mediator
 
 <PageName></PageName>
 
@@ -33,5 +31,8 @@
     private async Task ValidSubmitForm()
     {
         var result = await Mediator.Send(new UpdateStylesCommand(InputModel.Styles));
+
+        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/management/events/create"
+@inherits BasePage
 @using Churchee.Common.Abstractions.Auth
 @using Churchee.Module.Events.Areas.Website.Models
 @using Churchee.Module.UI.Components
@@ -17,15 +18,6 @@
 
     [Inject]
     private ICurrentUser CurrentUser { get; set; } = default!;
-
-    [Inject]
-    private IMediator Mediator { get; set; } = default!;
-
-    [Inject]
-    private NotificationService NotificationService { get; set; } = default!;
-
-    [Inject]
-    private NavigationManager NavigationManager { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

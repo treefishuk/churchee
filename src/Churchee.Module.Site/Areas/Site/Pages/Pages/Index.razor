@@ -1,19 +1,15 @@
 ﻿@page "/management/pages"
+@inherits BasePage
 @using Churchee.Module.Site.Features.Pages.Commands
 @using Churchee.Module.Site.Features.Pages.Queries
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
-@using MediatR
 @using Microsoft.AspNetCore.Components.Sections
 @using System.Text.Json
 @using Microsoft.AspNetCore.Http
 @using Radzen
 @using Radzen.Blazor
 @using System.Net.Http.Json
-@inject IMediator Mediator
-@inject NotificationService _notificationService
-@inject IHttpClientFactory ClientFactory
-@inject IHttpContextAccessor _httpContextAccessor
 
 
 <PageName Name="Pages"></PageName>
@@ -103,7 +99,7 @@
 
         if (result.IsSuccess)
         {
-            _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Page Deleted" });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Page Deleted" });
 
             await LoadData();
 

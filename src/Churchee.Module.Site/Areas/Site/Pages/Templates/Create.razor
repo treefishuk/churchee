@@ -1,13 +1,11 @@
 ﻿@page "/management/templates/create"
+@inherits BasePage
 @using Churchee.Module.Site.Areas.Site.Models
 @using Churchee.Module.Site.Features.Templates.Commands
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
 @using MediatR
 @using Radzen
-@inject IMediator Mediator
-@inject NotificationService _notificationService
-@inject NavigationManager NavigationManager
 
 <PageName Name="Create Page Template"></PageName>
 
@@ -24,7 +22,6 @@
         await base.OnInitializedAsync();
     }
 
-    
     private async Task ValidSubmitForm()
     {
         var result = await Mediator.Send(new CreateTemplateCommand(InputModel.Path, InputModel.Content), default);

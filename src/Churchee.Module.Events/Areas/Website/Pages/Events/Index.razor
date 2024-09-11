@@ -1,4 +1,6 @@
-﻿@using Churchee.Module.Events.Features.Commands
+﻿@page "/management/events"
+@inherits BasePage
+@using Churchee.Module.Events.Features.Commands
 @using Churchee.Module.Events.Features.Queries
 @using Churchee.Module.Site.Features.CDN.Queries
 @using Churchee.Module.UI.Components
@@ -9,7 +11,6 @@
 @using MediatR
 @using Radzen.Blazor
 @using Radzen
-@page "/management/events"
 
 <PageName></PageName>
 
@@ -26,15 +27,9 @@
 
     string imagePrefix = "";
 
-    [Inject]
-    private NotificationService _notificationService { get; set; } = default!;
-
-    [Inject]
-    private IMediator _mediator { get; set; } = default!;
-
     protected override async Task OnInitializedAsync()
     {
-        imagePrefix = await _mediator.Send(new GetCDNPathQuery());
+        imagePrefix = await Mediator.Send(new GetCDNPathQuery());
     }
 
     int count;
@@ -45,16 +40,16 @@
 
     async Task OnDelete(GetListingQueryResponseItem item)
     {
-        var result = await _mediator.Send(new DeleteEventCommand(item.Id));
+        var result = await Mediator.Send(new DeleteEventCommand(item.Id));
 
         if (!result.IsSuccess)
         {
-            _notificationService.Notify(NotificationSeverity.Error, "Error: Could not remove Event");
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove Event");
 
             return;
         }
 
-        _notificationService.Notify(NotificationSeverity.Success, "Event Deleted");
+        NotificationService.Notify(NotificationSeverity.Success, "Event Deleted");
     }
 
     async Task LoadData(LoadDataArgs args)
@@ -72,7 +67,7 @@
 
         }
 
-        var result = await _mediator.Send(new GetListingQuery(
+        var result = await Mediator.Send(new GetListingQuery(
                     skip: args?.Skip ?? 0,
                     take: args?.Top ?? 20,
                     searchText: args?.Filter ?? string.Empty,

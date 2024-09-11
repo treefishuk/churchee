@@ -1,4 +1,5 @@
 ﻿@page "/management/events/edit/{Id:guid}"
+@inherits BasePage
 @using Churchee.Common.Abstractions.Auth
 @using Churchee.Module.Events.Areas.Website.Models
 @using Churchee.Module.Events.Components
@@ -6,7 +7,6 @@
 @using Churchee.Module.UI.Models
 @using Churchee.Module.Events.Features.Queries
 @using Churchee.Module.Events.Features.Commands
-@using MediatR
 @using Microsoft.AspNetCore.Components.Forms
 @using Radzen
 @using Radzen.Blazor
@@ -75,15 +75,6 @@
 
     [Inject]
     private ICurrentUser CurrentUser { get; set; } = default!;
-
-    [Inject]
-    private IMediator Mediator { get; set; } = default!;
-
-    [Inject]
-    private NotificationService NotificationService { get; set; } = default!;
-
-    [Inject]
-    private NavigationManager NavigationManager { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

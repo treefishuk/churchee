@@ -1,17 +1,14 @@
 ﻿@page "/management/pagetypes/edit/{Id:guid}"
+@inherits BasePage
 @using Churchee.Module.Site.Areas.Site.Models
 @using Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
 @using Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent
 @using Churchee.Module.Site.Helpers
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
-@using MediatR
 @using Microsoft.AspNetCore.Components.Forms
 @using Radzen
 @using Radzen.Blazor
-@inject IMediator Mediator
-@inject NotificationService _notificationService
-@inject NavigationManager NavigationManager
 
 <PageName Name="Edit Page Type"/>
 
@@ -118,7 +115,7 @@
     {
         var result = await Mediator.Send(new UpdatePageTypeContentCommand(Id, Content));
 
-        _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
     }
 
 }

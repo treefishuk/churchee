@@ -1,4 +1,5 @@
 ﻿@page "/management/configuration/logs/details/{Id:int}"
+@inherits SystemAdminPage
 @using Churchee.Module.Logging.Entities
 @using Churchee.Module.Logging.Features.Queries
 @using Churchee.Module.Logging.Infrastructure
@@ -8,7 +9,6 @@
 @using Radzen
 @using Radzen.Blazor
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "SysAdmin")]
 
 @if(Model != null){
 
@@ -55,9 +55,6 @@
 
 
 @code {
-
-    [Inject]
-    private IMediator Mediator { get; set; } = default!;
 
     [Parameter]
     public int Id { get; set; }

@@ -1,4 +1,5 @@
 ﻿@page "/management/pagetypes"
+@inherits BasePage
 @using Churchee.Module.Site.Features.PageTypes.Queries
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
@@ -18,9 +19,6 @@
 <Grid TItem="GetPageTypesListingResponse" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
 
 @code {
-
-    [Inject]
-    private IMediator Mediator { get; set; } = default!;
 
     IEnumerable<GetPageTypesListingResponse> listingData;
 

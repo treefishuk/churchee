@@ -1,4 +1,5 @@
 ﻿@page "/management/pages/create"
+@inherits BasePage
 @using Churchee.Module.Site.Areas.Site.Models
 @using Churchee.Module.Site.Features.PageTypes.Queries
 @using Churchee.Module.Site.Features.Pages.Commands
@@ -6,11 +7,7 @@
 @using Churchee.Module.Site.Features.Pages.Queries
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
-@using MediatR
 @using Radzen
-@inject IMediator Mediator
-@inject NotificationService _notificationService
-@inject NavigationManager NavigationManager
 
 <PageName Name="Create Page Type"></PageName>
 

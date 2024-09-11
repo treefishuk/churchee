@@ -1,4 +1,5 @@
 ﻿@page "/management/configuration/contributors/create"
+@inherits BasePage
 @using Churchee.Common.Abstractions.Auth
 @using Churchee.Common.ValueTypes
 @using Churchee.Module.Identity.Features.Contributors.Queries
@@ -22,19 +23,10 @@
     public CreateContributorModel InputModel { get; set; }
 
     [Inject]
-    private IMediator Mediator { get; set; } = default!;
-
-    [Inject]
     private ICurrentUser CurrentUser { get; set; } = default!;
 
     [Inject]
     private ChurcheeUserManager UserManager { get; set; } = default!;
-
-    [Inject]
-    private NavigationManager NavigationManager { get; set; } = default!;
-
-    [Inject]
-    private NotificationService NotificationService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
