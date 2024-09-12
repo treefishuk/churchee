@@ -31,10 +31,8 @@ namespace Churchee.Module.Site.EventHandlers
 
         private const string EmptyViewTemplate = $@"
 
-            @model Churchee.Sites.Models.IWebContent
+            @model Churchee.Sites.Models.Page
 
-            @{{
-                ViewData[""Title""] = Model.Title;
-            }}";
+        ";
     }
 }
