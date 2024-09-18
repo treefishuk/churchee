@@ -5,12 +5,13 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
 {
     public class CreatePageTypeContentComand : IRequest<CommandResponse>
     {
-        public CreatePageTypeContentComand(Guid pageTypeId, string name, string type, bool required)
+        public CreatePageTypeContentComand(Guid pageTypeId, string name, string type, bool required, int order)
         {
             PageTypeId = pageTypeId;
             Name = name;
             Type = type;
             Required = required;
+            Order = order;
         }
 
         public Guid PageTypeId { get; set; }
@@ -20,6 +21,8 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
         public string Type { get; set; }
 
         public bool Required { get; set; }
+
+        public int Order { get; set; }
 
     }
 }

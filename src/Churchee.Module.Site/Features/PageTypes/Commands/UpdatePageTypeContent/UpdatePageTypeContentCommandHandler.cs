@@ -24,6 +24,17 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
                 .ApplySpecification(new PageContentTypesForPageType(request.PageTypeId))
                 .ToListAsync();
 
+            ProcessNewAndUpdatedItems(request, existingItems);
+
+            ProcessRemovedItems(request, existingItems);
+
+            await _storage.SaveChangesAsync(cancellationToken);
+
+            return new CommandResponse();
+        }
+
+        private void ProcessNewAndUpdatedItems(UpdatePageTypeContentCommand request, List<PageTypeContent> existingItems)
+        {
             foreach (var item in request.Content)
             {
                 var existingData = existingItems.FirstOrDefault(a => a.Id == item.Id);
@@ -39,10 +50,14 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
                 }
 
             }
+        }
 
-            await _storage.SaveChangesAsync(cancellationToken);
-
-            return new CommandResponse();
+        private void ProcessRemovedItems(UpdatePageTypeContentCommand request, List<PageTypeContent> existingItems)
+        {
+            foreach (var item in existingItems.Where(w => !request.Content.Select(s => s.Id).Contains(w.Id)))
+            {
+                DeleteItem(item.Id);
+            }
         }
 
         private void UpdateExistingItem(PageTypeContent existing, PageTypeContentItemModel item)
@@ -62,8 +77,16 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
                 return;
             }
 
-            pageType.AddPageTypeContent(item.Id, item.Name, item.Type.Value, item.Required);
+            pageType.AddPageTypeContent(item.Id, item.Name, item.Type.Value, item.Required, item.Order);
 
         }
+
+        private void DeleteItem(Guid itemId)
+        {
+            var pageType = _storage
+                .GetRepository<PageTypeContent>().SoftDelete(itemId);
+
+        }
+
     }
 }

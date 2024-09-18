@@ -22,7 +22,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
                 .ApplySpecification(new IncludePageTypeContentSpecification())
                 .FirstOrDefault(f => f.Id == request.PageTypeId);
 
-            pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required);
+            pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required, request.Order);
 
             await _storage.SaveChangesAsync(cancellationToken);
 

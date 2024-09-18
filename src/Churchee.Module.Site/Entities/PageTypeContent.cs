@@ -9,14 +9,6 @@ namespace Churchee.Module.Site.Entities
 
         }
 
-        public PageTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name) : base(pageTypeContentId, applicationTenantId)
-        {
-            Type = type;
-            IsRequired = isRequired;
-            Name = name;
-            DevName = name.ToDevName();
-        }
-
         public PageTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name, int order) : base(pageTypeContentId, applicationTenantId)
         {
             Type = type;
