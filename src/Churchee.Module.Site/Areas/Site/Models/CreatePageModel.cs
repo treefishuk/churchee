@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Churchee.Module.UI.Models;
+﻿using Churchee.Module.UI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Areas.Site.Models
 {
@@ -12,6 +12,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Description = string.Empty;
             PageType = new DropdownInput();
             Parent = new DropdownInput();
+            Order = 10;
         }
 
         [Required]
@@ -28,6 +29,9 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         [Required]
         public DropdownInput Parent { get; set; }
+
+        [Required]
+        public int Order { get; set; }
 
     }
 }

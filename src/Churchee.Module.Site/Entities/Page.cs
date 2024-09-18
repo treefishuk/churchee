@@ -31,6 +31,8 @@ namespace Churchee.Module.Site.Entities
 
         public ICollection<PageContent> PageContent { get; set; }
 
+        public int? Order { get; set; }
+
         public void AddContent(Guid pageTypeContentId, Guid pageId, string content, int version)
         {
             var newContent = new PageContent(pageTypeContentId, pageId, content, version);
@@ -38,11 +40,12 @@ namespace Churchee.Module.Site.Entities
             PageContent.Add(newContent);
         }
 
-        public void UpdateInfo(string title, string description, Guid? parentId)
+        public void UpdateInfo(string title, string description, Guid? parentId, int order)
         {
             Title = title;
             Description = description;
             ParentId = parentId;
+            Order = order;
 
             AddDomainEvent(new PageInfoUpdatedEvent(Id));
         }

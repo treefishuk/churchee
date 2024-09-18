@@ -5,7 +5,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 {
     public class UpdatePageCommand : IRequest<CommandResponse>
     {
-        public UpdatePageCommand(string title, string description, string parentId, bool unpublish, bool publish, Guid pageId, List<KeyValuePair<Guid, string>> content, List<KeyValuePair<Guid, string>> properties)
+        public UpdatePageCommand(string title, string description, string parentId, bool unpublish, bool publish, Guid pageId, int order, List<KeyValuePair<Guid, string>> content, List<KeyValuePair<Guid, string>> properties)
         {
             Title = title;
             Description = description;
@@ -15,6 +15,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
             PageId = pageId;
             Content = content;
             Properties = properties;
+            Order = order;
         }
 
         public string Title { get; set; }
@@ -28,6 +29,8 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
         public bool Unpublish { get; }
 
         public Guid PageId { get; set; }
+
+        public int Order { get; set; }
 
         public List<KeyValuePair<Guid, string>> Content { get; }
 

@@ -14,6 +14,8 @@
 
         public bool Published { get; set; }
 
+        public int Order { get; set; }
+
         public IEnumerable<GetPageDetailsResponseContentItem> ContentItems { get; set; }
 
 

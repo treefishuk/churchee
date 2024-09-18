@@ -142,6 +142,7 @@
         {
             Title = result.Title,
             Description = result.Description,
+            Order = result.Order,
             Parent = new DropdownInput
             {
                 Title = result.ParentName,
@@ -177,7 +178,7 @@
 
         bool publish = (Submit == "Publish");
 
-        var result = await Mediator.Send(new UpdatePageCommand(InputModel.Title, InputModel.Description, InputModel.Parent.Value, unpublish, publish, Id, content, properties), default);
+        var result = await Mediator.Send(new UpdatePageCommand(InputModel.Title, InputModel.Description, InputModel.Parent.Value, unpublish, publish, Id, InputModel.Order, content, properties), default);
 
         if (result.IsSuccess)
         {

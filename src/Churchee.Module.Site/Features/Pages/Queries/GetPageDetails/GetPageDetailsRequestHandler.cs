@@ -28,6 +28,7 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                     Description = s.Description,
                     Url = s.Url,
                     Published = s.Published,
+                    Order = s.Order ?? 10,
                     ContentItems = s.PageContent
                     .OrderBy(o => o.PageTypeContent.Order)
                     .Select(m => new GetPageDetailsResponseContentItem

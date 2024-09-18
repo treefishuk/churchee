@@ -23,7 +23,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
                 .ApplySpecification(new PageWithContentAndPropertiesSpecification(request.PageId))
                 .FirstOrDefault();
 
-            page.UpdateInfo(request.Title, request.Description, request.ParentId);
+            page.UpdateInfo(request.Title, request.Description, request.ParentId, request.Order);
             page.UpdateContent(request.Content);
 
             await _storage.SaveChangesAsync(cancellationToken);
