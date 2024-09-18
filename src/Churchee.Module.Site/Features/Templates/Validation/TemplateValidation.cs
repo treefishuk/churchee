@@ -82,7 +82,7 @@ namespace Churchee.Module.Site.Features.Templates.Validation
             foreach (Match match in matches)
             {
                 var tag = match.Value;
-                if (tag.Contains("youtube.com/embed"))
+                if (tag.Contains("youtube-nocookie.com/embed"))
                 {
                     continue; // Allow YouTube embeds
                 }

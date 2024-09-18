@@ -53,7 +53,7 @@ namespace Churchee.Module.Site.Features.Pages.Validation
             foreach (Match match in matches)
             {
                 var tag = match.Value;
-                if (tag.Contains("youtube.com/embed"))
+                if (tag.Contains("youtube-nocookie.com/embed"))
                 {
                     continue;
                 }
