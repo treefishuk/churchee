@@ -180,10 +180,10 @@
 
         var result = await Mediator.Send(new UpdatePageCommand(InputModel.Title, InputModel.Description, InputModel.Parent.Value, unpublish, publish, Id, InputModel.Order, content, properties), default);
 
+        NotificationService.Notify(result, "Saved Successfully");
+
         if (result.IsSuccess)
         {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
-
             if (publish)
             {
                 _isPublished = true;
@@ -194,13 +194,6 @@
                 _isPublished = false;
             }
         }
-
-        if (!result.IsSuccess)
-        {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Somerthing appears to have gone wrong, please check all fields and try again." });
-        }
-
-
     }
 
     public void CancelForm()

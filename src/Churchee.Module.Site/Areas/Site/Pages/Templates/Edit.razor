@@ -30,11 +30,12 @@
         InputModel = new EditTemplateInputModel(response.Id, response.Content);
 
     }
-
+     
     private async Task ValidSubmitForm()
     {
         var result = await Mediator.Send(new UpdateTemplateContentComand(InputModel.Id, InputModel.Content));
-       
-        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+
+        NotificationService.Notify(result);
+
     }
 }
