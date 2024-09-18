@@ -166,6 +166,7 @@
         editModel.AdditionalContent = selected.AdditionalContent ?? string.Empty;
         editModel.LinkUrl = selected.LinkUrl ?? string.Empty;
         editModel.CssClass = selected.CssClass ?? string.Empty;
+        editModel.Order = selected.Order;
 
         var result = await DialogService.OpenAsync("Edit Media Item", ds =>
         @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidEditSubmitForm(id)) />
@@ -184,7 +185,7 @@
 
     private async Task ValidCreateSubmitForm()
     {
-        var result = await Mediator.Send(new CreateMediaItemCommand(createModel.Name, Path.GetFileNameWithoutExtension(createModel.File.FileName), Path.GetExtension(createModel.File.FileName), createModel.Description, createModel.AdditionalContent, activeFolderId, createModel.File.Value, createModel.LinkUrl, createModel.CssClass));
+        var result = await Mediator.Send(new CreateMediaItemCommand(createModel.Name, Path.GetFileNameWithoutExtension(createModel.File.FileName), Path.GetExtension(createModel.File.FileName), createModel.Description, createModel.AdditionalContent, activeFolderId, createModel.File.Value, createModel.LinkUrl, createModel.CssClass, createModel.Order));
 
         if (result.IsSuccess)
         {
@@ -210,7 +211,7 @@
 
     private async Task ValidEditSubmitForm(Guid id)
     {
-        var result = await Mediator.Send(new UpdateMediaItemCommand(id, editModel.Name, Path.GetFileNameWithoutExtension(editModel.File.FileName), Path.GetExtension(editModel.File.FileName), editModel.LinkUrl, editModel.Description, editModel.AdditionalContent, editModel.CssClass, editModel.File.Value));
+        var result = await Mediator.Send(new UpdateMediaItemCommand(id, editModel.Name, Path.GetFileNameWithoutExtension(editModel.File.FileName), Path.GetExtension(editModel.File.FileName), editModel.LinkUrl, editModel.Description, editModel.AdditionalContent, editModel.CssClass, editModel.File.Value, editModel.Order));
 
         if (result.IsSuccess)
         {

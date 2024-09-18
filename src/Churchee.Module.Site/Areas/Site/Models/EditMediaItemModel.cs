@@ -13,6 +13,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             LinkUrl = string.Empty;
             CssClass = string.Empty;
             File = new Upload();
+            Order = 10;
         }
 
         [Required]
@@ -31,8 +32,13 @@ namespace Churchee.Module.Site.Areas.Site.Models
         [RegularExpression(pattern: RegexPattern.SingleLowercaseWord, ErrorMessage = "Must be a single camelcase string")]
         public string CssClass { get; set; }
 
+        [Required]
+        public int Order { get; set; }
+
         [DataType(DataTypes.Html)]
         public string AdditionalContent { get; set; }
+
+
 
     }
 }

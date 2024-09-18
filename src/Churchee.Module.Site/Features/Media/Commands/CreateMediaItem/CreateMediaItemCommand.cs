@@ -5,7 +5,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 {
     public class CreateMediaItemCommand : IRequest<CommandResponse>
     {
-        public CreateMediaItemCommand(string name, string fileName, string extention, string description, string additionalContent, Guid? folderId, string base64Image, string linkUrl, string cssClass)
+        public CreateMediaItemCommand(string name, string fileName, string extention, string description, string additionalContent, Guid? folderId, string base64Image, string linkUrl, string cssClass, int order)
         {
             Name = name;
             FileName = fileName;
@@ -16,6 +16,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
             Base64Image = base64Image;
             LinkUrl = linkUrl;
             CssClass = cssClass;
+            Order = order;
         }
 
         public string Name { get; set; }
@@ -36,6 +37,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string CssClass { get; set; }
 
+        public int Order { get; set; }
 
     }
 }

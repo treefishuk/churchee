@@ -27,6 +27,7 @@ namespace Churchee.Module.Site.Entities
             MediaFolderId = mediaFolderId;
             LinkUrl = linkUrl;
             CssClass = cssClass;
+            Order = 10;
         }
 
         public void UpdateMediaUrl(string mediaUrl)
@@ -37,7 +38,7 @@ namespace Churchee.Module.Site.Entities
             }
         }
 
-        public void UpdateDetails(string title, string description, string html, string linkUrl, string cssClass)
+        public void UpdateDetails(string title, string description, string html, string linkUrl, string cssClass, int order)
         {
             if (!string.IsNullOrEmpty(title))
             {
@@ -65,6 +66,8 @@ namespace Churchee.Module.Site.Entities
                 CssClass = cssClass;
             }
 
+            Order = order;
+
         }
 
         public string Title { get; protected set; }
@@ -82,6 +85,8 @@ namespace Churchee.Module.Site.Entities
         public Guid? MediaFolderId { get; protected set; }
 
         public MediaFolder MediaFolder { get; set; }
+
+        public int? Order { get; protected set; }
 
 
     }
