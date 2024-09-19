@@ -35,6 +35,8 @@ namespace Churchee.Module.Site.Registration
             {
                 etb.ToTable("Pages");
 
+                etb.Property<int?>("OldOrder").HasColumnName("Order");
+
             });
 
             modelbuilder.Entity<MediaItem>(etb =>
