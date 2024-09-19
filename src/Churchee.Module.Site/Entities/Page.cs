@@ -31,8 +31,6 @@ namespace Churchee.Module.Site.Entities
 
         public ICollection<PageContent> PageContent { get; set; }
 
-        public int? Order { get; set; }
-
         public void AddContent(Guid pageTypeContentId, Guid pageId, string content, int version)
         {
             var newContent = new PageContent(pageTypeContentId, pageId, content, version);

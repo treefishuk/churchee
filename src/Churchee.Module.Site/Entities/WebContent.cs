@@ -72,5 +72,8 @@ namespace Churchee.Module.Site.Entities
         public string SourceName { get; protected set; }
 
         public string SourceId { get; protected set; }
+
+        public int Order { get; set; }
+
     }
 }

@@ -15,6 +15,8 @@ namespace Churchee.Module.Site.Registration
 
                 etb.Property(t => t.PublishedData).HasColumnType("nvarchar(max)");
 
+                etb.Property(t => t.Order).HasDefaultValue(10);
+
                 etb.HasMany(m => m.RedirectUrls)
                 .WithOne()
                 .OnDelete(DeleteBehavior.NoAction);
