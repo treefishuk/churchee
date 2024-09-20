@@ -20,7 +20,7 @@ namespace Radzen
             {
                 foreach (var error in commandResponse.Errors)
                 {
-                    service.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description });
+                    service.Notify(message: new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description, Duration = 6000 });
                 }
             }
         }

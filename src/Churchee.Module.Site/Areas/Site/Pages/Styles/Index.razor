@@ -32,7 +32,7 @@
     {
         var result = await Mediator.Send(new UpdateStylesCommand(InputModel.Styles));
 
-        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+        NotificationService.Notify(result);
 
     }
 }

@@ -60,6 +60,7 @@ namespace Churchee.Presentation.Admin
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
             builder.Services.AddValidatorsFromAssemblies(assemblies);
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandlingBehavior<,>));
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 

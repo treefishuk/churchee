@@ -19,7 +19,7 @@ namespace Churchee.Module.Events.Features.Commands
 
         public async Task<CommandResponse> Handle(ActivateEventsCommand request, CancellationToken cancellationToken)
         {
-            var tenant = _dataStore.GetRepository<ApplicationTenant>().GetById(request.ApplicationTenantId);
+            var tenant = await _dataStore.GetRepository<ApplicationTenant>().GetByIdAsync(request.ApplicationTenantId);
 
             Guid eventListingPageTypeId = Guid.NewGuid();
 
