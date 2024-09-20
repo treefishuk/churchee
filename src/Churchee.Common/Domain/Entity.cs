@@ -9,13 +9,13 @@ namespace Churchee.Common.Data
 
         public Guid ApplicationTenantId { get; protected set; }
 
-        public Guid? CreatedById { get; }
+        public Guid? CreatedById { get; private set; }
 
         public DateTime? CreatedDate { get; set; }
 
         public string CreatedByUser { get; set; }
 
-        public Guid? ModifiedById { get; }
+        public Guid? ModifiedById { get; private set; }
 
         public DateTime? ModifiedDate { get; private set; }
 
@@ -31,6 +31,8 @@ namespace Churchee.Common.Data
             ApplicationTenantId = applicationTenantId;
             ModifiedDate = DateTime.Now;
             CreatedDate = DateTime.Now;
+            CreatedById = Guid.Empty;
+            ModifiedById = Guid.Empty;
         }
 
         protected Entity(Guid id, Guid applicationTenantId)
@@ -39,6 +41,8 @@ namespace Churchee.Common.Data
             ApplicationTenantId = applicationTenantId;
             ModifiedDate = DateTime.Now;
             CreatedDate = DateTime.Now;
+            CreatedById = Guid.Empty;
+            ModifiedById = Guid.Empty;
         }
     }
 }
