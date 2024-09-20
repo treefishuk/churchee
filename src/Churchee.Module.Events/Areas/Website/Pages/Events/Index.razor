@@ -32,8 +32,6 @@
         imagePrefix = await Mediator.Send(new GetCDNPathQuery());
     }
 
-    int count;
-
     IEnumerable<GetListingQueryResponseItem> listingData;
 
     bool isLoading = false;
@@ -72,9 +70,6 @@
                     take: args?.Top ?? 20,
                     searchText: args?.Filter ?? string.Empty,
                     orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "CreatedDate desc" : args?.OrderBy), default);
-
-        // Important!!! Make sure the Count property of RadzenDataGrid is set.
-        count = result.RecordsTotal;
 
         // Perform paging via Skip and Take.
         listingData = result.Data;

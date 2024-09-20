@@ -3,7 +3,6 @@ using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Linq.Dynamic.Core;
 
 namespace Churchee.Module.Events.Features.Queries
@@ -12,12 +11,10 @@ namespace Churchee.Module.Events.Features.Queries
     {
 
         private readonly IDataStore _storage;
-        private readonly IConfiguration _configuration;
 
-        public GetListingQueryHandler(IDataStore storage, IConfiguration configuration)
+        public GetListingQueryHandler(IDataStore storage)
         {
             _storage = storage;
-            _configuration = configuration;
         }
 
         public async Task<DataTableResponse<GetListingQueryResponseItem>> Handle(GetListingQuery request, CancellationToken cancellationToken)

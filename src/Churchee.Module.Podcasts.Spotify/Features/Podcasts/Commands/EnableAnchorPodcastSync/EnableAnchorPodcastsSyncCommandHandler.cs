@@ -11,7 +11,6 @@ using Churchee.Module.Site.Entities;
 using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -26,16 +25,14 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly ICurrentUser _currentUser;
-        private readonly ILogger<EnableSpotifyPodcastsSyncCommandHandler> _logger;
         private readonly IBlobStore _blobStore;
         private readonly IImageProcessor _imageProcessor;
 
-        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, IRecurringJobManager recurringJobManager, ICurrentUser currentUser, ILogger<EnableSpotifyPodcastsSyncCommandHandler> logger, IDataStore dataStore, IBackgroundJobClient backgroundJobClient, IBlobStore blobStore, IImageProcessor imageProcessor)
+        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, IRecurringJobManager recurringJobManager, ICurrentUser currentUser, IDataStore dataStore, IBackgroundJobClient backgroundJobClient, IBlobStore blobStore, IImageProcessor imageProcessor)
         {
             _settingStore = settingStore;
             _recurringJobManager = recurringJobManager;
             _currentUser = currentUser;
-            _logger = logger;
             _dataStore = dataStore;
             _backgroundJobClient = backgroundJobClient;
             _blobStore = blobStore;

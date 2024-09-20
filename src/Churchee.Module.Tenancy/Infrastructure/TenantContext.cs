@@ -11,9 +11,9 @@ namespace Churchee.Sites.db
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelbuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<ApplicationTenant>(etb =>
+            modelBuilder.Entity<ApplicationTenant>(etb =>
             {
                 etb.ToTable("ApplicationTenant");
                 etb.HasKey(e => e.Id);
@@ -22,12 +22,12 @@ namespace Churchee.Sites.db
                    .HasForeignKey(e => e.ApplicationTenantId);
             });
 
-            modelbuilder.Entity<ApplicationFeature>(etb =>
+            modelBuilder.Entity<ApplicationFeature>(etb =>
             {
                 etb.HasKey(e => e.Id);
             });
 
-            modelbuilder.Entity<ApplicationHost>(etb =>
+            modelBuilder.Entity<ApplicationHost>(etb =>
             {
                 etb.HasKey(e => e.Id);
             });

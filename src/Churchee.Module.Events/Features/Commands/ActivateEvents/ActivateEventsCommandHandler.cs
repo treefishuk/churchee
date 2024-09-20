@@ -10,13 +10,10 @@ namespace Churchee.Module.Events.Features.Commands
 {
     public class ActivateEventsCommandHandler : IRequestHandler<ActivateEventsCommand, CommandResponse>
     {
-
-        private readonly ISettingStore _settingStore;
         private readonly IDataStore _dataStore;
 
-        public ActivateEventsCommandHandler(ISettingStore settingStore, IDataStore dataStore)
+        public ActivateEventsCommandHandler(IDataStore dataStore)
         {
-            _settingStore = settingStore;
             _dataStore = dataStore;
         }
 

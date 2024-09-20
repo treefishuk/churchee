@@ -4,7 +4,6 @@ using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Entities;
 using Hangfire;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 {
@@ -14,15 +13,13 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
         private readonly Guid _rssFeedSettingKey = Guid.Parse("a9cd25bb-23b4-45ba-9484-04fc458ad29a");
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly ICurrentUser _currentUser;
-        private readonly ILogger<DisableSpotifyPodcastSyncCommandHandler> _logger;
         private readonly IDataStore _dataStore;
 
 
-        public DisableSpotifyPodcastSyncCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, ILogger<DisableSpotifyPodcastSyncCommandHandler> logger, IRecurringJobManager recurringJobManager, IDataStore dataStore)
+        public DisableSpotifyPodcastSyncCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IRecurringJobManager recurringJobManager, IDataStore dataStore)
         {
             _settingStore = settingStore;
             _currentUser = currentUser;
-            _logger = logger;
             _recurringJobManager = recurringJobManager;
             _dataStore = dataStore;
         }

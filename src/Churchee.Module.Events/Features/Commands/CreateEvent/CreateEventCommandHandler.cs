@@ -1,5 +1,4 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
@@ -19,15 +18,13 @@ namespace Churchee.Module.Events.Features.Commands
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
         private readonly IBlobStore _blobStore;
-        private readonly IImageProcessor _imageProcessor;
         private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IImageProcessor imageProcessor, IBackgroundJobClient backgroundJobClient)
+        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
             _blobStore = blobStore;
-            _imageProcessor = imageProcessor;
             _backgroundJobClient = backgroundJobClient;
         }
 

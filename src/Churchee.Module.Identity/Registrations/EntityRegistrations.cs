@@ -7,9 +7,9 @@ namespace Churchee.Module.Identity.Registration
 {
     public class EntityRegistrations : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder builder)
+        public void RegisterEntities(ModelBuilder modelbuilder)
         {
-            builder.Entity<ApplicationUser>(b =>
+            modelbuilder.Entity<ApplicationUser>(b =>
             {
                 // Primary key
                 b.HasKey(u => u.Id);
@@ -36,7 +36,7 @@ namespace Churchee.Module.Identity.Registration
                 b.HasMany<IdentityUserRole<Guid>>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
             });
 
-            builder.Entity<IdentityUserClaim<Guid>>(b =>
+            modelbuilder.Entity<IdentityUserClaim<Guid>>(b =>
             {
                 // Primary key
                 b.HasKey(uc => uc.Id);
@@ -45,7 +45,7 @@ namespace Churchee.Module.Identity.Registration
                 b.ToTable("AspNetUserClaims");
             });
 
-            builder.Entity<IdentityUserLogin<Guid>>(b =>
+            modelbuilder.Entity<IdentityUserLogin<Guid>>(b =>
             {
                 // Composite primary key consisting of the LoginProvider and the key to use
                 // with that provider
@@ -59,7 +59,7 @@ namespace Churchee.Module.Identity.Registration
                 b.ToTable("AspNetUserLogins");
             });
 
-            builder.Entity<IdentityUserToken<Guid>>(b =>
+            modelbuilder.Entity<IdentityUserToken<Guid>>(b =>
             {
                 // Composite primary key consisting of the UserId, LoginProvider and Name
                 b.HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
@@ -70,7 +70,7 @@ namespace Churchee.Module.Identity.Registration
                 b.ToTable("AspNetUserTokens");
             });
 
-            builder.Entity<ApplicationRole>(b =>
+            modelbuilder.Entity<ApplicationRole>(b =>
             {
                 // Primary key
                 b.HasKey(r => r.Id);
@@ -97,7 +97,7 @@ namespace Churchee.Module.Identity.Registration
 
             });
 
-            builder.Entity<IdentityRoleClaim<Guid>>(b =>
+            modelbuilder.Entity<IdentityRoleClaim<Guid>>(b =>
             {
                 // Primary key
                 b.HasKey(rc => rc.Id);
@@ -106,7 +106,7 @@ namespace Churchee.Module.Identity.Registration
                 b.ToTable("AspNetRoleClaims");
             });
 
-            builder.Entity<IdentityUserRole<Guid>>(b =>
+            modelbuilder.Entity<IdentityUserRole<Guid>>(b =>
             {
                 // Primary key
                 b.HasKey(r => new { r.UserId, r.RoleId });

@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 
 namespace Churchee.Module.Identity.Managers
 {
     public class ChurcheeUserManager : UserManager<ApplicationUser>
     {
-        private readonly IServiceProvider _services;
-
         public ChurcheeUserManager(IUserStore<ApplicationUser> store,
             IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<ApplicationUser> passwordHasher,
@@ -29,7 +27,6 @@ namespace Churchee.Module.Identity.Managers
                   services ?? throw new ArgumentNullException(nameof(services)),
                   logger ?? throw new ArgumentNullException(nameof(logger)))
         {
-            _services = services;
         }
     }
 }

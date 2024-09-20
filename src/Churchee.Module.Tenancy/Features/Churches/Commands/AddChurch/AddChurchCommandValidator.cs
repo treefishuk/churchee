@@ -5,13 +5,8 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands.AddChurch
 {
     public class AddChurchCommandValidator : AbstractValidator<AddChurchCommand>
     {
-
-        private readonly ICurrentUser _currentUser;
-
         public AddChurchCommandValidator(ICurrentUser currentUser)
         {
-            _currentUser = currentUser;
-
             RuleFor(x => x.Name).Custom((command, context) =>
             {
 

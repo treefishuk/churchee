@@ -23,7 +23,7 @@
     </div> 
 </SectionContent>
 
-<RadzenDataGrid @ref="grid" AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+<RadzenDataGrid AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
                 Data="@churches" TItem="GetListingQueryResponseItem">
     <Columns>
 
@@ -72,8 +72,6 @@
     private Guid _activeTenant { get; set; } = default!;
 
     IEnumerable<GetListingQueryResponseItem> churches = default!;
-
-    RadzenDataGrid<GetListingQueryResponseItem> grid = default!;
 
     protected override async Task OnInitializedAsync()
     {

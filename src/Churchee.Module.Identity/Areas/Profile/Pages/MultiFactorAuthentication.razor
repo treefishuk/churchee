@@ -75,11 +75,6 @@
         </div>
     }
 
-@*     if (IsMachineRemembered)
-    {
-        <RadzenButton Text="Forget this browser" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" />
-    } *@
-
     <RadzenButton Text="Disable 2FA" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" Click="Disable2FA" />
     <RadzenButton Text="Reset recovery codes" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" />
 
@@ -176,11 +171,6 @@
             StateHasChanged();
 
         }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-
     }
 
     private async Task SetProperties()
