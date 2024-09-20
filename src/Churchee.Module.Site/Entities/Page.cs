@@ -54,7 +54,7 @@ namespace Churchee.Module.Site.Entities
             {
                 var pageContent = PageContent.FirstOrDefault(d => d.PageTypeContentId == item.Key);
 
-                if (content != null)
+                if (pageContent != null)
                 {
                     pageContent.Value = item.Value;
                 }

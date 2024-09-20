@@ -8,7 +8,6 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background-position: center;
   background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
   transition: background-size 0.8s, opacity 0.8s;
 }
@@ -33,7 +32,6 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background-position: center;
   background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
   transition: background-size 0.8s, opacity 0.8s;
 }
@@ -54,7 +52,6 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background-position: center;
   background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
   transition: background-size 0.8s, opacity 0.8s;
 }
@@ -70,7 +67,6 @@
 }
 
 .rz-panel-menu .rz-navigation-item-link {
-  background-position: center;
   transition: background-size 0.8s;
   background: radial-gradient(circle, transparent 1%, var(--rz-base-300) 1%) center/15000%;
 }
@@ -223,7 +219,6 @@
 }
 
 .rz-fileupload-choose.rz-button {
-  background-position: center;
   transition: background-size 0.8s;
   background: radial-gradient(circle, transparent 1%, rgba(0, 0, 0, 0.12) 1%) center/15000%;
 }
@@ -316,7 +311,6 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background-position: center;
   background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
   transition: background-size 0.8s, opacity 0.8s;
 }
@@ -387,7 +381,6 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background-position: center;
   background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
   transition: background-size 0.8s, opacity 0.8s;
 }
@@ -2711,7 +2704,6 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background-position: center;
   background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
   transition: background-size 0.8s, opacity 0.8s;
 }
@@ -11841,7 +11833,6 @@ a:focus-visible .rz-fieldset-toggler {
 }
 
 .rz-listbox-item {
-  cursor: default;
   padding: var(--rz-listbox-item-padding);
   margin: var(--rz-listbox-item-margin);
   cursor: default;

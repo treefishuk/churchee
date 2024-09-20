@@ -61,7 +61,6 @@
 
   } @else {
 
-    background-position: center;
     transition: background-size 0.8s;
     background: radial-gradient(circle, transparent 1%, $ripple-background 1%)  center/15000%;
 
