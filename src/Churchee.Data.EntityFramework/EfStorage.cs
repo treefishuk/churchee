@@ -57,8 +57,8 @@ namespace Churchee.Data.EntityFramework
 
                 if (user != null && user.Identity.IsAuthenticated)
                 {
-                    var nameClaim = user.Claims.Where(w => w.Type == ClaimTypes.Name).FirstOrDefault();
-                    var idClaim = user.Claims.Where(w => w.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
+                    var nameClaim = user.Claims.FirstOrDefault(w => w.Type == ClaimTypes.Name);
+                    var idClaim = user.Claims.FirstOrDefault(w => w.Type == ClaimTypes.NameIdentifier);
 
                     string name = nameClaim?.Value ?? "Unknown";
                     var userId = idClaim != null ? Guid.Parse(idClaim.Value) : Guid.Empty;

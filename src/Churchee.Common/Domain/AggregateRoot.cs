@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Churchee.Common.Abstractions.Entities;
+﻿using Churchee.Common.Abstractions.Entities;
 using MediatR;
+using System;
+using System.Collections.Generic;
 
 namespace Churchee.Common.Data
 {
@@ -9,7 +9,7 @@ namespace Churchee.Common.Data
     {
         public void AddDomainEvent(INotification eventItem)
         {
-            _domainEvents = _domainEvents ?? new List<INotification>();
+            _domainEvents ??= [];
             _domainEvents.Add(eventItem);
         }
 

@@ -9,13 +9,13 @@ namespace Churchee.Common.Data
 
         public Guid ApplicationTenantId { get; protected set; }
 
-        public Guid? CreatedById { get; private set; }
+        public Guid? CreatedById { get; }
 
         public DateTime? CreatedDate { get; set; }
 
         public string CreatedByUser { get; set; }
 
-        public Guid? ModifiedById { get; private set; }
+        public Guid? ModifiedById { get; }
 
         public DateTime? ModifiedDate { get; private set; }
 

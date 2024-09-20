@@ -116,7 +116,7 @@
         bool replaceNameResult = await ReplaceApplicationTenenatId(claims, newId, user);
         bool replaceIdResult = await ReplaceApplicationTenenatName(claims, newId, user);
 
-        if(!replaceIdResult || !replaceIdResult)
+        if (!replaceNameResult || !replaceIdResult)
         {
             NotificationService.Notify(NotificationSeverity.Error, "Failed to Switch Church Context");
 

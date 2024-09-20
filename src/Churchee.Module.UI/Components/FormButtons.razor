@@ -27,20 +27,10 @@
 
     public void CancelForm()
     {
-        var currentUrl = _navigationManager.Uri;
+        var currentUrl = new Uri(_navigationManager.Uri);
+        var parentUrl = new Uri(currentUrl, "..").ToString();
 
-        currentUrl = currentUrl.Replace("/edit", "");
-
-        Uri uri = new Uri(currentUrl);
-
-        var parent = uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
-
-        int lastSlash = parent.LastIndexOf('/');
-
-        parent = (lastSlash > -1) ? parent.Substring(0, lastSlash) : parent;
-
-        _navigationManager.NavigateTo(parent);
-
+        _navigationManager.NavigateTo(parentUrl);
     }
 
 }

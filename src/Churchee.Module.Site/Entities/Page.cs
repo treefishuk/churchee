@@ -50,10 +50,15 @@ namespace Churchee.Module.Site.Entities
 
         public void UpdateContent(List<KeyValuePair<Guid, string>> content)
         {
-
             foreach (var item in content)
             {
-                PageContent.FirstOrDefault(d => d.PageTypeContentId == item.Key).Value = item.Value;
+                var pageContent = PageContent.FirstOrDefault(d => d.PageTypeContentId == item.Key);
+
+                if (content != null)
+                {
+                    pageContent.Value = item.Value;
+                }
+
             }
 
         }

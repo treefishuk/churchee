@@ -14,14 +14,12 @@ namespace Churchee.Data.EntityFramework.Converters
 
         private static string EncryptFunc(string key, string val)
         {
-            string test = val;
-
-            return AESEncryptionHelper.Encrypt(key, val);
+            return AesEncryptionHelper.Encrypt(key, val);
         }
 
         private static string DecryptFunc(string key, string val)
         {
-            return AESEncryptionHelper.Decrypt(key, val);
+            return AesEncryptionHelper.Decrypt(key, val);
         }
     }
 }

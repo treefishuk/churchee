@@ -8,7 +8,8 @@
             Property = code;
         }
 
-        public string Description { get; private set; }
-        public string Property { get; private set; }
+        public string Description { get; }
+
+        public string Property { get; }
     }
 }

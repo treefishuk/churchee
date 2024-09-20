@@ -34,7 +34,7 @@ namespace Churchee.Module.Site.Features.Pages.Validation
 
         private static bool ContainsScriptTags(string content)
         {
-            bool containsStyleTags = Regex.IsMatch(content, @"<script>", RegexOptions.IgnoreCase);
+            bool containsStyleTags = Regex.IsMatch(content, @"<script>", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
 
             if (containsStyleTags)
             {
@@ -48,7 +48,7 @@ namespace Churchee.Module.Site.Features.Pages.Validation
         internal static bool ContainsNonYouTubeEmbeds(string content)
         {
             var embedPattern = @"<(iframe|object|embed)[^>]*>";
-            var matches = Regex.Matches(content, embedPattern, RegexOptions.IgnoreCase);
+            var matches = Regex.Matches(content, embedPattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
 
             foreach (Match match in matches)
             {

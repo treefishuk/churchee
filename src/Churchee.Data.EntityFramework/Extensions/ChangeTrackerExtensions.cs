@@ -12,7 +12,7 @@ namespace Churchee.Data.EntityFramework.Extensions
         {
             foreach (var entity in entities)
             {
-                foreach (PropertyEntry property in entity.Properties.ToList().Where(o => o.Metadata.ClrType.Name.Equals("String") && o.CurrentValue is not null))
+                foreach (PropertyEntry property in entity.Properties.Where(o => o.Metadata.ClrType.Name.Equals("String") && o.CurrentValue is not null))
                 {
                     TrimFieldValue(property);
                 }

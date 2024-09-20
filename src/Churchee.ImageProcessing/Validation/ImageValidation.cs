@@ -25,7 +25,7 @@ namespace Churchee.ImageProcessing.Validation
 
                 string base64Trimmed = base64Image.Split(',')[1];
 
-                if (!Regex.IsMatch(base64Trimmed, base64Pattern))
+                if (!Regex.IsMatch(base64Trimmed, base64Pattern, RegexOptions.NonBacktracking, TimeSpan.FromSeconds(2)))
                 {
                     return false;
                 }

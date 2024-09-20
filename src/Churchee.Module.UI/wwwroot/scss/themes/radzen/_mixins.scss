@@ -47,7 +47,6 @@
       position: absolute;
       inset: 0;
       opacity: 0;
-      background-position: center;
       background: radial-gradient(circle, currentColor 1%, transparent 1%) center/15000%;
       transition: background-size 0.8s, opacity 0.8s;
     }

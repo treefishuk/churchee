@@ -15,30 +15,27 @@ namespace Churchee.Data.EntityFramework.Extensions
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                if (entityType.GetRootType() == entityType)
+                if (entityType.GetRootType() == entityType && entityType.ClrType.GetInterface(typeof(TInterface).Name) != null)
                 {
-                    if (entityType.ClrType.GetInterface(typeof(TInterface).Name) != null)
+                    var parameterType = Expression.Parameter(entityType.ClrType);
+
+                    var expressionFilter = ReplacingExpressionVisitor.
+                        Replace(expression.Parameters.Single(), parameterType, expression.Body);
+
+                    var builder = modelBuilder.Entity(entityType.ClrType);
+
+                    if (builder.Metadata.GetQueryFilter() != null)
                     {
-                        var parameterType = Expression.Parameter(entityType.ClrType);
+                        var currentQueryFilter = builder.Metadata.GetQueryFilter();
 
-                        var expressionFilter = ReplacingExpressionVisitor.
-                            Replace(expression.Parameters.Single(), parameterType, expression.Body);
+                        var currentExpressionFilter = ReplacingExpressionVisitor.Replace(
+                            currentQueryFilter.Parameters.Single(), parameterType, currentQueryFilter.Body);
 
-                        var builder = modelBuilder.Entity(entityType.ClrType);
-
-                        if (builder.Metadata.GetQueryFilter() != null)
-                        {
-                            var currentQueryFilter = builder.Metadata.GetQueryFilter();
-
-                            var currentExpressionFilter = ReplacingExpressionVisitor.Replace(
-                                currentQueryFilter.Parameters.Single(), parameterType, currentQueryFilter.Body);
-
-                            expressionFilter = Expression.AndAlso(currentExpressionFilter, expressionFilter);
-                        }
-
-                        modelBuilder.Entity(entityType.ClrType).
-                            HasQueryFilter(Expression.Lambda(expressionFilter, parameterType));
+                        expressionFilter = Expression.AndAlso(currentExpressionFilter, expressionFilter);
                     }
+
+                    modelBuilder.Entity(entityType.ClrType).
+                        HasQueryFilter(Expression.Lambda(expressionFilter, parameterType));
                 }
             }
 

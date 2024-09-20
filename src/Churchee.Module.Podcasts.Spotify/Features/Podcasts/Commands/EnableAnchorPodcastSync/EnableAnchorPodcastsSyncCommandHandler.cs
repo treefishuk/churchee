@@ -143,11 +143,6 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             var serializer = new XmlSerializer(typeof(rss));
 
-            if (serializer == null)
-            {
-                throw new NullReferenceException(nameof(serializer));
-            }
-
             var reader = doc.Root.CreateReader();
 
             object? temp = serializer.Deserialize(reader);

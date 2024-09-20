@@ -198,20 +198,7 @@
 
     public void CancelForm()
     {
-        var currentUrl = NavigationManager.Uri;
-
-        currentUrl = currentUrl.Replace("/edit", "");
-
-        Uri uri = new Uri(currentUrl);
-
-        var parent = uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
-
-        int lastSlash = parent.LastIndexOf('/');
-
-        parent = (lastSlash > -1) ? parent.Substring(0, lastSlash) : parent;
-
-        NavigationManager.NavigateTo(parent);
-
+        NavigationManager.NavigateTo("/management/pages");
     }
 
 }

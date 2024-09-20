@@ -1,5 +1,4 @@
 ﻿using Azure.Storage.Blobs;
-using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -12,12 +11,10 @@ namespace Churchee.Blobstorage.Providers.Azure
     public class AzureBlobStore : IBlobStore
     {
         private readonly string _connectionString;
-        private readonly IImageProcessor _imageProcessor;
 
-        public AzureBlobStore(IConfiguration configuartion, IImageProcessor imageProcessor)
+        public AzureBlobStore(IConfiguration configuartion)
         {
             _connectionString = configuartion.GetConnectionString("Storage");
-            _imageProcessor = imageProcessor;
         }
 
         public async Task<Stream> GetAsync(Guid applicationTenantId, string fullPath, CancellationToken cancellationToken = default)

@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
         {
             var pageType = _storage.GetRepository<PageType>()
                 .ApplySpecification(new IncludePageTypeContentSpecification())
-                .FirstOrDefault(f => f.Id == request.PageTypeId);
+                .First(f => f.Id == request.PageTypeId);
 
             pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required, request.Order);
 

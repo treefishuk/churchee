@@ -34,9 +34,9 @@ namespace Churchee.Data.EntityFramework
             _dbContext.Set<T>().Attach(entity);
         }
 
-        public virtual T GetById(params object[] id)
+        public virtual T GetById(params object[] keyValues)
         {
-            return _dbSet.Find(id);
+            return _dbSet.Find(keyValues);
         }
 
         public virtual IQueryable<T> GetQueryable()
@@ -74,18 +74,18 @@ namespace Churchee.Data.EntityFramework
             _dbSet.Remove(entity);
         }
 
-        public async Task SoftDelete(Guid id)
-        {
-            var entity = await _dbSet.FindAsync(id);
-
-            entity.Deleted = true;
-        }
-
         public async Task PermenantDelete(Guid id)
         {
             var entity = await _dbSet.FindAsync(id);
 
             _dbSet.Remove(entity);
+        }
+
+        public async Task SoftDelete(Guid id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+
+            entity.Deleted = true;
         }
 
         public bool AnyWithFiltersDisabled(Expression<Func<T, bool>> predicate)

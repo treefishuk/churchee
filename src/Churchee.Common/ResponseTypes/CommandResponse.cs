@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Churchee.Common.ResponseTypes
 {
@@ -8,7 +6,7 @@ namespace Churchee.Common.ResponseTypes
     {
         public CommandResponse()
         {
-            Errors = new List<ValidationError>();
+            Errors = [];
         }
 
         public void AddError(string error, string propertyName)
@@ -18,6 +16,6 @@ namespace Churchee.Common.ResponseTypes
 
         public List<ValidationError> Errors { get; }
 
-        public bool IsSuccess => Errors.Count() == 0;
+        public bool IsSuccess => Errors.Count == 0;
     }
 }

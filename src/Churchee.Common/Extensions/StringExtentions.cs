@@ -5,7 +5,7 @@ using System.Web;
 
 namespace System
 {
-    public static class StringExtentions
+    public static partial class StringExtentions
     {
         public static string ToTitleCase(this string str)
         {
@@ -59,11 +59,16 @@ namespace System
             return ToCamelCase(text);
         }
 
+        [GeneratedRegex(@"[^\p{L}0-9 -\.]", RegexOptions.None, matchTimeoutMilliseconds: 2000)]
+        private static partial Regex InvalidUrlCharactersRegex();
+
         public static string ToURL(this string text)
         {
-            string dashed = text.Replace(" ", "-").Replace(".", "");
+            ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-            string result = Regex.Replace(dashed, @"[^\p{L}0-9 -]", "");
+            string dashed = Regex.Replace(text, @"\s+", "-", RegexOptions.None, TimeSpan.FromSeconds(2));
+
+            string result = InvalidUrlCharactersRegex().Replace(dashed, string.Empty);
 
             return HttpUtility.UrlEncode(result.ToLowerInvariant());
         }

@@ -18,7 +18,7 @@ namespace Churchee.Module.Site.Features.Styles.Commands
 
         public async Task<CommandResponse> Handle(UpdateStylesCommand request, CancellationToken cancellationToken)
         {
-            var css = _storage.GetRepository<Css>().GetQueryable().FirstOrDefault();
+            var css = _storage.GetRepository<Css>().GetQueryable().First();
 
             css.SetStyles(request.Css);
 

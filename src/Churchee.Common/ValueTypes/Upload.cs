@@ -23,12 +23,9 @@ namespace Churchee.Common.ValueTypes
         {
             var results = new List<ValidationResult>();
 
-            if (validationContext.ImplementsInterface<RequiredAttribute>())
+            if (validationContext.ImplementsInterface<RequiredAttribute>() && string.IsNullOrEmpty(Value))
             {
-                if (string.IsNullOrEmpty(Value))
-                {
-                    results.Add(new ValidationResult("Required"));
-                }
+                results.Add(new ValidationResult("Required"));
             }
 
             return results;

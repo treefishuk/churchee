@@ -11,7 +11,6 @@ namespace Radzen
 
         public static void Notify(this NotificationService service, CommandResponse commandResponse, string successMessage)
         {
-
             if (commandResponse.IsSuccess)
             {
                 service.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = successMessage });

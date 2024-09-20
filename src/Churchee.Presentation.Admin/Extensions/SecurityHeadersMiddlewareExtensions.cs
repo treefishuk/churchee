@@ -1,7 +1,11 @@
-public static class SecurityHeadersMiddlewareExtensions
+
+namespace Churchee.Presentation.Admin
 {
-    public static IApplicationBuilder UseSecurityHeadersMiddleware(this IApplicationBuilder builder)
+    public static class SecurityHeadersMiddlewareExtensions
     {
-        return builder.UseMiddleware<SecurityHeadersMiddleware>();
+        public static IApplicationBuilder UseSecurityHeadersMiddleware(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<SecurityHeadersMiddleware>();
+        }
     }
 }

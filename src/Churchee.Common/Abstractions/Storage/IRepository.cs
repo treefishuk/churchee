@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 
 namespace Churchee.Common.Abstractions.Storage
 {
-    public interface IRepository
-    {
-    }
+    public interface IRepository;
 
     public interface IRepository<T> : IRepository where T : class, IEntity
     {

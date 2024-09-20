@@ -21,7 +21,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
             var page = _storage.GetRepository<Page>()
                 .ApplySpecification(new PageWithContentAndPropertiesSpecification(request.PageId))
-                .FirstOrDefault();
+                .First();
 
             page.UpdateInfo(request.Title, request.Description, request.ParentId, request.Order);
             page.UpdateContent(request.Content);

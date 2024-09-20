@@ -161,6 +161,11 @@
     {
         var selected = data.FirstOrDefault(w => w.Id == id);
 
+        if (selected == null)
+        {
+            return;
+        }
+
         editModel.Name = selected.Title;
         editModel.Description = selected.Description ?? string.Empty;
         editModel.AdditionalContent = selected.AdditionalContent ?? string.Empty;
