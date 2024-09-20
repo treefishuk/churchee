@@ -20,7 +20,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
         private readonly ISettingStore _settingStore;
         private readonly IConfiguration _configuration;
 
-        public EnableFacebookIntegrationCommandHandler(IHttpClientFactory clientFactory, ICurrentUser currentUser, ISettingStore settingStore, IConfiguration configuration, IDataStore dataStore = null)
+        public EnableFacebookIntegrationCommandHandler(IHttpClientFactory clientFactory, ICurrentUser currentUser, ISettingStore settingStore, IConfiguration configuration, IDataStore dataStore)
         {
             _clientFactory = clientFactory;
             _currentUser = currentUser;
@@ -41,7 +41,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
             client.BaseAddress = new Uri("https://graph.facebook.com/v18.0/");
 
-            string facebookAppId = _configuration.GetValue<string>("facebookAppId");
+            string facebookAppId = _configuration.GetValue<string>("facebookAppId") ?? string.Empty;
 
             if (string.IsNullOrEmpty(facebookAppId))
             {
@@ -50,7 +50,12 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
             string pageId = await _settingStore.GetSettingValue(Guid.Parse("3de048ae-d711-4609-9b66-97564a9d0d68"), applicationTenantId);
 
-            string appSecret = _configuration.GetValue<string>("facebookAppSecret");
+            string appSecret = _configuration.GetValue<string>("facebookAppSecret") ?? string.Empty;
+
+            if (string.IsNullOrEmpty(appSecret))
+            {
+                throw new MissingConfirgurationSettingException(nameof(appSecret));
+            }
 
             string stateId = await _settingStore.GetSettingValue(Guid.Parse("841fb9d0-92ca-41b2-9cdb-5903a6ab7bad"), applicationTenantId);
 
@@ -91,7 +96,12 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
             var pagessResponse = JsonSerializer.Deserialize<FacebookPagesReponse>(pagessResponseJson, options);
 
-            string pageToken = pagessResponse.Data.Where(w => w.Id == pageId).Select(s => s.AccessToken).FirstOrDefault();
+            if (pagessResponse == null)
+            {
+                return new CommandResponse();
+            }
+
+            string pageToken = pagessResponse.Data.Where(w => w.Id == pageId).Select(s => s.AccessToken).FirstOrDefault() ?? string.Empty;
 
             tokenRepo.Create(new Token(applicationTenantId, SettingKeys.FacebookPageAccessToken, pageToken));
 

@@ -26,7 +26,7 @@ namespace Churchee.Module.Events.Features.Commands
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            var entity = await _dataStore.GetRepository<Event>().ApplySpecification(new EventByIdIncludingDatesSpecification(request.Id)).FirstOrDefaultAsync();
+            var entity = await _dataStore.GetRepository<Event>().ApplySpecification(new EventByIdIncludingDatesSpecification(request.Id)).FirstOrDefaultAsync(cancellationToken);
 
             entity.UpdateInfo(title: request.Title,
                                    description: request.Description,

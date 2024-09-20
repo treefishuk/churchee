@@ -24,7 +24,7 @@ namespace Churchee.Blobstorage.Providers.Azure
 
             var blob = client.GetBlobClient(fullPath);
 
-            return await blob.OpenReadAsync();
+            return await blob.OpenReadAsync(cancellationToken: cancellationToken);
         }
 
         public async Task<string> SaveAsync(Guid applicationTenantId, string fullPath, Stream stream, bool overrideExisting = false, CancellationToken cancellationToken = default)

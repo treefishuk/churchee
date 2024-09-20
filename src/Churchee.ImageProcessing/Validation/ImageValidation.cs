@@ -82,7 +82,7 @@ namespace Churchee.ImageProcessing.Validation
                 ".png" => SixLabors.ImageSharp.Formats.Png.PngFormat.Instance,
                 ".gif" => SixLabors.ImageSharp.Formats.Gif.GifFormat.Instance,
                 ".bmp" => SixLabors.ImageSharp.Formats.Bmp.BmpFormat.Instance,
-                _ => null,
+                _ => SixLabors.ImageSharp.Formats.Png.PngFormat.Instance,
             };
         }
 
