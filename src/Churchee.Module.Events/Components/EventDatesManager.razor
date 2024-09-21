@@ -7,7 +7,7 @@
 @inject CurrentPage currentPage;
 
 
-@foreach(var item in Dates)
+@foreach(var item in Dates.OrderBy(o => o.Start))
 {
     <RadzenStack Orientation="Orientation.Horizontal">
 
@@ -58,12 +58,15 @@
 
     public void AddEntry()
     {
-        Dates.Add(new EventDateModel(Start, End));
+        if(Start != null)
+        {
+            Dates.Add(new EventDateModel(Start, End));
 
-        Start = null;
-        End = null;
+            Start = null;
+            End = null;
 
-        StateHasChanged();
+            StateHasChanged();
+        }
     }
 
     public void RemoveEntry(EventDateModel item)

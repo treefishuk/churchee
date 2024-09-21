@@ -36,6 +36,11 @@
         get
         {
 
+            if (string.IsNullOrEmpty(Value))
+            {
+                return string.Empty;
+            }
+
             if(Value == "Home")
             {
                 return "/";
