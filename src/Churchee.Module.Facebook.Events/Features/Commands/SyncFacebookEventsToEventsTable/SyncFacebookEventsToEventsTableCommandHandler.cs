@@ -88,7 +88,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
                 return;
             }
 
-            var eventIds = feedResponseItems.Where(w => !string.IsNullOrEmpty(w.Story) && w.Story.Contains("created an event")).Select(s => s.Id.Replace($"{pageId}_", "")).ToList();
+            var eventIds = feedResponseItems.Where(w => !string.IsNullOrEmpty(w.Story) && (w.Story.Contains("created an event") || w.Story.Contains("added an event"))).Select(s => s.Id.Replace($"{pageId}_", "")).ToList();
 
             if (eventIds.Count == 0)
             {
