@@ -87,9 +87,23 @@ namespace Churchee.ImageProcessing
         {
             int originalWidth = image.Width;
             int originalHeight = image.Height;
+
+            // Ensure the crop width is not greater than the original width
+            if (width > originalWidth)
+            {
+                width = originalWidth;
+            }
+
             int cropX = (originalWidth - width) / 2;
+
+            // Ensure the crop rectangle is within the image bounds
+            if (cropX < 0)
+            {
+                cropX = 0;
+            }
 
             image.Mutate(x => x.Crop(new Rectangle(cropX, 0, width, originalHeight)));
         }
+
     }
 }

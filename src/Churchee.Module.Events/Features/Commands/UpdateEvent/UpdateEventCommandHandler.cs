@@ -1,8 +1,10 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,12 +16,14 @@ namespace Churchee.Module.Events.Features.Commands
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
         private readonly IBlobStore _blobStore;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore)
+        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
             _blobStore = blobStore;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<CommandResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
@@ -101,7 +105,13 @@ namespace Churchee.Module.Events.Features.Commands
 
                 imagePath = $"/img/events/{fileName.ToDevName()}{extension}";
 
-                await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
+                string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, false, cancellationToken);
+
+                var bytes = ms.ConvertStreamToByteArray();
+
+                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
+
+                return finalImagePath;
             }
 
             return imagePath;
