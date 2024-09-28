@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Churchee.Common.Extensibility
 {
@@ -6,21 +7,23 @@ namespace Churchee.Common.Extensibility
     {
         public MenuItem(string name, string path, string icon, int order = 1, string reqiredRole = "")
         {
+            ArgumentException.ThrowIfNullOrEmpty(name);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            ArgumentException.ThrowIfNullOrEmpty(icon);
+
+            if (!path.StartsWith("/management"))
+            {
+                throw new FormatException("Path must start with /management");
+            }
+
             Name = name;
             Path = path;
             Icon = icon;
-            Children = new List<MenuItem>();
+            Children = [];
             Order = order;
             RequiredRole = reqiredRole;
-        }
 
-        public MenuItem(string name, string path, string icon, List<MenuItem> children)
-        {
-            Name = name;
-            Path = path;
-            Icon = icon;
-            Children = children;
-            Order = 1;
+
         }
 
         public int Order { get; }
