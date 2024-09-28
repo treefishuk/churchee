@@ -23,7 +23,7 @@ namespace Churchee.Module.Identity.Features.Roles.Queries
         public async Task<IEnumerable<MultiSelectItem>> Handle(GetAllSelectableRolesQuery request, CancellationToken cancellationToken)
         {
             return await _store.GetRepository<ApplicationRole>().GetQueryable().Where(w => w.Selectable)
-                .Select(s => new MultiSelectItem { Value = s.Id, Text = s.Name })
+                .Select(s => new MultiSelectItem(s.Id, s.Name))
                 .ToListAsync(cancellationToken);
         }
     }
