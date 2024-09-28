@@ -27,7 +27,7 @@ namespace Churchee.Common.Data
             _domainEvents?.Clear();
         }
 
-        protected AggregateRoot() : base()
+        protected AggregateRoot()
         {
         }
 
