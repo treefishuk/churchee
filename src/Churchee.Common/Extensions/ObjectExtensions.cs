@@ -9,14 +9,5 @@ namespace System
         {
             return @object.GetType().GetInterfaces().Contains(typeof(TInterface));
         }
-
-        public static bool TypeImplementsInterface<TInterface>(this Type type)
-        {
-            var interfaces = type.GetInterfaces();
-
-            var interfaceToLookFor = typeof(TInterface);
-
-            return interfaces.Contains(interfaceToLookFor);
-        }
     }
 }

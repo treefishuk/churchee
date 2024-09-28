@@ -17,7 +17,6 @@
         public const string ImageUpload = "ImageUpload";
         public const string ImageUrl = "ImageUrl";
         public const string GeoCoordinates = "GeoCoordinates";
-        public const string CreditCard = "CreditCard";
         public const string PostalCode = "PostalCode";
         public const string Upload = "Upload";
         public const string CssEditor = "CssEditor";
