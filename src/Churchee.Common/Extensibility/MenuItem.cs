@@ -26,6 +26,15 @@ namespace Churchee.Common.Extensibility
 
         }
 
+        public MenuItem(string name, string path, string icon, List<MenuItem> children)
+        {
+            Name = name;
+            Path = path;
+            Icon = icon;
+            Children = children;
+            Order = 1;
+        }
+
         public int Order { get; }
 
         public string Name { get; }

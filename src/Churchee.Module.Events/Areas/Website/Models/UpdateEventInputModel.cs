@@ -35,7 +35,6 @@ namespace Churchee.Module.Events.Areas.Website.Models
             Longitude = responseObject.Longitude;
             ImageUpload = new Upload();
             Dates = responseObject.Dates;
-            //Date stuff
         }
 
         [Required]

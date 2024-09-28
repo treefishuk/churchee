@@ -35,7 +35,7 @@
     <ProjectReference Include="..\Churchee.Module.Facebook.Events\Churchee.Module.Facebook.Events.csproj" />
     <ProjectReference Include="..\Churchee.Module.Hangfire\Churchee.Module.Hangfire.csproj" />
     <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
-    <ProjectReference Include="..\Churchee.Module.Podcasts.Anchor\Churchee.Module.Podcasts.Anchor.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Podcasts.Spotify\Churchee.Module.Podcasts.Spotify.csproj" />
     <ProjectReference Include="..\Churchee.Module.Podcasts\Churchee.Module.Podcasts.csproj" />
     <ProjectReference Include="..\Churchee.Module.Settings\Churchee.Module.Settings.csproj" />
     <ProjectReference Include="..\Churchee.Module.Site\Churchee.Module.Site.csproj" />
