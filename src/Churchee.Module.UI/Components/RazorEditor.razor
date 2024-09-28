@@ -2,9 +2,10 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Reflection
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
 
 
-<ErrorBoundary>
+<ChurcheeErrorBoundry>
     <ChildContent>
 
         @if (rendered)
@@ -16,7 +17,7 @@
     <ErrorContent>
         Failed to load Editor
     </ErrorContent>
-</ErrorBoundary>
+</ChurcheeErrorBoundry>
 
 
 @code {
@@ -33,6 +34,10 @@
     }
 
     private string Id { get; set; }
+
+
+    [Inject]
+    protected ILogger<RazorEditor> Logger { get; set; } = default!;
 
     [Parameter]
     public string Value { get; set; }
@@ -58,15 +63,19 @@
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "OnEditorChange Error");
+
             throw;
         }
 
 
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         Id = Guid.NewGuid().ToString();
+
+        return base.OnInitializedAsync();
     }
 
     public async Task OnEditorDidInit()
@@ -77,6 +86,8 @@
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "OnEditorChange Error");
+
             throw;
         }
     }

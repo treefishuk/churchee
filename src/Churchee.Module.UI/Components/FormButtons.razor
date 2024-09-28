@@ -28,7 +28,7 @@
     public void CancelForm()
     {
         var currentUrl = new Uri(_navigationManager.Uri);
-        var parentUrl = new Uri(currentUrl, "..").ToString();
+        var parentUrl = new Uri(currentUrl, "..").ToString().TrimEnd('/');
 
         _navigationManager.NavigateTo(parentUrl);
     }

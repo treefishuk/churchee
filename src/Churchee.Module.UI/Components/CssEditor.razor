@@ -2,8 +2,9 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Reflection
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
 
-<ErrorBoundary>
+<ChurcheeErrorBoundry>
     <ChildContent>
         @if (rendered)
         {
@@ -13,7 +14,7 @@
     <ErrorContent>
         Failed to load Editor
     </ErrorContent>
-</ErrorBoundary>
+</ChurcheeErrorBoundry>
 
 
 @code {
@@ -38,6 +39,9 @@
     private StandaloneCodeEditor _editorRef;
 
 
+    [Inject]
+    protected ILogger<CssEditor> Logger { get; set; } = default!;
+
     private StandaloneEditorConstructionOptions CSSEditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
@@ -57,20 +61,31 @@
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "OnEditorChange Error");
+
             throw;
         }
-
-
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         Id = Guid.NewGuid().ToString();
+
+        return base.OnInitializedAsync();
     }
 
     public async Task OnEditorDidInit()
     {
-        await _editorRef.SetValue(Value);
+        try
+        {
+            await _editorRef.SetValue(Value);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "OnEditorChange Error");
+
+            throw;
+        }
     }
 
     [Parameter]
