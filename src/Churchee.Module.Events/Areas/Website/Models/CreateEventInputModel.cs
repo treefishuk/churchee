@@ -36,7 +36,7 @@ namespace Churchee.Module.Events.Areas.Website.Models
         [DataType(DataTypes.DateTime)]
         public DateTime? End { get; private set; }
 
-        [Required]
+        //[Required]
         [DataType(DataTypes.Html)]
         public string Content { get; private set; }
 

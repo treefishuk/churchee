@@ -6,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Radzen;
 using MediatR;
+using Churchee.Module.Events.Features.Commands;
+using Churchee.Common.ResponseTypes;
+using Bunit.TestDoubles;
+using Radzen.Blazor;
 
 namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 {
@@ -35,6 +39,5 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             cut.Instance.InputModel.Should().NotBeNull();
 
         }
-
     }
 }

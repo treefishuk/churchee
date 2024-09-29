@@ -40,7 +40,7 @@
 
                 if (dataType == DataTypes.TextWithSlug)
                 {
-                    <TextWithSlug PropertyInfo="@prop" InputModel="InputModel" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value))></TextWithSlug>
+                    <TextWithSlug Name="@prop.Name" PropertyInfo="@prop" InputModel="InputModel" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value))></TextWithSlug>
                 }
                 if (dataType == DataTypes.Upload)
                 {
@@ -90,37 +90,36 @@
                                             }
                                             if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                                             {
-                                                <RadzenTextBox Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) />
+                                                <RadzenTextBox Name="@(prop.Name)" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) />
                                             }
 
                                             if (dataType == DataTypes.Password)
                                             {
-                                                <RadzenPassword PropertyInfo="@prop" InputModel="InputModel" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value))></RadzenPassword>
+                                                <RadzenPassword Name="@(prop.Name)" PropertyInfo="@prop" InputModel="InputModel" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value))></RadzenPassword>
                                             }
                                             if (dataType == DataTypes.EmailAddress)
                                             {
-                                                <RadzenTextBox Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) />
+                                                <RadzenTextBox Name="@(prop.Name)" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) />
                                             }
 
                                             if (dataType == DataTypes.DateTime)
                                             {
-                                                    <RadzenDatePicker DateFormat="dd-MM-yyyy HH:mm" ShowTime="true" TValue="DateTime" Value=@prop.GetValue(InputModel) Change=@((value) => OnFieldChange(prop, value)) />
-
+                                                <RadzenDatePicker Name="@(prop.Name)" DateFormat="dd-MM-yyyy HH:mm" ShowTime="true" TValue="DateTime" Value=@prop.GetValue(InputModel) Change=@((value) => OnFieldChange(prop, value)) />
                                             }
 
                                             if (dataType == DataTypes.Date)
                                             {
-                                                <RadzenDatePicker DateFormat="dd-MM-yyyy" ShowTime=false TValue="DateTime" Value=@prop.GetValue(InputModel) Change=@((value) => OnFieldChange(prop, value))/>
+                                                <RadzenDatePicker Name="@(prop.Name)" DateFormat="dd-MM-yyyy" ShowTime=false TValue="DateTime" Value=@prop.GetValue(InputModel) Change=@((value) => OnFieldChange(prop, value))/>
                                             }
 
                                             if (dataType == DataTypes.Url)
                                             {
-                                                <RadzenTextBox Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) />
+                                                <RadzenTextBox Name="@(prop.Name)" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) />
                                             }
 
                                             if (dataType == DataTypes.Readonly)
                                             {
-                                                <RadzenTextBox Value="@prop.GetValue(InputModel).ToString()" ReadOnly=true />
+                                                <RadzenTextBox Name="@(prop.Name)" Value="@prop.GetValue(InputModel).ToString()" ReadOnly=true />
                                             }
 
                                             if (dataType == DataTypes.MultilineText)
@@ -134,7 +133,7 @@
                                                     rows = Math.Max(2, (maxlengthDataAttribute.Length / 50));
                                                 }
 
-                                                <RadzenTextArea Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) class="w-100" Rows="rows" aria-label="TextArea" />
+                                                <RadzenTextArea Name="@prop.Name" Value="@prop.GetValue(InputModel).ToString()" Change=@((value) => OnFieldChange(prop, value)) class="w-100" Rows="rows" aria-label="TextArea" />
                                             }
 
                                             if (dataType == DataTypes.CssEditor)
