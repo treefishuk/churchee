@@ -9,7 +9,7 @@ namespace Churchee.Module.Events.Features.Queries
             Id = id;
         }
 
-        public Guid Id { get; private set; }
+        public Guid Id { get; }
 
     }
 }
