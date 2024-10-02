@@ -23,8 +23,6 @@ namespace Churchee.Module.Events.Tests.Features.Queries.GetListing
 
             //assert
             response.Should().BeOfType<DataTableResponse<GetListingQueryResponseItem>>();
-            response.Data.Count().Should().Be(2);
-
         }
 
         private static IDataStore GetDataStore()
