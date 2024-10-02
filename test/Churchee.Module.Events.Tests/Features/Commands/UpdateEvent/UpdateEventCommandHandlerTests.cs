@@ -14,7 +14,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
     public class UpdateEventCommandHandlerTests
     {
         [Fact]
-        public async Task UpdateEventCommandHandler_Handler_ReturnsCommandResponse()
+        public async Task UpdateEventCommandHandler_Handler_DataSetAndCommandResponseReturned()
         {
             //arrange
             var mockCurrentUser = new Mock<ICurrentUser>();

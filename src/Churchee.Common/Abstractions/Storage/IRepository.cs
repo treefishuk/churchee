@@ -40,5 +40,14 @@ namespace Churchee.Common.Abstractions.Storage
         bool AnyWithFiltersDisabled(Expression<Func<T, bool>> predicate);
 
         int Count();
+
+        Task<int> CountAsync(CancellationToken cancellationToken);
+
+        Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
+
+        Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(ISpecification<T> specification, string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
+
+        Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
+
     }
 }

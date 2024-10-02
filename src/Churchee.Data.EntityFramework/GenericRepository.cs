@@ -1,11 +1,13 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
+using Churchee.Common.Abstractions;
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,6 +71,10 @@ namespace Churchee.Data.EntityFramework
         {
             return _dbSet.Count();
         }
+        public async Task<int> CountAsync(CancellationToken cancellationToken)
+        {
+            return await _dbSet.CountAsync(cancellationToken);
+        }
 
         public void PermenantDelete(T entity)
         {
@@ -97,6 +103,38 @@ namespace Churchee.Data.EntityFramework
         public async Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken = default)
+        {
+            return await _specificationEvaluator.GetQuery(GetQueryable(), specification).Select(selector).ToListAsync(cancellationToken);
+        }
+
+        public async Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(ISpecification<T> specification, string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        {
+            int count = await CountAsync(cancellationToken);
+
+            string orderbyCombined = $"{orderBy} {orderByDir}";
+
+            var data = await _specificationEvaluator.GetQuery(GetQueryable(), specification)
+                .Select(selector)
+                .OrderBy(orderbyCombined)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync(cancellationToken);
+
+            return new DataTableResponse<TResult>
+            {
+                RecordsTotal = count,
+                RecordsFiltered = count,
+                Draw = take,
+                Data = data
+            };
+        }
+
+        public Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
