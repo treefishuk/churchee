@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Churchee.Common.Abstractions.Storage
@@ -15,6 +16,8 @@ namespace Churchee.Common.Abstractions.Storage
         IQueryable<T> GetQueryable();
 
         IQueryable<T> ApplySpecification(ISpecification<T> specification, bool evaluateCriteriaOnly = false);
+
+        Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken);
 
         T GetById(params object[] keyValues);
 

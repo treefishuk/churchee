@@ -31,35 +31,35 @@ namespace Churchee.Module.Events.Areas.Website.Models
 
         [Required]
         [DataType(DataTypes.DateTime)]
-        public DateTime? Start { get; private set; }
+        public DateTime? Start { get; set; }
 
         [DataType(DataTypes.DateTime)]
-        public DateTime? End { get; private set; }
+        public DateTime? End { get; set; }
 
         //[Required]
         [DataType(DataTypes.Html)]
-        public string Content { get; private set; }
+        public string Content { get; set; }
 
         [DataType(DataTypes.ImageUpload)]
         public Upload ImageUpload { get; set; }
 
-        public string LocationName { get; private set; }
+        public string LocationName { get; set; }
 
-        public string City { get; private set; }
+        public string City { get; set; }
 
-        public string Street { get; private set; }
+        public string Street { get; set; }
 
-        public string PostCode { get; private set; }
+        public string PostCode { get; set; }
 
-        public string Country { get; private set; }
-
-
-        [DataType(DataTypes.GeoCoordinates)]
-        public decimal? Latitude { get; private set; }
+        public string Country { get; set; }
 
 
         [DataType(DataTypes.GeoCoordinates)]
-        public decimal? Longitude { get; private set; }
+        public decimal? Latitude { get; set; }
+
+
+        [DataType(DataTypes.GeoCoordinates)]
+        public decimal? Longitude { get; set; }
 
     }
 }

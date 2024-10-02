@@ -1,15 +1,11 @@
-﻿using Churchee.Module.Events.Areas.Website.Pages.Events;
-using Bunit;
-using FluentAssertions;
+﻿using Bunit;
 using Churchee.Common.Abstractions.Auth;
+using Churchee.Module.Events.Areas.Website.Pages.Events;
+using FluentAssertions;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Radzen;
-using MediatR;
-using Churchee.Module.Events.Features.Commands;
-using Churchee.Common.ResponseTypes;
-using Bunit.TestDoubles;
-using Radzen.Blazor;
 
 namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 {
@@ -24,16 +20,17 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 
             var mockMediatorService = new Mock<IMediator>();
             Services.AddSingleton(mockMediatorService.Object);
-            
+
             Services.AddRadzenComponents();
 
-            JSInterop.SetupVoid("Radzen.preventArrows", _ => true);
-            JSInterop.SetupVoid("Radzen.createEditor", _ => true);
-            JSInterop.SetupVoid("Radzen.createDatePicker", _ => true);
-            JSInterop.SetupVoid("Radzen.uploads", _ => true);
+            JSInterop.Mode = JSRuntimeMode.Loose;
 
             //act
             var cut = RenderComponent<Create>();
+
+            cut.Instance.InputModel.Start = DateTime.Now;
+            cut.Instance.InputModel.Title = "Test";
+            cut.Instance.InputModel.Description = "Test";
 
             //assert
             cut.Instance.InputModel.Should().NotBeNull();

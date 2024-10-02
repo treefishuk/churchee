@@ -6,7 +6,6 @@ using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
 using Hangfire;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Events.Features.Commands
 {
@@ -30,7 +29,7 @@ namespace Churchee.Module.Events.Features.Commands
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            var entity = await _dataStore.GetRepository<Event>().ApplySpecification(new EventByIdIncludingDatesSpecification(request.Id)).FirstOrDefaultAsync(cancellationToken);
+            var entity = await _dataStore.GetRepository<Event>().FirstOrDefaultAsync(new EventByIdIncludingDatesSpecification(request.Id), cancellationToken);
 
             entity.UpdateInfo(title: request.Title,
                                    description: request.Description,
@@ -59,7 +58,6 @@ namespace Churchee.Module.Events.Features.Commands
 
         private void UpdateEventDates(UpdateEventCommand request, Event eventEntity)
         {
-
             //Clear all dates if empty
             if (request.Dates.Count == 0)
             {

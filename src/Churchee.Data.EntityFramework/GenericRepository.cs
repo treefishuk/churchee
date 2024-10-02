@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Churchee.Data.EntityFramework
@@ -91,6 +92,11 @@ namespace Churchee.Data.EntityFramework
         public bool AnyWithFiltersDisabled(Expression<Func<T, bool>> predicate)
         {
             return _dbSet.IgnoreQueryFilters().Any(predicate);
+        }
+
+        public async Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
+        {
+            return await _specificationEvaluator.GetQuery(GetQueryable(), specification).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }
