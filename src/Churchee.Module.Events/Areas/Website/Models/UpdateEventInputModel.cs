@@ -47,30 +47,28 @@ namespace Churchee.Module.Events.Areas.Website.Models
         public string Description { get; set; }
 
         [DataType(DataTypes.Html)]
-        public string Content { get; private set; }
+        public string Content { get; set; }
 
         [DataType(DataTypes.ImageUpload)]
         public Upload ImageUpload { get; set; }
 
-        public string LocationName { get; private set; }
+        public string LocationName { get; set; }
 
-        public string City { get; private set; }
+        public string City { get; set; }
 
-        public string Street { get; private set; }
+        public string Street { get; set; }
 
-        public string PostCode { get; private set; }
+        public string PostCode { get; set; }
 
-        public string Country { get; private set; }
-
-
-        [DataType(DataTypes.GeoCoordinates)]
-        public decimal? Latitude { get; private set; }
-
+        public string Country { get; set; }
 
         [DataType(DataTypes.GeoCoordinates)]
-        public decimal? Longitude { get; private set; }
+        public decimal? Latitude { get; set; }
 
-        public List<EventDateModel> Dates { get; private set; }
+        [DataType(DataTypes.GeoCoordinates)]
+        public decimal? Longitude { get; set; }
+
+        public List<EventDateModel> Dates { get; set; }
 
     }
 }
