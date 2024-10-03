@@ -1,5 +1,4 @@
 ﻿using Churchee.Common.ValueTypes;
-using Churchee.Module.Events.Features.Queries;
 using Churchee.Module.Events.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,22 +18,6 @@ namespace Churchee.Module.Events.Areas.Website.Models
             PostCode = string.Empty;
             Country = string.Empty;
             Content = string.Empty;
-        }
-
-        public UpdateEventInputModel(GetDetailByIdResponse responseObject)
-        {
-            Title = responseObject.Title;
-            Description = responseObject.Description;
-            Content = responseObject.Content;
-            LocationName = responseObject.LocationName;
-            City = responseObject.City;
-            Street = responseObject.Street;
-            PostCode = responseObject.PostCode;
-            Country = responseObject.Country;
-            Latitude = responseObject.Latitude;
-            Longitude = responseObject.Longitude;
-            ImageUpload = new Upload();
-            Dates = responseObject.Dates;
         }
 
         [Required]

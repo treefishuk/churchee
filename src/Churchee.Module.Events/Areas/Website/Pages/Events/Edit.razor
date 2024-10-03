@@ -1,6 +1,7 @@
 ﻿@page "/management/events/edit/{Id:guid}"
 @inherits BasePage
 @using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.ValueTypes
 @using Churchee.Module.Events.Areas.Website.Models
 @using Churchee.Module.Events.Components
 @using Churchee.Module.UI.Components
@@ -82,7 +83,23 @@
 
         var response = await Mediator.Send(new GetDetailByIdQuery(Id));
 
-        InputModel = new UpdateEventInputModel(response);
+        MapResponseToInputModel(response);
+    }
+
+    private void MapResponseToInputModel(GetDetailByIdResponse response)
+    {
+        InputModel.Title = response.Title;
+        InputModel.Description = response.Description;
+        InputModel.Content = response.Content;
+        InputModel.LocationName = response.LocationName;
+        InputModel.City = response.City;
+        InputModel.Street = response.Street;
+        InputModel.PostCode = response.PostCode;
+        InputModel.Country = response.Country;
+        InputModel.Latitude = response.Latitude;
+        InputModel.Longitude = response.Longitude;
+        InputModel.ImageUpload = new Upload();
+        InputModel.Dates = response.Dates;
     }
 
     protected override void OnParametersSet()
