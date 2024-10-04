@@ -13,7 +13,7 @@ namespace Churchee.Module.Events.Tests.Areas.Shared.Pages
     public abstract class BasePageTests : TestContext
     {
         protected Mock<ICurrentUser> MockCurrentUser;
-        protected Mock<NotificationService> MockNotificationService;
+        protected CustomNotificationService NotificationService;
         protected Mock<IMediator> MockMediator;
         protected Mock<IConfiguration> MockConfiguration;
 
@@ -25,18 +25,17 @@ namespace Churchee.Module.Events.Tests.Areas.Shared.Pages
             MockCurrentUser = new Mock<ICurrentUser>();
             Services.AddSingleton(MockCurrentUser.Object);
 
-            MockNotificationService = new Mock<NotificationService>();
-            Services.AddSingleton(MockNotificationService.Object);
+            var dialogService = new DialogService(new FakeNavigationManager(this), JSInterop.JSRuntime);
+            Services.AddSingleton(dialogService);
+
+            NotificationService = new CustomNotificationService();
+            Services.AddSingleton<NotificationService>(NotificationService);
 
             MockMediator = new Mock<IMediator>();
             Services.AddSingleton(MockMediator.Object);
 
             MockConfiguration = new Mock<IConfiguration>();
             Services.AddSingleton(MockConfiguration.Object);
-
-
-            Services.AddRadzenComponents();
-
         }
 
         protected void SetInitialUrl<TComponent>() where TComponent : IComponent
@@ -49,5 +48,27 @@ namespace Churchee.Module.Events.Tests.Areas.Shared.Pages
                 navMan.NavigateTo(pageAttribute.Template, false);
             }
         }
+
+        public class CustomNotificationService : NotificationService
+        {
+            public List<NotificationMessage> Notifications { get; } = new List<NotificationMessage>();
+
+            public CustomNotificationService()
+            {
+                Messages.CollectionChanged += OnMessagesChanged;
+            }
+
+            private void OnMessagesChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (NotificationMessage newItem in e.NewItems)
+                    {
+                        Notifications.Add(newItem);
+                    }
+                }
+            }
+        }
+
     }
 }

@@ -7,6 +7,7 @@ using Churchee.Module.Events.Tests.Areas.Shared.Pages;
 using Churchee.Module.UI.Components;
 using FluentAssertions;
 using Moq;
+using Radzen;
 using Index = Churchee.Module.Events.Areas.Website.Pages.Events.Index;
 
 namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
@@ -33,17 +34,11 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
         }
 
         [Fact]
-        public void EventsDelete_DoesntFail()
+        public void EventsIndex_DeleteSucceeds_ShowsSuccessMessage()
         {
             //arrange
-            var data = new DataTableResponse<GetListingQueryResponseItem>();
+            SetupGetListingQueryResponse();
 
-            data.Data = new List<GetListingQueryResponseItem>()
-            {
-                new GetListingQueryResponseItem{ Id = Guid.NewGuid(), Title = "Test" }
-            };
-
-            MockMediator.Setup(s => s.Send(It.IsAny<GetListingQuery>(), default)).ReturnsAsync(data);
             MockMediator.Setup(s => s.Send(It.IsAny<DeleteEventCommand>(), default)).ReturnsAsync(new CommandResponse());
 
             //act
@@ -51,6 +46,45 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 
             cut.FindAll(".delete-row").First().Click();
 
+            //assert
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Event Deleted");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+        }
+
+        [Fact]
+        public void EventsIndex_DeleteFails_ShowsErrorMessage()
+        {
+            //arrange
+            SetupGetListingQueryResponse();
+
+            var commandResponse = new CommandResponse();
+            commandResponse.AddError("Error", "Thing");
+
+            MockMediator.Setup(s => s.Send(It.IsAny<DeleteEventCommand>(), default)).ReturnsAsync(commandResponse);
+
+            //act
+            var cut = RenderComponent<Index>();
+
+            cut.FindAll(".delete-row").First().Click();
+
+            //assert
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Error: Could not remove Event");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+        }
+
+        private void SetupGetListingQueryResponse()
+        {
+            var data = new DataTableResponse<GetListingQueryResponseItem>
+            {
+                Data =
+                [
+                    new() { Id = Guid.NewGuid(), Title = "Test" }
+                ]
+            };
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetListingQuery>(), default)).ReturnsAsync(data);
         }
     }
 }
