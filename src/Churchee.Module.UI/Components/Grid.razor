@@ -130,7 +130,7 @@
         {
             <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
                 <Template Context="data">
-                    <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteActions(data)"></RadzenButton>
+                    <RadzenButton Icon="delete" class="delete-row" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteActions(data)"></RadzenButton>
                </Template>
             </RadzenDataGridColumn>
         }

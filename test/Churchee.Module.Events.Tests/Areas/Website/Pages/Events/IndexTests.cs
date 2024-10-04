@@ -1,5 +1,7 @@
 ﻿using Bunit;
 using Churchee.Common.Abstractions;
+using Churchee.Common.ResponseTypes;
+using Churchee.Module.Events.Features.Commands;
 using Churchee.Module.Events.Features.Queries;
 using Churchee.Module.Events.Tests.Areas.Shared.Pages;
 using Churchee.Module.UI.Components;
@@ -28,6 +30,27 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             var pageName = cut.FindComponent<PageName>();
 
             pageName.Instance.Name.Should().Be("Events");
+        }
+
+        [Fact]
+        public void EventsDelete_DoesntFail()
+        {
+            //arrange
+            var data = new DataTableResponse<GetListingQueryResponseItem>();
+
+            data.Data = new List<GetListingQueryResponseItem>()
+            {
+                new GetListingQueryResponseItem{ Id = Guid.NewGuid(), Title = "Test" }
+            };
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetListingQuery>(), default)).ReturnsAsync(data);
+            MockMediator.Setup(s => s.Send(It.IsAny<DeleteEventCommand>(), default)).ReturnsAsync(new CommandResponse());
+
+            //act
+            var cut = RenderComponent<Index>();
+
+            cut.FindAll(".delete-row").First().Click();
+
         }
     }
 }
