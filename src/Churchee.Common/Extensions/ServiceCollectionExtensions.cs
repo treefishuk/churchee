@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
             foreach (var action in startUpActions)
             {
                 action.Execute(services, serviceProvider);
-                    
+
                 serviceProvider = services.BuildServiceProvider();
             }
         }

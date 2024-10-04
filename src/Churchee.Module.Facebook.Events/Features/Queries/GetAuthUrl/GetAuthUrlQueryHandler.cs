@@ -36,7 +36,7 @@ namespace Churchee.Module.Facebook.Events.Features.Queries
 
             string facebookAppId = _configuration.GetValue<string>("facebookAppId") ?? string.Empty;
 
-            if(string.IsNullOrEmpty(facebookAppId))
+            if (string.IsNullOrEmpty(facebookAppId))
             {
                 throw new MissingConfirgurationSettingException(nameof(facebookAppId));
             }

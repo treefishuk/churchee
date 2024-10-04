@@ -7,11 +7,11 @@ namespace Churchee.Module.Tenancy.Entities
         private ApplicationFeature()
         {
 
-        }  
+        }
 
         public ApplicationFeature(string name, Guid applicationTenantId) : base(applicationTenantId)
         {
-            Name = name;    
+            Name = name;
         }
 
         public string Name { get; set; }

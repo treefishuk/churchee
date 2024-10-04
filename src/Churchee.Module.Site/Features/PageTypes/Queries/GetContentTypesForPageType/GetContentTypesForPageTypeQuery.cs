@@ -1,6 +1,4 @@
-﻿using Churchee.Common.ResponseTypes;
-using Churchee.Module.Site.Features.PageTypes.Responses;
-using MediatR;
+﻿using MediatR;
 
 namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent
 {
@@ -13,6 +11,6 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeConte
 
         public Guid PageTypeId { get; private set; }
 
-       
+
     }
 }

@@ -21,7 +21,7 @@ namespace Churchee.Module.Tenancy.Infrastructure
 
         public Guid GetTenantId()
         {
-            if(_httpContextAccessor.HttpContext == null)
+            if (_httpContextAccessor.HttpContext == null)
             {
                 return Guid.Empty;
             }
@@ -37,7 +37,8 @@ namespace Churchee.Module.Tenancy.Infrastructure
 
             returnValue = GetTenantIdFromDB(domain);
 
-            if (returnValue != Guid.Empty) {
+            if (returnValue != Guid.Empty)
+            {
 
                 _memoryCache.Set($"{domain}_tenantId", returnValue);
             }

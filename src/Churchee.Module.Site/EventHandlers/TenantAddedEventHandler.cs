@@ -31,7 +31,7 @@ namespace Churchee.Module.Site.EventHandlers
             var newPage = new Page(applicationTenantId, "Home", "/", "Home Page", pageTypeId, null, false);
 
             repo.Create(newPage);
-                
+
             await _storage.SaveChangesAsync(cancellationToken);
         }
 

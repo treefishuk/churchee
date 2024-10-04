@@ -49,7 +49,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 
             var repo = _storage.GetRepository<Page>();
 
-            string parentSlug =  await repo.GetQueryable().Where(w => w.Id == parentId.Value).Select(s => s.Url).FirstOrDefaultAsync();
+            string parentSlug = await repo.GetQueryable().Where(w => w.Id == parentId.Value).Select(s => s.Url).FirstOrDefaultAsync();
 
             return parentSlug;
         }

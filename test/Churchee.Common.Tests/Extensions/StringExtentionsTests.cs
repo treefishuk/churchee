@@ -11,7 +11,7 @@ namespace Churchee.Common.Tests.Extensions
     {
 
         [Fact]
-        public void StringExtentions_ToTitleCase_ReturnsTitleCase() 
+        public void StringExtentions_ToTitleCase_ReturnsTitleCase()
         {
             //arrange
             string sut = "Do a thing";
