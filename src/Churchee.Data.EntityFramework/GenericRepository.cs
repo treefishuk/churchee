@@ -18,7 +18,7 @@ namespace Churchee.Data.EntityFramework
     {
         private readonly DbSet<T> _dbSet;
         private readonly DbContext _dbContext;
-        private readonly ISpecificationEvaluator _specificationEvaluator;
+        private readonly SpecificationEvaluator _specificationEvaluator;
 
         public GenericRepository(DbContext dbContext)
         {
