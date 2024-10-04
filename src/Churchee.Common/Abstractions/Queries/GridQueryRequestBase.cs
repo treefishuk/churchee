@@ -35,8 +35,6 @@ namespace Churchee.Common.Abstractions.Queries
 
             OrderBy = orderBy;
             OrderByDirection = "asc";
-
-
         }
 
         public int Skip { get; set; }

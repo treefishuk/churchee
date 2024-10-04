@@ -48,6 +48,5 @@ namespace Churchee.Common.Abstractions.Storage
         Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(ISpecification<T> specification, string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
 
         Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
-
     }
 }

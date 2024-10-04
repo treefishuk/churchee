@@ -4,7 +4,6 @@ namespace Churchee.Common.ValueTypes
 {
     public class MultiSelectItem
     {
-
         public MultiSelectItem(Guid value, string text, bool selected)
         {
             Value = value;
@@ -13,7 +12,6 @@ namespace Churchee.Common.ValueTypes
         }
         public MultiSelectItem(Guid value, string text) : this(value, text, false)
         {
-
         }
 
         public Guid Value { get; set; }

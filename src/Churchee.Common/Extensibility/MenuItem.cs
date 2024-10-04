@@ -22,8 +22,6 @@ namespace Churchee.Common.Extensibility
             Children = [];
             Order = order;
             RequiredRole = reqiredRole;
-
-
         }
 
         public MenuItem(string name, string path, string icon, List<MenuItem> children)
