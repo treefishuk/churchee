@@ -17,19 +17,19 @@ namespace Churchee.Module.Events.Tests.Registrations
             var eventEntityType = modelBuilder.Model.FindEntityType(typeof(Event));
 
             // Assert Table Name
-            eventEntityType.GetTableName().Should().Be("Events");
+            eventEntityType?.GetTableName().Should().Be("Events");
 
 
             // Assert Properties
-            eventEntityType.FindProperty(nameof(Event.Latitude)).GetPrecision().Should().Be(8);
-            eventEntityType.FindProperty(nameof(Event.Latitude)).GetScale().Should().Be(6);
+            eventEntityType?.FindProperty(nameof(Event.Latitude))?.GetPrecision().Should().Be(8);
+            eventEntityType?.FindProperty(nameof(Event.Latitude))?.GetScale().Should().Be(6);
 
-            eventEntityType.FindProperty(nameof(Event.Longitude)).GetPrecision().Should().Be(9);
-            eventEntityType.FindProperty(nameof(Event.Longitude)).GetScale().Should().Be(6);
+            eventEntityType?.FindProperty(nameof(Event.Longitude))?.GetPrecision().Should().Be(9);
+            eventEntityType?.FindProperty(nameof(Event.Longitude))?.GetScale().Should().Be(6);
 
-            eventEntityType.FindProperty(nameof(Event.PostCode)).GetMaxLength().Should().Be(20);
+            eventEntityType?.FindProperty(nameof(Event.PostCode))?.GetMaxLength().Should().Be(20);
 
-            eventEntityType.FindProperty(nameof(Event.Content)).GetColumnType().Should().Be("nvarchar(max)");
+            eventEntityType?.FindProperty(nameof(Event.Content))?.GetColumnType().Should().Be("nvarchar(max)");
 
         }
 
