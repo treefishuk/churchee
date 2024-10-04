@@ -22,7 +22,7 @@
             }
         </div>
 
-        <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="() => RemoveEntry(item)"></RadzenButton>
+        <RadzenButton Icon="delete" class="btn-remove" ButtonStyle="ButtonStyle.Danger" Click="() => RemoveEntry(item)"></RadzenButton>
 
 
     </RadzenStack>
@@ -34,7 +34,7 @@
     <RadzenDatePicker Max=End DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=Start />
     <RadzenDatePicker Min=Start DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=End />
 
-    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add" Click="AddEntry"></RadzenButton>
+    <RadzenButton ButtonStyle="ButtonStyle.Success" class="btn-add" Icon="add" Click="AddEntry"></RadzenButton>
 
 </RadzenStack>
 
