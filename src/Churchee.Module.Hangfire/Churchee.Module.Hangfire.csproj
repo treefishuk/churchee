@@ -4,7 +4,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 	</PropertyGroup>
-
+	<ItemGroup>
+		<InternalsVisibleTo Include="Churchee.Module.Hangfire.Tests" />
+	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
 		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
