@@ -81,15 +81,32 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
 
         private void DeleteDatabaseIfExists()
         {
+            string databaseName = "Fake"; // Replace with your actual database name
+
             using (SqlConnection connection = new SqlConnection(MasterConnectionString))
             {
                 connection.Open();
-                string query = "IF EXISTS (SELECT * FROM sys.databases WHERE name = 'Fake') DROP DATABASE [Fake]";
-                using (SqlCommand command = new SqlCommand(query, connection))
+
+                // First, forcibly close all other connections (if any)
+                string killConnectionsQuery = $@"
+                    USE [master];
+                    ALTER DATABASE [{databaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                    ALTER DATABASE [{databaseName}] SET MULTI_USER;
+                ";
+
+                using (SqlCommand killCommand = new SqlCommand(killConnectionsQuery, connection))
                 {
-                    command.ExecuteNonQuery();
+                    killCommand.ExecuteNonQuery();
+                }
+
+                // Now drop the database
+                string dropDatabaseQuery = $"USE [master]; DROP DATABASE [{databaseName}];";
+                using (SqlCommand dropCommand = new SqlCommand(dropDatabaseQuery, connection))
+                {
+                    dropCommand.ExecuteNonQuery();
                 }
             }
         }
+
     }
 }
