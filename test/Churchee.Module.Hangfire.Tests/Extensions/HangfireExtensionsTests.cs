@@ -31,7 +31,7 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
 
 
         [Fact]
-        public void HangfireExtensions_UseChurcheeHangfireDashboard_SetsRoute()
+        public void HangfireExtensions_UseChurcheeHangfireDashboard_Builds()
         {
             //arrange
             var globalConfigurationMock = new Mock<IGlobalConfiguration>();
