@@ -5,27 +5,46 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using System.Data.Common;
+using Testcontainers.MsSql;
 
 namespace Churchee.Module.Hangfire.Tests.Extensions
 {
-    public class HangfireExtensionsTests
+    public class HangfireExtensionsTests : IAsyncLifetime
     {
-        private const string FakeConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Fake;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
-        private const string FakeConnectionString2 = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Fake2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
-        private const string MasterConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Master;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        private readonly MsSqlContainer _msSqlContainer;
+
+        public HangfireExtensionsTests()
+        {
+            _msSqlContainer = new MsSqlBuilder()
+             .WithImage("mcr.microsoft.com/mssql/server:2019-latest")
+             .WithPassword("yourStrong(!)Password")
+             .Build();
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _msSqlContainer.StartAsync();
+        }
+
+
+        public async Task DisposeAsync()
+        {
+            await _msSqlContainer.DisposeAsync().AsTask();
+        }
 
         [Fact]
-        public void HangfireExtensions_CreateDatabaseIfNotExists_CreatesDatabase_IfNotExist()
+        public async Task HangfireExtensions_CreateDatabaseIfNotExists_CreatesDatabase_IfNotExist()
         {
             //arrange
             var configurationMock = new Mock<IGlobalConfiguration>();
 
-            DeleteDatabaseIfExists();
-
             //act
-            HangfireExtensions.CreateDatabaseIfNotExists(configurationMock.Object, FakeConnectionString);
+            HangfireExtensions.CreateDatabaseIfNotExists(configurationMock.Object, GetHangfireConnectionString());
 
-            DatabaseExists().Should().BeTrue();
+            var exists = await DatabaseExists();
+
+            exists.Should().BeTrue();
 
         }
 
@@ -42,7 +61,7 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(FakeConnectionString2, new SqlServerStorageOptions
+                .UseSqlServerStorage(GetHangfireConnectionString(), new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
@@ -63,33 +82,31 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
             builder.Build();
         }
 
-        private bool DatabaseExists()
+
+
+        private async Task<bool> DatabaseExists()
         {
-            using (SqlConnection connection = new SqlConnection(MasterConnectionString))
-            {
-                connection.Open();
-                string query = "SELECT * FROM sys.databases WHERE name = 'Fake'";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        return reader.HasRows;
-                    }
-                }
-            }
+            using DbConnection connection = new SqlConnection(_msSqlContainer.GetConnectionString());
+            await connection.OpenAsync();
+
+            using DbCommand command = connection.CreateCommand();
+
+            command.CommandText = "SELECT database_id FROM sys.databases WHERE name = 'Hangfire'";
+
+            var result = await command.ExecuteScalarAsync();
+
+            return result != null;
         }
 
-        private void DeleteDatabaseIfExists()
+        private string GetHangfireConnectionString()
         {
-            using (SqlConnection connection = new SqlConnection(MasterConnectionString))
+            var builder = new SqlConnectionStringBuilder(_msSqlContainer.GetConnectionString())
             {
-                connection.Open();
-                string query = "IF EXISTS (SELECT * FROM sys.databases WHERE name = 'Fake') DROP DATABASE [Fake]";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
+                InitialCatalog = "Hangfire"
+            };
+            return builder.ConnectionString;
         }
+
+
     }
 }
