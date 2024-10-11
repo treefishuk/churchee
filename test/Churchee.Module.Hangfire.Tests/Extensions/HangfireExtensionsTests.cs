@@ -17,7 +17,7 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
         public HangfireExtensionsTests()
         {
             _msSqlContainer = new MsSqlBuilder()
-             .WithImage("mcr.microsoft.com/mssql/server:2019-latest")
+             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
              .WithPassword("yourStrong(!)Password")
              .Build();
         }
