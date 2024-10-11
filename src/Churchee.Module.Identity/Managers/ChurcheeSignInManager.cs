@@ -31,7 +31,6 @@ namespace Churchee.Module.Identity.Managers
             _identitySeed = identitySeed ?? throw new ArgumentNullException(nameof(identitySeed));
         }
 
-
         public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
         {
             await _identitySeed.CreateAsync();
