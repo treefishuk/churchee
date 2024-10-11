@@ -38,6 +38,5 @@ namespace Churchee.Module.Identity.Managers
 
             return await base.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
         }
-
     }
 }

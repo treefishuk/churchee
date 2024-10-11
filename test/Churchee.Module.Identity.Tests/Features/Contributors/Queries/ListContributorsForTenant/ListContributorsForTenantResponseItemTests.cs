@@ -6,7 +6,7 @@ namespace Churchee.Module.Identity.Tests.Features.Contributors.Queries.ListContr
     public class ListContributorsForTenantResponseItemTests
     {
         [Fact]
-        public void ListContributorsForTenantResponseItemTests_PorpertiesSet()
+        public void ListContributorsForTenantResponseItemTests_PropertiesSet()
         {
             //arrange
             var createdDate = DateTime.Now;

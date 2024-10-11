@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace Churchee.Module.Identity.Tests.Features.Roles.Queries.GetAllSelectableRolesForUser
 {
-    public class GetAllSelectableRolesForUserTests
+    public class GetAllSelectableRolesForUserQueryTests
     {
         [Fact]
         public void Constructor_ShouldInitializeUserIdProperty()
