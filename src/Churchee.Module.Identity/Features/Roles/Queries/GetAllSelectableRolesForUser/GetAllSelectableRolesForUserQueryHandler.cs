@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Common.ValueTypes;
+using Churchee.Module.Events.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -26,15 +26,16 @@ namespace Churchee.Module.Identity.Features.Roles.Queries
         {
             var user = await _churcheeUserManager.FindByIdAsync(request.UserId.ToString());
 
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
             var userRoles = await _churcheeUserManager.GetRolesAsync(user);
 
             var rolesQuery = _store.GetRepository<ApplicationRole>().GetQueryable();
 
-            var data = await _store.GetRepository<ApplicationRole>()
-                .GetQueryable()
-                .Where(w => w.Selectable)
-                .Select(s => new MultiSelectItem(s.Id, s.Name, userRoles.Any(a => a == s.Name)))
-                .ToListAsync(cancellationToken);
+            var data = await _store.GetRepository<ApplicationRole>().GetListAsync(new SelectableRolesSpecification(), s => new MultiSelectItem(s.Id, s.Name, userRoles.Any(a => a == s.Name)), cancellationToken);
 
             return data;
         }

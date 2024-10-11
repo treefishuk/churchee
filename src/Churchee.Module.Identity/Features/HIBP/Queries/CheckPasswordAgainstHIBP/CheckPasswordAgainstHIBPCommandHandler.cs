@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.ResponseTypes;
 using MediatR;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
 
                 var lines = content.Split("\r\n");
 
-                foreach (var line in lines)
+                foreach (var line in lines.Where(w => !string.IsNullOrEmpty(w)))
                 {
                     var parts = line.Split(':');
 
