@@ -59,7 +59,7 @@ namespace Churchee.Module.Settings.Store
                 return;
             }
 
-            _dataStore.GetRepository<Setting>().PermenantDelete(setting);
+            _dataStore.GetRepository<Setting>().PermanentDelete(setting);
 
             await _dataStore.SaveChangesAsync();
         }

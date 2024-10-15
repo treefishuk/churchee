@@ -1,10 +1,8 @@
-﻿using System;
-using Churchee.Common.Storage;
+﻿using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Events;
 using Churchee.Module.Site.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.EventHandlers
 {
@@ -20,22 +18,14 @@ namespace Churchee.Module.Site.EventHandlers
 
         public async Task Handle(PageCreatedEvent notification, CancellationToken cancellationToken)
         {
-            var page = await _storage.GetRepository<Page>().GetQueryable().Where(w => w.Id == notification.PageId).FirstOrDefaultAsync();
+            var pageTypes = await _storage.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeWithPageTypeContentSpecification(notification.PageTypeId), cancellationToken);
 
-            var pageContentTypes = await _storage.GetRepository<PageType>()
-                .GetQueryable()
-                .Where(w => w.Id == notification.PageTypeId)
-                .Select(s => s.PageTypeContent)
-                .FirstOrDefaultAsync();
-
-            foreach (var type in pageContentTypes)
+            foreach (var content in pageTypes.PageTypeContent)
             {
-                _storage.GetRepository<PageContent>().Create(new PageContent(type.Id, notification.PageId, string.Empty, 1));
+                _storage.GetRepository<PageContent>().Create(new PageContent(content.Id, notification.PageId, string.Empty, 1));
             }
 
             await _storage.SaveChangesAsync(cancellationToken);
         }
-
-
     }
 }

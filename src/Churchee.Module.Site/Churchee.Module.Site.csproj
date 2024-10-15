@@ -6,7 +6,11 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="Churchee.Module.Site.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
     <Compile Remove="Areas\Site\Pages\Podcasts\**" />
     <Compile Remove="Features\Blog\Responses\**" />
     <Content Remove="Areas\Site\Pages\Podcasts\**" />

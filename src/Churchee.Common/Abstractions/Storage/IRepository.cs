@@ -25,9 +25,9 @@ namespace Churchee.Common.Abstractions.Storage
 
         void Create(T entity);
 
-        void PermenantDelete(T entity);
+        void PermanentDelete(T entity);
 
-        Task PermenantDelete(Guid id);
+        Task PermanentDelete(Guid id);
 
         Task SoftDelete(Guid id);
 
@@ -42,6 +42,8 @@ namespace Churchee.Common.Abstractions.Storage
         int Count();
 
         Task<int> CountAsync(CancellationToken cancellationToken);
+
+        Task<List<T>> GetListAsync(ISpecification<T> specification, CancellationToken cancellationToken);
 
         Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
 
