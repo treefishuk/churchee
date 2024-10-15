@@ -6,14 +6,6 @@ namespace Churchee.Common.ValueTypes
 {
     public class Upload : IValidatableObject
     {
-        public Upload()
-        {
-        }
-        public Upload(string path)
-        {
-            Path = path;
-        }
-
         public string Value { get; set; }
         public string FileName { get; set; }
         public string Path { get; set; }
