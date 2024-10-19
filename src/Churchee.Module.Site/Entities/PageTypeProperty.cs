@@ -2,14 +2,8 @@
 
 namespace Churchee.Module.Site.Entities
 {
-
     public class PageTypeProperty : Entity
     {
-        public PageTypeProperty(Guid id, Guid applicationTenantId) : base(id, applicationTenantId)
-        {
-
-        }
-
         public PageType PageType { get; set; }
 
         public string Name { get; set; }
@@ -19,7 +13,5 @@ namespace Churchee.Module.Site.Entities
         public string Type { get; set; }
 
         public bool Required { get; set; }
-
-
     }
 }

@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Churchee.Module.Site.Entities
+﻿namespace Churchee.Module.Site.Entities
 {
     public class RedirectUrl
     {
-        private RedirectUrl()
-        {
-
-        }
-
         public RedirectUrl(string path)
         {
             Path = path;
