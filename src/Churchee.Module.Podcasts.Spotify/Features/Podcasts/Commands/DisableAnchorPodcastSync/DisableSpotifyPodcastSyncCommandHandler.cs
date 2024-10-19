@@ -34,7 +34,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             foreach (var item in spotifyPodcasts)
             {
-                _dataStore.GetRepository<Podcast>().PermenantDelete(item);
+                _dataStore.GetRepository<Podcast>().PermanentDelete(item);
             }
 
             await _dataStore.SaveChangesAsync(cancellationToken);

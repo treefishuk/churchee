@@ -19,7 +19,9 @@ namespace Churchee.Module.Site.EventHandlers
         {
             var repo = _storage.GetRepository<ViewTemplate>();
 
-            if (repo.GetQueryable().Any(a => a.Location == $"/Views/Shared/{notification.Name.ToPascalCase()}.cshtml"))
+            var exists = repo.AnyWithFiltersDisabled(a => a.Location == $"/Views/Shared/{notification.Name.ToPascalCase()}.cshtml");
+
+            if (exists)
             {
                 return;
             }

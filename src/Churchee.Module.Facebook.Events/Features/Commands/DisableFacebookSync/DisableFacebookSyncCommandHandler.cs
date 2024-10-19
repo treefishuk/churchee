@@ -50,14 +50,14 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
                 if (pageAccessToken != null)
                 {
-                    tokenRepo.PermenantDelete(pageAccessToken);
+                    tokenRepo.PermanentDelete(pageAccessToken);
                 }
 
                 var facebookAccessToken = tokenRepo.GetQueryable().Where(w => w.ApplicationTenantId == applicationTenantId && w.Key == SettingKeys.FacebookAccessToken).FirstOrDefault();
 
                 if (facebookAccessToken != null)
                 {
-                    tokenRepo.PermenantDelete(facebookAccessToken);
+                    tokenRepo.PermanentDelete(facebookAccessToken);
                 }
 
                 await _dataStore.SaveChangesAsync(cancellationToken);

@@ -76,12 +76,12 @@ namespace Churchee.Data.EntityFramework
             return await _dbSet.CountAsync(cancellationToken);
         }
 
-        public void PermenantDelete(T entity)
+        public void PermanentDelete(T entity)
         {
             _dbSet.Remove(entity);
         }
 
-        public async Task PermenantDelete(Guid id)
+        public async Task PermanentDelete(Guid id)
         {
             var entity = await _dbSet.FindAsync(id);
 
@@ -103,6 +103,11 @@ namespace Churchee.Data.EntityFramework
         public async Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<List<T>> GetListAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
+        {
+            return await _specificationEvaluator.GetQuery(GetQueryable(), specification).ToListAsync(cancellationToken);
         }
 
         public async Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken = default)
