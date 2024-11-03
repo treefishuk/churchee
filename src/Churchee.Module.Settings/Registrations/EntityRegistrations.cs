@@ -6,9 +6,9 @@ namespace Churchee.Module.Settings.Registration
 {
     public class EntityRegistrations : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder modelbuilder)
+        public void RegisterEntities(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<Setting>(etb =>
+            modelBuilder.Entity<Setting>(etb =>
             {
                 etb.ToTable("Settings");
                 etb.HasKey(e => new { e.Id, e.ApplicationTenantId });

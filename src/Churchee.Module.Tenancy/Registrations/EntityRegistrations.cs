@@ -6,9 +6,9 @@ namespace Churchee.Module.Tenancy.Data.Registrations
 {
     public class EntityRegistrations : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder modelbuilder)
+        public void RegisterEntities(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<ApplicationTenant>(etb =>
+            modelBuilder.Entity<ApplicationTenant>(etb =>
             {
                 etb.HasKey(e => e.Id);
                 etb.HasMany(e => e.Hosts)
@@ -16,12 +16,12 @@ namespace Churchee.Module.Tenancy.Data.Registrations
                    .HasForeignKey(e => e.ApplicationTenantId);
             });
 
-            modelbuilder.Entity<ApplicationFeature>(etb =>
+            modelBuilder.Entity<ApplicationFeature>(etb =>
             {
                 etb.HasKey(e => e.Id);
             });
 
-            modelbuilder.Entity<ApplicationHost>(etb =>
+            modelBuilder.Entity<ApplicationHost>(etb =>
             {
                 etb.HasKey(e => e.Id);
             });

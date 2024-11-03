@@ -6,9 +6,9 @@ namespace Churchee.Module.Podcasts.Registrations
 {
     public class EntityRegistrations : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder modelbuilder)
+        public void RegisterEntities(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<Podcast>(etb =>
+            modelBuilder.Entity<Podcast>(etb =>
             {
                 etb.ToTable("Podcasts");
                 etb.Property(e => e.Id);

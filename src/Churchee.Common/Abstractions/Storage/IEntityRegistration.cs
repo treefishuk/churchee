@@ -4,6 +4,6 @@ namespace Churchee.Common.Abstractions.Storage
 {
     public interface IEntityRegistration
     {
-        void RegisterEntities(ModelBuilder modelbuilder);
+        void RegisterEntities(ModelBuilder modelBuilder);
     }
 }

@@ -6,9 +6,9 @@ namespace Churchee.Module.Tokens.Registrations
 {
     public class EntityRegistrations : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder modelbuilder)
+        public void RegisterEntities(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<Token>(etb =>
+            modelBuilder.Entity<Token>(etb =>
             {
                 etb.HasKey(e => e.Id);
                 etb.Property(e => e.Value).HasMaxLength(2000);

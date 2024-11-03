@@ -31,6 +31,7 @@
     <ProjectReference Include="..\Churchee.Blobstorage.Providers\Churchee.Blobstorage.Providers.csproj" />
     <ProjectReference Include="..\Churchee.Data.EntityFramework\Churchee.Data.EntityFramework.csproj" />
     <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Dashboard\Churchee.Module.Dashboard.csproj" />
     <ProjectReference Include="..\Churchee.Module.Events\Churchee.Module.Events.csproj" />
     <ProjectReference Include="..\Churchee.Module.Facebook.Events\Churchee.Module.Facebook.Events.csproj" />
     <ProjectReference Include="..\Churchee.Module.Hangfire\Churchee.Module.Hangfire.csproj" />

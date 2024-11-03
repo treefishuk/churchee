@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="DeviceDetector.NET" Version="6.3.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\churchee\src\Churchee.Common\Churchee.Common.csproj" />
+	  <ProjectReference Include="..\..\..\churchee\src\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
+	</ItemGroup>
+
+</Project>

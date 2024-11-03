@@ -6,9 +6,9 @@ namespace Churchee.Module.Site.Registration
 {
     public class EntityRegistrations : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder modelbuilder)
+        public void RegisterEntities(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<WebContent>(etb =>
+            modelBuilder.Entity<WebContent>(etb =>
             {
                 etb.HasKey(e => e.Id);
                 etb.Property(e => e.Id);
@@ -31,7 +31,7 @@ namespace Churchee.Module.Site.Registration
 
 
 
-            modelbuilder.Entity<Page>(etb =>
+            modelBuilder.Entity<Page>(etb =>
             {
                 etb.ToTable("Pages");
 
@@ -39,13 +39,13 @@ namespace Churchee.Module.Site.Registration
 
             });
 
-            modelbuilder.Entity<MediaItem>(etb =>
+            modelBuilder.Entity<MediaItem>(etb =>
             {
                 etb.ToTable("MediaItems");
                 etb.Property(e => e.Id);
             });
 
-            modelbuilder.Entity<MediaFolder>(etb =>
+            modelBuilder.Entity<MediaFolder>(etb =>
             {
                 etb.ToTable("MediaFolders");
                 etb.Property(e => e.Id);
@@ -53,7 +53,7 @@ namespace Churchee.Module.Site.Registration
             });
 
 
-            modelbuilder.Entity<PageType>(etb =>
+            modelBuilder.Entity<PageType>(etb =>
             {
                 etb.HasKey(e => e.Id);
                 etb.Property(e => e.Id);
@@ -66,13 +66,13 @@ namespace Churchee.Module.Site.Registration
 
             });
 
-            modelbuilder.Entity<PageTypeProperty>(etb =>
+            modelBuilder.Entity<PageTypeProperty>(etb =>
             {
                 etb.HasKey(e => e.Id);
                 etb.Property(e => e.Id);
             });
 
-            modelbuilder.Entity<PageTypeTypeMapping>(etb =>
+            modelBuilder.Entity<PageTypeTypeMapping>(etb =>
             {
                 etb.HasKey(t => new { t.ParentPageTypeId, t.ChildPageTypeId });
 
@@ -91,14 +91,14 @@ namespace Churchee.Module.Site.Registration
 
             });
 
-            modelbuilder.Entity<PageTypeContent>(etb =>
+            modelBuilder.Entity<PageTypeContent>(etb =>
             {
                 etb.HasKey(t => t.Id);
                 etb.Property(t => t.Id).ValueGeneratedNever();
             });
 
 
-            modelbuilder.Entity<PageContent>(etb =>
+            modelBuilder.Entity<PageContent>(etb =>
             {
                 etb.ToTable("PageContent", b => b.IsTemporal());
                 etb.HasKey(t => new { t.PageId, t.PageTypeContentId });
@@ -111,7 +111,7 @@ namespace Churchee.Module.Site.Registration
             });
 
 
-            modelbuilder.Entity<ViewTemplate>(etb =>
+            modelBuilder.Entity<ViewTemplate>(etb =>
             {
                 etb.ToTable("ViewTemplates", b => b.IsTemporal());
 
@@ -125,13 +125,13 @@ namespace Churchee.Module.Site.Registration
 
             });
 
-            modelbuilder.Entity<RedirectUrl>(etb =>
+            modelBuilder.Entity<RedirectUrl>(etb =>
             {
                 etb.HasKey(t => new { t.Id });
 
             });
 
-            modelbuilder.Entity<Css>(etb =>
+            modelBuilder.Entity<Css>(etb =>
             {
                 etb.ToTable("CSS", b => b.IsTemporal());
 
@@ -143,7 +143,7 @@ namespace Churchee.Module.Site.Registration
 
             });
 
-            modelbuilder.Entity<Article>(etb =>
+            modelBuilder.Entity<Article>(etb =>
             {
                 etb.ToTable("Articles");
 

@@ -6,9 +6,9 @@ namespace Churchee.Module.Events.Registration
 {
     public class EntityRegistrations : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder modelbuilder)
+        public void RegisterEntities(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<Event>(etb =>
+            modelBuilder.Entity<Event>(etb =>
             {
                 etb.ToTable("Events");
 
@@ -24,7 +24,7 @@ namespace Churchee.Module.Events.Registration
 
             });
 
-            modelbuilder.Entity<EventDate>(etb =>
+            modelBuilder.Entity<EventDate>(etb =>
             {
                 etb.ToTable("EventDates");
 
