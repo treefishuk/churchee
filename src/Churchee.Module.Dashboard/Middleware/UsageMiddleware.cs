@@ -21,7 +21,7 @@ namespace Churchee.Module.Dashboard.Middleware
             await _next(context);
         }
 
-        private async Task LogRequest(HttpContext context, DbContext dbContext, ITenantResolver tenantResolver)
+        internal async Task LogRequest(HttpContext context, DbContext dbContext, ITenantResolver tenantResolver)
         {
             var ipAddress = context.Connection.RemoteIpAddress?.ToString();
             var userAgent = context.Request.Headers["User-Agent"].ToString();
@@ -43,8 +43,8 @@ namespace Churchee.Module.Dashboard.Middleware
             deviceDetector.Parse();
 
             var device = deviceDetector.GetDeviceName();         // Mobile, Tablet, Desktop
-            var os = deviceDetector.GetOs().Match.Name;          // Windows, Android, iOS
-            var browser = deviceDetector.GetClient().Match.Name; // Chrome, Firefox, etc.
+            var os = deviceDetector.GetOs().Match?.Name;          // Windows, Android, iOS
+            var browser = deviceDetector.GetClient().Match?.Name; // Chrome, Firefox, etc.
 
             if (!string.IsNullOrEmpty(ipAddress))
             {

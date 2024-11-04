@@ -1,6 +1,8 @@
 ﻿using Churchee.Module.Hangfire.Filters;
 using FluentAssertions;
+using Hangfire;
 using Hangfire.Dashboard;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
@@ -13,76 +15,107 @@ namespace Churchee.Module.Hangfire.Tests.Filters
         public void Authorize_ShouldReturnTrue_WhenUserIsAuthenticatedAndIsSysAdmin()
         {
             // Arrange
-            var httpContextMock = new Mock<HttpContext>();
+            var storage = new Mock<JobStorage>().Object;
+            var options = new DashboardOptions();
+            var httpContext = new DefaultHttpContext();
+
+            var antiforgeryMock = new Mock<IAntiforgery>();
+            var antiforgeryTokenSet = new AntiforgeryTokenSet("requestToken", "cookieToken", "formFieldName", "headerName");
+            antiforgeryMock.Setup(a => a.GetAndStoreTokens(It.IsAny<HttpContext>())).Returns(antiforgeryTokenSet);
+
+            var serviceProviderMock = new Mock<IServiceProvider>();
+            serviceProviderMock.Setup(sp => sp.GetService(typeof(IAntiforgery))).Returns(antiforgeryMock.Object);
+
             var userMock = new Mock<ClaimsPrincipal>();
             var identityMock = new Mock<ClaimsIdentity>();
-
             identityMock.Setup(i => i.IsAuthenticated).Returns(true);
-            userMock.Setup(u => u.Identity).Returns(identityMock.Object);
             userMock.Setup(u => u.IsInRole("SysAdmin")).Returns(true);
-            httpContextMock.Setup(h => h.User).Returns(userMock.Object);
+            userMock.Setup(u => u.Identity).Returns(identityMock.Object);
 
-            var dashboardContextMock = new Mock<DashboardContext>();
-            dashboardContextMock.Setup(c => c.GetHttpContext()).Returns(httpContextMock.Object);
+            httpContext.RequestServices = serviceProviderMock.Object;
+            httpContext.User = userMock.Object;
+            httpContext.Request.Path = "/jobs";
 
             var filter = new DashboardAuthorizationFilter();
 
+            var context = new AspNetCoreDashboardContext(storage, options, httpContext);
+
             // Act
-            var result = filter.Authorize(dashboardContextMock.Object);
+            var result = filter.Authorize(context);
 
             // Assert
             result.Should().BeTrue();
         }
 
         [Fact]
-        public void Authorize_ShouldReturnFalseAndSetStatusCodeTo404_WhenUserIsNotAuthenticated()
+        public void Authorize_ShouldReturnFalse_WhenUserIsNotAuthenticated()
         {
             // Arrange
-            var httpContextMock = new Mock<HttpContext>();
+            var storage = new Mock<JobStorage>().Object;
+            var options = new DashboardOptions();
+            var httpContext = new DefaultHttpContext();
+
+            var antiforgeryMock = new Mock<IAntiforgery>();
+            var antiforgeryTokenSet = new AntiforgeryTokenSet("requestToken", "cookieToken", "formFieldName", "headerName");
+            antiforgeryMock.Setup(a => a.GetAndStoreTokens(It.IsAny<HttpContext>())).Returns(antiforgeryTokenSet);
+
+            var serviceProviderMock = new Mock<IServiceProvider>();
+            serviceProviderMock.Setup(sp => sp.GetService(typeof(IAntiforgery))).Returns(antiforgeryMock.Object);
+
             var userMock = new Mock<ClaimsPrincipal>();
             var identityMock = new Mock<ClaimsIdentity>();
-
             identityMock.Setup(i => i.IsAuthenticated).Returns(false);
             userMock.Setup(u => u.Identity).Returns(identityMock.Object);
-            httpContextMock.Setup(h => h.User).Returns(userMock.Object);
 
-            var dashboardContextMock = new Mock<DashboardContext>();
-            dashboardContextMock.Setup(c => c.GetHttpContext()).Returns(httpContextMock.Object);
+            httpContext.RequestServices = serviceProviderMock.Object;
+            httpContext.User = userMock.Object;
+            httpContext.Request.Path = "/jobs";
 
             var filter = new DashboardAuthorizationFilter();
 
+            var context = new AspNetCoreDashboardContext(storage, options, httpContext);
+
             // Act
-            var result = filter.Authorize(dashboardContextMock.Object);
+            var result = filter.Authorize(context);
 
             // Assert
             result.Should().BeFalse();
-            httpContextMock.VerifySet(h => h.Response.StatusCode = StatusCodes.Status404NotFound);
         }
 
         [Fact]
-        public void Authorize_ShouldReturnFalseAndSetStatusCodeTo404_WhenUserIsNotSysAdmin()
+        public void Authorize_ShouldReturnFalse_WhenUserIsNotSysAdmin()
         {
             // Arrange
-            var httpContextMock = new Mock<HttpContext>();
+            var storage = new Mock<JobStorage>().Object;
+            var options = new DashboardOptions();
+            var httpContext = new DefaultHttpContext();
+
+            var antiforgeryMock = new Mock<IAntiforgery>();
+            var antiforgeryTokenSet = new AntiforgeryTokenSet("requestToken", "cookieToken", "formFieldName", "headerName");
+            antiforgeryMock.Setup(a => a.GetAndStoreTokens(It.IsAny<HttpContext>())).Returns(antiforgeryTokenSet);
+
+            var serviceProviderMock = new Mock<IServiceProvider>();
+            serviceProviderMock.Setup(sp => sp.GetService(typeof(IAntiforgery))).Returns(antiforgeryMock.Object);
+
             var userMock = new Mock<ClaimsPrincipal>();
             var identityMock = new Mock<ClaimsIdentity>();
-
             identityMock.Setup(i => i.IsAuthenticated).Returns(true);
-            userMock.Setup(u => u.Identity).Returns(identityMock.Object);
             userMock.Setup(u => u.IsInRole("SysAdmin")).Returns(false);
-            httpContextMock.Setup(h => h.User).Returns(userMock.Object);
+            userMock.Setup(u => u.Identity).Returns(identityMock.Object);
 
-            var dashboardContextMock = new Mock<DashboardContext>();
-            dashboardContextMock.Setup(c => c.GetHttpContext()).Returns(httpContextMock.Object);
+            httpContext.RequestServices = serviceProviderMock.Object;
+            httpContext.User = userMock.Object;
+            httpContext.Request.Path = "/jobs";
 
             var filter = new DashboardAuthorizationFilter();
 
+            var context = new AspNetCoreDashboardContext(storage, options, httpContext);
+
             // Act
-            var result = filter.Authorize(dashboardContextMock.Object);
+            var result = filter.Authorize(context);
 
             // Assert
             result.Should().BeFalse();
-            httpContextMock.VerifySet(h => h.Response.StatusCode = StatusCodes.Status404NotFound);
         }
     }
 

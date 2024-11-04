@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Common.ValueTypes
@@ -15,7 +14,7 @@ namespace Churchee.Common.ValueTypes
         {
             var results = new List<ValidationResult>();
 
-            if (validationContext.ImplementsInterface<RequiredAttribute>() && string.IsNullOrEmpty(Value))
+            if (validationContext.Items.ContainsKey(typeof(RequiredAttribute)) && string.IsNullOrEmpty(Value))
             {
                 results.Add(new ValidationResult("Required"));
             }

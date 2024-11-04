@@ -1,11 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-	<PropertyGroup>
+  <PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 	</PropertyGroup>
-	
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Churchee.Module.Dashboard.Tests" />
+  </ItemGroup>  
+  
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>

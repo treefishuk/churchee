@@ -8,7 +8,6 @@ namespace Churchee.Module.Hangfire.Filters
     {
         public bool Authorize([NotNull] DashboardContext context)
         {
-
             var httpContext = context.GetHttpContext();
 
             bool authenticated = httpContext.User.Identity.IsAuthenticated;
