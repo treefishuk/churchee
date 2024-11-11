@@ -17,7 +17,7 @@
                     </ErrorContent>
                 </ErrorBoundary>
             </Breadcrumb>
-            
+                <SectionOutlet SectionName="top-bar-end" />
         <ProfileMenu></ProfileMenu>
         </RadzenStack>
 
@@ -40,13 +40,16 @@
             </ErrorContent>
         </ErrorBoundary>
     </RadzenBody>
+
     <RadzenFooter>
-        <SectionOutlet SectionName="footer-bar"/>
+        <SectionOutlet SectionName="footer-bar" @ref="_sectionOutlet"/>
     </RadzenFooter>
 </RadzenLayout>
 
 @code {
     bool sidebarExpanded = true;
+
+    private SectionOutlet _sectionOutlet;
 
     [Inject]
     private IHttpContextAccessor _context { get; set; } = default!;

@@ -21617,3 +21617,7 @@ img {
 .validation-message {
   color: #d74a4a;
 }
+
+.rz-footer:empty {
+  padding: 0;
+}

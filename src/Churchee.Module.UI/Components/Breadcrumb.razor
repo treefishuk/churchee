@@ -33,7 +33,7 @@
     {
         var count = crumbs.Count();
 
-        return crumbs.Take(count - 1).ToList();
+        return crumbs.Skip(1).Take(count - 2).ToList();
 
     }
 

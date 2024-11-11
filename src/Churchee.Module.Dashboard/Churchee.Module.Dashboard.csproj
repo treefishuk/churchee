@@ -6,9 +6,9 @@
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <InternalsVisibleTo Include="Churchee.Module.Dashboard.Tests" />
-  </ItemGroup>  
+	<ItemGroup>
+		<InternalsVisibleTo Include="Churchee.Module.Dashboard.Tests" />
+	</ItemGroup>  
   
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -21,6 +21,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
 	  <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
+	  <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
 	</ItemGroup>
 
 </Project>
