@@ -58,7 +58,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
         {
             //arrange
             var responseFailure = new CommandResponse();
-            responseFailure.AddError("Failure", "Thning");
+            responseFailure.AddError("Failure", "Thing");
 
             MockMediator.Setup(s => s.Send(It.IsAny<ActivateEventsCommand>(), default)).ReturnsAsync(new CommandResponse());
             MockMediator.Setup(s => s.Send(It.IsAny<CreateEventCommand>(), default)).ReturnsAsync(responseFailure);

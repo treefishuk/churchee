@@ -10,18 +10,6 @@
 
 <PageName Name="Dashboard"></PageName>
 
-<SectionContent SectionName="top-bar-end">
-
-    <RadzenMenu>
-        <RadzenMenuItem Icon="filter_alt">
-            <RadzenMenuItem Text="Today" Click="@(async () => await FilterClick(0))"></RadzenMenuItem>
-            <RadzenMenuItem Text="Last 7 Days" Click="@(async () => await FilterClick(7))"></RadzenMenuItem>
-            <RadzenMenuItem Text="Last 30 Days" Click="@(async () => await FilterClick(30))"></RadzenMenuItem>
-        </RadzenMenuItem>
-    </RadzenMenu>
-
-</SectionContent>
-
 @if(data != null)
 {
     
@@ -67,8 +55,15 @@
 
                 <RadzenIcon Icon="show_chart" Style="font-size: 3rem;" />
                 <RadzenStack Gap="0">
-                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-5 rz-my-0">Showing Data From: @filterRange</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-5 rz-my-0">Viewing: @filterRange</RadzenText>
                 </RadzenStack>
+                <RadzenMenu class="rz-dash-menu">
+                    <RadzenMenuItem >
+                        <RadzenMenuItem Text="Today" Click="@(async () => await FilterClick(0))"></RadzenMenuItem>
+                        <RadzenMenuItem Text="Last 7 Days" Click="@(async () => await FilterClick(7))"></RadzenMenuItem>
+                        <RadzenMenuItem Text="Last 30 Days" Click="@(async () => await FilterClick(30))"></RadzenMenuItem>
+                    </RadzenMenuItem>
+                </RadzenMenu>
             </RadzenStack>
         </RadzenCard>
     </RadzenColumn>

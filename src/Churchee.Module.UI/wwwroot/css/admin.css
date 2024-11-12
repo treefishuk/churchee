@@ -21621,3 +21621,18 @@ img {
 .rz-footer:empty {
   padding: 0;
 }
+
+.rz-menu.rz-dash-menu {
+  background: none;
+  margin-top: 0.3rem;
+}
+.rz-menu.rz-dash-menu * {
+  color: #333;
+}
+.rz-menu.rz-dash-menu .rz-navigation-item {
+  direction: rtl;
+}
+.rz-menu.rz-dash-menu > li > .rz-navigation-item-wrapper > .rz-navigation-item-link {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

@@ -1,6 +1,7 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Churchee.Common.Abstractions.Auth;
+using Churchee.Module.UI.Models;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ namespace Churchee.Module.Events.Tests.Areas.Shared.Pages
         protected CustomNotificationService NotificationService;
         protected Mock<IMediator> MockMediator;
         protected Mock<IConfiguration> MockConfiguration;
+        protected CurrentPage CurrentPage;
 
         protected BasePageTests()
         {
@@ -36,6 +38,10 @@ namespace Churchee.Module.Events.Tests.Areas.Shared.Pages
 
             MockConfiguration = new Mock<IConfiguration>();
             Services.AddSingleton(MockConfiguration.Object);
+
+            CurrentPage = new CurrentPage();
+            Services.AddSingleton(CurrentPage);
+
         }
 
         protected void SetInitialUrl<TComponent>() where TComponent : IComponent
