@@ -19,6 +19,8 @@ namespace Churchee.Common.Abstractions.Storage
 
         Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken);
 
+        Task<TResult> FirstOrDefaultAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
+
         T GetById(params object[] keyValues);
 
         Task<T> GetByIdAsync(object id);
@@ -48,7 +50,5 @@ namespace Churchee.Common.Abstractions.Storage
         Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
 
         Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(ISpecification<T> specification, string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
-
-        Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
     }
 }

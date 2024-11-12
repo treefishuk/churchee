@@ -137,9 +137,11 @@ namespace Churchee.Data.EntityFramework
             };
         }
 
-        public Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        public async Task<TResult> FirstOrDefaultAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await _specificationEvaluator.GetQuery(GetQueryable(), specification)
+                .Select(selector)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }
