@@ -117,8 +117,11 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 .Where(w => !string.IsNullOrEmpty(w.Referrer))
                 .Select(s => new
                 {
-                    Referrer = new Uri(s.Referrer).Host,
+                    Referrer = GetHost(s.Referrer),
                 })
+                .Where(w => w.Referrer != "Invalid URL"
+                        && !w.Referrer.StartsWith("/.")
+                        )
                 .ToList();
 
             // Calculate the total number of records
@@ -136,6 +139,21 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             .Take(5)
             .ToArray();
         }
+
+        string GetHost(string referrer)
+        {
+            try
+            {
+                return new Uri(referrer).Host;
+            }
+            catch (UriFormatException)
+            {
+                // Handle the invalid URL situation here
+                // For example, return a default value or a specific string
+                return "Invalid URL";
+            }
+        }
+
 
     }
 }
