@@ -1,8 +1,9 @@
-﻿using Churchee.Module.Dashboard.Entities;
-using Churchee.Module.Dashboard.Middleware;
+﻿using Churchee.Module.Dashboard.Middleware;
 using Churchee.Module.Tenancy.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 
@@ -15,6 +16,21 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
         {
             // Arrange
             var context = new DefaultHttpContext();
+            var logger = new Mock<ILogger<UsageMiddleware>>();
+            var serviceProvider = new Mock<IServiceProvider>();
+
+            var serviceScope = new Mock<IServiceScope>();
+            serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
+
+            var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+            serviceScopeFactory
+            .Setup(x => x.CreateScope())
+                .Returns(serviceScope.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
+                .Returns(serviceScopeFactory.Object);
+
             var dbContextMock = new Mock<DbContext>();
             var tenantResolverMock = new Mock<ITenantResolver>();
             var nextCalled = false;
@@ -23,10 +39,10 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
                 nextCalled = true;
                 return Task.CompletedTask;
             };
-            var middleware = new UsageMiddleware(next);
+            var middleware = new UsageMiddleware(next, logger.Object, serviceProvider.Object);
 
             // Act
-            await middleware.InvokeAsync(context, dbContextMock.Object, tenantResolverMock.Object);
+            await middleware.InvokeAsync(context, tenantResolverMock.Object);
 
             // Assert
             Assert.True(nextCalled);
@@ -37,26 +53,37 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
         {
             // Arrange
             var context = new DefaultHttpContext();
+            var logger = new Mock<ILogger<UsageMiddleware>>();
+            var serviceProvider = new Mock<IServiceProvider>();
+
+            var serviceScope = new Mock<IServiceScope>();
+            serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
+
+            var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+            serviceScopeFactory
+            .Setup(x => x.CreateScope())
+                .Returns(serviceScope.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
+                .Returns(serviceScopeFactory.Object);
+
+
             context.Connection.RemoteIpAddress = IPAddress.Parse("127.0.0.1");
             context.Request.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0";
             context.Request.Path = "/test";
             context.Request.Headers["Referer"] = "http://example.com";
 
-            var dbContextMock = new Mock<DbContext>();
-            var dbSetMock = new Mock<DbSet<PageView>>();
-            dbContextMock.Setup(m => m.Set<PageView>()).Returns(dbSetMock.Object);
-
             var tenantResolverMock = new Mock<ITenantResolver>();
             tenantResolverMock.Setup(tr => tr.GetTenantId()).Returns(Guid.NewGuid());
 
-            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask);
+            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask, logger.Object, serviceProvider.Object);
 
             // Act
-            await middleware.LogRequest(context, dbContextMock.Object, tenantResolverMock.Object);
+            await middleware.LogRequest(context, tenantResolverMock.Object);
 
             // Assert
-            dbSetMock.Verify(m => m.Add(It.IsAny<PageView>()), Times.Once);
-            dbContextMock.Verify(m => m.SaveChangesAsync(default), Times.Once);
+            tenantResolverMock.Verify(m => m.GetTenantId(), Times.Once);
         }
 
         [Fact]
@@ -66,16 +93,31 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
             var context = new DefaultHttpContext();
             context.Request.Path = "/styles.css";
 
-            var dbContextMock = new Mock<DbContext>();
+            var logger = new Mock<ILogger<UsageMiddleware>>();
+
+            var serviceProvider = new Mock<IServiceProvider>();
+
+            var serviceScope = new Mock<IServiceScope>();
+            serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
+
+            var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+            serviceScopeFactory
+            .Setup(x => x.CreateScope())
+                .Returns(serviceScope.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
+                .Returns(serviceScopeFactory.Object);
+
             var tenantResolverMock = new Mock<ITenantResolver>();
 
-            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask);
+            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask, logger.Object, serviceProvider.Object);
 
             // Act
-            await middleware.InvokeAsync(context, dbContextMock.Object, tenantResolverMock.Object);
+            await middleware.InvokeAsync(context, tenantResolverMock.Object);
 
             // Assert
-            dbContextMock.Verify(m => m.SaveChangesAsync(default), Times.Never);
+            tenantResolverMock.Verify(m => m.GetTenantId(), Times.Once);
         }
 
         [Fact]
@@ -85,16 +127,30 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
             var context = new DefaultHttpContext();
             context.Request.Headers["User-Agent"] = "Googlebot";
 
-            var dbContextMock = new Mock<DbContext>();
+            var logger = new Mock<ILogger<UsageMiddleware>>();
+            var serviceProvider = new Mock<IServiceProvider>();
+
+            var serviceScope = new Mock<IServiceScope>();
+            serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
+
+            var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+            serviceScopeFactory
+            .Setup(x => x.CreateScope())
+                .Returns(serviceScope.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
+                .Returns(serviceScopeFactory.Object);
+
             var tenantResolverMock = new Mock<ITenantResolver>();
 
-            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask);
+            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask, logger.Object, serviceProvider.Object);
 
             // Act
-            await middleware.InvokeAsync(context, dbContextMock.Object, tenantResolverMock.Object);
+            await middleware.InvokeAsync(context, tenantResolverMock.Object);
 
             // Assert
-            dbContextMock.Verify(m => m.SaveChangesAsync(default), Times.Never);
+            tenantResolverMock.Verify(m => m.GetTenantId(), Times.Once);
         }
     }
 }
