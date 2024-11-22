@@ -15,6 +15,7 @@ using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR;
 using Radzen;
 
@@ -40,6 +41,19 @@ namespace Churchee.Presentation.Admin
             builder.Services.Configure<HubOptions>(options =>
             {
                 options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB or use null
+            });
+
+            builder.Services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true; // Enable compression for HTTPS requests
+                options.Providers.Add<GzipCompressionProvider>();
+                options.Providers.Add<BrotliCompressionProvider>();
+
+            });
+
+            builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = System.IO.Compression.CompressionLevel.Fastest; // Set the compression level
             });
 
             builder.Services.RegisterSeedActions();
