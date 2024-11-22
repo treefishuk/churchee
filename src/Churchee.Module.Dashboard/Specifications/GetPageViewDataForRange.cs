@@ -7,7 +7,7 @@ namespace Churchee.Module.Dashboard.Specifications
     {
         public GetPageViewDataForRange(DateTime start)
         {
-            Query.Where(x => x.ViewedAt > start && !string.IsNullOrEmpty(x.Device) && !string.IsNullOrEmpty(x.UserAgent));
+            Query.AsNoTracking().Where(x => x.ViewedAt > start && !string.IsNullOrEmpty(x.Device) && !string.IsNullOrEmpty(x.UserAgent));
         }
     }
 }

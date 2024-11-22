@@ -2,7 +2,6 @@
 using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 
 namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
@@ -22,14 +21,16 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
             var data = await _dataStore.GetRepository<PageView>().GetListAsync(new GetPageViewDataForRange(start), cancellationToken);
 
+            var pastVisitors = await _dataStore.GetRepository<PageView>().GetListAsync(new GetIpsBeforeDateSpecification(start), s => s.IpAddress, cancellationToken);
+
             var response = new GetDashboardDataResponse()
             {
                 ReferralSource = GetReferralSources(data),
                 Devices = GetDevices(data),
                 PagesOverTime = GetPagesOverTime(data),
                 TopPages = GetTopPages(data),
-                UniqueVisitors = await GetUniqueVisitors(start, cancellationToken),
-                ReturningVisitors = await GetReturnVisitors(start, cancellationToken),
+                UniqueVisitors = await GetUniqueVisitors(data, pastVisitors, cancellationToken),
+                ReturningVisitors = await GetReturnVisitors(data, pastVisitors, cancellationToken),
                 TotalPageViews = data.Count
             };
 
@@ -46,36 +47,30 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             return start;
         }
 
-        private async Task<int> GetUniqueVisitors(DateTime startDate, CancellationToken cancellationToken)
+        private async Task<int> GetUniqueVisitors(List<PageView> recentPageViews, List<string> pastVisitorIps, CancellationToken cancellationToken)
         {
-            return await _dataStore.GetRepository<PageView>().GetQueryable()
-                .Where(record => record.ViewedAt > startDate)
+            var uniqueVisitors = recentPageViews
                 .GroupBy(record => record.IpAddress)
-                .Select(group => new
-                {
-                    IpAddress = group.Key,
-                    Count = group.Count()
-                })
-                .Where(group => !_dataStore.GetRepository<PageView>().GetQueryable().Any(r => r.ViewedAt <= startDate && r.IpAddress == group.IpAddress))
-                .Select(group => group.IpAddress)
-                .Distinct()
-                .CountAsync(cancellationToken);
+                .Select(group => group.Key);
+
+            var newVisitors = uniqueVisitors
+                .Where(ip => !pastVisitorIps.Contains(ip))
+                .Distinct();
+
+            return newVisitors.Count();
         }
 
-        private async Task<int> GetReturnVisitors(DateTime startDate, CancellationToken cancellationToken)
+        private async Task<int> GetReturnVisitors(List<PageView> recentPageViews, List<string> pastVisitorIps, CancellationToken cancellationToken)
         {
-            return await _dataStore.GetRepository<PageView>().GetQueryable()
-                .Where(record => record.ViewedAt > startDate)
+            var uniqueVisitors = recentPageViews
                 .GroupBy(record => record.IpAddress)
-                .Select(group => new
-                {
-                    IpAddress = group.Key,
-                    Count = group.Count()
-                })
-                .Where(group => _dataStore.GetRepository<PageView>().GetQueryable().Any(r => r.ViewedAt <= startDate && r.IpAddress == group.IpAddress))
-                .Select(group => group.IpAddress)
-                .Distinct()
-                .CountAsync(cancellationToken);
+                .Select(group => group.Key);
+
+            var returnVisitors = uniqueVisitors
+                .Where(ip => pastVisitorIps.Contains(ip))
+                .Distinct();
+
+            return returnVisitors.Count();
         }
 
         private GetDashboardDataResponseItem[] GetTopPages(List<PageView> data)
