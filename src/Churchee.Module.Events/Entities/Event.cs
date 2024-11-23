@@ -186,6 +186,7 @@ namespace Churchee.Module.Events.Entities
 
             public Event Build()
             {
+                _event.Id = Guid.NewGuid();
                 _event.Url = $"{ParentSlug}/{_event.Title.ToURL()}";
 
                 return _event;
