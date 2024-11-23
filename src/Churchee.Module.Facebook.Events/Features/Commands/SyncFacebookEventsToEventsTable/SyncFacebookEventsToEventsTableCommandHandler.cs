@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
@@ -14,6 +15,7 @@ using Churchee.Module.Tokens.Specifications;
 using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Event = Churchee.Module.Events.Entities.Event;
 
@@ -30,14 +32,16 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
         private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly ILogger<SyncFacebookEventsToEventsTableCommandHandler> _logger;
 
-        public SyncFacebookEventsToEventsTableCommandHandler(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, ICurrentUser currentUser, IRecurringJobManager recurringJobManager, IBackgroundJobClient backgroundJobClient)
+        public SyncFacebookEventsToEventsTableCommandHandler(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, ICurrentUser currentUser, IRecurringJobManager recurringJobManager, IBackgroundJobClient backgroundJobClient, ILogger<SyncFacebookEventsToEventsTableCommandHandler> logger)
         {
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
             _settingStore = settingStore ?? throw new ArgumentNullException(nameof(settingStore));
             _dataStore = dataStore ?? throw new ArgumentNullException(nameof(dataStore));
             _blobStore = blobStore ?? throw new ArgumentNullException(nameof(blobStore));
             _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             _jsonSerializerOptions = new JsonSerializerOptions();
 
@@ -60,6 +64,8 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error syncing Facebook events");
+
                 response.AddError("Failed To Sync", "");
             }
 
@@ -69,9 +75,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
         public async Task SyncFacebookEvents(Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            var client = _clientFactory.CreateClient();
-
-            client.BaseAddress = new Uri("https://graph.facebook.com/v18.0/");
+            var client = CreateClient();
 
             var tokenRepo = _dataStore.GetRepository<Token>();
 
@@ -83,7 +87,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             var feedResponseItems = await GetFeedResult(client, pageId, facebookPageAccessToken);
 
-            if (feedResponseItems.Count == 0)
+            if (!feedResponseItems.Any())
             {
                 return;
             }
@@ -108,79 +112,84 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
                     continue;
                 }
 
-                string facebookEventJson = await client.GetStringAsync($"{eventId}?access_token={facebookPageAccessToken}&format=json&fields=cover,description,name,place,start_time,end_time");
-
-                var item = JsonSerializer.Deserialize<FacebookEventResult>(facebookEventJson, _jsonSerializerOptions);
-
-                if (item == null)
-                {
-                    continue;
-                }
-
-                string parentSlug = "/events";
-
-                Guid? parentId = null;
-
-                var parentPage = _dataStore.GetRepository<Page>().ApplySpecification(new EventListingPageSpecification()).FirstOrDefault();
-
-                if (parentPage != null)
-                {
-                    parentSlug = parentPage.Url;
-                    parentId = parentPage.Id;
-                }
-
-                var newEvent = new Event.Builder()
-                    .SetApplicationTenantId(applicationTenantId)
-                    .SetParentId(parentId)
-                    .SetParentSlug(parentSlug)
-                    .SetPageTypeId(pageTypeId)
-                    .SetSourceName("Facebook")
-                    .SetSourceId(item.Id)
-                    .SetTitle(item.Name ?? string.Empty)
-                    .SetDescription(item.Description)
-                    .SetContent(item.Description)
-                    .SetLocationName(item.Place?.Name ?? string.Empty)
-                    .SetCity(item.Place?.Location?.City ?? string.Empty)
-                    .SetStreet(item.Place?.Location?.Street ?? string.Empty)
-                    .SetPostCode(item.Place?.Location?.Zip ?? string.Empty)
-                    .SetCountry(item.Place?.Location?.Country ?? string.Empty)
-                    .SetLatitude(Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d))
-                    .SetLongitude(Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d))
-                    .SetDates(item.StartTime, item.EndTime)
-                    .SetImageUrl(item.Cover?.Source ?? string.Empty)
-                    .Build();
-
-                await ConvertImageToLocalImage(newEvent, applicationTenantId, cancellationToken);
-
-                repo.Create(newEvent);
+                await CreateNewEvent(applicationTenantId, client, facebookPageAccessToken, repo, pageTypeId, eventId, cancellationToken);
 
             }
 
-            await _dataStore.SaveChangesAsync();
+            await _dataStore.SaveChangesAsync(cancellationToken);
 
         }
 
-        private async Task<List<FacebookFeedResponseItem>> GetFeedResult(HttpClient client, string pageId, string accessToken)
+        private async Task CreateNewEvent(Guid applicationTenantId, HttpClient client, string facebookPageAccessToken, IRepository<Event> repo, Guid pageTypeId, string eventId, CancellationToken cancellationToken)
+        {
+            string facebookEventJson = await client.GetStringAsync($"{eventId}?access_token={facebookPageAccessToken}&format=json&fields=cover,description,name,place,start_time,end_time");
+
+            var item = JsonSerializer.Deserialize<FacebookEventResult>(facebookEventJson, _jsonSerializerOptions);
+
+            if (item == null)
+            {
+                return;
+            }
+
+            string parentSlug = "/events";
+
+            Guid? parentId = null;
+
+            var parentPage = _dataStore.GetRepository<Page>().ApplySpecification(new EventListingPageSpecification()).FirstOrDefault();
+
+            if (parentPage != null)
+            {
+                parentSlug = parentPage.Url;
+                parentId = parentPage.Id;
+            }
+
+            var newEvent = new Event.Builder()
+                .SetApplicationTenantId(applicationTenantId)
+                .SetParentId(parentId)
+                .SetParentSlug(parentSlug)
+                .SetPageTypeId(pageTypeId)
+                .SetSourceName("Facebook")
+                .SetSourceId(item.Id)
+                .SetTitle(item.Name ?? string.Empty)
+                .SetDescription(item.Description)
+                .SetContent(item.Description)
+                .SetLocationName(item.Place?.Name ?? string.Empty)
+                .SetCity(item.Place?.Location?.City ?? string.Empty)
+                .SetStreet(item.Place?.Location?.Street ?? string.Empty)
+                .SetPostCode(item.Place?.Location?.Zip ?? string.Empty)
+                .SetCountry(item.Place?.Location?.Country ?? string.Empty)
+                .SetLatitude(Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d))
+                .SetLongitude(Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d))
+                .SetDates(item.StartTime, item.EndTime)
+                .SetImageUrl(item.Cover?.Source ?? string.Empty)
+                .Build();
+
+            await ConvertImageToLocalImage(newEvent, applicationTenantId, cancellationToken);
+
+            repo.Create(newEvent);
+        }
+
+        private async Task<IEnumerable<FacebookFeedResponseItem>> GetFeedResult(HttpClient client, string pageId, string accessToken)
         {
             string feedJsonString = await client.GetStringAsync($"{pageId}/feed?access_token={accessToken}&limit=100");
 
             if (string.IsNullOrEmpty(feedJsonString))
             {
-                return new List<FacebookFeedResponseItem>();
+                return Enumerable.Empty<FacebookFeedResponseItem>();
             }
 
             return JsonSerializer.Deserialize<FacebookFeedResponse>(feedJsonString, _jsonSerializerOptions).Data;
         }
 
-        private async Task ConvertImageToLocalImage(Event facebookevent, Guid applicationTenantId, CancellationToken cancellationToken)
+        private async Task ConvertImageToLocalImage(Event facebookEvent, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            string fileName = Path.GetFileName(facebookevent.ImageUrl.Split('?')[0]);
+            string fileName = Path.GetFileName(facebookEvent.ImageUrl.Split('?')[0]);
 
             string fileExt = Path.GetExtension(fileName);
 
-            string friendlyFileName = $"{facebookevent.Title.Replace(" ", "_")}{fileExt}";
+            string friendlyFileName = $"{facebookEvent.Title.Replace(" ", "_")}{fileExt}";
 
-            var response = await _clientFactory.CreateClient().GetAsync($"{facebookevent.ImageUrl}");
+            var response = await _clientFactory.CreateClient().GetAsync($"{facebookEvent.ImageUrl}");
 
             response.EnsureSuccessStatusCode();
 
@@ -188,11 +197,20 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", stream, true, cancellationToken);
 
-            facebookevent.SetImageUrl($"/img/events/{friendlyFileName}");
+            facebookEvent.SetImageUrl($"/img/events/{friendlyFileName}");
 
             var bytes = stream.ConvertStreamToByteArray();
 
             _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
+        }
+
+        private HttpClient CreateClient()
+        {
+            var client = _clientFactory.CreateClient();
+
+            client.BaseAddress = new Uri("https://graph.facebook.com/v18.0/");
+
+            return client;
         }
     }
 }
