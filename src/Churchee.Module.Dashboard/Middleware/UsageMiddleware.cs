@@ -35,9 +35,9 @@ namespace Churchee.Module.Dashboard.Middleware
             try
             {
                 var ipAddress = context.Connection.RemoteIpAddress?.ToString();
-                var userAgent = context.Request.Headers["User-Agent"].ToString();
+                var userAgent = context.Request.Headers.UserAgent.ToString();
                 var url = context.Request.Path.ToString();
-                var referrer = context.Request.Headers["Referer"].ToString();
+                var referrer = context.Request.Headers.Referer.ToString();
 
                 if (url.EndsWith(".css"))
                 {
@@ -83,7 +83,6 @@ namespace Churchee.Module.Dashboard.Middleware
             }
             catch (Exception ex)
             {
-
                 _logger.LogError(ex, "Usage Middleware Error");
             }
         }

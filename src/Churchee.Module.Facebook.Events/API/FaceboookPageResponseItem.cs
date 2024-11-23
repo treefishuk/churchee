@@ -9,7 +9,6 @@ namespace Churchee.Module.Facebook.Events.API
         public string AccessToken { get; set; }
 
         [JsonPropertyName("id")]
-
         public string Id { get; set; }
     }
 }

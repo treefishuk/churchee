@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Exceptions;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
@@ -19,6 +20,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
         private readonly IDataStore _dataStore;
         private readonly ISettingStore _settingStore;
         private readonly IConfiguration _configuration;
+        private readonly JsonSerializerOptions _options;
 
         public EnableFacebookIntegrationCommandHandler(IHttpClientFactory clientFactory, ICurrentUser currentUser, ISettingStore settingStore, IConfiguration configuration, IDataStore dataStore)
         {
@@ -27,89 +29,137 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
             _settingStore = settingStore;
             _configuration = configuration;
             _dataStore = dataStore;
+            _options = GetOptions();
         }
 
         public async Task<CommandResponse> Handle(EnableFacebookIntegrationCommand request, CancellationToken cancellationToken)
         {
             var tokenRepo = _dataStore.GetRepository<Token>();
-
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string code = request.Token;
-
-            var client = _clientFactory.CreateClient();
-
-            client.BaseAddress = new Uri("https://graph.facebook.com/v18.0/");
-
-            string facebookAppId = _configuration.GetValue<string>("facebookAppId") ?? string.Empty;
-
-            if (string.IsNullOrEmpty(facebookAppId))
-            {
-                throw new MissingConfirgurationSettingException(nameof(facebookAppId));
-            }
-
-            string pageId = await _settingStore.GetSettingValue(Guid.Parse("3de048ae-d711-4609-9b66-97564a9d0d68"), applicationTenantId);
-
-            string appSecret = _configuration.GetValue<string>("facebookAppSecret") ?? string.Empty;
-
-            if (string.IsNullOrEmpty(appSecret))
-            {
-                throw new MissingConfirgurationSettingException(nameof(appSecret));
-            }
-
-            string stateId = await _settingStore.GetSettingValue(Guid.Parse("841fb9d0-92ca-41b2-9cdb-5903a6ab7bad"), applicationTenantId);
-
+            string facebookAppId = GetConfigurationValue("facebookAppId");
+            string appSecret = GetConfigurationValue("facebookAppSecret");
+            string pageId = await GetSettingValue("3de048ae-d711-4609-9b66-97564a9d0d68", applicationTenantId);
+            string stateId = await GetSettingValue("841fb9d0-92ca-41b2-9cdb-5903a6ab7bad", applicationTenantId);
             string redirectUri = $"{request.Domain}/management/integrations/facebook-events/auth?state={stateId}";
 
-            string jsonString = await client.GetStringAsync($"oauth/access_token?client_id={facebookAppId}&redirect_uri={redirectUri}&client_secret={appSecret}&code={code}&state={stateId}");
+            var client = CreateClient();
 
-            if (string.IsNullOrEmpty(jsonString))
+            var accessToken = await GetAccessToken(facebookAppId, appSecret, stateId, redirectUri, request.Token, client, cancellationToken);
+
+            if (accessToken == null)
             {
                 return new CommandResponse();
             }
 
-            var options = new JsonSerializerOptions();
+            StoreAccessToken(tokenRepo, applicationTenantId, accessToken);
 
-            options.Converters.Add(new DateTimeISO8601JsonConverter());
-
-            var accessTokenResponse = JsonSerializer.Deserialize<FacebookAccessTokenResponse>(jsonString, options);
-
-            if (accessTokenResponse == null)
-            {
-                return new CommandResponse();
-            }
-
-            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.FacebookAccessToken, accessTokenResponse.AccessToken));
-
-            string userIdjsonString = await client.GetStringAsync($"me?fields=id&access_token={accessTokenResponse.AccessToken}");
-
-            var userIdResponse = JsonSerializer.Deserialize<FacebookUserIdResponse>(userIdjsonString, options);
+            var userIdResponse = await GetFacebookUserId(client, accessToken, cancellationToken);
 
             if (userIdResponse == null)
             {
                 return new CommandResponse();
             }
 
-            await _settingStore.AddOrUpdateSetting(Guid.Parse("efa5252a-e825-4310-a498-2383875e9584"), applicationTenantId, "FacebookUserId", userIdResponse.Id);
+            await StoreFacebookUserId(applicationTenantId, userIdResponse);
 
-            string pagessResponseJson = await client.GetStringAsync($"{userIdResponse.Id}/accounts?access_token={accessTokenResponse.AccessToken}");
+            var pageTokensResponse = await GetAvailablePageTokensForUser(client, accessToken, userIdResponse, cancellationToken);
 
-            var pagessResponse = JsonSerializer.Deserialize<FacebookPagesReponse>(pagessResponseJson, options);
-
-            if (pagessResponse == null)
+            if (pageTokensResponse == null)
             {
                 return new CommandResponse();
             }
 
-            string pageToken = pagessResponse.Data.Where(w => w.Id == pageId).Select(s => s.AccessToken).FirstOrDefault() ?? string.Empty;
+            string pageToken = GetPageAccessTokenForPage(pageId, pageTokensResponse);
 
-            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.FacebookPageAccessToken, pageToken));
+            StorePageAccessToken(tokenRepo, applicationTenantId, pageToken);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
             return new CommandResponse();
-
         }
 
+        private static string GetPageAccessTokenForPage(string pageId, FacebookPagesReponse pageTokensResponse)
+        {
+            return pageTokensResponse.Data.Where(w => w.Id == pageId).Select(s => s.AccessToken).FirstOrDefault() ?? string.Empty;
+        }
+
+        private static void StorePageAccessToken(IRepository<Token> tokenRepo, Guid applicationTenantId, string pageToken)
+        {
+            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.FacebookPageAccessToken, pageToken));
+        }
+
+        private async Task<FacebookPagesReponse> GetAvailablePageTokensForUser(HttpClient client, FacebookAccessTokenResponse accessToken, FacebookUserIdResponse userIdResponse, CancellationToken cancellationToken)
+        {
+            string pagesResponseJson = await client.GetStringAsync($"{userIdResponse.Id}/accounts?access_token={accessToken.AccessToken}", cancellationToken);
+
+            var pagesResponse = JsonSerializer.Deserialize<FacebookPagesReponse>(pagesResponseJson, _options);
+
+            return pagesResponse;
+        }
+
+        private async Task StoreFacebookUserId(Guid applicationTenantId, FacebookUserIdResponse userIdResponse)
+        {
+            await _settingStore.AddOrUpdateSetting(Guid.Parse("efa5252a-e825-4310-a498-2383875e9584"), applicationTenantId, "FacebookUserId", userIdResponse.Id);
+        }
+
+        private static void StoreAccessToken(IRepository<Token> tokenRepo, Guid applicationTenantId, FacebookAccessTokenResponse accessToken)
+        {
+            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.FacebookAccessToken, accessToken.AccessToken));
+        }
+
+        private async Task<FacebookUserIdResponse> GetFacebookUserId(HttpClient client, FacebookAccessTokenResponse accessToken, CancellationToken cancellationToken)
+        {
+            var json = await client.GetStringAsync($"me?fields=id&access_token={accessToken.AccessToken}", cancellationToken);
+
+            return JsonSerializer.Deserialize<FacebookUserIdResponse>(json, _options);
+        }
+
+        private async Task<FacebookAccessTokenResponse> GetAccessToken(string facebookAppId, string appSecret, string stateId, string redirectUri, string code, HttpClient client, CancellationToken cancellationToken)
+        {
+            string jsonString = await client.GetStringAsync($"oauth/access_token?client_id={facebookAppId}&redirect_uri={redirectUri}&client_secret={appSecret}&code={code}&state={stateId}", cancellationToken);
+
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                return null;
+            }
+
+            return JsonSerializer.Deserialize<FacebookAccessTokenResponse>(jsonString, _options);
+        }
+
+        private HttpClient CreateClient()
+        {
+            var client = _clientFactory.CreateClient();
+
+            client.BaseAddress = new Uri("https://graph.facebook.com/v18.0/");
+
+            return client;
+        }
+
+        private string GetConfigurationValue(string key)
+        {
+            string value = _configuration.GetValue<string>(key) ?? string.Empty;
+
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new MissingConfirgurationSettingException(key);
+            }
+
+            return value;
+        }
+
+        private async Task<string> GetSettingValue(string settingId, Guid tenantId)
+        {
+            return await _settingStore.GetSettingValue(Guid.Parse(settingId), tenantId);
+        }
+
+        private static JsonSerializerOptions GetOptions()
+        {
+            var options = new JsonSerializerOptions();
+
+            options.Converters.Add(new DateTimeISO8601JsonConverter());
+
+            return options;
+        }
     }
 }

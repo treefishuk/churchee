@@ -4,6 +4,7 @@ namespace Churchee.Module.Facebook.Events.API
 {
     public class Cover
     {
+
         [JsonPropertyName("offset_x")]
         public int OffsetX { get; set; }
 

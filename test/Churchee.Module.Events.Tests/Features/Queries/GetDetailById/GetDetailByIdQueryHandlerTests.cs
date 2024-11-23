@@ -15,7 +15,15 @@ namespace Churchee.Module.Events.Tests.Features.Queries.GetDetailById
         {
 
             //arrange
-            var testEvent = new Event(Guid.NewGuid(), Guid.NewGuid(), "/events", Guid.NewGuid(), "", "", "Test Event", "", "", "", "", "", "", "", null, null, DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), "");
+            var testEvent = new Event.Builder()
+                .SetApplicationTenantId(Guid.NewGuid())
+                .SetParentId(Guid.NewGuid())
+                .SetParentSlug("/events")
+                .SetTitle("Test Event")
+                .SetPageTypeId(Guid.NewGuid())
+                .SetDates(DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1))
+                .Build();
+
             var cut = new GetDetailByIdQueryHandler(GetDataStore(testEvent));
 
             //act

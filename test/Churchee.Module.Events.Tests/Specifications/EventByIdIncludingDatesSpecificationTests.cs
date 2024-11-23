@@ -11,8 +11,23 @@ namespace Churchee.Module.Events.Tests.Specifications
         [Fact]
         public void EventByIdIncludingDatesSpecification_FiltersCorrectly()
         {
-            var testEvent = new Event(Guid.NewGuid(), Guid.NewGuid(), "/events", Guid.NewGuid(), "", "", "Test Event", "", "", "", "", "", "", "", null, null, DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), "");
-            var testEvent2 = new Event(Guid.NewGuid(), Guid.NewGuid(), "/events", Guid.NewGuid(), "", "", "Test Event 2", "", "", "", "", "", "", "", null, null, DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), "");
+            var testEvent = new Event.Builder()
+                .SetApplicationTenantId(Guid.NewGuid())
+                .SetParentId(Guid.NewGuid())
+                .SetParentSlug("/events")
+                .SetPageTypeId(Guid.NewGuid())
+                .SetTitle("Test Event")
+                .SetDates(DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1))
+                .Build();
+
+            var testEvent2 = new Event.Builder()
+                .SetApplicationTenantId(Guid.NewGuid())
+                .SetParentId(Guid.NewGuid())
+                .SetParentSlug("/events")
+                .SetPageTypeId(Guid.NewGuid())
+                .SetTitle("Test Event 2")
+                .SetDates(DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1))
+                .Build();
 
             var events = new List<Event> { testEvent, testEvent2 };
 

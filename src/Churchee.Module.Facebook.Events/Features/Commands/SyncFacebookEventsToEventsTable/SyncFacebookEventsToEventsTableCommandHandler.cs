@@ -129,26 +129,26 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
                     parentId = parentPage.Id;
                 }
 
-                var newEvent = new Event(applicationTenantId,
-                                         pageTypeId: pageTypeId,
-                                         parentId: parentId,
-                                         parentSlug: parentSlug,
-                                         sourceName: "Facebook",
-                                         sourceId: item.Id,
-                                         title: item.Name ?? "",
-                                         description: item.Description,
-                                         content: item.Description,
-                                         locationName: item.Place?.Name ?? "",
-                                         city: item.Place?.Location?.City ?? "",
-                                         street: item.Place?.Location?.Street ?? "",
-                                         postCode: item.Place?.Location?.Zip ?? "",
-                                         country: item.Place?.Location?.Country ?? "",
-                                         latitude: Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d),
-                                         longitude: Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d),
-                                         start: item.StartTime,
-                                         end: item.EndTime,
-                                         imageUrl: item.Cover?.Source ?? "");
-
+                var newEvent = new Event.Builder()
+                    .SetApplicationTenantId(applicationTenantId)
+                    .SetParentId(parentId)
+                    .SetParentSlug(parentSlug)
+                    .SetPageTypeId(pageTypeId)
+                    .SetSourceName("Facebook")
+                    .SetSourceId(item.Id)
+                    .SetTitle(item.Name ?? string.Empty)
+                    .SetDescription(item.Description)
+                    .SetContent(item.Description)
+                    .SetLocationName(item.Place?.Name ?? string.Empty)
+                    .SetCity(item.Place?.Location?.City ?? string.Empty)
+                    .SetStreet(item.Place?.Location?.Street ?? string.Empty)
+                    .SetPostCode(item.Place?.Location?.Zip ?? string.Empty)
+                    .SetCountry(item.Place?.Location?.Country ?? string.Empty)
+                    .SetLatitude(Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d))
+                    .SetLongitude(Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d))
+                    .SetDates(item.StartTime, item.EndTime)
+                    .SetImageUrl(item.Cover?.Source ?? string.Empty)
+                    .Build();
 
                 await ConvertImageToLocalImage(newEvent, applicationTenantId, cancellationToken);
 

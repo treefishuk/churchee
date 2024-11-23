@@ -63,7 +63,14 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
 
         private Event GetTestEvent()
         {
-            var testEvent = new Event(Guid.NewGuid(), Guid.NewGuid(), "/events", Guid.NewGuid(), "", "", "Test Event", "", "", "", "", "", "", "", null, null, DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1), "");
+            var testEvent = new Event.Builder()
+                .SetApplicationTenantId(Guid.NewGuid())
+                .SetParentId(Guid.NewGuid())
+                .SetParentSlug("/events")
+                .SetPageTypeId(Guid.NewGuid())
+                .SetTitle("Test Event")
+                .SetDates(DateTime.Now.AddDays(-2), DateTime.Now.AddDays(-1))
+                .Build();
 
             return testEvent;
         }

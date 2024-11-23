@@ -29,8 +29,8 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 Devices = GetDevices(data),
                 PagesOverTime = GetPagesOverTime(data),
                 TopPages = GetTopPages(data),
-                UniqueVisitors = await GetUniqueVisitors(data, pastVisitors, cancellationToken),
-                ReturningVisitors = await GetReturnVisitors(data, pastVisitors, cancellationToken),
+                UniqueVisitors = GetUniqueVisitors(data, pastVisitors),
+                ReturningVisitors = GetReturnVisitors(data, pastVisitors),
                 TotalPageViews = data.Count
             };
 
@@ -39,7 +39,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private static DateTime GetStartDate(GetDashboardDataQuery request)
         {
-            var startOfTheDay = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, DateTime.UtcNow.Day);
+            var startOfTheDay = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, DateTime.UtcNow.Day, 0, 0, 0, DateTimeKind.Utc);
 
             int negativeNumber = (request.Days * -1);
 
@@ -47,7 +47,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             return start;
         }
 
-        private async Task<int> GetUniqueVisitors(List<PageView> recentPageViews, List<string> pastVisitorIps, CancellationToken cancellationToken)
+        private static int GetUniqueVisitors(List<PageView> recentPageViews, List<string> pastVisitorIps)
         {
             var uniqueVisitors = recentPageViews
                 .GroupBy(record => record.IpAddress)
@@ -60,7 +60,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             return newVisitors.Count();
         }
 
-        private async Task<int> GetReturnVisitors(List<PageView> recentPageViews, List<string> pastVisitorIps, CancellationToken cancellationToken)
+        private static int GetReturnVisitors(List<PageView> recentPageViews, List<string> pastVisitorIps)
         {
             var uniqueVisitors = recentPageViews
                 .GroupBy(record => record.IpAddress)
@@ -91,7 +91,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             }).OrderBy(x => x.Name).ToArray();
         }
 
-        private GetDashboardDataResponseItem[] GetDevices(List<PageView> data)
+        private static GetDashboardDataResponseItem[] GetDevices(List<PageView> data)
         {
             var totalRequestsAfterDate = data.Count;
 
@@ -135,7 +135,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             .ToArray();
         }
 
-        string GetHost(string referrer)
+        private static string GetHost(string referrer)
         {
             try
             {

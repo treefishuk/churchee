@@ -42,14 +42,12 @@
     </RadzenBody>
 
     <RadzenFooter>
-        <SectionOutlet SectionName="footer-bar" @ref="_sectionOutlet"/>
+        <SectionOutlet SectionName="footer-bar"/>
     </RadzenFooter>
 </RadzenLayout>
 
 @code {
     bool sidebarExpanded = true;
-
-    private SectionOutlet _sectionOutlet;
 
     [Inject]
     private IHttpContextAccessor _context { get; set; } = default!;

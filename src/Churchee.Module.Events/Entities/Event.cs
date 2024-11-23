@@ -4,7 +4,7 @@ namespace Churchee.Module.Events.Entities
 {
     public class Event : WebContent
     {
-        private Event()
+        public Event()
         {
             Title = string.Empty;
             Description = string.Empty;
@@ -15,39 +15,7 @@ namespace Churchee.Module.Events.Entities
             PostCode = string.Empty;
             Country = string.Empty;
             Content = string.Empty;
-            EventDates = new List<EventDate>();
-        }
-
-        public Event(Guid applicationTenantId, Guid? parentId, string parentSlug, Guid pageTypeId, string sourceName, string sourceId, string title, string description, string content, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude, DateTime? start, DateTime? end, string imageUrl)
-            : base()
-        {
-            var eventId = Guid.NewGuid();
-
-            Id = eventId;
-            ApplicationTenantId = applicationTenantId;
-            ParentId = parentId;
-            CreatedDate = DateTime.Now;
-            SourceName = sourceName;
-            SourceId = sourceId;
-            Title = title;
-            Description = description;
-            Content = content;
-            LocationName = locationName;
-            City = city;
-            Street = street;
-            PostCode = postCode;
-            Country = country;
-            Latitude = latitude;
-            Longitude = longitude;
-            ImageUrl = imageUrl;
-            Url = $"{parentSlug}/{title.ToURL()}";
-            IsSystem = true;
-            PageTypeId = pageTypeId;
-
-            EventDates = new List<EventDate>
-            {
-                new EventDate { Id = Guid.NewGuid(), EventId = eventId, Start = start, End = end }
-            };
+            EventDates = [];
         }
 
         public string Content { get; private set; }
@@ -97,10 +65,131 @@ namespace Churchee.Module.Events.Entities
             }
         }
 
-        public void RemoveDate(EventDate date)
+        public static void RemoveDate(EventDate date)
         {
             date.Deleted = true;
         }
 
+        public class Builder
+        {
+            private Event _event = new();
+
+            public string ParentSlug { get; set; }
+
+            public Builder SetApplicationTenantId(Guid applicationTenantId)
+            {
+                _event.ApplicationTenantId = applicationTenantId;
+                return this;
+            }
+
+            public Builder SetParentId(Guid? parentId)
+            {
+                _event.ParentId = parentId;
+                return this;
+            }
+
+            public Builder SetParentSlug(string parentSlug)
+            {
+                ParentSlug = parentSlug;
+                return this;
+            }
+
+            public Builder SetPageTypeId(Guid pageTypeId)
+            {
+                _event.PageTypeId = pageTypeId;
+                return this;
+            }
+
+            public Builder SetSourceName(string sourceName)
+            {
+                _event.SourceName = sourceName;
+                return this;
+            }
+
+            public Builder SetSourceId(string sourceId)
+            {
+                _event.SourceId = sourceId;
+                return this;
+            }
+
+            public Builder SetTitle(string title)
+            {
+                _event.Title = title;
+                return this;
+            }
+
+            public Builder SetDescription(string description)
+            {
+                _event.Description = description;
+                return this;
+            }
+
+            public Builder SetContent(string content)
+            {
+                _event.Content = content;
+                return this;
+            }
+
+            public Builder SetLocationName(string locationName)
+            {
+                _event.LocationName = locationName;
+                return this;
+            }
+
+            public Builder SetCity(string city)
+            {
+                _event.City = city;
+                return this;
+            }
+
+            public Builder SetStreet(string street)
+            {
+                _event.Street = street;
+                return this;
+            }
+
+            public Builder SetPostCode(string postCode)
+            {
+                _event.PostCode = postCode;
+                return this;
+            }
+
+            public Builder SetCountry(string country)
+            {
+                _event.Country = country;
+                return this;
+            }
+
+            public Builder SetLatitude(decimal? latitude)
+            {
+                _event.Latitude = latitude;
+                return this;
+            }
+
+            public Builder SetLongitude(decimal? longitude)
+            {
+                _event.Longitude = longitude;
+                return this;
+            }
+
+            public Builder SetDates(DateTime? start, DateTime? end)
+            {
+                _event.EventDates.Add(new EventDate { Id = Guid.NewGuid(), EventId = _event.Id, Start = start, End = end });
+                return this;
+            }
+
+            public Builder SetImageUrl(string imageUrl)
+            {
+                _event.ImageUrl = imageUrl;
+                return this;
+            }
+
+            public Event Build()
+            {
+                _event.Url = $"{ParentSlug}/{_event.Title.ToURL()}";
+
+                return _event;
+            }
+        }
     }
 }

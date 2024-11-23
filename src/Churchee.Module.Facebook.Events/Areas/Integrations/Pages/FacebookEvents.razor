@@ -39,7 +39,6 @@ else
 }
 
 
-
 @code {
 
     [SupplyParameterFromForm]
@@ -49,13 +48,6 @@ else
     private NotificationService _notificationService { get; set; }
 
     public bool Linked { get; set; } = false;
-
-    // Valid Handler
-    private Task InvalidSubmitForm()
-    {
-        Logger.LogDebug($"Invalid Form Submitted at :{DateTime.Now.ToLongTimeString()}");
-        return Task.CompletedTask;
-    }
 
     protected override async Task OnInitializedAsync()
     {

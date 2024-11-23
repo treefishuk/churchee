@@ -6,9 +6,9 @@ namespace Churchee.Data.EntityFramework.Registrations
 {
     internal class DataProtectionKeyConfiguration : IEntityRegistration
     {
-        public void RegisterEntities(ModelBuilder modelbuilder)
+        public void RegisterEntities(ModelBuilder modelBuilder)
         {
-            modelbuilder.Entity<DataProtectionKey>(etb =>
+            modelBuilder.Entity<DataProtectionKey>(etb =>
             {
                 etb.Property(t => t.Xml).HasMaxLength(4000);
             });

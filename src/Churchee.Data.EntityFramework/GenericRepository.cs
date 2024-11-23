@@ -100,17 +100,17 @@ namespace Churchee.Data.EntityFramework
             return _dbSet.IgnoreQueryFilters().Any(predicate);
         }
 
-        public async Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
+        public async Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<List<T>> GetListAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
+        public async Task<List<T>> GetListAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).ToListAsync(cancellationToken);
         }
 
-        public async Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken = default)
+        public async Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).Select(selector).ToListAsync(cancellationToken);
         }

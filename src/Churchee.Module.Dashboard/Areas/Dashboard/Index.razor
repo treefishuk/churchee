@@ -75,7 +75,7 @@
         <RadzenCard Style="width: 100%; height: 100%">
             <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0 rz-mb-5">Most Viewed Pages</RadzenText>
 
-            <RadzenDataGrid @ref="pagesGrid" AllowFiltering="false" AllowPaging="false" PageSize="5" AllowSorting="false" Data="@data.TopPages" TItem="GetDashboardDataResponseItem">
+            <RadzenDataGrid AllowFiltering="false" AllowPaging="false" PageSize="5" AllowSorting="false" Data="@data.TopPages" TItem="GetDashboardDataResponseItem">
                 <Columns>
                     <RadzenDataGridColumn Property="@nameof(GetDashboardDataResponseItem.Name)" Title="Page" />
                     <RadzenDataGridColumn Property="@nameof(GetDashboardDataResponseItem.Count)" Title="Count" />
@@ -133,11 +133,9 @@
 }
 
 @code {
-    string[] colours = { "#6A8DAE", "#667584", "#5F9ED9", "#4D5359", "#232B33" };
+    readonly string[] colours = { "#6A8DAE", "#667584", "#5F9ED9", "#4D5359", "#232B33" };
 
     string filterRange = "Today";
-
-    RadzenDataGrid<GetDashboardDataResponseItem> pagesGrid;
 
     GetDashboardDataResponse data = null;
 

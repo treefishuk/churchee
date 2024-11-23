@@ -53,26 +53,26 @@ namespace Churchee.Module.Events.Features.Commands
 
             var repo = _dataStore.GetRepository<Event>();
 
-            var newEvent = new Event(
-                applicationTenantId: applicationTenantId,
-                parentId: parentId,
-                parentSlug: parentSlug,
-                pageTypeId: pageTypeId,
-                sourceName: "Churchee",
-                sourceId: "N/A",
-                title: request.Title,
-                description: request.Description,
-                content: request.Content,
-                locationName: request.LocationName,
-                city: request.City,
-                street: request.Street,
-                postCode: request.PostCode,
-                country: request.Country,
-                latitude: request.Latitude,
-                longitude: request.Longitude,
-                start: request.Start,
-                end: request.End,
-                imageUrl: imagePath);
+            var newEvent = new Event.Builder()
+                .SetApplicationTenantId(applicationTenantId)
+                .SetParentId(parentId)
+                .SetParentSlug(parentSlug)
+                .SetPageTypeId(pageTypeId)
+                .SetSourceName("Churchee")
+                .SetSourceId("N/A")
+                .SetTitle(request.Title)
+                .SetDescription(request.Description)
+                .SetContent(request.Content)
+                .SetLocationName(request.LocationName)
+                .SetCity(request.City)
+                .SetStreet(request.Street)
+                .SetPostCode(request.PostCode)
+                .SetCountry(request.Country)
+                .SetLatitude(request.Latitude)
+                .SetLongitude(request.Longitude)
+                .SetDates(request.Start, request.End)
+                .SetImageUrl(imagePath)
+                .Build();
 
             repo.Create(newEvent);
 
