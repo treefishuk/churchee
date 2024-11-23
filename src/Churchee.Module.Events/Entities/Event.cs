@@ -65,7 +65,7 @@ namespace Churchee.Module.Events.Entities
             }
         }
 
-        public static void RemoveDate(EventDate date)
+        public void RemoveDate(EventDate date)
         {
             date.Deleted = true;
         }
