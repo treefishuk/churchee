@@ -1,15 +1,9 @@
 ﻿using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Churchee.Common.Tests.Extensions
 {
     public class StringExtentionsTests
     {
-
         [Fact]
         public void StringExtentions_ToTitleCase_ReturnsTitleCase()
         {
@@ -22,6 +16,7 @@ namespace Churchee.Common.Tests.Extensions
             //assert
             result.Should().Be("Do A Thing");
         }
+
 
         [Fact]
         public void StringExtentions_DoAThingToSentence_ReturnsSentance()
@@ -50,6 +45,32 @@ namespace Churchee.Common.Tests.Extensions
         }
 
         [Fact]
+        public void StringExtentions_ToCamelCase_ReturnsEmpty_WhenEmpty()
+        {
+            //arrange
+            string sut = "";
+
+            //act
+            var result = sut.ToCamelCase();
+
+            //assert
+            result.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void StringExtentions_ToCamelCase_ReturnsNull_WhenNull()
+        {
+            //arrange
+            string? sut = null;
+
+            //act
+            var result = sut.ToCamelCase();
+
+            //assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
         public void StringExtentions_ToPascalCase_ReturnsCamelCase()
         {
             //arrange
@@ -62,5 +83,49 @@ namespace Churchee.Common.Tests.Extensions
             result.Should().Be("DoAThing");
         }
 
+        [Fact]
+        public void StringExtentions_ToPascalCase_ReturnsEmpty_WhenEmpty()
+        {
+            //arrange
+            string sut = "";
+
+            //act
+            var result = sut.ToPascalCase();
+
+            //assert
+            result.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void StringExtentions_ToPascalCase_ReturnsNull_WhenNull()
+        {
+            //arrange
+            string? sut = null;
+
+            //act
+            var result = sut.ToPascalCase();
+
+            //assert
+            result.Should().BeNull();
+        }
+
+        [Theory]
+        [InlineData("1", "1st")]
+        [InlineData("21", "21st")]
+        [InlineData("31", "31st")]
+        [InlineData("2", "2nd")]
+        [InlineData("22", "22nd")]
+        [InlineData("3", "3rd")]
+        [InlineData("23", "23rd")]
+        [InlineData("5", "5th")]
+        [InlineData("", "")]
+        public void StringExtentions_AddSuffix_ReturnsExpected(string input, string expected)
+        {
+            //act
+            var result = input.AddSuffix();
+
+            //assert
+            result.Should().Be(expected);
+        }
     }
 }

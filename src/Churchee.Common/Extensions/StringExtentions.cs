@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
@@ -26,12 +25,17 @@ namespace System
 
         public static string ToCamelCase(this string str)
         {
+            if (str == null)
+            {
+                return null;
+            }
+
             if (str.Contains(' '))
             {
                 str = str.ToPascalCase();
             }
 
-            if (!string.IsNullOrEmpty(str) && str.Length > 1)
+            if (str.Length > 1)
             {
                 return char.ToLowerInvariant(str[0]) + str.Substring(1);
             }

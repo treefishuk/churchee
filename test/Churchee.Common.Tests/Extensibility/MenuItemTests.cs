@@ -62,6 +62,30 @@ namespace Churchee.Common.Tests.Extensibility
         }
 
         [Fact]
+        public void MenuItem_Constructor_WithItems_SetsCorrecValues()
+        {
+            //arrange
+            string path = "/management/test";
+            var list = new List<MenuItem>() {
+                new MenuItem("Thing", "/management/test/thing", "Icon"),
+                new MenuItem("Thing 2", "/management/test/thing2", "Icon")
+            };
+
+            //act
+            var cut = new MenuItem("Test", path, "Icon", list);
+
+            //assert
+            cut.Order.Should().Be(1);
+            cut.Path.Should().Be(path);
+            cut.Icon.Should().Be("Icon");
+            cut.RequiredRole.Should().BeNull();
+            cut.Children.Should().NotBeNull();
+            cut.Children.Count.Should().Be(2);
+        }
+
+
+
+        [Fact]
         public void MenuItem_WithMissingPath_ThrowsException()
         {
             Assert.Throws<ArgumentException>(() => new MenuItem("Test", string.Empty, "Icon"));

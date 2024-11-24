@@ -23,7 +23,8 @@ namespace Churchee.Common.Tests.Domain
             cut.CreatedById.Should().Be(Guid.Empty);
             cut.ModifiedById.Should().Be(Guid.Empty);
             cut.Deleted.Should().Be(false);
-
+            cut.ModifiedByName.Should().BeNull();
+            cut.CreatedByUser.Should().BeNull();
         }
 
         [Fact]
@@ -44,8 +45,9 @@ namespace Churchee.Common.Tests.Domain
             cut.CreatedById.Should().Be(Guid.Empty);
             cut.ModifiedById.Should().Be(Guid.Empty);
             cut.Deleted.Should().Be(false);
+            cut.ModifiedByName.Should().BeNull();
+            cut.CreatedByUser.Should().BeNull();
         }
-
     }
 }
 

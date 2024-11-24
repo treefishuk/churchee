@@ -24,6 +24,14 @@ namespace Churchee.Common.Helpers
             var returnAssemblies = GetAssemblies()
                 .Where(w => w.FullName.StartsWith("Churchee") && w.GetTypes().Any(a => a.GetInterfaces().Contains(typeof(IModule))));
 
+            return GetModuleAssemblies(returnAssemblies);
+        }
+
+        internal static Assembly[] GetModuleAssemblies(IEnumerable<Assembly> assemblies)
+        {
+            var returnAssemblies = assemblies
+                .Where(w => w.FullName.StartsWith("Churchee") && w.GetTypes().Any(a => a.GetInterfaces().Contains(typeof(IModule))));
+
             return returnAssemblies.ToArray();
         }
     }
