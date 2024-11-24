@@ -89,6 +89,21 @@ namespace Churchee.Common.Tests.Domain
             cut.DomainEvents.Count().Should().Be(0);
         }
 
+
+        [Fact]
+        public void AggregateRoot_RemoveDomainEventThatDoesntExist_DomainEventsShouldBeNull()
+        {
+            //arrange
+            var cut = new Mock<AggregateRoot>().Object;
+            var notification = new Mock<INotification>().Object;
+
+            //act
+            cut.RemoveDomainEvent(notification);
+
+            //assert
+            cut.DomainEvents.Should().BeNull();
+        }
+
         [Fact]
         public void AggregateRootClearDomainEvents_DomainEventsShouldNotReturnEvent()
         {
@@ -103,6 +118,20 @@ namespace Churchee.Common.Tests.Domain
             //assert
             cut.DomainEvents.Should().NotBeNull();
             cut.DomainEvents.Count().Should().Be(0);
+        }
+
+        [Fact]
+        public void AggregateRootClearDomainEvents_RemoveDomainEventThatDoesntExist_DomainEventsShouldBeNull()
+        {
+            //arrange
+            var cut = new Mock<AggregateRoot>().Object;
+            var notification = new Mock<INotification>().Object;
+
+            //act
+            cut.ClearDomainEvents();
+
+            //assert
+            cut.DomainEvents.Should().BeNull();
         }
     }
 }

@@ -100,6 +100,11 @@ namespace Churchee.Data.EntityFramework
             return _dbSet.IgnoreQueryFilters().Any(predicate);
         }
 
+        public async Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken)
+        {
+            return await _dbSet.FirstAsync(cancellationToken);
+        }
+
         public async Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).FirstOrDefaultAsync(cancellationToken);

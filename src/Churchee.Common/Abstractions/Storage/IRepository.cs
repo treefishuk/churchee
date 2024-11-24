@@ -17,6 +17,8 @@ namespace Churchee.Common.Abstractions.Storage
 
         IQueryable<T> ApplySpecification(ISpecification<T> specification, bool evaluateCriteriaOnly = false);
 
+        Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken);
+
         Task<T> FirstOrDefaultAsync(ISpecification<T> specification, CancellationToken cancellationToken);
 
         Task<TResult> FirstOrDefaultAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
