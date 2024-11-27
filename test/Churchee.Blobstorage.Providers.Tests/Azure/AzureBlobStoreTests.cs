@@ -65,7 +65,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
         }
 
         [Fact]
-        public async Task SaveAsync_ShouldUploadBlob_WhenCalled()
+        public async Task SaveAsync_ShouldUploadBlob_WhenCalled_AndDosentAlreadyExist()
         {
             // Arrange
             var blobStore = new AzureBlobStore(_mockConfiguration.Object);
@@ -84,6 +84,56 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             var blobServiceClient = new BlobServiceClient(_mockConfiguration.Object.GetConnectionString("Storage"));
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(applicationTenantId.ToString());
             var blobClient = blobContainerClient.GetBlobClient(fullPath);
+            var exists = await blobClient.ExistsAsync(cancellationToken);
+            exists.Value.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task SaveAsync_ShouldUploadBlob_WhenCalled_AndAlreadyExist_AndOverrideTrue()
+        {
+            // Arrange
+            var blobStore = new AzureBlobStore(_mockConfiguration.Object);
+
+            var applicationTenantId = Guid.NewGuid();
+            var fullPath = "test/blob.txt";
+            var stream = new MemoryStream(new byte[] { 1, 2, 3 });
+            var cancellationToken = CancellationToken.None;
+            var blobServiceClient = new BlobServiceClient(_mockConfiguration.Object.GetConnectionString("Storage"));
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(applicationTenantId.ToString());
+            await blobContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+            var blobClient = blobContainerClient.GetBlobClient(fullPath);
+            await blobClient.UploadAsync(new MemoryStream(new byte[] { 1, 2, 3 }), cancellationToken: cancellationToken);
+
+            // Act
+            var result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, true, cancellationToken);
+
+            // Assert
+            result.Should().Be(fullPath);
+            var exists = await blobClient.ExistsAsync(cancellationToken);
+            exists.Value.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task SaveAsync_ShouldUploadINcrementedBlob_WhenCalled_AndAlreadyExist_AndOverrideFalse()
+        {
+            // Arrange
+            var blobStore = new AzureBlobStore(_mockConfiguration.Object);
+
+            var applicationTenantId = Guid.NewGuid();
+            var fullPath = "test/blob.txt";
+            var stream = new MemoryStream(new byte[] { 1, 2, 3 });
+            var cancellationToken = CancellationToken.None;
+            var blobServiceClient = new BlobServiceClient(_mockConfiguration.Object.GetConnectionString("Storage"));
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(applicationTenantId.ToString());
+            await blobContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+            var blobClient = blobContainerClient.GetBlobClient(fullPath);
+            await blobClient.UploadAsync(new MemoryStream(new byte[] { 1, 2, 3 }), cancellationToken: cancellationToken);
+
+            // Act
+            var result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, false, cancellationToken);
+
+            // Assert
+            result.Should().Be("test/blob(1).txt");
             var exists = await blobClient.ExistsAsync(cancellationToken);
             exists.Value.Should().BeTrue();
         }

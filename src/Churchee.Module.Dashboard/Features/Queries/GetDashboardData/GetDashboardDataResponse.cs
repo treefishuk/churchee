@@ -4,6 +4,17 @@ namespace Churchee.Module.Dashboard.Features.Queries
 {
     public class GetDashboardDataResponse
     {
+        public GetDashboardDataResponse()
+        {
+            Devices = [];
+            TopPages = [];
+            PagesOverTime = [];
+            ReferralSource = [];
+            UniqueVisitors = 0;
+            ReturningVisitors = 0;
+            TotalPageViews = 0;
+        }
+
         public GetDashboardDataResponseItem[] Devices { get; set; }
         public GetDashboardDataResponseItem[] TopPages { get; set; }
         public GetDashboardDataResponseItem[] PagesOverTime { get; set; }

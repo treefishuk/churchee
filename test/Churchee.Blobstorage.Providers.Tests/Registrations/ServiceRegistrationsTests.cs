@@ -1,9 +1,12 @@
-﻿using Churchee.Common.Abstractions.Utilities;
-using Churchee.ImageProcessing.Registrations;
+﻿using Churchee.Blobstorage.Providers.Azure;
+using Churchee.Blobstorage.Providers.Registrations;
+using Churchee.Common.Storage;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
-namespace Churchee.ImageProcessing.Tests.Registrations
+namespace Churchee.Blobstorage.Providers.Tests.Registrations
 {
     public class ServiceRegistrationsTests
     {
@@ -18,11 +21,15 @@ namespace Churchee.ImageProcessing.Tests.Registrations
         }
 
         [Fact]
-        public void Execute_ShouldRegisterImageProcessor()
+        public void Execute_ShouldRegisterBlobStore()
         {
             // Arrange
             var services = new ServiceCollection();
             var serviceProvider = services.BuildServiceProvider();
+            var mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.Setup(s => s.GetSection("ConnectionStrings")["Storage"]).Returns("NotReal");
+            services.AddScoped(_ => mockConfiguration.Object);
+
             var action = new ServiceRegistrations();
 
             // Act
@@ -30,9 +37,9 @@ namespace Churchee.ImageProcessing.Tests.Registrations
             serviceProvider = services.BuildServiceProvider();
 
             // Assert
-            var processor = serviceProvider.GetService<IImageProcessor>();
+            var processor = serviceProvider.GetService<IBlobStore>();
             processor.Should().NotBeNull();
-            processor.Should().BeOfType<DefaultImageProcessor>();
+            processor.Should().BeOfType<AzureBlobStore>();
         }
     }
 }

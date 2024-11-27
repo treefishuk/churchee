@@ -58,7 +58,7 @@ namespace Churchee.Blobstorage.Providers.Azure
                 if (alreadyExists)
                 {
 
-                    int i = 0;
+                    int i = 1;
 
                     string extension = Path.GetExtension(fullPath);
 

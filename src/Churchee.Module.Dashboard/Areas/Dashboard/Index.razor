@@ -161,10 +161,17 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await GetData(0);
     }
+
+
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await GetData(0);
+    // }
 
     async Task GetData(int days)
     {
