@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Churchee.Blobstorage.Providers.Tests" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.22.2" />
   </ItemGroup>
 
@@ -14,3 +18,5 @@
   </ItemGroup>
 
 </Project>
+
+

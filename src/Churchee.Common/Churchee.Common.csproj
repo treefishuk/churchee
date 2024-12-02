@@ -2,6 +2,11 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Churchee.Common.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Ardalis.Specification" Version="8.0.0" />
     <PackageReference Include="BlazorMonaco" Version="3.2.0" />

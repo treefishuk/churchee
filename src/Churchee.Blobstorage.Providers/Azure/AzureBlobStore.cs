@@ -22,6 +22,8 @@ namespace Churchee.Blobstorage.Providers.Azure
             // With container URL and DefaultAzureCredential
             var client = new BlobContainerClient(_connectionString, applicationTenantId.ToString());
 
+            var exists = await client.ExistsAsync(cancellationToken);
+
             var blob = client.GetBlobClient(fullPath);
 
             return await blob.OpenReadAsync(cancellationToken: cancellationToken);
@@ -56,7 +58,7 @@ namespace Churchee.Blobstorage.Providers.Azure
                 if (alreadyExists)
                 {
 
-                    int i = 0;
+                    int i = 1;
 
                     string extension = Path.GetExtension(fullPath);
 

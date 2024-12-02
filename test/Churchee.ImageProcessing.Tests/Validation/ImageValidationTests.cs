@@ -5,6 +5,7 @@ namespace Churchee.ImageProcessing.Tests.Validation
 {
     public class ImageValidationTests
     {
+
         [Fact]
         public void BeAValidImageExtension_ShouldReturnTrue_WhenExtensionIsValid()
         {
@@ -52,6 +53,16 @@ namespace Churchee.ImageProcessing.Tests.Validation
 
             // Act
             var result = ImageValidation.BeValidImage(base64Image);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public void BeValidImage_ShouldReturnFalse_WhenStringIsEmpty()
+        {
+            // Act  
+            var result = ImageValidation.BeValidImage(string.Empty);
 
             // Assert
             result.Should().BeFalse();
