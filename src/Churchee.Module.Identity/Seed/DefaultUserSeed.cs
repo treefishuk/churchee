@@ -1,10 +1,9 @@
 ﻿using Churchee.Module.Identity.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace Churchee.Module.Identity
+namespace Churchee.Module.Identity.Seed
 {
     public class DefaultUserSeed : IIdentitySeed
     {
@@ -22,7 +21,7 @@ namespace Churchee.Module.Identity
 
         public async Task CreateAsync()
         {
-            if (!_context.Set<ApplicationUser>().IgnoreQueryFilters().Any())
+            if (!await _context.Set<ApplicationUser>().IgnoreQueryFilters().AnyAsync())
             {
                 var user = new ApplicationUser(
                     applicationTenantId: Guid.Parse("2ca25984-b0f6-44e9-98ff-151d7d79dcbd"),

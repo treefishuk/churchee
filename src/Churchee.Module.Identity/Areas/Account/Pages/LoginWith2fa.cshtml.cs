@@ -44,7 +44,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public string? ReturnUrl { get; set; }
+        public string ReturnUrl { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -71,7 +71,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
         }
 
 
-        public async Task<IActionResult> OnGetAsync(bool rememberMe, string? returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(bool rememberMe, string returnUrl = null)
         {
             // Ensure the user has gone through the username & password screen first
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
@@ -87,7 +87,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(bool rememberMe, string? returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(bool rememberMe, string returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
@@ -97,6 +97,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
             returnUrl = returnUrl ?? Url.Content("~/management");
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
             if (user == null)
             {
                 throw new InvalidOperationException("Unable to load two-factor authentication user.");

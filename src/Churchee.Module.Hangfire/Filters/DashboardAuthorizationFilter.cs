@@ -17,7 +17,7 @@ namespace Churchee.Module.Hangfire.Filters
             if (authenticated && isSysAdmin)
             {
                 return true;
-            };
+            }
 
             httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 

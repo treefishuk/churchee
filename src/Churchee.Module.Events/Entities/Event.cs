@@ -65,14 +65,14 @@ namespace Churchee.Module.Events.Entities
             }
         }
 
-        public void RemoveDate(EventDate date)
+        public static void RemoveDate(EventDate date)
         {
             date.Deleted = true;
         }
 
         public class Builder
         {
-            private Event _event = new();
+            private readonly Event _event = new();
 
             public string ParentSlug { get; set; }
 

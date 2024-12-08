@@ -71,6 +71,7 @@ namespace Churchee.Data.EntityFramework
         {
             return _dbSet.Count();
         }
+
         public async Task<int> CountAsync(CancellationToken cancellationToken)
         {
             return await _dbSet.CountAsync(cancellationToken);
@@ -110,6 +111,13 @@ namespace Churchee.Data.EntityFramework
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<TResult> FirstOrDefaultAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        {
+            return await _specificationEvaluator.GetQuery(GetQueryable(), specification)
+                .Select(selector)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<List<T>> GetListAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).ToListAsync(cancellationToken);
@@ -140,13 +148,6 @@ namespace Churchee.Data.EntityFramework
                 Draw = take,
                 Data = data
             };
-        }
-
-        public async Task<TResult> FirstOrDefaultAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
-        {
-            return await _specificationEvaluator.GetQuery(GetQueryable(), specification)
-                .Select(selector)
-                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

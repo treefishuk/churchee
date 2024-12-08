@@ -129,9 +129,11 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
         private HttpClient CreateClient()
         {
+            var facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("Api");
+
             var client = _clientFactory.CreateClient();
 
-            client.BaseAddress = new Uri("https://graph.facebook.com/v18.0/");
+            client.BaseAddress = new Uri(facebookApiUrl);
 
             return client;
         }
@@ -157,7 +159,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
         {
             var options = new JsonSerializerOptions();
 
-            options.Converters.Add(new DateTimeISO8601JsonConverter());
+            options.Converters.Add(new DateTimeIso8601JsonConverter());
 
             return options;
         }

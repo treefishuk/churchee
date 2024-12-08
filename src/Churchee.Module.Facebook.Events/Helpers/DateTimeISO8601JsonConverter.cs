@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Churchee.Module.Facebook.Events.Helpers
 {
-    public class DateTimeISO8601JsonConverter : JsonConverter<DateTime>
+    public class DateTimeIso8601JsonConverter : JsonConverter<DateTime>
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

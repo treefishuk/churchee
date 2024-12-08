@@ -73,7 +73,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             return returnVisitors.Count();
         }
 
-        private GetDashboardDataResponseItem[] GetTopPages(List<PageView> data)
+        private static GetDashboardDataResponseItem[] GetTopPages(List<PageView> data)
         {
             return data.GroupBy(x => x.Url).Select(x => new GetDashboardDataResponseItem
             {
@@ -82,7 +82,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             }).OrderByDescending(x => x.Count).Take(5).ToArray();
         }
 
-        private GetDashboardDataResponseItem[] GetPagesOverTime(List<PageView> data)
+        private static GetDashboardDataResponseItem[] GetPagesOverTime(List<PageView> data)
         {
             return data.Select(s => new { Hour = s.ViewedAt.ToString("HH") }).GroupBy(x => x.Hour).Select(x => new GetDashboardDataResponseItem
             {
@@ -106,7 +106,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 .ToArray();
         }
 
-        private GetDashboardDataResponseItem[] GetReferralSources(List<PageView> data)
+        private static GetDashboardDataResponseItem[] GetReferralSources(List<PageView> data)
         {
             var filteredList = data
                 .Where(w => !string.IsNullOrEmpty(w.Referrer))

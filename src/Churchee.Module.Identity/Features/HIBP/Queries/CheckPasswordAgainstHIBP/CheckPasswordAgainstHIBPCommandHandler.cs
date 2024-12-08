@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.ResponseTypes;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -10,12 +11,17 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
 {
     public class CheckPasswordAgainstHIBPCommandHandler : IRequestHandler<CheckPasswordAgainstHIBPCommand, CommandResponse>
     {
-
+        private readonly ILogger _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public CheckPasswordAgainstHIBPCommandHandler(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
+        }
+
+        public CheckPasswordAgainstHIBPCommandHandler(ILogger<CheckPasswordAgainstHIBPCommandHandler> logger)
+        {
+            _logger = logger;
         }
 
         public async Task<CommandResponse> Handle(CheckPasswordAgainstHIBPCommand request, CancellationToken cancellationToken)
@@ -37,7 +43,7 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
                 string hashPrefix = hash[..5];
                 var hashSuffix = hash.Substring(5).ToUpper();
 
-                var response = await _httpClientFactory.CreateClient().GetAsync($"https://api.pwnedpasswords.com/range/{hashPrefix}");
+                var response = await _httpClientFactory.CreateClient().GetAsync($"https://api.pwnedpasswords.com/range/{hashPrefix}", cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -46,7 +52,7 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
                     return commandResponse;
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 var lines = content.Split("\r\n");
 
@@ -68,16 +74,17 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error calling HIBP API");
+
                 commandResponse.AddError("Error Calling HIBP API", "");
             }
 
             return commandResponse;
         }
 
-        private string ComputeSha1Hash(string input)
+        private static string ComputeSha1Hash(string input)
         {
-            using var sha1 = System.Security.Cryptography.SHA1.Create();
-            var hashBytes = sha1.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
+            var hashBytes = System.Security.Cryptography.SHA1.HashData(Encoding.UTF8.GetBytes(input));
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }

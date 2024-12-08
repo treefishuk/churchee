@@ -33,8 +33,6 @@ namespace Churchee.Module.Identity.Features.Roles.Queries
 
             var userRoles = await _churcheeUserManager.GetRolesAsync(user);
 
-            var rolesQuery = _store.GetRepository<ApplicationRole>().GetQueryable();
-
             var data = await _store.GetRepository<ApplicationRole>().GetListAsync(new SelectableRolesSpecification(), s => new MultiSelectItem(s.Id, s.Name, userRoles.Any(a => a == s.Name)), cancellationToken);
 
             return data;

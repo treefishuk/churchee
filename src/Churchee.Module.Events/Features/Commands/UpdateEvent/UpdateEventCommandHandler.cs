@@ -56,7 +56,7 @@ namespace Churchee.Module.Events.Features.Commands
             return new CommandResponse();
         }
 
-        private void UpdateEventDates(UpdateEventCommand request, Event eventEntity)
+        private static void UpdateEventDates(UpdateEventCommand request, Event eventEntity)
         {
             //Clear all dates if empty
             if (request.Dates.Count == 0)
@@ -82,7 +82,7 @@ namespace Churchee.Module.Events.Features.Commands
             {
                 if (!request.Dates.Exists(a => a.Id == date.Id))
                 {
-                    eventEntity.RemoveDate(date);
+                    Event.RemoveDate(date);
                 }
             }
         }

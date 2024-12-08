@@ -25,7 +25,7 @@ namespace Churchee.Module.Identity.Infrastructure
 
             var claims = await _userManager.GetClaimsAsync(user);
 
-            var claim = claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
+            var claim = claims.FirstOrDefault(w => w.Type == "ActiveTenantId");
 
             if (claim != null)
             {
