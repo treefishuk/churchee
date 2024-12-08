@@ -13,10 +13,10 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             var response = new GetDashboardDataResponse();
 
             // Assert
-            response.Devices.Should().BeNull();
-            response.TopPages.Should().BeNull();
-            response.PagesOverTime.Should().BeNull();
-            response.ReferralSource.Should().BeNull();
+            response.Devices.Count().Should().Be(0);
+            response.TopPages.Count().Should().Be(0);
+            response.PagesOverTime.Count().Should().Be(0);
+            response.ReferralSource.Count().Should().Be(0);
             response.UniqueVisitors.Should().Be(0);
             response.ReturningVisitors.Should().Be(0);
             response.TotalPageViews.Should().Be(0);
