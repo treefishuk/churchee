@@ -14,14 +14,11 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
         private readonly ILogger _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public CheckPasswordAgainstHIBPCommandHandler(IHttpClientFactory httpClientFactory)
+        public CheckPasswordAgainstHIBPCommandHandler(IHttpClientFactory httpClientFactory, ILogger<CheckPasswordAgainstHIBPCommandHandler> logger)
         {
             _httpClientFactory = httpClientFactory;
-        }
-
-        public CheckPasswordAgainstHIBPCommandHandler(ILogger<CheckPasswordAgainstHIBPCommandHandler> logger)
-        {
             _logger = logger;
+
         }
 
         public async Task<CommandResponse> Handle(CheckPasswordAgainstHIBPCommand request, CancellationToken cancellationToken)
