@@ -25,7 +25,7 @@
         imagePrefix = await Mediator.Send(new GetCDNPathQuery());
     }
 
-    IEnumerable<GetListingQueryResponseItem> listingData;
+    IEnumerable<GetListingQueryResponseItem> listingData = default!;
 
     bool isLoading = false;
 
@@ -33,27 +33,15 @@
     {
         isLoading = true;
 
-        string orderBy = "PublishedDate";
-        string orderByDirection = "desc";
+        var result = await Mediator.Send(new GetListingQuery(
+                skip: args?.Skip ?? 0,
+                take: args?.Top ?? 20,
+                searchText: args?.Filter ?? string.Empty,
+                orderBy: args?.OrderBy ?? "PublishedDate desc"), default);
 
-        if (!string.IsNullOrEmpty(args.OrderBy))
-        {
-            var split = args.OrderBy.Split(" ");
-            orderBy = split[0];
-            orderByDirection = split[1];
+        // Perform paging via Skip and Take.
+        listingData = result.Data;
 
-        }
-
-    var result = await Mediator.Send(new GetListingQuery(
-            skip: args?.Skip ?? 0,
-            take: args?.Top ?? 20,
-            searchText: args?.Filter ?? string.Empty,
-            orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "PublishedDate desc" : args?.OrderBy), default);
-
-    // Perform paging via Skip and Take.
-    listingData = result.Data;
-
-    isLoading = false;
+        isLoading = false;
     }
-
 }

@@ -137,11 +137,9 @@ namespace Churchee.Data.EntityFramework
         {
             int count = await CountAsync(cancellationToken);
 
-            string orderbyCombined = $"{orderBy} {orderByDir}";
-
             var data = await _specificationEvaluator.GetQuery(GetQueryable(), specification)
                 .Select(selector)
-                .OrderBy(orderbyCombined)
+                .OrderBy(orderBy, orderByDir)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync(cancellationToken);
