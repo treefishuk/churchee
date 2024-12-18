@@ -69,7 +69,7 @@ namespace Churchee.Data.EntityFramework
 
         public async Task<T> GetByIdAsync(object id, CancellationToken cancellationToken)
         {
-            return await _dbSet.FindAsync(id, cancellationToken);
+            return await _dbSet.FindAsync([id], cancellationToken);
         }
 
         public int Count()
