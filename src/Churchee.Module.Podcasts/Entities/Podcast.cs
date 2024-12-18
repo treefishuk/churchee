@@ -29,7 +29,7 @@ namespace Churchee.Module.Podcasts.Entities
             Content = description;
         }
 
-        public string Content { get; private set; }
+        public string? Content { get; private set; }
 
         public string AudioUri { get; private set; }
 
