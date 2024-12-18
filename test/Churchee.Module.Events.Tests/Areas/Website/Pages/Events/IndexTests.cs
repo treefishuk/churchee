@@ -15,7 +15,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
     public class IndexTests : BasePageTests
     {
         [Fact]
-        public void EventsIndex_HasCorrectname()
+        public void EventsIndex_HasCorrectName()
         {
             //arrange
             var data = new DataTableResponse<GetListingQueryResponseItem>();
