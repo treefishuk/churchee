@@ -71,11 +71,11 @@ namespace Churchee.Module.Settings.Store
                 .IgnoreQueryFilters()
                 .Where(x => x.Id == id && x.ApplicationTenantId == applicationTenantId)
                 .Select(s => s.Value)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ?? string.Empty;
 
             if (string.IsNullOrEmpty(setting))
             {
-                setting = _configuration[$"Settings:{id}"];
+                setting = _configuration[$"Settings:{id}"] ?? string.Empty;
             }
 
             return setting;

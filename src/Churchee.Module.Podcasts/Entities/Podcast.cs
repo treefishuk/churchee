@@ -10,6 +10,7 @@ namespace Churchee.Module.Podcasts.Entities
             SourceName = string.Empty;
             ImageUrl = string.Empty;
             ThumbnailUrl = string.Empty;
+            Content = string.Empty;
         }
 
         public Podcast(Guid applicationTenantId, string audioUri, DateTime publishedDate, string sourceName, string sourceId, string title, string description, string imageUrl, string thumbnailUrl, string podcastsUrl, Guid podcastDetailPageTypeId)

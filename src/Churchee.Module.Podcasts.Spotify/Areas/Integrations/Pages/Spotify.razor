@@ -1,4 +1,6 @@
-﻿@using Churchee.Module.Podcasts.Features.Commands
+﻿@page "/management/integrations/spotify"
+@inherits BasePage
+@using Churchee.Module.Podcasts.Features.Commands
 @using Churchee.Module.UI.Models
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.Extensions.Logging
@@ -10,13 +12,10 @@
 @using Churchee.Module.UI.Components
 @using Radzen.Blazor
 @using Radzen
-@page "/management/integrations/spotify"
-@inject ILogger<Spotify> Logger
-@inject IMediator Mediator
 
 <PageName></PageName>
 
-@if (spotifyConfigued)
+@if (spotifyConfigured)
 {
     <div>
 
@@ -71,10 +70,7 @@ else
 
 @code{
 
-    [Inject]
-    private NotificationService _notificationService { get; set; }
-
-    bool spotifyConfigued = false;
+    bool spotifyConfigured = false;
 
     DateTime? lastRun = null;
 
@@ -86,7 +82,7 @@ else
 
         lastRun = result.LastRun;
 
-        spotifyConfigued = !string.IsNullOrEmpty(result.SpotifyUrl);
+        spotifyConfigured = !string.IsNullOrEmpty(result.SpotifyUrl);
     }
 
     private async Task DisableSync()
@@ -95,9 +91,9 @@ else
 
         if (result.IsSuccess)
         {
-            spotifyConfigued = false;
+            spotifyConfigured = false;
 
-            _notificationService.Notify(NotificationSeverity.Success, "Integration Disabled");
+            NotificationService.Notify(NotificationSeverity.Success, "Integration Disabled");
 
             InputModel = new InputModel();
 
@@ -107,11 +103,11 @@ else
 
     private async Task SyncNow()
     {
-        var result = await Mediator.Send(new EnableSpotifyPodcastSyncCommand(InputModel?.SpotifyRSSFeedUrl));
+        var result = await Mediator.Send(new EnableSpotifyPodcastSyncCommand(InputModel.SpotifyRSSFeedUrl));
 
         if (result.IsSuccess)
         {
-            _notificationService.Notify(NotificationSeverity.Success, "Sync Scheduled");
+            NotificationService.Notify(NotificationSeverity.Success, "Sync Scheduled");
         }
     }
 
@@ -124,22 +120,20 @@ else
 
         if (!result.IsSuccess)
         {
-            _notificationService.Notify(NotificationSeverity.Error, "Failed to enable Podcasts");
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to enable Podcasts");
         }
 
-        var result2 = await Mediator.Send(new EnableSpotifyPodcastSyncCommand(InputModel?.SpotifyRSSFeedUrl));
+        var result2 = await Mediator.Send(new EnableSpotifyPodcastSyncCommand(InputModel.SpotifyRSSFeedUrl));
 
         if (result.IsSuccess)
         {
-            Logger.LogDebug("spotifyrssfeedurl = {spotifyrssfeedurl}", InputModel.SpotifyRSSFeedUrl);
+            Logger.LogDebug("Spotify RSS Feed URL = {SpotifyRSSFeedUrl}", InputModel.SpotifyRSSFeedUrl);
 
-            _notificationService.Notify(NotificationSeverity.Success, "Spotify Podcasts configured, Syncing will being shortly");
+            NotificationService.Notify(NotificationSeverity.Success, "Spotify Podcasts configured, Syncing will being shortly");
 
-            spotifyConfigued = true;
+            spotifyConfigured = true;
 
             StateHasChanged();
-
         }
     }
-
 }
