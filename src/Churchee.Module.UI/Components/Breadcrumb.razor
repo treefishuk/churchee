@@ -31,7 +31,7 @@
 
     private List<KeyValuePair<string, string>> GetLoop()
     {
-        var count = crumbs.Count();
+        var count = crumbs.Count;
 
         return crumbs.Skip(1).Take(count - 2).ToList();
 

@@ -25,7 +25,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            var parent = repo.GetById(request.ParentId);
+            var parent = await repo.GetByIdAsync(request.ParentId, cancellationToken);
 
             repo.Create(new MediaFolder(applicationTenantId, request.Name, parent));
 

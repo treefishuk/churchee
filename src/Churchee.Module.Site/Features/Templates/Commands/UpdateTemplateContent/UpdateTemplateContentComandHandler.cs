@@ -5,12 +5,12 @@ using MediatR;
 
 namespace Churchee.Module.Site.Features.Templates.Commands.UpdateTemplateContent
 {
-    public class UpdateTemplateContentComandHandler : IRequestHandler<UpdateTemplateContentComand, CommandResponse>
+    public class UpdateTemplateContentCommandHandler : IRequestHandler<UpdateTemplateContentComand, CommandResponse>
     {
 
         private readonly IDataStore _storage;
 
-        public UpdateTemplateContentComandHandler(IDataStore storage)
+        public UpdateTemplateContentCommandHandler(IDataStore storage)
         {
             _storage = storage;
         }
@@ -19,7 +19,7 @@ namespace Churchee.Module.Site.Features.Templates.Commands.UpdateTemplateContent
         {
             var repo = _storage.GetRepository<ViewTemplate>();
 
-            var template = repo.GetById(request.TemplateId);
+            var template = await repo.GetByIdAsync(request.TemplateId, cancellationToken);
 
             template.SetContent(request.Content);
 

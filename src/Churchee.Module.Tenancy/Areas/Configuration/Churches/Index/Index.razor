@@ -111,8 +111,8 @@
 
         var claims = await UserManager.GetClaimsAsync(user);
 
-        bool replaceNameResult = await ReplaceApplicationTenenatId(claims, newId, user);
-        bool replaceIdResult = await ReplaceApplicationTenenatName(claims, newId, user);
+        bool replaceNameResult = await ReplaceApplicationTenantId(claims, newId, user);
+        bool replaceIdResult = await ReplaceApplicationTenantName(claims, newId, user);
 
         if (!replaceNameResult || !replaceIdResult)
         {
@@ -134,9 +134,9 @@
 
     }
 
-    private async Task<bool> ReplaceApplicationTenenatId(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
+    private async Task<bool> ReplaceApplicationTenantId(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
     {
-        var oldActiveTenantIdClaim = claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
+        var oldActiveTenantIdClaim = claims.FirstOrDefault(w => w.Type == "ActiveTenantId");
 
         if (oldActiveTenantIdClaim == null)
         {
@@ -155,9 +155,9 @@
         return true;
     }
 
-    private async Task<bool> ReplaceApplicationTenenatName(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
+    private async Task<bool> ReplaceApplicationTenantName(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
     {
-        var oldActiveTenantNameClaim = claims.Where(w => w.Type == "ActiveTenantName").FirstOrDefault();
+        var oldActiveTenantNameClaim = claims.FirstOrDefault(w => w.Type == "ActiveTenantName");
 
         if (oldActiveTenantNameClaim == null)
         {

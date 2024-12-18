@@ -27,6 +27,8 @@ namespace Churchee.Common.Abstractions.Storage
 
         Task<T> GetByIdAsync(object id);
 
+        Task<T> GetByIdAsync(object id, CancellationToken cancellationToken);
+
         void Create(T entity);
 
         void PermanentDelete(T entity);

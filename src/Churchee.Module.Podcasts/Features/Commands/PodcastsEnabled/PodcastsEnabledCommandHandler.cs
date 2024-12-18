@@ -42,7 +42,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
             await CreatePageTypes(applicationTenantId, listingTypeId, detailPageTypeId);
 
-            var tenant = _dataStore.GetRepository<ApplicationTenant>().GetById(applicationTenantId);
+            var tenant = await _dataStore.GetRepository<ApplicationTenant>().GetByIdAsync(applicationTenantId, cancellationToken);
 
             await CreatePodcastsListingPage(request, tenant, listingTypeId);
 
