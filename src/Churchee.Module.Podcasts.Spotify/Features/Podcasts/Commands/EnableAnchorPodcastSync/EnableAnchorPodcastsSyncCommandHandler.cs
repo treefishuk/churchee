@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
@@ -58,12 +59,12 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
         {
             var podcastShows = await GetAndParseRssFeed(request);
 
-            await AddPodcastShowsNotYetAdded(applicationTenantId, podcastShows, podcastsUrl);
+            await AddOrUpdatePodcasts(applicationTenantId, podcastShows, podcastsUrl);
 
             await _dataStore.SaveChangesAsync();
         }
 
-        private async Task AddPodcastShowsNotYetAdded(Guid applicationTenantId, rssChannelItem[] podcastShows, string podcastsUrl)
+        private async Task AddOrUpdatePodcasts(Guid applicationTenantId, rssChannelItem[] podcastShows, string podcastsUrl)
         {
             var repo = _dataStore.GetRepository<Podcast>();
 
@@ -75,47 +76,14 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
                 var alreadyExists = repo.AnyWithFiltersDisabled(w => w.AudioUri == audioUri && w.ApplicationTenantId == applicationTenantId);
 
+                if (alreadyExists)
+                {
+                    await UpdateExistingPodcast(applicationTenantId, audioUri, repo, item);
+                }
+
                 if (!alreadyExists)
                 {
-
-                    string ext = Path.GetExtension(item.image.href);
-
-                    using var httpClient = new HttpClient();
-
-                    var imageStream = await httpClient.GetStreamAsync(item.image.href);
-
-                    var resizedImageStream = _imageProcessor.ResizeImage(imageStream, 350, 0, ext);
-
-                    string fileName = Path.GetFileName(item.image.href);
-
-                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, default);
-
-                    string thumbFileName = $"{Path.GetFileNameWithoutExtension(item.image.href)}_t{Path.GetExtension(item.image.href)}";
-
-                    var originalImgStream = await _blobStore.GetAsync(applicationTenantId, $"/img/audio/{fileName}");
-
-                    var thumbnailImage = _imageProcessor.ResizeImage(originalImgStream, 50, 0, ext);
-
-                    Guid podcastDetailPageTypeId = await _dataStore.GetRepository<PageType>().ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.PodcastDetailPageTypeId, applicationTenantId)).Select(s => s.Id).FirstOrDefaultAsync();
-
-                    if (podcastDetailPageTypeId == Guid.Empty)
-                    {
-                        throw new PodcastSyncException("podcastDetailPageTypeId is Empty");
-                    }
-
-                    await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, default);
-
-                    podcasts.Add(new Podcast(applicationTenantId: applicationTenantId,
-                        audioUri: item.enclosure.url,
-                        publishedDate: DateTime.Parse(item.pubDate),
-                        sourceName: "Spotify",
-                        sourceId: item.guid.Value,
-                        title: item.title,
-                        description: item.description,
-                        imageUrl: $"/img/audio/{fileName}",
-                        thumbnailUrl: $"/img/audio/{thumbFileName}",
-                        podcastsUrl: podcastsUrl,
-                        podcastDetailPageTypeId: podcastDetailPageTypeId));
+                    await AddNewPodcast(applicationTenantId, podcastsUrl, podcasts, item);
                 }
             }
 
@@ -123,6 +91,76 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
             {
                 repo.AddRange(podcasts);
             }
+        }
+
+        private async Task UpdateExistingPodcast(Guid applicationTenantId, string audioUri, IRepository<Podcast> repository, rssChannelItem item)
+        {
+            var existing = await repository.GetQueryable().Where(w => w.AudioUri == audioUri).FirstOrDefaultAsync();
+
+            if (existing == null)
+            {
+                return;
+            }
+
+            string fileName = Path.GetFileName(item.image.href);
+
+            string thumbFileName = $"{Path.GetFileNameWithoutExtension(item.image.href)}_t{Path.GetExtension(item.image.href)}";
+
+            if (existing.ImageUrl != $"/img/audio/{fileName}")
+            {
+                await GenerateImage(applicationTenantId, item.image.href, fileName, thumbFileName);
+            }
+
+            existing.Update(item.description, $"/img/audio/{fileName}", $"/img/audio/{thumbFileName}");
+        }
+
+        private async Task GenerateImage(Guid applicationTenantId, string sourceImageUrl, string fileName, string thumbFileName)
+        {
+
+            string ext = Path.GetExtension(fileName);
+
+            using var httpClient = new HttpClient();
+
+            var imageStream = await httpClient.GetStreamAsync(sourceImageUrl);
+
+            var resizedImageStream = _imageProcessor.ResizeImage(imageStream, 350, 0, ext);
+
+            await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, default);
+
+            var originalImgStream = await _blobStore.GetAsync(applicationTenantId, $"/img/audio/{fileName}");
+
+            var thumbnailImage = _imageProcessor.ResizeImage(originalImgStream, 50, 0, ext);
+
+            await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, default);
+        }
+
+
+        private async Task AddNewPodcast(Guid applicationTenantId, string podcastsUrl, List<Podcast> podcasts, rssChannelItem item)
+        {
+            Guid podcastDetailPageTypeId = await _dataStore.GetRepository<PageType>().ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.PodcastDetailPageTypeId, applicationTenantId)).Select(s => s.Id).FirstOrDefaultAsync();
+
+            if (podcastDetailPageTypeId == Guid.Empty)
+            {
+                throw new PodcastSyncException("podcastDetailPageTypeId is Empty");
+            }
+
+            string fileName = Path.GetFileName(item.image.href);
+
+            string thumbFileName = $"{Path.GetFileNameWithoutExtension(item.image.href)}_t{Path.GetExtension(item.image.href)}";
+
+            await GenerateImage(applicationTenantId, item.image.href, fileName, thumbFileName);
+
+            podcasts.Add(new Podcast(applicationTenantId: applicationTenantId,
+                audioUri: item.enclosure.url,
+                publishedDate: DateTime.Parse(item.pubDate),
+                sourceName: "Spotify",
+                sourceId: item.guid.Value,
+                title: item.title,
+                description: item.description,
+                imageUrl: $"/img/audio/{fileName}",
+                thumbnailUrl: $"/img/audio/{thumbFileName}",
+                podcastsUrl: podcastsUrl,
+                podcastDetailPageTypeId: podcastDetailPageTypeId));
         }
 
         private static async Task<rssChannelItem[]> GetAndParseRssFeed(EnableSpotifyPodcastSyncCommand request)

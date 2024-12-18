@@ -8,7 +8,7 @@ namespace Churchee.Module.Site.Entities
     {
         protected WebContent()
         {
-            Children = new HashSet<WebContent>();
+            Children = [];
         }
 
 
@@ -18,7 +18,7 @@ namespace Churchee.Module.Site.Entities
             Url = url;
             Title = title;
             Description = description;
-            Children = new HashSet<WebContent>();
+            Children = [];
             SourceName = source;
         }
 
@@ -28,7 +28,7 @@ namespace Churchee.Module.Site.Entities
             Url = url;
             Title = title;
             Description = description;
-            Children = new HashSet<WebContent>();
+            Children = [];
             SourceName = "Admin";
         }
         public string Title { get; protected set; }

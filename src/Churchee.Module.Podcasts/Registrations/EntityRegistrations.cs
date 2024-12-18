@@ -12,6 +12,7 @@ namespace Churchee.Module.Podcasts.Registrations
             {
                 etb.ToTable("Podcasts");
                 etb.Property(e => e.Id);
+                etb.Property(e => e.Content).HasColumnType("nvarchar(max)");
             });
 
         }

@@ -10,7 +10,7 @@ namespace Churchee.Module.Tokens.Registrations
         {
             modelBuilder.Entity<Token>(etb =>
             {
-                etb.ToTable("Tokens");
+                etb.ToTable("Token");
                 etb.HasKey(e => e.Id);
                 etb.Property(e => e.Value).HasMaxLength(2000);
             });

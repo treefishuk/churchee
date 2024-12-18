@@ -25,8 +25,10 @@ namespace Churchee.Module.Podcasts.Entities
             Url = $"/{podcastsUrl.ToLowerInvariant()}/{title.ToURL()}";
             SourceName = sourceName;
             SourceId = sourceId;
-
+            Content = description;
         }
+
+        public string Content { get; private set; }
 
         public string AudioUri { get; private set; }
 
@@ -37,6 +39,14 @@ namespace Churchee.Module.Podcasts.Entities
         public DateTime PublishedDate { get; private set; }
 
         public DateTime SyncDate { get; private set; }
+
+        public void Update(string content, string imageUrl, string thumbnailUrl)
+        {
+            SyncDate = DateTime.Now;
+            Content = content;
+            ImageUrl = imageUrl;
+            ThumbnailUrl = thumbnailUrl;
+        }
 
 
     }

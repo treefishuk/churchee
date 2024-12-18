@@ -64,16 +64,20 @@ namespace System
             return ToCamelCase(text);
         }
 
-        [GeneratedRegex(@"[^\p{L}0-9 -\.]", RegexOptions.None, matchTimeoutMilliseconds: 2000)]
+        [GeneratedRegex(@"[^a-zA-Z0-9\-]", RegexOptions.None, matchTimeoutMilliseconds: 2000)]
         private static partial Regex InvalidUrlCharactersRegex();
 
         public static string ToURL(this string text)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-            string dashed = Regex.Replace(text, @"\s+", "-", RegexOptions.None, TimeSpan.FromSeconds(2));
+            string ampersandReplaced = Regex.Replace(text, @"&", "and", RegexOptions.None, TimeSpan.FromSeconds(2));
+
+            string dashed = Regex.Replace(ampersandReplaced, @"\s+", "-", RegexOptions.None, TimeSpan.FromSeconds(2));
 
             string result = InvalidUrlCharactersRegex().Replace(dashed, string.Empty);
+
+            result = Regex.Replace(result, "-{2,}", "-", RegexOptions.None, TimeSpan.FromSeconds(2));
 
             return HttpUtility.UrlEncode(result.ToLowerInvariant());
         }
