@@ -42,7 +42,7 @@ namespace Churchee.Module.Site.Helpers
         }
 
         /// <summary>
-        /// Excute the actual minify
+        /// Execute the actual minify
         /// </summary>
         private void ExecuteCssMin()
         {
@@ -52,54 +52,21 @@ namespace Churchee.Module.Site.Helpers
                 switch (_theA)
                 {
                     case ' ':
-                        {
-                            switch (_theB)
-                            {
-                                case ' ':        //body.Replace("  ", String.Empty);
-                                case '{':        //body = body.Replace(" {", "{");
-                                case ':':        //body = body.Replace(" {", "{");
-                                case '\n':       //body = body.Replace(" \n", "\n");
-                                case '\r':       //body = body.Replace(" \r", "\r");
-                                case '\t':       //body = body.Replace(" \t", "\t");
-                                    Action(2);
-                                    break;
-                                default:
-                                    Action(1);
-                                    break;
-                            }
-                            break;
-                        }
-                    case '\t':              //body = body.Replace("\t", "");
-                    case '\r':              //body = body.Replace("\r", "");
+                        HandleSpaces();
+                        break;
+                    case '\t':
+                    case '\r':
                         Action(2);
                         break;
-                    case '\n':              //body = body.Replace("\n", "");
-                        if (char.IsWhiteSpace((char)_theB))
-                        {
-                            //skip over whitespace
-                            Action(3);
-                        }
-                        else
-                        {
-                            //convert the line break to a space except when in the beginning
-                            //TODO: this isn't the best place to put this logic since all puts are done
-                            // in the action, but i don't see any other way to do this,
-                            //we could set theA = ' ' and call action(1) ?
-                            if (_sb.Length > 0)
-                            {
-                                Put(' ');
-                            }
-
-                            Action(2);
-                        }
+                    case '\n':
+                        HandleNewLines();
                         break;
                     case '}':
                     case '{':
                     case ':':
                     case ',':
                     case ';':
-                        //skip over whitespace
-                        Action(char.IsWhiteSpace((char)_theB) ? 3 : 1);
+                        HandleSpecialCharacters();
                         break;
                     default:
                         Action(1);
@@ -107,11 +74,57 @@ namespace Churchee.Module.Site.Helpers
                 }
             }
         }
+
+        private void HandleSpecialCharacters()
+        {
+            Action(char.IsWhiteSpace((char)_theB) ? 3 : 1);
+        }
+
+        private void HandleNewLines()
+        {
+            if (char.IsWhiteSpace((char)_theB))
+            {
+                //skip over whitespace
+                Action(3);
+            }
+            else
+            {
+                //convert the line break to a space except when in the beginning
+                //TODO: this isn't the best place to put this logic since all puts are done
+                // in the action, but i don't see any other way to do this,
+                //we could set theA = ' ' and call action(1) ?
+                if (_sb.Length > 0)
+                {
+                    Put(' ');
+                }
+
+                Action(2);
+            }
+        }
+
+        private void HandleSpaces()
+        {
+            switch (_theB)
+            {
+                case ' ':        //body.Replace("  ", String.Empty);
+                case '{':        //body = body.Replace(" {", "{");
+                case ':':        //body = body.Replace(" {", "{");
+                case '\n':       //body = body.Replace(" \n", "\n");
+                case '\r':       //body = body.Replace(" \r", "\r");
+                case '\t':       //body = body.Replace(" \t", "\t");
+                    Action(2);
+                    break;
+                default:
+                    Action(1);
+                    break;
+            }
+        }
+
         /* action -- do something! What you do is determined by the argument:
-                1   Output A. Copy B to A. Get the next B.
-                2   Copy B to A. Get the next B. (Delete A).
-                3   Get the next B. (Delete B).
-        */
+       1   Output A. Copy B to A. Get the next B.
+       2   Copy B to A. Get the next B. (Delete A).
+       3   Get the next B. (Delete B).
+*/
 
         private void Action(int d)
         {
@@ -255,7 +268,5 @@ namespace Churchee.Module.Site.Helpers
         {
             _sb.Append((char)c);
         }
-
-
     }
 }
