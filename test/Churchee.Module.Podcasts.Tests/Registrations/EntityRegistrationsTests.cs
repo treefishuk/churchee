@@ -8,7 +8,7 @@ namespace Churchee.Module.Podcasts.Tests.Registrations
     public class EntityRegistrationsTests
     {
         [Fact]
-        public void EntityRegistrationsTests_EventConfiguredCorrectly()
+        public void EntityRegistrationsTests_PodcastConfiguredCorrectly()
         {
             // Arrange
             var modelBuilder = GetBuilder();
@@ -21,7 +21,7 @@ namespace Churchee.Module.Podcasts.Tests.Registrations
 
 
             // Assert Properties
-            eventEntityType?.FindProperty(nameof(Podcast.Id))?.IsKey().Should().BeTrue();
+            eventEntityType?.FindProperty(nameof(Podcast.Content))?.GetColumnType().Should().Be("nvarchar(max)");
         }
 
         private static ModelBuilder GetBuilder()
