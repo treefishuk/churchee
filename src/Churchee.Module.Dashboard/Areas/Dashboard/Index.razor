@@ -166,13 +166,6 @@
         await GetData(0);
     }
 
-
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     await GetData(0);
-    // }
-
     async Task GetData(int days)
     {
         data = await Mediator.Send(new GetDashboardDataQuery(days));
