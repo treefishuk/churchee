@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Churchee.Module.Identity.Stores
 {
@@ -12,15 +10,5 @@ namespace Churchee.Module.Identity.Stores
         public ChurcheeUserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer)
         {
         }
-
-        public override Task<ApplicationUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            ThrowIfDisposed();
-
-            return Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName, cancellationToken);
-        }
-
     }
 }
