@@ -23,7 +23,7 @@ namespace Churchee.Module.Podcasts.Tests.Areas.Website.Pages
 
             var data = new DataTableResponse<GetListingQueryResponseItem>();
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetListingQuery>(), default)).ReturnsAsync(data);
+            MockMediator.Setup(s => s.Send(It.IsAny<GetListingQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             SetInitialUrl<Index>();
 
