@@ -173,7 +173,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             if (doc == null || doc.Root == null)
             {
-                throw new NullReferenceException(nameof(doc));
+                throw new InvalidOperationException("The RSS feed document is null or has no root element.");
             }
 
             var serializer = new XmlSerializer(typeof(Rss));
@@ -184,7 +184,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             if (feed == null)
             {
-                throw new NullReferenceException(nameof(feed));
+                throw new InvalidOperationException("Failed to deserialize the RSS feed.");
             }
 
             var items = feed.Channel.Items;

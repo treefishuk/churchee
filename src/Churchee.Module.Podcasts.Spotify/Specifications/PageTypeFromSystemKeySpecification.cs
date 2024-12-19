@@ -7,7 +7,7 @@ namespace Churchee.Module.Podcasts.Spotify.Specifications
     {
         public PageTypeFromSystemKeySpecification(Guid systemKey, Guid applicationTenantId)
         {
-            Query.IgnoreQueryFilters().Where(x => x.SystemKey == systemKey && x.ApplicationTenantId == applicationTenantId && x.Deleted == false);
+            Query.IgnoreQueryFilters().Where(x => x.SystemKey == systemKey && x.ApplicationTenantId == applicationTenantId && !x.Deleted);
         }
     }
 }

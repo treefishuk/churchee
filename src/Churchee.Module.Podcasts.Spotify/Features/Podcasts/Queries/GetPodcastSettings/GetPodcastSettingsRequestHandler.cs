@@ -1,18 +1,14 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Storage;
-using Churchee.Module.Tenancy.Entities;
 using Hangfire;
 using Hangfire.Storage;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries
 {
     internal class GetPodcastSettingsRequestHandler : IRequestHandler<GetPodcastSettingsRequest, GetPodcastSettingsResponse>
     {
         private readonly Guid _podcastsNameId = Guid.Parse("4379e3d3-fa40-489b-b80d-01c30835fa9d");
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly ISettingStore _store;
         private readonly ICurrentUser _currentUser;
 
