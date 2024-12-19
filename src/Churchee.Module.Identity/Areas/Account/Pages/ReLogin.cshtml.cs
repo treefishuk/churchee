@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Threading.Tasks;
 
 namespace Churchee.Module.Identity.Areas.Account.Pages
 {
@@ -42,12 +42,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
 
             await _signInManager.RefreshSignInAsync(user);
 
-
-            //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
             returnUrl ??= Url.Content("~/");
-
-            // Clear the existing external cookie to ensure a clean login process
 
             return Redirect(returnUrl);
         }

@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Churchee.Module.Podcasts.Spotify.Exceptions
+﻿namespace Churchee.Module.Podcasts.Spotify.Exceptions
 {
     public class PodcastSyncException : Exception
     {
@@ -13,10 +11,6 @@ namespace Churchee.Module.Podcasts.Spotify.Exceptions
         }
 
         public PodcastSyncException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
-
-        protected PodcastSyncException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
