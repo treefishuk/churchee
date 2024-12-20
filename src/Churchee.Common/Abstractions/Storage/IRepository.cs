@@ -24,9 +24,7 @@ namespace Churchee.Common.Abstractions.Storage
         Task<TResult> FirstOrDefaultAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
 
         T GetById(params object[] keyValues);
-
         Task<T> GetByIdAsync(object id);
-        Task<T> GetByIdAsync(object id, CancellationToken cancellationToken);
 
         Task<T> GetByIdAsync(object id, CancellationToken cancellationToken);
 
