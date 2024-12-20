@@ -87,7 +87,7 @@
 
     private async Task LoadData()
     {
-        var result = await Mediator.Send(new GetListingQuery(null, string.Empty), default);
+        var result = await Mediator.Send(new GetListingQuery(null, string.Empty), CancellationToken);
 
         listingData = result;
     }
@@ -95,27 +95,25 @@
 
     private async Task OnDelete(Guid id)
     {
-        var result = await Mediator.Send(new DeletePageCommand(id), default);
+        var result = await Mediator.Send(new DeletePageCommand(id), CancellationToken);
 
         if (result.IsSuccess)
         {
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Page Deleted" });
 
             await LoadData();
-
         }
     }
 
     void RowRender(RowRenderEventArgs<GetListingQueryResponseItem> args)
     {
-        args.Expandable = args.Data.HasChildren == true;
+        args.Expandable = args.Data.HasChildren;
     }
 
     async Task LoadChildData(DataGridLoadChildDataEventArgs<GetListingQueryResponseItem> args)
     {
-        args.Data = await Mediator.Send(new GetListingQuery(args.Item.Id, string.Empty), default);
+        args.Data = await Mediator.Send(new GetListingQuery(args.Item.Id, string.Empty), CancellationToken);
     }
-
 }
 
 

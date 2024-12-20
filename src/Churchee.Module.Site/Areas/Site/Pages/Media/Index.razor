@@ -49,8 +49,8 @@
             <RadzenTree @ref="tree" @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 500px; margin-right: 1rem; min-width: 500px; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; border:1px solid #d9d8d8">
                 <RadzenTreeLevel HasChildren=@HasChildren ChildrenProperty="Children" Text="@GetTextForNode" Template="@FolderTemplate" />
             </RadzenTree>
-            <RadzenDataList AllowVirtualization=@allowVirtualization Style="height:100%; width:100%; overflow:auto;"
-                        WrapItems="true" AllowPaging="@(!allowVirtualization)"
+            <RadzenDataList Style="height:100%; width:100%; overflow:auto;"
+                        WrapItems="true"
                         Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="12" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 
             <Template Context="item">
@@ -88,7 +88,7 @@
     [Inject]
     private IJSRuntime JSRuntime { get; set; }
 
-    string[] ProtectedPaths = new string[] { "Banners/", "Images/", "Fonts/", "Video/" };
+    readonly string[] ProtectedPaths = new string[] { "Banners/", "Images/", "Fonts/", "Video/" };
 
     bool DeleteFolderDisabled
     {
@@ -118,8 +118,6 @@
 
     bool AddMediaDisabled => activeFolder == null;
 
-    bool allowVirtualization;
-
     object activeFolder = null;
 
     Guid? activeFolderId = (Guid?)null;
@@ -141,8 +139,11 @@
 
     private async Task OnCancelEdit(DialogService ds)
     {
-        ds.Close();
-        editModel = new EditMediaItemModel();
+        await Task.Run(() =>
+        {
+            ds.Close();
+            editModel = new EditMediaItemModel();
+        });
     }
 
     private async Task OnDelete(Guid id)
@@ -173,17 +174,16 @@
         editModel.CssClass = selected.CssClass ?? string.Empty;
         editModel.Order = selected.Order;
 
-        var result = await DialogService.OpenAsync("Edit Media Item", ds =>
-        @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidEditSubmitForm(id)) />
-    );
+        await DialogService.OpenAsync("Edit Media Item", ds =>
+            @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidEditSubmitForm(id)) />
+        );
     }
 
     private async Task AddMediaItem()
     {
-        var result = await DialogService.OpenAsync("Add Media Item", ds =>
-        @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidCreateSubmitForm()) />
+        await DialogService.OpenAsync("Add Media Item", ds =>
+            @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidCreateSubmitForm()) />
         );
-
     }
 
     IEnumerable<GetMediaFoldersQueryResponseItem> Directories = new List<GetMediaFoldersQueryResponseItem>();
@@ -296,7 +296,7 @@
     {
         if (item == null || item.Value == "Add")
         {
-                var result = await DialogService.OpenAsync("Add Folder", ds =>
+                await DialogService.OpenAsync("Add Folder", ds =>
                 @<RadzenStack Gap="1.5rem">
 
                     <RadzenTextBox Placeholder="Folder Name"
@@ -314,29 +314,29 @@
 
         if (item != null && item.Value == "Delete")
         {
-            var result = await DialogService.OpenAsync("Add Folder", ds =>
-    @<RadzenStack Gap="1.5rem">
+            await DialogService.OpenAsync("Add Folder", ds =>
+             @<RadzenStack Gap="1.5rem">
 
 
-                @if (activeFolder is GetMediaFoldersQueryResponseItem item)
-                {
-                        <p>Are you sure you want to delete the folder @item.Title ? </p>
+                        @if (activeFolder is GetMediaFoldersQueryResponseItem item)
+                        {
+                                <p>Are you sure you want to delete the folder @item.Title ? </p>
 
-                }
+                        }
 
-                        <RadzenButton Text="Yes, Delete"
-                                          Click="DeleteFolderAsync"
-                                      ButtonStyle="ButtonStyle.Danger"
-                                      Style="margin-bottom: 20px;height: 35px" />
+                                <RadzenButton Text="Yes, Delete"
+                                                  Click="DeleteFolderAsync"
+                                              ButtonStyle="ButtonStyle.Danger"
+                                              Style="margin-bottom: 20px;height: 35px" />
 
 
-                        <RadzenButton Text="Nope, Cancel"
-                                              Click="CloseFolderPopup"
-                                          ButtonStyle="ButtonStyle.Success"
-                                      Style="margin-bottom: 20px;height: 35px" />
+                                <RadzenButton Text="Nope, Cancel"
+                                                      Click="CloseFolderPopup"
+                                                  ButtonStyle="ButtonStyle.Success"
+                                              Style="margin-bottom: 20px;height: 35px" />
 
-                    </RadzenStack>
-    );
+                            </RadzenStack>
+            );
         }
 
         if (item != null && item.Value == "Clear")

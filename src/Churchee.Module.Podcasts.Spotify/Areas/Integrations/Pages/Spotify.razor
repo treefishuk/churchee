@@ -116,16 +116,16 @@ else
 
     private async Task ValidSubmitForm()
     {
-        var result = await Mediator.Send(new PodcastsEnabledCommand(InputModel.NameForContent));
+        var enablePocastResult = await Mediator.Send(new PodcastsEnabledCommand(InputModel.NameForContent));
 
-        if (!result.IsSuccess)
+        if (!enablePocastResult.IsSuccess)
         {
             NotificationService.Notify(NotificationSeverity.Error, "Failed to enable Podcasts");
         }
 
-        var result2 = await Mediator.Send(new EnableSpotifyPodcastSyncCommand(InputModel.SpotifyRSSFeedUrl));
+        var enablePodcastSyncResult = await Mediator.Send(new EnableSpotifyPodcastSyncCommand(InputModel.SpotifyRSSFeedUrl));
 
-        if (result.IsSuccess)
+        if (enablePodcastSyncResult.IsSuccess)
         {
             Logger.LogDebug("Spotify RSS Feed URL = {SpotifyRSSFeedUrl}", InputModel.SpotifyRSSFeedUrl);
 

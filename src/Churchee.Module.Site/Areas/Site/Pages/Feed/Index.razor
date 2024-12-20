@@ -13,7 +13,6 @@
 
 <Grid TItem="GetListBlogItemsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
 
-
 @code {
 
     IEnumerable<GetListBlogItemsResponseItem> listingData;
@@ -28,7 +27,7 @@
             skip: args.Skip.Value,
             take: args.Top.Value,
             searchText: args.Filter,
-            orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Title desc" : args?.OrderBy), default);
+            orderBy: string.IsNullOrEmpty(args.OrderBy) ? "Title desc" : args.OrderBy), CancellationToken);
 
         listingData = result.Data;
 

@@ -114,7 +114,6 @@
                 Data = EditorTypes
             }
         }).ToList();
-
     }
 
     protected override void OnParametersSet()
@@ -126,7 +125,7 @@
     {
         var result = await Mediator.Send(new UpdatePageTypeContentCommand(Id, Content));
 
-        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Saved Successfully" });
+        NotificationService.Notify(result, "Saved Successfully");
     }
 
 }

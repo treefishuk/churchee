@@ -37,11 +37,10 @@
                 skip: args?.Skip ?? 0,
                 take: args?.Top ?? 20,
                 searchText: args?.Filter ?? string.Empty,
-                orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Location asc" : args?.OrderBy), default);
+                orderBy: string.IsNullOrEmpty(args.OrderBy) ? "Location asc" : args.OrderBy), CancellationToken);
 
         listingData = result.Data;
 
         isLoading = false;
     }
-
 }
