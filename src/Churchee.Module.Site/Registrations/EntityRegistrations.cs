@@ -8,12 +8,14 @@ namespace Churchee.Module.Site.Registration
     {
         public void RegisterEntities(ModelBuilder modelBuilder)
         {
+            const string nvarcharMax = "nvarchar(max)";
+
             modelBuilder.Entity<WebContent>(etb =>
             {
                 etb.HasKey(e => e.Id);
                 etb.Property(e => e.Id);
 
-                etb.Property(t => t.PublishedData).HasColumnType("nvarchar(max)");
+                etb.Property(t => t.PublishedData).HasColumnType(nvarcharMax);
 
                 etb.Property(t => t.Order).HasDefaultValue(10);
 
@@ -102,7 +104,7 @@ namespace Churchee.Module.Site.Registration
             {
                 etb.ToTable("PageContent", b => b.IsTemporal());
                 etb.HasKey(t => new { t.PageId, t.PageTypeContentId });
-                etb.Property(t => t.Value).HasColumnType("nvarchar(max)");
+                etb.Property(t => t.Value).HasColumnType(nvarcharMax);
                 etb.HasOne(pt => pt.Page)
                 .WithMany(p => p.PageContent)
                 .HasForeignKey(k => k.PageId)
@@ -115,7 +117,7 @@ namespace Churchee.Module.Site.Registration
             {
                 etb.ToTable("ViewTemplates", b => b.IsTemporal());
 
-                etb.Property(t => t.Content).HasColumnType("nvarchar(max)");
+                etb.Property(t => t.Content).HasColumnType(nvarcharMax);
 
                 etb.Property(t => t.TenantLocation).HasComputedColumnSql("'/' + convert(nvarchar(36), ApplicationTenantId) + [Location]");
 
@@ -137,8 +139,8 @@ namespace Churchee.Module.Site.Registration
 
                 etb.HasKey(t => new { t.Id });
 
-                etb.Property(t => t.Styles).HasColumnType("nvarchar(max)");
-                etb.Property(t => t.MinifiedStyles).HasColumnType("nvarchar(max)");
+                etb.Property(t => t.Styles).HasColumnType(nvarcharMax);
+                etb.Property(t => t.MinifiedStyles).HasColumnType(nvarcharMax);
 
 
             });
@@ -147,7 +149,7 @@ namespace Churchee.Module.Site.Registration
             {
                 etb.ToTable("Articles");
 
-                etb.Property(t => t.Content).HasColumnType("nvarchar(max)");
+                etb.Property(t => t.Content).HasColumnType(nvarcharMax);
 
             });
         }

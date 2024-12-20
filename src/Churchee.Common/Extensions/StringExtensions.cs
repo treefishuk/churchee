@@ -5,7 +5,7 @@ using System.Web;
 
 namespace System
 {
-    public static partial class StringExtentions
+    public static partial class StringExtensions
     {
         public static string ToTitleCase(this string str)
         {
@@ -37,7 +37,7 @@ namespace System
 
             if (str.Length > 1)
             {
-                return char.ToLowerInvariant(str[0]) + str.Substring(1);
+                return char.ToLowerInvariant(str[0]) + str[1..];
             }
 
             return str;
@@ -64,16 +64,20 @@ namespace System
             return ToCamelCase(text);
         }
 
-        [GeneratedRegex(@"[^\p{L}0-9 -\.]", RegexOptions.None, matchTimeoutMilliseconds: 2000)]
+        [GeneratedRegex(@"[^a-zA-Z0-9\-]", RegexOptions.None, matchTimeoutMilliseconds: 2000)]
         private static partial Regex InvalidUrlCharactersRegex();
 
         public static string ToURL(this string text)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-            string dashed = Regex.Replace(text, @"\s+", "-", RegexOptions.None, TimeSpan.FromSeconds(2));
+            string ampersandReplaced = Regex.Replace(text, "&", "and", RegexOptions.None, TimeSpan.FromSeconds(2));
+
+            string dashed = Regex.Replace(ampersandReplaced, @"\s+", "-", RegexOptions.None, TimeSpan.FromSeconds(2));
 
             string result = InvalidUrlCharactersRegex().Replace(dashed, string.Empty);
+
+            result = Regex.Replace(result, "-{2,}", "-", RegexOptions.None, TimeSpan.FromSeconds(2));
 
             return HttpUtility.UrlEncode(result.ToLowerInvariant());
         }
@@ -82,21 +86,13 @@ namespace System
         {
             if (int.TryParse(text, out int day))
             {
-                switch (day)
+                return day switch
                 {
-                    case 1:
-                    case 21:
-                    case 31:
-                        return text + "st";
-                    case 2:
-                    case 22:
-                        return text + "nd";
-                    case 3:
-                    case 23:
-                        return text + "rd";
-                    default:
-                        return text + "th";
-                }
+                    1 or 21 or 31 => text + "st",
+                    2 or 22 => text + "nd",
+                    3 or 23 => text + "rd",
+                    _ => text + "th",
+                };
             }
 
             return string.Empty;

@@ -43,9 +43,12 @@
 
     private async Task LoadData()
     {
+        isLoading = true;
 
         var result = await Mediator.Send(new ListContributorsForTenantQuery(), default);
 
         data = result;
+
+        isLoading = false;
     }
 }

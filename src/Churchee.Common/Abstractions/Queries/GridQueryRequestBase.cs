@@ -13,9 +13,6 @@ namespace Churchee.Common.Abstractions.Queries
 
             if (string.IsNullOrEmpty(orderBy))
             {
-                OrderBy = string.Empty;
-                OrderByDirection = "asc";
-
                 return;
             }
 

@@ -54,20 +54,11 @@
 
     public async Task OnChange(string value)
     {
-        try
-        {
-            Value = value;
+        Value = value;
 
-            StateHasChanged();
+        StateHasChanged();
 
-            await Change.InvokeAsync(Value);
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
-
-
+        await Change.InvokeAsync(Value);
     }
 
     private Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)

@@ -86,11 +86,10 @@ namespace Churchee.Common.Tests.Abstractions.Queries
         }
 
         [Fact]
-        public void GridQueryRequestBase_NotPassedAnyOrdering_ReturnsEmptyStringAndAsc()
+        public void GridQueryRequestBase_NotPassedAnyOrdering_ShouldBeNull()
         {
             var mock = new Mock<GridQueryRequestBase<object>>(1, 2, string.Empty, string.Empty);
-            mock.Object.OrderBy.Should().Be(string.Empty);
-            mock.Object.OrderByDirection.Should().Be("asc");
+            mock.Object.OrderBy.Should().BeNull();
         }
 
     }

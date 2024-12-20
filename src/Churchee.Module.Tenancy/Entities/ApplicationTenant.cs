@@ -99,8 +99,7 @@ namespace Churchee.Module.Tenancy.Entities
         public int RemoveHost(Guid hostId)
         {
             var host = Hosts
-                .Where(x => x.Id == hostId)
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.Id == hostId);
 
             Hosts.Remove(host);
 
@@ -122,8 +121,7 @@ namespace Churchee.Module.Tenancy.Entities
         public int RemoveFeature(Guid featureId)
         {
             var feature = Features
-                .Where(x => x.Id == featureId)
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.Id == featureId);
 
             Features.Remove(feature);
 

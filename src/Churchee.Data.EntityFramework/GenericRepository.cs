@@ -69,7 +69,7 @@ namespace Churchee.Data.EntityFramework
 
         public async Task<T> GetByIdAsync(object id, CancellationToken cancellationToken)
         {
-            return await _dbSet.FindAsync([id], cancellationToken: cancellationToken);
+            return await _dbSet.FindAsync([id], cancellationToken);
         }
 
         public int Count()
@@ -137,11 +137,9 @@ namespace Churchee.Data.EntityFramework
         {
             int count = await CountAsync(cancellationToken);
 
-            string orderbyCombined = $"{orderBy} {orderByDir}";
-
             var data = await _specificationEvaluator.GetQuery(GetQueryable(), specification)
                 .Select(selector)
-                .OrderBy(orderbyCombined)
+                .OrderBy(orderBy, orderByDir)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync(cancellationToken);

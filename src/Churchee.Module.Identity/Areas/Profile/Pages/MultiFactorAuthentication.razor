@@ -1,4 +1,5 @@
 ﻿@page "/management/profile/mfa"
+@inherits BasePage
 @using System.Globalization
 @using Microsoft.AspNetCore.Identity.UI
 @using Microsoft.Extensions.Logging
@@ -105,9 +106,6 @@
 @code {
 
     [Inject]
-    private ILogger<MultiFactorAuthentication> _logger { get; set; }
-
-    [Inject]
     private UrlEncoder UrlEncoder { get; set; }
 
     [Inject]
@@ -122,9 +120,6 @@
     [Inject]
     private IJSRuntime _js { get; set; }
 
-    [Inject]
-    private NotificationService _notificationService { get; set; }
-
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
     public bool HasAuthenticator { get; set; }
@@ -133,11 +128,9 @@
 
     public bool Is2faEnabled { get; set; }
 
-    public bool IsMachineRemembered { get; set; }
-
     public string[] RecoveryCodes { get; set; }
 
-    public EnableMultiFactorModel model = new();
+    private EnableMultiFactorModel model = new();
 
     private ApplicationUser _user;
 
@@ -157,7 +150,6 @@
             {
                 HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(_user) != null;
                 Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(_user);
-                // IsMachineRemembered = await _churcheeSignInManager.IsTwoFactorClientRememberedAsync(_user);
                 RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(_user);
             }
 
@@ -234,7 +226,7 @@
 
         if (!is2faTokenValid)
         {
-            _notificationService.Notify(NotificationSeverity.Error, "Verification code is invalid.");
+            NotificationService.Notify(NotificationSeverity.Error, "Verification code is invalid.");
 
             return;
         }
@@ -243,9 +235,9 @@
 
         await _userManager.GetUserIdAsync(_user);
 
-        _logger.LogInformation(LoggerEventIds.TwoFAEnabled, "User has enabled 2FA with an authenticator app.");
+        Logger.LogInformation(LoggerEventIds.TwoFAEnabled, "User has enabled 2FA with an authenticator app.");
 
-        _notificationService.Notify(NotificationSeverity.Success, "Your authenticator app has been verified.");
+        NotificationService.Notify(NotificationSeverity.Success, "Your authenticator app has been verified.");
 
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(_user, 10);
 
@@ -265,13 +257,13 @@
         {
             Is2faEnabled = false;
 
-            _notificationService.Notify(NotificationSeverity.Success, "2fa has been disabled. You can reenable 2fa when you setup an authenticator app.");
+            NotificationService.Notify(NotificationSeverity.Success, "2fa has been disabled. You can reenable 2fa when you setup an authenticator app.");
 
             StateHasChanged();
         }
         else
         {
-            _notificationService.Notify(NotificationSeverity.Error, "Unexpected error occurred disabling 2FA.");
+            NotificationService.Notify(NotificationSeverity.Error, "Unexpected error occurred disabling 2FA.");
         }
     }
 }

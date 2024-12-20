@@ -33,7 +33,7 @@ namespace Churchee.Module.Podcasts.Tests.Features.Commands.PodcastsEnabled
             var viewTemplateRepository = new Mock<IRepository<ViewTemplate>>();
             var applicationTenantRepository = new Mock<IRepository<ApplicationTenant>>();
             var pageRepository = new Mock<IRepository<Page>>();
-            applicationTenantRepository.Setup(s => s.GetById(It.IsAny<Guid>())).Returns(new ApplicationTenant(Guid.NewGuid(), "Name", 1));
+            applicationTenantRepository.Setup(s => s.GetByIdAsync(It.IsAny<Guid>(), CancellationToken.None)).ReturnsAsync(new ApplicationTenant(Guid.NewGuid(), "Name", 1));
 
             _dataStoreMock.Setup(s => s.GetRepository<PageType>()).Returns(mockEventRepository.Object);
             _dataStoreMock.Setup(s => s.GetRepository<ViewTemplate>()).Returns(viewTemplateRepository.Object);

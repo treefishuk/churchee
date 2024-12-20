@@ -29,7 +29,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.ActivateEvents
         private static IDataStore GetDataStore()
         {
             var mockApplicationTenantRepository = new Mock<IRepository<ApplicationTenant>>();
-            mockApplicationTenantRepository.Setup(s => s.GetByIdAsync(It.IsAny<object>())).ReturnsAsync(new ApplicationTenant(Guid.NewGuid(), "Test", 1));
+            mockApplicationTenantRepository.Setup(s => s.GetByIdAsync(It.IsAny<object>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ApplicationTenant(Guid.NewGuid(), "Test", 1));
 
             var mockPageRepository = new Mock<IRepository<Page>>();
             var mockPageTypeRepository = new Mock<IRepository<PageType>>();

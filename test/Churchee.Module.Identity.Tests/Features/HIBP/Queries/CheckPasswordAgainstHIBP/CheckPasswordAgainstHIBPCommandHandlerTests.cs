@@ -1,5 +1,6 @@
 ﻿using Churchee.Module.Identity.Features.HIBP.Queries;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 
@@ -13,7 +14,8 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         public CheckPasswordAgainstHIBPCommandHandlerTests()
         {
             _httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            _handler = new CheckPasswordAgainstHIBPCommandHandler(_httpClientFactoryMock.Object);
+            var logger = new Mock<ILogger<CheckPasswordAgainstHIBPCommandHandler>>();
+            _handler = new CheckPasswordAgainstHIBPCommandHandler(_httpClientFactoryMock.Object, logger.Object);
         }
 
         [Fact]

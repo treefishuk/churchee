@@ -18,7 +18,7 @@ namespace Churchee.Module.Tenancy.Infrastructure
                 return Guid.Empty;
             }
 
-            var claim = _httpContextAccessor.HttpContext.User.Claims.Where(w => w.Type == "ActiveTenantId").FirstOrDefault();
+            var claim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(w => w.Type == "ActiveTenantId");
 
             if (claim == null)
             {
@@ -35,7 +35,7 @@ namespace Churchee.Module.Tenancy.Infrastructure
                 return string.Empty;
             }
 
-            var claim = _httpContextAccessor.HttpContext.User.Claims.Where(w => w.Type == "ActiveTenantName").FirstOrDefault();
+            var claim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(w => w.Type == "ActiveTenantName");
 
             if (claim == null)
             {

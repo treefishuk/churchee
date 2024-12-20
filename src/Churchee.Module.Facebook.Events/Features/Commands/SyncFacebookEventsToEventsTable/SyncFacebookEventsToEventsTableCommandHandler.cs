@@ -84,8 +84,6 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             string facebookPageAccessToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.FacebookPageAccessToken, applicationTenantId), s => s.Value, cancellationToken);
 
-            string facebookAccessToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.FacebookAccessToken, applicationTenantId), s => s.Value, cancellationToken);
-
             string pageId = await _settingStore.GetSettingValue(Guid.Parse("3de048ae-d711-4609-9b66-97564a9d0d68"), applicationTenantId);
 
             var feedResponseItems = await GetFeedResult(client, pageId, facebookPageAccessToken);

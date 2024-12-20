@@ -40,15 +40,15 @@ namespace Churchee.Module.Podcasts.Features.Commands
                 pageNameForPodcasts = request.PageNameForPodcasts;
             }
 
-            await CreatePageTypes(applicationTenantId, listingTypeId, detailPageTypeId);
+            await CreatePageTypes(applicationTenantId, listingTypeId, detailPageTypeId, cancellationToken);
 
             var tenant = await _dataStore.GetRepository<ApplicationTenant>().GetByIdAsync(applicationTenantId, cancellationToken);
 
-            await CreatePodcastsListingPage(request, tenant, listingTypeId);
+            await CreatePodcastsListingPage(request, tenant, listingTypeId, cancellationToken);
 
             CreateViewTemplates(pageNameForPodcasts, applicationTenantId);
 
-            await _dataStore.SaveChangesAsync();
+            await _dataStore.SaveChangesAsync(cancellationToken);
 
             return new CommandResponse();
         }
@@ -111,7 +111,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
             }
         }
 
-        private async Task CreatePodcastsListingPage(PodcastsEnabledCommand request, ApplicationTenant tenant, Guid listingPageTypeId)
+        private async Task CreatePodcastsListingPage(PodcastsEnabledCommand request, ApplicationTenant tenant, Guid listingPageTypeId, CancellationToken cancellationToken)
         {
             var pageRepo = _dataStore.GetRepository<Page>();
 
@@ -121,16 +121,16 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
             if (!pageRepo.GetQueryable().Any(a => a.Url == pageUrl))
             {
-                var newListingPage = new Page(applicationTenantId, request.PageNameForPodcasts, pageUrl, $"Talks/Sermons/Podasts from {tenant.Name}", listingPageTypeId, null, false);
+                var newListingPage = new Page(applicationTenantId, request.PageNameForPodcasts, pageUrl, $"Talks/Sermons/Podcasts from {tenant.Name}", listingPageTypeId, null, false);
 
                 pageRepo.Create(newListingPage);
 
-                await _dataStore.SaveChangesAsync();
+                await _dataStore.SaveChangesAsync(cancellationToken);
             }
         }
 
 
-        private async Task CreatePageTypes(Guid applicationTenantId, Guid listingPageTypeId, Guid detailsPageTypeId)
+        private async Task CreatePageTypes(Guid applicationTenantId, Guid listingPageTypeId, Guid detailsPageTypeId, CancellationToken cancellationToken)
         {
             var pageTypeRepo = _dataStore.GetRepository<PageType>();
 
@@ -149,7 +149,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
                 pageTypeRepo.Create(newListingPageType);
 
-                await _dataStore.SaveChangesAsync();
+                await _dataStore.SaveChangesAsync(cancellationToken);
             }
 
             var viewTemplateRepo = _dataStore.GetRepository<ViewTemplate>();
@@ -219,7 +219,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
                 viewTemplateRepo.Create(podcastListingComponant);
 
-                await _dataStore.SaveChangesAsync();
+                await _dataStore.SaveChangesAsync(cancellationToken);
 
             }
 
