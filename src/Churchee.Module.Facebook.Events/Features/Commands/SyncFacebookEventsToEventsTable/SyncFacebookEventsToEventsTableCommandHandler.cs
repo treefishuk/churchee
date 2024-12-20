@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
@@ -15,7 +16,6 @@ using Churchee.Module.Tokens.Specifications;
 using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Event = Churchee.Module.Events.Entities.Event;
@@ -24,19 +24,16 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 {
     public class SyncFacebookEventsToEventsTableCommandHandler : IRequestHandler<SyncFacebookEventsToEventsTableCommand, CommandResponse>
     {
-
         private readonly IHttpClientFactory _clientFactory;
         private readonly ISettingStore _settingStore;
         private readonly IDataStore _dataStore;
         private readonly IBlobStore _blobStore;
         private readonly ICurrentUser _currentUser;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IJobService _jobShedularService;
         private readonly ILogger<SyncFacebookEventsToEventsTableCommandHandler> _logger;
-        private readonly IConfiguration _configuration;
 
-        public SyncFacebookEventsToEventsTableCommandHandler(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, ICurrentUser currentUser, IRecurringJobManager recurringJobManager, IBackgroundJobClient backgroundJobClient, ILogger<SyncFacebookEventsToEventsTableCommandHandler> logger, IConfiguration configuration)
+        public SyncFacebookEventsToEventsTableCommandHandler(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, ICurrentUser currentUser, ILogger<SyncFacebookEventsToEventsTableCommandHandler> logger, IJobService jobShedularService)
         {
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
             _settingStore = settingStore ?? throw new ArgumentNullException(nameof(settingStore));
@@ -44,13 +41,9 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
             _blobStore = blobStore ?? throw new ArgumentNullException(nameof(blobStore));
             _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
             _jsonSerializerOptions = new JsonSerializerOptions();
-
             _jsonSerializerOptions.Converters.Add(new DateTimeIso8601JsonConverter());
-            _recurringJobManager = recurringJobManager;
-            _backgroundJobClient = backgroundJobClient;
-            _configuration = configuration;
+            _jobShedularService = jobShedularService;
         }
 
         public async Task<CommandResponse> Handle(SyncFacebookEventsToEventsTableCommand request, CancellationToken cancellationToken)
@@ -61,9 +54,9 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
             {
                 var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-                _recurringJobManager.AddOrUpdate($"{applicationTenantId}_FacebookEvents", () => SyncFacebookEvents(applicationTenantId, cancellationToken), Cron.Daily);
+                _jobShedularService.SheduleJob($"{applicationTenantId}_FacebookEvents", () => SyncFacebookEvents(applicationTenantId, cancellationToken), Cron.Daily);
 
-                _backgroundJobClient.Enqueue(() => SyncFacebookEvents(applicationTenantId, cancellationToken));
+                _jobShedularService.QueueJob(() => SyncFacebookEvents(applicationTenantId, cancellationToken));
             }
             catch (Exception ex)
             {
@@ -78,7 +71,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
         public async Task SyncFacebookEvents(Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            var client = CreateClient();
+            var client = _clientFactory.CreateClient("Facebook");
 
             var tokenRepo = _dataStore.GetRepository<Token>();
 
@@ -202,18 +195,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             var bytes = stream.ConvertStreamToByteArray();
 
-            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
-        }
-
-        private HttpClient CreateClient()
-        {
-            var facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("Api");
-
-            var client = _clientFactory.CreateClient();
-
-            client.BaseAddress = new Uri(facebookApiUrl);
-
-            return client;
+            _jobShedularService.QueueJob<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
         }
     }
 }

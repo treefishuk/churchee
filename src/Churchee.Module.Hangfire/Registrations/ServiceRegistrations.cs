@@ -1,4 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
+using Churchee.Common.Abstractions.Queue;
+using Churchee.Module.Hangfire.Services;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
@@ -30,11 +32,18 @@ namespace Churchee.Module.Hangfire.Registrations
                     DisableGlobalLocks = true,
                 }));
 
+            serviceCollection.AddScoped<IJobService, JobService>();
+
             if (config.GetSection("Hangfire")["IsService"] != "true")
             {
                 serviceCollection.AddHangfireServer();
 
             }
+
+            var facebookApiUrl = config.GetSection("Facebook").GetValue<string>("Api");
+
+            serviceCollection.AddHttpClient("Facebook", client => { client.BaseAddress = new Uri(facebookApiUrl); });
+
         }
     }
 }
