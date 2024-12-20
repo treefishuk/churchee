@@ -39,11 +39,6 @@ namespace Churchee.Module.Hangfire.Registrations
                 serviceCollection.AddHangfireServer();
 
             }
-
-            var facebookApiUrl = config.GetSection("Facebook").GetValue<string>("Api");
-
-            serviceCollection.AddHttpClient("Facebook", client => { client.BaseAddress = new Uri(facebookApiUrl); });
-
         }
     }
 }

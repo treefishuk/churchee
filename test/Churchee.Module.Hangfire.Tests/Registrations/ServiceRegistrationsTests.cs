@@ -62,7 +62,7 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
         [Fact]
         public void ServiceRegistrations_Execute_WithIsServiceSetToFalse_RegistersHanginterfacesAndServer()
         {
-            // Arrange
+            // Arrange  
             var services = new ServiceCollection();
             var configurationMock = new Mock<IConfiguration>();
             configurationMock.Setup(s => s.GetSection("Hangfire")["IsService"]).Returns("false");
