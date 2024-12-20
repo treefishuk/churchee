@@ -18,7 +18,7 @@
 
 @if (data != null)
 {
-    <Grid @ref="dataGrid" TItem="ListContributorsForTenantResponseItem" IsLoading=isLoading Data=data LoadData="@LoadData" ShowEdit="true"></Grid>
+    <Grid TItem="ListContributorsForTenantResponseItem" IsLoading=isLoading Data=data LoadData="@LoadData" ShowEdit="true"></Grid>
 }
 
 @code {
@@ -31,8 +31,6 @@
     bool isLoading = false;
 
     IEnumerable<ListContributorsForTenantResponseItem> data = default!;
-
-    Grid<ListContributorsForTenantResponseItem> dataGrid;
 
     protected override async Task OnInitializedAsync()
     {

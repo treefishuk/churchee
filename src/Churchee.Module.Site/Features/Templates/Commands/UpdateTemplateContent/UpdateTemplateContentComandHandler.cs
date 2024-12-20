@@ -19,7 +19,7 @@ namespace Churchee.Module.Site.Features.Templates.Commands.UpdateTemplateContent
         {
             var repo = _storage.GetRepository<ViewTemplate>();
 
-            var template = repo.GetById(request.TemplateId);
+            var template = await repo.GetByIdAsync(request.TemplateId, cancellationToken);
 
             template.SetContent(request.Content);
 
