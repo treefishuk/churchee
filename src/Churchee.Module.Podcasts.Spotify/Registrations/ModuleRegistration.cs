@@ -4,6 +4,6 @@ namespace Churchee.Module.Podcasts.Spotify.Registrations
 {
     public class ModuleRegistration : IModule
     {
-        public string Name => "Spofify";
+        public string Name => "Spotify";
     }
 }
