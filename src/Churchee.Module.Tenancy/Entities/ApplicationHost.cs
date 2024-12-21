@@ -7,7 +7,7 @@ namespace Churchee.Module.Tenancy.Entities
 
         private ApplicationHost()
         {
-
+            Host = string.Empty;
         }
 
         public ApplicationHost(string host, Guid applicationTenantId) : base(applicationTenantId)

@@ -204,13 +204,13 @@
     private string validationVisibility = "display:none";
 
     [Parameter]
-    public EditContext EditContext { get; set; }
+    public EditContext EditContext { get; set; } = default!;
 
     [Parameter]
-    public object InputModel { get; set; }
+    public object InputModel { get; set; } = default!;
 
     [Parameter]
-    public IEnumerable<PropertyInfo> Properties { get; set; }
+    public IEnumerable<PropertyInfo> Properties { get; set; } = default!;
 
 
     private string ShowHideValidation()

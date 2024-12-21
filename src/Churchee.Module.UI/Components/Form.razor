@@ -35,17 +35,16 @@
 
     private bool _submitClicked;
 
-    private EditContext _editContext { get; set; }
+    private EditContext _editContext { get; set; } = default!;
 
     [Parameter]
-    public object InputModel { get; set; }
+    public object InputModel { get; set; } = default!;
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment ChildContent { get; set; } = default!;
 
     [Inject]
-    public IServiceProvider _serviceProvider { get; set; }
-
+    public IServiceProvider _serviceProvider { get; set; } = default!;
 
     protected override void OnParametersSet()
     {

@@ -27,25 +27,24 @@ namespace Churchee.Module.Site.Specifications
             {
                 return;
             }
-            if (orderByField.ToUpperInvariant() == "TITLE" && orderDir.ToUpperInvariant().StartsWith("ASC"))
+            if (orderByField.Equals("TITLE", StringComparison.InvariantCultureIgnoreCase) && orderDir.StartsWith("ASC", StringComparison.InvariantCultureIgnoreCase))
             {
                 Query.OrderBy(x => x.Title);
                 return;
             }
-            if (orderByField.ToUpperInvariant() == "TITLE")
+            if (orderByField.Equals("TITLE", StringComparison.InvariantCultureIgnoreCase))
             {
                 Query.OrderByDescending(x => x.Title);
                 return;
             }
-            if (orderByField.ToUpperInvariant() == "URL" && orderDir.ToUpperInvariant().StartsWith("ASC"))
+            if (orderByField.Equals("URL", StringComparison.InvariantCultureIgnoreCase) && orderDir.StartsWith("ASC", StringComparison.InvariantCultureIgnoreCase))
             {
                 Query.OrderBy(x => x.Url);
                 return;
             }
-            if (orderByField.ToUpperInvariant() == "URL")
+            if (orderByField.Equals("URL", StringComparison.InvariantCultureIgnoreCase))
             {
                 Query.OrderByDescending(x => x.Url);
-                return;
             }
         }
 
@@ -63,6 +62,5 @@ namespace Churchee.Module.Site.Specifications
         {
             Query.Where(w => w.ParentId == parentId);
         }
-
     }
 }

@@ -6,7 +6,7 @@ namespace Churchee.Module.Tenancy.Entities
     {
         private ApplicationFeature()
         {
-
+            Name = string.Empty;
         }
 
         public ApplicationFeature(string name, Guid applicationTenantId) : base(applicationTenantId)

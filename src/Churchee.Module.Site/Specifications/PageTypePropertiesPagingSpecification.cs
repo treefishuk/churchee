@@ -27,15 +27,14 @@ namespace Churchee.Module.Site.Specifications
             {
                 return;
             }
-            if (orderByField.ToUpperInvariant() == "NAME" && orderDir.ToUpperInvariant().StartsWith("ASC"))
+            if (orderByField.Equals("NAME", StringComparison.InvariantCultureIgnoreCase) && orderDir.StartsWith("ASC", StringComparison.InvariantCultureIgnoreCase))
             {
                 Query.OrderBy(x => x.Name);
                 return;
             }
-            if (orderByField.ToUpperInvariant() == "NAME")
+            if (orderByField.Equals("NAME", StringComparison.InvariantCultureIgnoreCase))
             {
                 Query.OrderByDescending(x => x.Name);
-                return;
             }
 
         }
