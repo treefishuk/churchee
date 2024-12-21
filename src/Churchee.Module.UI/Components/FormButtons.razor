@@ -15,10 +15,10 @@
 @code {
 
     [Parameter]
-    public bool FormInvalid { get; set; }
+    public bool FormInvalid { get; set; } = default!;
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment ChildContent { get; set; } = default!;
 
     protected override void OnParametersSet()
     {

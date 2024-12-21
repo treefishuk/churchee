@@ -31,21 +31,21 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             ];
 
             //act
-            var cut = new UpdateEventCommand(
-                id: id,
-                title: title,
-                description: description,
-                content: content,
-                imageFileName: imageFileName,
-                base64Image: base64Image,
-                locationName: locationName,
-                city: city,
-                street: street,
-                postCode: postcode,
-                country: country,
-                latitude: latitude,
-                longitude: longitude,
-                dates: dates);
+            var cut = new UpdateEventCommand.Builder()
+                .SetId(id)
+                .SetTitle(title)
+                .SetDescription(description)
+                .SetContent(content)
+                .SetImageFileName(imageFileName)
+                .SetBase64Image(base64Image)
+                .SetLocationName(locationName)
+                .SetCity(city)
+                .SetStreet(street)
+                .SetPostCode(postcode)
+                .SetCountry(country)
+                .SetGeoCordinates(latitude, longitude)
+                .SetDates(dates)
+                .Build();
 
             //assert
             cut.Id.Should().Be(id);

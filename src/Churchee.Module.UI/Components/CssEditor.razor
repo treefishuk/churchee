@@ -3,6 +3,7 @@
 @using System.Reflection
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Logging
+@using Radzen
 
 <ChurcheeErrorBoundry>
     <ChildContent>
@@ -31,13 +32,15 @@
         }
     }
 
-    private string Id { get; set; }
+    private string Id { get; set; } = default!;
 
     [Parameter]
-    public string Value { get; set; }
+    public string Value { get; set; } = default!;
 
-    private StandaloneCodeEditor _editorRef;
+    private StandaloneCodeEditor _editorRef = default!;
 
+    [Inject]
+    protected NotificationService NotificationService { get; set; } = default!;
 
     [Inject]
     protected ILogger<CssEditor> Logger { get; set; } = default!;
@@ -59,11 +62,11 @@
 
             await Change.InvokeAsync(value);
         }
-        catch (Exception ex)
+        catch (Exception ex)    
         {
             Logger.LogError(ex, "OnEditorChange Error");
 
-            throw;
+            NotificationService.Notify(NotificationSeverity.Error, "Change event failed to execute, an error has been logged");
         }
     }
 
@@ -84,7 +87,7 @@
         {
             Logger.LogError(ex, "OnEditorChange Error");
 
-            throw;
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to load Editor, an error has been logged");
         }
     }
 

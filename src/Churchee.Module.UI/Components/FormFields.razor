@@ -10,9 +10,6 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Linq.Expressions
 @using Microsoft.AspNetCore.Mvc.Rendering
-
-@inject ILogger<Form> _logger
-@inject NotificationService _notificationService
     
 <RadzenStack>
 
@@ -212,6 +209,11 @@
     [Parameter]
     public IEnumerable<PropertyInfo> Properties { get; set; } = default!;
 
+    [Inject]
+    protected ILogger<Form> _logger { get; set; } = default!;
+
+    [Inject]
+    protected NotificationService _notificationService { get; set; } = default!;
 
     private string ShowHideValidation()
     {

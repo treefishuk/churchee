@@ -1,17 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components;
 
-
-
 @ChildContent
 
-
-
 @code{
-
-
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
-
-
+    public RenderFragment ChildContent { get; set; } = default!;
 }

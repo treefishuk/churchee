@@ -25,7 +25,22 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             decimal longitude = -94.62311716634233m;
 
             //act
-            var cut = new CreateEventCommand(title, description, startDate, endDate, content, imageFileName, base64Image, locationName, city, street, postcode, country, latitude, longitude);
+            var cut = new CreateEventCommand.Builder()
+                .SetTitle(title)
+                .SetDescription(description)
+                .SetStart(startDate)
+                .SetEnd(endDate)
+                .SetContent(content)
+                .SetImageFileName(imageFileName)
+                .SetBase64Image(base64Image)
+                .SetLocationName(locationName)
+                .SetCity(city)
+                .SetStreet(street)
+                .SetPostCode(postcode)
+                .SetCountry(country)
+                .SetLatitude(latitude)
+                .SetLongitude(longitude)
+                .Build();
 
             //assert
             cut.Title.Should().Be(title);

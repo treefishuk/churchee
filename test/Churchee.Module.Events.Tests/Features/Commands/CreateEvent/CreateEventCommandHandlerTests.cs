@@ -38,7 +38,22 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             decimal latitude = 39.105092049099866m;
             decimal longitude = -94.62311716634233m;
 
-            var command = new CreateEventCommand(title, description, startDate, endDate, content, imageFileName, base64Image, locationName, city, street, postcode, country, latitude, longitude);
+            var command = new CreateEventCommand.Builder()
+                .SetTitle(title)
+                .SetDescription(description)
+                .SetStart(startDate)
+                .SetEnd(endDate)
+                .SetContent(content)
+                .SetImageFileName(imageFileName)
+                .SetBase64Image(base64Image)
+                .SetLocationName(locationName)
+                .SetCity(city)
+                .SetStreet(street)
+                .SetPostCode(postcode)
+                .SetCountry(country)
+                .SetLatitude(latitude)
+                .SetLongitude(longitude)
+                .Build();
 
             //act
             var cut = new CreateEventCommandHandler(GetDataStore(), mockCurrentUser.Object, mockBlobStore.Object, mockBackgroundJobClient.Object);

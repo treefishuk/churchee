@@ -24,6 +24,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
 
             //act
             var cut = new UpdateEventCommandHandler(GetDataStore(testEvent), mockCurrentUser.Object, GetBlobStore(), mockBackgroundJobClient.Object);
+
             var result = await cut.Handle(command, default);
 
             //assert
@@ -95,21 +96,21 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
                 new EventDateModel(DateTime.Now, DateTime.Now.AddMinutes(90))
             ];
 
-            return new UpdateEventCommand(
-                id: id,
-                title: title,
-                description: description,
-                content: content,
-                imageFileName: imageFileName,
-                base64Image: base64Image,
-                locationName: locationName,
-                city: city,
-                street: street,
-                postCode: postcode,
-                country: country,
-                latitude: latitude,
-                longitude: longitude,
-                dates: dates);
+            return new UpdateEventCommand.Builder()
+                .SetId(id)
+                .SetTitle(title)
+                .SetDescription(description)
+                .SetContent(content)
+                .SetImageFileName(imageFileName)
+                .SetBase64Image(base64Image)
+                .SetLocationName(locationName)
+                .SetCity(city)
+                .SetStreet(street)
+                .SetPostCode(postcode)
+                .SetCountry(country)
+                .SetGeoCordinates(latitude, longitude)
+                .SetDates(dates)
+                .Build();
 
         }
 
