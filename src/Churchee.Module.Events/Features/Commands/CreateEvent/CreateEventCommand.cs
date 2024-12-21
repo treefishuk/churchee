@@ -148,11 +148,6 @@ namespace Churchee.Module.Events.Features.Commands
                 {
                     throw new InvalidOperationException("Start date must be before end date.");
                 }
-
-                if (string.IsNullOrWhiteSpace(_command.LocationName))
-                {
-                    throw new InvalidOperationException("Location name must be provided.");
-                }
             }
         }
     }

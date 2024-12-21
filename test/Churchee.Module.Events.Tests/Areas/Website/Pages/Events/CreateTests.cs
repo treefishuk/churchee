@@ -35,8 +35,8 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
         public void CreateEvent_InputModelValid_RedirectsToIndex()
         {
             //arrange
-            MockMediator.Setup(s => s.Send(It.IsAny<ActivateEventsCommand>(), default)).ReturnsAsync(new CommandResponse());
-            MockMediator.Setup(s => s.Send(It.IsAny<CreateEventCommand>(), default)).ReturnsAsync(new CommandResponse());
+            MockMediator.Setup(s => s.Send(It.IsAny<ActivateEventsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CommandResponse());
+            MockMediator.Setup(s => s.Send(It.IsAny<CreateEventCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CommandResponse());
 
             //act
             var cut = RenderComponent<Create>();
