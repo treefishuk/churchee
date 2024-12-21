@@ -1,5 +1,4 @@
-﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.ResponseTypes;
+﻿using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using MediatR;
@@ -8,13 +7,10 @@ namespace Churchee.Module.Site.Features.Media.Commands
 {
     public class DeleteMediaFolderCommandHandler : IRequestHandler<DeleteMediaFolderCommand, CommandResponse>
     {
-
-        private readonly ICurrentUser _currentUser;
         private readonly IDataStore _dataStore;
 
-        public DeleteMediaFolderCommandHandler(ICurrentUser currentUser, IDataStore dataStore)
+        public DeleteMediaFolderCommandHandler(IDataStore dataStore)
         {
-            _currentUser = currentUser;
             _dataStore = dataStore;
         }
 

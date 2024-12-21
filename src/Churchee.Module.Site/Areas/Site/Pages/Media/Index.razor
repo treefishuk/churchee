@@ -216,7 +216,20 @@
 
     private async Task ValidEditSubmitForm(Guid id)
     {
-        var result = await Mediator.Send(new UpdateMediaItemCommand(id, editModel.Name, Path.GetFileNameWithoutExtension(editModel.File.FileName), Path.GetExtension(editModel.File.FileName), editModel.LinkUrl, editModel.Description, editModel.AdditionalContent, editModel.CssClass, editModel.File.Value, editModel.Order));
+        var command = new UpdateMediaItemCommand.Builder()
+            .SetId(id)
+            .SetName(editModel.Name)
+            .SetFileName(Path.GetFileNameWithoutExtension(editModel.File.FileName))
+            .SetExtention(Path.GetExtension(editModel.File.FileName))
+            .SetLinkUrl(editModel.LinkUrl)
+            .SetDescription(editModel.Description)
+            .SetAdditionalContent(editModel.AdditionalContent)
+            .SetCssClass(editModel.CssClass)
+            .SetBase64Image(editModel.File.Value)
+            .SetOrder(editModel.Order)
+            .Build();
+
+        var result = await Mediator.Send(command);
 
         if (result.IsSuccess)
         {
@@ -224,19 +237,10 @@
 
             data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
 
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Updated" });
-
             editModel = new EditMediaItemModel();
-
         }
 
-        if (!result.IsSuccess)
-        {
-            foreach(var error in result.Errors)
-            {
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description });
-            }
-        }
+        NotificationService.Notify(result, "Media Item Updated");
     }
 
     private static bool HasChildren(object data)
