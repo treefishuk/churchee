@@ -43,11 +43,8 @@ namespace Churchee.Module.Events.Entities
 
         public ICollection<EventDate> EventDates { get; set; }
 
-        public void UpdateInfo(string title, string description, string content, string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude)
+        public void UpdateLocation(string locationName, string city, string street, string postCode, string country, decimal? latitude, decimal? longitude)
         {
-            Title = title;
-            Description = description;
-            Content = content;
             LocationName = locationName;
             City = city;
             Street = street;
@@ -55,6 +52,13 @@ namespace Churchee.Module.Events.Entities
             Country = country;
             Latitude = latitude;
             Longitude = longitude;
+        }
+
+        public void UpdateInformation(string title, string description, string content)
+        {
+            Title = title;
+            Description = description;
+            Content = content;
         }
 
         public void AddDate(Guid id, DateTime? start, DateTime? end)

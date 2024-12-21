@@ -31,10 +31,11 @@ namespace Churchee.Module.Events.Features.Commands
 
             var entity = await _dataStore.GetRepository<Event>().FirstOrDefaultAsync(new EventByIdIncludingDatesSpecification(request.Id), cancellationToken);
 
-            entity.UpdateInfo(title: request.Title,
+            entity.UpdateInformation(title: request.Title,
                                    description: request.Description,
-                                   content: request.Content,
-                                   locationName: request.LocationName,
+                                   content: request.Content);
+
+            entity.UpdateLocation(locationName: request.LocationName,
                                    city: request.City,
                                    street: request.Street,
                                    postCode: request.PostCode,

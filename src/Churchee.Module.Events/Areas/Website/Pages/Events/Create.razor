@@ -32,23 +32,24 @@
 
         if (createEventsResult.IsSuccess)
         {
-            var command = new CreateEventCommand(
-                title: InputModel.Title,
-                description: InputModel.Description,
-                start: InputModel.Start,
-                end: InputModel.End,
-                content: InputModel.Content,
-                imageFileName: InputModel.ImageUpload.FileName,
-                base64Image: InputModel.ImageUpload.Value,
-                locationName: InputModel.LocationName,
-                city: InputModel.City,
-                street: InputModel.Street,
-                postCode: InputModel.PostCode,
-                country: InputModel.Country,
-                latitude: InputModel.Latitude,
-                longitude: InputModel.Longitude);
+            var command = new CreateEventCommand.Builder()
+                .SetTitle(InputModel.Title)
+                .SetDescription(InputModel.Description)
+                .SetStart(InputModel.Start)
+                .SetEnd(InputModel.End)
+                .SetContent(InputModel.Content)
+                .SetImageFileName(InputModel.ImageUpload.FileName)
+                .SetBase64Image(InputModel.ImageUpload.Value)
+                .SetLocationName(InputModel.LocationName)
+                .SetCity(InputModel.City)
+                .SetStreet(InputModel.Street)
+                .SetPostCode(InputModel.PostCode)
+                .SetCountry(InputModel.Country)
+                .SetLatitude(InputModel.Latitude)
+                .SetLongitude(InputModel.Longitude)
+                .Build();
 
-            var result = await Mediator.Send(command, default);
+            var result = await Mediator.Send(command, CancellationToken);
 
             if (result.IsSuccess)
             {

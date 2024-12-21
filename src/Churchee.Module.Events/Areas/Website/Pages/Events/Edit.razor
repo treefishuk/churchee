@@ -4,6 +4,7 @@
 @using Churchee.Common.ValueTypes
 @using Churchee.Module.Events.Areas.Website.Models
 @using Churchee.Module.Events.Components
+@using Churchee.Module.Events.Models
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
 @using Churchee.Module.Events.Features.Queries
@@ -109,22 +110,23 @@
 
     private async Task ValidSubmitForm()
     {
-        var updateEventsResult = await Mediator.Send(new UpdateEventCommand(
-            id: Id, 
-            title: InputModel.Title, 
-            description: InputModel.Description, 
-            content: InputModel.Content, 
-            imageFileName: InputModel.ImageUpload.FileName, 
-            base64Image: InputModel.ImageUpload.Value, 
-            locationName: InputModel.LocationName,
-            city: InputModel.City,
-            street: InputModel.Street,
-            postCode: InputModel.PostCode,
-            country: InputModel.Country,
-            latitude: InputModel.Latitude,
-            longitude: InputModel.Longitude,
-            InputModel.Dates
-        ));
+        var command = new UpdateEventCommand.Builder()
+            .SetId(Id)
+            .SetTitle(InputModel.Title)
+            .SetDescription(InputModel.Description)
+            .SetContent(InputModel.Content)
+            .SetImageFileName(InputModel.ImageUpload.FileName)
+            .SetBase64Image(InputModel.ImageUpload.Value)
+            .SetLocationName(InputModel.LocationName)
+            .SetCity(InputModel.City)
+            .SetStreet(InputModel.Street)
+            .SetPostCode(InputModel.PostCode)
+            .SetCountry(InputModel.Country)
+            .SetGeoCordinates(InputModel.Latitude, InputModel.Longitude)
+            .SetDates(InputModel.Dates)
+            .Build();
+
+        var updateEventsResult = await Mediator.Send(command, CancellationToken);
 
         if (updateEventsResult.IsSuccess)
         {
