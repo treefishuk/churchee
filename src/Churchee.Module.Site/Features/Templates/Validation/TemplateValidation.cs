@@ -25,16 +25,8 @@ namespace Churchee.Module.Site.Features.Templates.Validation
                 @"@Environment",
             };
 
-            // Check for disallowed patterns
-            foreach (var pattern in disallowedPatterns)
-            {
-                if (Regex.IsMatch(viewContent, pattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2)))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !disallowedPatterns.Any(pattern =>
+                Regex.IsMatch(viewContent, pattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2)));
         }
 
 
@@ -79,13 +71,13 @@ namespace Churchee.Module.Site.Features.Templates.Validation
             var embedPattern = @"<(iframe|object|embed)[^>]*>";
             var matches = Regex.Matches(content, embedPattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
 
-            foreach (Match match in matches)
+            foreach (string tag in matches.Select(s => s.Value))
             {
-                var tag = match.Value;
                 if (tag.Contains("youtube-nocookie.com/embed"))
                 {
                     continue; // Allow YouTube embeds
                 }
+
                 return false; // Disallow other embeds
             }
 

@@ -2,7 +2,6 @@
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent
 {
@@ -18,8 +17,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeConte
         public async Task<IEnumerable<GetContentTypesForPageTypeResponse>> Handle(GetContentTypesForPageTypeQuery request, CancellationToken cancellationToken)
         {
             return await _storage.GetRepository<PageTypeContent>()
-                .ApplySpecification(new PageContentTypesForPageType(request.PageTypeId))
-                .Select(s => new GetContentTypesForPageTypeResponse
+                .GetListAsync(new PageContentTypesForPageType(request.PageTypeId), s => new GetContentTypesForPageTypeResponse
                 {
                     Id = s.Id,
                     DevName = s.DevName,
@@ -27,7 +25,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeConte
                     Required = s.IsRequired,
                     Type = s.Type,
                     Order = s.Order
-                }).ToListAsync();
+                }, cancellationToken);
         }
     }
 }

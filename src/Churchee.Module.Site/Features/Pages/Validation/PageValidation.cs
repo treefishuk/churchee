@@ -21,42 +21,27 @@ namespace Churchee.Module.Site.Features.Pages.Validation
 
         internal static bool DoesNotContainEmbedTags(List<KeyValuePair<Guid, string>> content)
         {
-            foreach (var item in content)
-            {
-                if (ContainsNonYouTubeEmbeds(item.Value))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !content.Any(item => ContainsNonYouTubeEmbeds(item.Value));
         }
 
         private static bool ContainsScriptTags(string content)
         {
-            bool containsStyleTags = Regex.IsMatch(content, @"<script>", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
-
-            if (containsStyleTags)
-            {
-                return true;
-            }
-
-            return false;
+            return Regex.IsMatch(content, @"<script>", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
         }
-
 
         internal static bool ContainsNonYouTubeEmbeds(string content)
         {
             var embedPattern = @"<(iframe|object|embed)[^>]*>";
+
             var matches = Regex.Matches(content, embedPattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
 
-            foreach (Match match in matches)
+            foreach (string tag in matches.Select(s => s.Value))
             {
-                var tag = match.Value;
                 if (tag.Contains("youtube-nocookie.com/embed"))
                 {
                     continue;
                 }
+
                 return true;
             }
 

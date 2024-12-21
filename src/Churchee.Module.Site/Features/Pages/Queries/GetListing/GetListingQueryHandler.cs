@@ -20,8 +20,6 @@ namespace Churchee.Module.Site.Features.Pages.Queries
         {
             var repo = _storage.GetRepository<Page>();
 
-            int count = repo.Count();
-
             var query = repo.GetQueryable();
 
             if (!string.IsNullOrEmpty(request.SearchText))
@@ -44,7 +42,7 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                 .Select(s => new GetListingQueryResponseItem
                 {
                     Id = s.Id,
-                    HasChildren = s.Children.Any(a => a.IsSystem == false),
+                    HasChildren = s.Children.Any(a => !a.IsSystem),
                     Title = s.Title,
                     Url = s.Url,
                     Created = s.CreatedDate,

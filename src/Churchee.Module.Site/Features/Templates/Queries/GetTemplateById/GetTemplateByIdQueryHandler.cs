@@ -17,7 +17,7 @@ namespace Churchee.Module.Site.Features.Templates.Queries.GetTemplateById
         public async Task<TemplateDetailResponse> Handle(GetTemplateByIdQuery request, CancellationToken cancellationToken)
         {
             var dbItem = await _storage.GetRepository<ViewTemplate>()
-                                        .GetByIdAsync(request.Id);
+                                        .GetByIdAsync(request.Id, cancellationToken);
 
             return new TemplateDetailResponse() { Id = dbItem.Id, Content = dbItem.Content };
         }

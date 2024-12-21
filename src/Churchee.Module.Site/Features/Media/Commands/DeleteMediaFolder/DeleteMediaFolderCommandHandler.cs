@@ -22,12 +22,9 @@ namespace Churchee.Module.Site.Features.Media.Commands
         {
             var response = new CommandResponse();
 
-
             try
             {
                 var repo = _dataStore.GetRepository<MediaFolder>();
-
-                var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
                 await repo.SoftDelete(request.FolderId);
 

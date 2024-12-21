@@ -237,31 +237,29 @@
                 NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description });
             }
         }
-
     }
 
-    bool HasChildren(object data)
+    private static bool HasChildren(object data)
     {
         var item = data as GetMediaFoldersQueryResponseItem;
 
         return item.HasChildren;
     }
 
-    string GetTextForNode(object data)
+    private static string GetTextForNode(object data)
     {
         var item = data as GetMediaFoldersQueryResponseItem;
 
         return item.Title;
     }
 
-    RenderFragment<RadzenTreeItem> FolderTemplate = (context) => builder =>
+    private readonly RenderFragment<RadzenTreeItem> FolderTemplate = (context) => builder =>
     {
         builder.OpenComponent<RadzenIcon>(0);
         builder.AddAttribute(1, "Icon", "folder");
         builder.AddAttribute(2, "Style", "margin-left: 24px");
         builder.CloseComponent();
         builder.AddContent(3, context.Text);
-
     };
 
     async Task LogChange(TreeEventArgs args)
@@ -336,7 +334,7 @@
                                               Style="margin-bottom: 20px;height: 35px" />
 
                             </RadzenStack>
-            );
+    );
         }
 
         if (item != null && item.Value == "Clear")
@@ -400,14 +398,16 @@
     {
         var result = await Mediator.Send(new CreateMediaFolderCommand(activeFolderId, NewFolderName));
 
-        await RefreshActiveFolderAsync();
+        if(result.IsSuccess)
+        {
+            await RefreshActiveFolderAsync();
 
-        NewFolderName = string.Empty;
+            NewFolderName = string.Empty;
 
-        DialogService.Close();
+            DialogService.Close();
+        }
 
-        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Folder Added" });
-
+        NotificationService.Notify(result, "Media Folder Added");
     }
 
     private async Task OpenImage(string prefix, string imageUrl)

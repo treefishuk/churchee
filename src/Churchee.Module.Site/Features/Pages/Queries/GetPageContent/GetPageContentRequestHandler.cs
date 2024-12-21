@@ -2,7 +2,6 @@
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.Pages.Queries.GetPageContent
 {
@@ -19,15 +18,14 @@ namespace Churchee.Module.Site.Features.Pages.Queries.GetPageContent
         public async Task<IEnumerable<GetPageContentResponseItem>> Handle(GetPageContentRequest request, CancellationToken cancellationToken)
         {
             return await _storage.GetRepository<PageContent>()
-                .ApplySpecification(new PageContentForPageSpecification(request.PageId))
-                .OrderBy(o => o.PageTypeContent.Order)
-                .Select(s => new GetPageContentResponseItem
+                .GetListAsync(new PageContentForPageSpecification(request.PageId),
+                s => new GetPageContentResponseItem
                 {
                     PageTypeContentId = s.PageTypeContentId,
                     Title = s.PageTypeContent.Name,
                     Value = s.Value,
                     Type = s.PageTypeContent.Type
-                }).ToListAsync();
+                }, cancellationToken);
         }
     }
 }

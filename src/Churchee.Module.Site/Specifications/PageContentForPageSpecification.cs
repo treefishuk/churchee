@@ -7,7 +7,7 @@ namespace Churchee.Module.Site.Specifications
     {
         public PageContentForPageSpecification(Guid pageId)
         {
-            Query.Where(x => x.PageId == pageId).OrderBy(o => o.PageTypeContent.Name);
+            Query.Where(x => x.PageId == pageId).OrderBy(o => o.PageTypeContent.Order);
         }
 
     }

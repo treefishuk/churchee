@@ -102,10 +102,10 @@
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Page Deleted" });
 
             await LoadData();
-        }
+        }   
     }
 
-    void RowRender(RowRenderEventArgs<GetListingQueryResponseItem> args)
+    static void RowRender(RowRenderEventArgs<GetListingQueryResponseItem> args)
     {
         args.Expandable = args.Data.HasChildren;
     }

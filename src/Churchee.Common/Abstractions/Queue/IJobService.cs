@@ -11,6 +11,5 @@ namespace Churchee.Common.Abstractions.Queue
         void QueueJob(Expression<Func<Task>> methodCall);
 
         void QueueJob<T>(Expression<Func<T, Task>> methodCall);
-
     }
 }
