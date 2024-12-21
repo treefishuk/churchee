@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Churchee.Module.Settings.Registrations
 {
-    public class StoreRegistration : IConfigureServicesAction
+    public class ServiceRegistrations : IConfigureServicesAction
     {
         public int Priority => 5000;
 

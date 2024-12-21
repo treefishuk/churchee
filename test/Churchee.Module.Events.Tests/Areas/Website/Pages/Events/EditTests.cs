@@ -75,7 +75,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             SetupGetDetailByIdResponse();
             SetupUpdateEventCommandResponse();
 
-            var cut = RenderComponent<Edit>();
+            var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, Guid.NewGuid()));
 
             //act
             cut.Find(".sticky-formButtons .rz-success").Click();
@@ -109,7 +109,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 
         private void SetupUpdateEventCommandResponse()
         {
-            MockMediator.Setup(s => s.Send(It.IsAny<UpdateEventCommand>(), default)).ReturnsAsync(new CommandResponse());
+            MockMediator.Setup(s => s.Send(It.IsAny<UpdateEventCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CommandResponse());
         }
     }
 }
