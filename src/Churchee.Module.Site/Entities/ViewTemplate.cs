@@ -15,11 +15,11 @@ namespace Churchee.Module.Site.Entities
             Content = content;
         }
 
-        public DateTime LastRequested { get; }
+        public DateTime LastRequested { get; private set; }
 
         public string Location { get; private set; }
 
-        public string TenantLocation { get; }
+        public string TenantLocation { get; private set; }
 
         public string Content { get; private set; }
 
