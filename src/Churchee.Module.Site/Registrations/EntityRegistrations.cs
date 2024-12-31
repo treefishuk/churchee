@@ -141,8 +141,6 @@ namespace Churchee.Module.Site.Registration
 
                 etb.Property(t => t.Styles).HasColumnType(nvarcharMax);
                 etb.Property(t => t.MinifiedStyles).HasColumnType(nvarcharMax);
-
-
             });
 
             modelBuilder.Entity<Article>(etb =>

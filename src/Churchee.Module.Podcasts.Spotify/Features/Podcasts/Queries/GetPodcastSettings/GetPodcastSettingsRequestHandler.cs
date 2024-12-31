@@ -1,7 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Storage;
-using Hangfire;
-using Hangfire.Storage;
 using MediatR;
 
 namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries
@@ -11,11 +10,13 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries
         private readonly Guid _podcastsNameId = Guid.Parse("4379e3d3-fa40-489b-b80d-01c30835fa9d");
         private readonly ISettingStore _store;
         private readonly ICurrentUser _currentUser;
+        private readonly IJobService _jobService;
 
-        public GetPodcastSettingsRequestHandler(ISettingStore store, ICurrentUser currentUser)
+        public GetPodcastSettingsRequestHandler(ISettingStore store, ICurrentUser currentUser, IJobService jobService)
         {
             _store = store;
             _currentUser = currentUser;
+            _jobService = jobService;
         }
 
         public async Task<GetPodcastSettingsResponse> Handle(GetPodcastSettingsRequest request, CancellationToken cancellationToken)
@@ -26,14 +27,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries
 
             string pageNameForPodcasts = await _store.GetSettingValue(_podcastsNameId, applicationTenantId);
 
-            DateTime? lastRun = null;
-
-            using (var connection = JobStorage.Current.GetConnection())
-            {
-                var recurringJobs = connection.GetRecurringJobs();
-
-                lastRun = recurringJobs.Where(w => w.Id == $"{applicationTenantId}_SpotifyPodcasts").Select(s => s.LastExecution).FirstOrDefault();
-            }
+            var lastRun = _jobService.GetLastRunDate($"{applicationTenantId}_SpotifyPodcasts");
 
             return new GetPodcastSettingsResponse(spotifyUrl, pageNameForPodcasts, lastRun);
         }

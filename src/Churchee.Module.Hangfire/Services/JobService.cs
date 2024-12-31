@@ -1,6 +1,8 @@
 ﻿using Churchee.Common.Abstractions.Queue;
 using Hangfire;
+using Hangfire.Storage;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -17,6 +19,21 @@ namespace Churchee.Module.Hangfire.Services
             _backgroundJobClient = backgroundJobClient;
         }
 
+        public DateTime? GetLastRunDate(string recurringJobId)
+        {
+            DateTime? lastRun = null;
+
+            using (var connection = JobStorage.Current.GetConnection())
+            {
+                var recurringJobs = connection.GetRecurringJobs();
+
+                lastRun = recurringJobs.Where(w => w.Id == recurringJobId).Select(s => s.LastExecution).FirstOrDefault();
+            }
+
+            return lastRun;
+
+        }
+
         public void QueueJob(Expression<Func<Task>> methodCall)
         {
             _backgroundJobClient.Enqueue(methodCall);
@@ -27,7 +44,7 @@ namespace Churchee.Module.Hangfire.Services
             _backgroundJobClient.Enqueue<T>(methodCall);
         }
 
-        public void SheduleJob(string recurringJobId, Expression<Func<Task>> methodCall, Func<string> cronExpression)
+        public void ScheduleJob(string recurringJobId, Expression<Func<Task>> methodCall, Func<string> cronExpression)
         {
             _recurringJobManager.AddOrUpdate(recurringJobId, methodCall, cronExpression);
         }

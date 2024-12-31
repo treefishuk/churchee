@@ -54,7 +54,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
             {
                 var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-                _jobShedularService.SheduleJob($"{applicationTenantId}_FacebookEvents", () => SyncFacebookEvents(applicationTenantId, cancellationToken), Cron.Daily);
+                _jobShedularService.ScheduleJob($"{applicationTenantId}_FacebookEvents", () => SyncFacebookEvents(applicationTenantId, cancellationToken), Cron.Daily);
 
                 _jobShedularService.QueueJob(() => SyncFacebookEvents(applicationTenantId, cancellationToken));
             }

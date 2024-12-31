@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
@@ -23,21 +24,19 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
         private readonly Guid _podcastsNameId = Guid.Parse("4379e3d3-fa40-489b-b80d-01c30835fa9d");
         private readonly ISettingStore _settingStore;
         private readonly IDataStore _dataStore;
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly ICurrentUser _currentUser;
         private readonly IBlobStore _blobStore;
         private readonly IImageProcessor _imageProcessor;
+        private readonly IJobService _jobService;
 
-        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, IRecurringJobManager recurringJobManager, ICurrentUser currentUser, IDataStore dataStore, IBackgroundJobClient backgroundJobClient, IBlobStore blobStore, IImageProcessor imageProcessor)
+        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, IJobService jobService)
         {
             _settingStore = settingStore;
-            _recurringJobManager = recurringJobManager;
             _currentUser = currentUser;
             _dataStore = dataStore;
-            _backgroundJobClient = backgroundJobClient;
             _blobStore = blobStore;
             _imageProcessor = imageProcessor;
+            _jobService = jobService;
         }
 
         public async Task<CommandResponse> Handle(EnableSpotifyPodcastSyncCommand request, CancellationToken cancellationToken)
@@ -48,9 +47,9 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             string podcastsUrl = await _settingStore.GetSettingValue(_podcastsNameId, applicationTenantId);
 
-            _recurringJobManager.AddOrUpdate($"{applicationTenantId}_SpotifyPodcasts", () => SyncPodcasts(request, applicationTenantId, podcastsUrl), Cron.Daily);
+            _jobService.ScheduleJob($"{applicationTenantId}_SpotifyPodcasts", () => SyncPodcasts(request, applicationTenantId, podcastsUrl), Cron.Daily);
 
-            _backgroundJobClient.Enqueue(() => SyncPodcasts(request, applicationTenantId, podcastsUrl));
+            _jobService.QueueJob(() => SyncPodcasts(request, applicationTenantId, podcastsUrl));
 
             return new CommandResponse();
         }
