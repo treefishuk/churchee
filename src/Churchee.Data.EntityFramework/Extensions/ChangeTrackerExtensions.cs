@@ -6,8 +6,6 @@ namespace Churchee.Data.EntityFramework.Extensions
 {
     internal static class ChangeTrackerExtensions
     {
-
-
         internal static IEnumerable<EntityEntry> ApplyTrimOnStringFields(this IEnumerable<EntityEntry> entities)
         {
             foreach (var entity in entities)
@@ -19,7 +17,6 @@ namespace Churchee.Data.EntityFramework.Extensions
             }
 
             return entities;
-
         }
 
         private static void TrimFieldValue(PropertyEntry property)
@@ -47,7 +44,5 @@ namespace Churchee.Data.EntityFramework.Extensions
                 property.CurrentValue = currentValue.Substring(0, maxLength.Value).Trim();
             }
         }
-
-
     }
 }
