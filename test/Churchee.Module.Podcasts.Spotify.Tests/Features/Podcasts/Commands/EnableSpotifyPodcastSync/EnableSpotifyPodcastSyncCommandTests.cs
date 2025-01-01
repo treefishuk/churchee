@@ -1,4 +1,5 @@
 ﻿using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
+using FluentAssertions;
 
 namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.EnableSpotifyPodcastSync
 {
@@ -14,7 +15,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
             var cut = new EnableSpotifyPodcastSyncCommand(rssFeed);
 
             //assert
-            Assert.Equal(rssFeed, cut.SpotifyFMRSSFeed);
+            cut.SpotifyFMRSSFeed.Should().Be(rssFeed);
         }
     }
 }
