@@ -10,21 +10,18 @@
         <img class="rz-gravatar" src="@GravatarUrl" alt="gravatar" crossorigin>
     </Template>
     <ChildContent>
-            <RadzenProfileMenuItem Text="Profile" Path="/management/profile/email" Icon="account_circle"></RadzenProfileMenuItem>
-            <RadzenProfileMenuItem Text="Log Out" Path="/account/logout" Icon="logout"></RadzenProfileMenuItem>
-        </ChildContent>
+        <RadzenProfileMenuItem Text="Profile" Path="/management/profile/email" Icon="account_circle"></RadzenProfileMenuItem>
+        <RadzenProfileMenuItem Text="Log Out" Path="/account/logout" Icon="logout"></RadzenProfileMenuItem>
+    </ChildContent>
 </RadzenProfileMenu>
 
-
-
 @code{
-
     [Inject]
-    private IHttpContextAccessor _context { get; set; }
+    private IHttpContextAccessor _context { get; set; } = default!;
 
-    public string GravatarUrl { get; set; }
+    public string GravatarUrl { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         GravatarUrl = GenerateGravatarUrl();
     }
@@ -33,10 +30,10 @@
     {
         int size = 36;
 
-        var email = _context.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+        var email = _context.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
 
         // Convert the email to lowercase
-        email = email.Trim().ToLower();
+        email = email?.Trim().ToLower() ?? string.Empty;
 
         // Create an MD5 hash of the email
         using (MD5 md5 = MD5.Create())

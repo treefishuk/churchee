@@ -97,5 +97,12 @@ namespace System
 
             return string.Empty;
         }
+
+        public static string GetLast(this string[] array)
+        {
+            var index = array.Length - 1;
+
+            return array[index];
+        }
     }
 }

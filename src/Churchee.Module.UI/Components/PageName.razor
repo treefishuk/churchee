@@ -27,6 +27,6 @@
     {
         var urlParts = NavigationManager.Uri.Split('/');
 
-        Name = urlParts.Last().ToTitleCase();
+        Name = urlParts.GetLast().ToTitleCase();
     }
 }
