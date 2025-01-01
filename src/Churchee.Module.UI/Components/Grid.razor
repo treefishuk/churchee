@@ -47,7 +47,7 @@
 
             if (dataTypeAttribute != null)
             {
-                dataType = dataTypeAttribute.CustomDataType;
+                dataType = dataTypeAttribute.CustomDataType ?? string.Empty;
             }
 
             if (dataTypeAttribute == null && dataType == typeof(string).Name)
@@ -65,7 +65,11 @@
                 <RadzenDataGridColumn TItem="TItem" Title="@prop.Name.ToSentence()" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center">
                     <Template Context="data">
                         @{
-                            if (prop.GetValue(data).ToString().ToUpperInvariant() == "TRUE")
+                            var properyValue = prop.GetValue(data);
+
+                            string propertyStringValue = properyValue?.ToString() ?? string.Empty;
+
+                            if (propertyStringValue.ToUpperInvariant() == "TRUE")
                             {
                                 <RadzenBadge BadgeStyle="BadgeStyle.Success" IsPill="@true" Text="True" />
                             }
@@ -101,7 +105,7 @@
 
                             if (imgObj != null)
                             {
-                                imageUrl = imgObj.ToString();
+                                imageUrl = imgObj.ToString() ?? string.Empty;
                             }
 
                             if (!string.IsNullOrEmpty(imageUrl) && imageUrl.StartsWith("https"))
@@ -139,11 +143,6 @@
     </Columns>
 </RadzenDataGrid>
 
-
-
-
-
-
 @code {
 
     async Task DeleteActions(TItem item)
@@ -157,12 +156,12 @@
         prefix = _navigationManager.Uri;
     }
 
-    RadzenDataGrid<TItem> radzenGrid;
+    RadzenDataGrid<TItem> radzenGrid = default!;
 
-    string prefix;
+    string prefix = default!;
 
     [Parameter]
-    public string ImagePrefix { get; set; }
+    public string ImagePrefix { get; set; } = default!;
 
     [Parameter]
     public int Count { get; set; }
@@ -171,10 +170,10 @@
     public bool IsLoading { get; set; }
 
     [Parameter]
-    public IEnumerable<TItem> Data { get; set; }
+    public IEnumerable<TItem> Data { get; set; } = default!;
 
     [Parameter]
-    public string DetailIcon { get; set; }
+    public string DetailIcon { get; set; } = default!;
 
     [Parameter]
     public bool ShowDetail { get; set; }
