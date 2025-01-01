@@ -41,7 +41,9 @@ namespace Churchee.Data.EntityFramework.Extensions
 
             if (currentValue.Length > maxLength.Value)
             {
-                property.CurrentValue = currentValue.Substring(0, maxLength.Value).Trim();
+                currentValue = currentValue.Trim();
+
+                property.CurrentValue = currentValue.Substring(0, maxLength.Value);
             }
         }
     }

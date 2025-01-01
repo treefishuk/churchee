@@ -52,6 +52,29 @@ namespace Churchee.Data.EntityFramework.Tests.Extensions
         }
 
         [Fact]
+        public void ApplyTrimOnStringFields_ShouldTrimStringPropertiesWithMaxLength()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<TestDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
+
+            using var context = new TestDbContext(options);
+            var entity = new TestEntityWithMaxLength { TestProperty = "  test string  " };
+            context.TestEntitiesWithMaxLength.Add(entity);
+            context.SaveChanges();
+
+            var entities = context.ChangeTracker.Entries().ToList();
+
+            // Act
+            entities.ApplyTrimOnStringFields();
+
+            // Assert
+            entity.TestProperty.Should().Be("test");
+        }
+
+
+        [Fact]
         public void ApplyTrimOnStringFields_ShouldHandleNullValues()
         {
             // Arrange
