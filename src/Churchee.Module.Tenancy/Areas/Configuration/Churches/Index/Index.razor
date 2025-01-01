@@ -69,7 +69,7 @@
     [Inject]
     private ChurcheeUserManager UserManager { get; set; } = default!;
 
-    private Guid _activeTenant { get; set; } = default!;
+    private Guid _activeTenant { get; set; } = Guid.Empty;
 
     IEnumerable<GetListingQueryResponseItem> churches = default!;
 
