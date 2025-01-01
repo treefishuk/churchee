@@ -14,11 +14,20 @@ namespace Churchee.Data.EntityFramework.Converters
 
         private static string EncryptFunc(string key, string val)
         {
+            if (string.IsNullOrEmpty(val))
+            {
+                return string.Empty;
+            }
+
             return AesEncryptionHelper.Encrypt(key, val);
         }
 
         private static string DecryptFunc(string key, string val)
         {
+            if (string.IsNullOrEmpty(val))
+            {
+                return string.Empty;
+            }
             return AesEncryptionHelper.Decrypt(key, val);
         }
     }

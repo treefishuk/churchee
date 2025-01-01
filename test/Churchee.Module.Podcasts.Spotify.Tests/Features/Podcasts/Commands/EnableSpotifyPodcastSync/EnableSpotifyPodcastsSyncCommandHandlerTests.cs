@@ -6,6 +6,7 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Entities;
 using Churchee.Module.Podcasts.Specifications;
+using Churchee.Module.Podcasts.Spotify.Exceptions;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
 using Churchee.Module.Podcasts.Spotify.Specifications;
 using Churchee.Module.Site.Entities;
@@ -152,6 +153,28 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
             // Assert
             _podcastRepositoryMock.Verify(x => x.AddRange(It.IsAny<List<Podcast>>()), Times.Once);
             _dataStoreMock.Verify(x => x.SaveChangesAsync(cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task SyncPodcasts_WhenPodcastDetailPageTypeIdIsEmpty_ThrowException()
+        {
+            // arrange
+            string rssFeed = "http://example.com/rss";
+            var tenantId = Guid.NewGuid();
+            var command = new EnableSpotifyPodcastSyncCommand(rssFeed);
+            var cancellationToken = CancellationToken.None;
+
+            ConfigureTestXml();
+
+            _podcastRepositoryMock.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Podcast, bool>>>())).Returns(false);
+            _podcastRepositoryMock.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PodcastByAudioUrlSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Podcast());
+            _pageTypeRepositoryMock.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.Empty);
+
+            // Act
+            Func<Task> act = async () => await _handler.SyncPodcasts(command, tenantId, rssFeed, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<PodcastSyncException>().WithMessage("podcastDetailPageTypeId is Empty");
         }
 
         private void ConfigureTestXml()
