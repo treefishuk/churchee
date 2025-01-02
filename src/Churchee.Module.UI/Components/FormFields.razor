@@ -263,7 +263,7 @@
         await OnValueChanged.InvokeAsync(null);
     }
 
-    Nullable<T> GetParsed<T>(PropertyInfo info, object inputModel) where T: struct
+    private static Nullable<T> GetParsed<T>(PropertyInfo info, object inputModel) where T: struct
     {
         var value = info.GetValue(inputModel);
 
@@ -286,7 +286,7 @@
             _notificationService.Notify(NotificationSeverity.Error, "Error uploading file");
         }
 
-        _logger.LogInformation($"{name} value error");
+        _logger.LogInformation("{name} value error", name);
     }
 
     private static Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)

@@ -13,11 +13,11 @@ namespace Churchee.Presentation.Admin.PipelineBehavoirs
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Handling {typeof(TRequest).Name}");
+            _logger.LogInformation("Handling {Name}", typeof(TResponse).Name);
 
             var response = await next();
 
-            _logger.LogInformation($"Returned {typeof(TResponse).Name}");
+            _logger.LogInformation("Returned {Name}", typeof(TResponse).Name);
 
             return response;
         }

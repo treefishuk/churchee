@@ -30,7 +30,12 @@ namespace Churchee.Presentation.Admin.PipelineBehavoirs
                     response.AddError(failure.ErrorMessage, propertyName);
                 }
 
-                return Task.FromResult(response as TResponse);
+                if (response is TResponse castResponse)
+                {
+                    return Task.FromResult(castResponse);
+                }
+
+                throw new InvalidOperationException("TResponse must be of type CommandResponse.");
             }
 
             return next();
