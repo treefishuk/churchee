@@ -49,7 +49,7 @@
 
         if(upload != null)
         {
-                <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(args, upload)) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
+                <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
         }
     }
 
@@ -59,7 +59,7 @@
 
         if(upload != null)
         {
-            <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(args, upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
+            <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
         }
     }
 
@@ -199,7 +199,11 @@
 
 @code{
 
-    private string validationVisibility = "display:none";
+    [Inject]
+    protected ILogger<Form> _logger { get; set; } = default!;
+
+    [Inject]
+    protected NotificationService _notificationService { get; set; } = default!;
 
     [Parameter]
     public EditContext EditContext { get; set; } = default!;
@@ -210,29 +214,11 @@
     [Parameter]
     public IEnumerable<PropertyInfo> Properties { get; set; } = default!;
 
-    [Inject]
-    protected ILogger<Form> _logger { get; set; } = default!;
-
-    [Inject]
-    protected NotificationService _notificationService { get; set; } = default!;
-
-    private string ShowHideValidation()
-    {
-        if (SubmitClicked)
-        {
-            return "display:block";
-        }
-
-        return "display:none";
-
-    }
-
     [Parameter]
     public bool FormInvalid { get; set; }
 
     [Parameter]
     public bool SubmitClicked { get; set; }
-
 
     public async Task OnFieldChange(PropertyInfo info, object? value)
     {
@@ -270,9 +256,9 @@
 
     }
 
-    async Task OnFileChangeAsync(string value, Upload upload)
+    async Task OnFileChangeAsync(Upload upload)
     {
-        _logger.LogInformation($"{upload} value changed");
+        _logger.LogInformation("{upload} value changed", upload);
 
         await OnValueChanged.InvokeAsync(null);
     }
@@ -303,7 +289,7 @@
         _logger.LogInformation($"{name} value error");
     }
 
-    private Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
+    private static Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
     {
         // Create an expression to set the ValueExpression-attribute.
         var constant = System.Linq.Expressions.Expression.Constant(inputModel, inputModel.GetType());

@@ -57,7 +57,7 @@
         isLoading = false;
     }
 
-    private bool IsNotOriginal(string fileName)
+    private static bool IsNotOriginal(string fileName)
     {
         return fileName.EndsWith("_t") || fileName.EndsWith("_s") || fileName.EndsWith("_m") || fileName.EndsWith("_l");
     }

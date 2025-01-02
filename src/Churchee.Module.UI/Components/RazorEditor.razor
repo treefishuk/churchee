@@ -33,16 +33,15 @@
         }
     }
 
-    private string Id { get; set; }
-
+    private string Id { get; set; } = string.Empty;
 
     [Inject]
     protected ILogger<RazorEditor> Logger { get; set; } = default!;
 
     [Parameter]
-    public string Value { get; set; }
+    public string Value { get; set; } = default!;
 
-    private StandaloneCodeEditor _editorRef;
+    private StandaloneCodeEditor _editorRef = default!;
 
     private StandaloneEditorConstructionOptions RazorEditorConstructionOptions(StandaloneCodeEditor editor)
     {

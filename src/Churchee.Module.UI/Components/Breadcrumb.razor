@@ -27,22 +27,19 @@
 
 @code {
 
-    private List<KeyValuePair<string, string>> crumbs = new List<KeyValuePair<string, string>>();
+    private readonly List<KeyValuePair<string, string>> crumbs = new List<KeyValuePair<string, string>>();
 
     private List<KeyValuePair<string, string>> GetLoop()
     {
         var count = crumbs.Count;
 
         return crumbs.Skip(1).Take(count - 2).ToList();
-
     }
 
-    private KeyValuePair<string, string> Last => crumbs.Last();
-
     [Parameter] 
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment ChildContent { get; set; } = default!;
 
-    void LocationChanged(object sender, LocationChangedEventArgs e)
+    void LocationChanged(object? sender, LocationChangedEventArgs e)
     {
         SetBreadCrumbs();
     }

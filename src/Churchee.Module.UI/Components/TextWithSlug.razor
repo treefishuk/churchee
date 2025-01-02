@@ -20,19 +20,17 @@
 
 @code {
 
-    private string Id { get; set; }
+    [Parameter]
+    public PropertyInfo PropertyInfo { get; set; } = default!;
 
     [Parameter]
-    public PropertyInfo PropertyInfo { get; set; }
+    public object InputModel { get; set; } = default!;
 
     [Parameter]
-    public object InputModel { get; set; }
+    public string Value { get; set; } = default!;
 
     [Parameter]
-    public string Value { get; set; }
-
-    [Parameter]
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
     public string Slug { 
         get
@@ -61,7 +59,7 @@
         await Change.InvokeAsync(Value);
     }
 
-    private Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
+    private static Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
     {
         // Create an expression to set the ValueExpression-attribute.
         var constant = System.Linq.Expressions.Expression.Constant(inputModel, inputModel.GetType());
