@@ -7,7 +7,6 @@ namespace Churchee.Module.Tenancy.Entities
     {
         public void AddDomainEvent(INotification eventItem)
         {
-            _domainEvents = _domainEvents ?? new List<INotification>();
             _domainEvents.Add(eventItem);
         }
 
@@ -16,7 +15,7 @@ namespace Churchee.Module.Tenancy.Entities
             _domainEvents?.Remove(eventItem);
         }
 
-        private List<INotification> _domainEvents;
+        private readonly List<INotification> _domainEvents;
 
         public List<INotification> DomainEvents => _domainEvents;
 
@@ -27,6 +26,12 @@ namespace Churchee.Module.Tenancy.Entities
 
         private ApplicationTenant()
         {
+            Name = string.Empty;
+            DevName = string.Empty;
+            CharityNumber = 0;
+            Hosts = [];
+            Features = [];
+            _domainEvents = [];
         }
 
         public ApplicationTenant(Guid tenantId, string name, int charityNumber)
@@ -40,22 +45,9 @@ namespace Churchee.Module.Tenancy.Entities
             Name = name;
             DevName = name.ToCamelCase();
             CharityNumber = charityNumber;
-            Hosts = new List<ApplicationHost>();
-            Features = new List<ApplicationFeature>();
-        }
-
-        public ApplicationTenant(string name, int charityNumber) : base()
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            Name = name;
-            DevName = name.ToCamelCase();
-            CharityNumber = charityNumber;
-            Hosts = new List<ApplicationHost>();
-            Features = new List<ApplicationFeature>();
+            Hosts = [];
+            Features = [];
+            _domainEvents = [];
         }
 
         public Guid Id { get; private set; }
@@ -101,7 +93,10 @@ namespace Churchee.Module.Tenancy.Entities
             var host = Hosts
                 .FirstOrDefault(x => x.Id == hostId);
 
-            Hosts.Remove(host);
+            if (host != null)
+            {
+                Hosts.Remove(host);
+            }
 
             return 1;
         }
@@ -123,7 +118,10 @@ namespace Churchee.Module.Tenancy.Entities
             var feature = Features
                 .FirstOrDefault(x => x.Id == featureId);
 
-            Features.Remove(feature);
+            if (feature != null)
+            {
+                Features.Remove(feature);
+            }
 
             return 1;
         }

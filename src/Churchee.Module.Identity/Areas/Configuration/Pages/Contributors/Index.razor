@@ -26,7 +26,7 @@
     [Inject]
     private ICurrentUser CurrentUser { get; set; } = default!;
 
-    private Guid _activeTenant { get; set; } = default!;
+    private Guid _activeTenant { get; set; } = Guid.Empty;
 
     bool isLoading = false;
 
