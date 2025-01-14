@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,7 +22,17 @@ namespace Churchee.Module.Identity.Tests.Registrations
             // Arrange
             var services = new ServiceCollection();
 
+            var mockConfiguration = new Mock<IConfiguration>();
+            var mockConfigurationSection = new Mock<IConfigurationSection>();
+
+            mockConfigurationSection.Setup(a => a.Value).Returns("true");
+            mockConfiguration.Setup(a => a.GetSection("IdentityOptions")).Returns(mockConfigurationSection.Object);
+
+            services.AddSingleton(mockConfiguration.Object);
+
             var serviceRegistrations = new ServiceRegistrations();
+
+            var serviceProvider = services.BuildServiceProvider();
 
             services.AddScoped(s => new Mock<IUserStore<ApplicationUser>>().Object);
             services.AddScoped(s => new Mock<IUserConfirmation<ApplicationUser>>().Object);
@@ -40,9 +51,9 @@ namespace Churchee.Module.Identity.Tests.Registrations
             services.AddHttpContextAccessor();
 
             // Act
-            serviceRegistrations.Execute(services, null);
+            serviceRegistrations.Execute(services, serviceProvider);
 
-            var serviceProvider = services.BuildServiceProvider();
+            serviceProvider = services.BuildServiceProvider();
 
             // Assert
             serviceProvider.GetService<UserManager<ApplicationUser>>().Should().NotBeNull();
