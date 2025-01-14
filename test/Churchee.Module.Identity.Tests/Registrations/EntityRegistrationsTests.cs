@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Identity.Entities;
-using Churchee.Module.Identity.Registration;
+using Churchee.Module.Identity.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.MsSql;
 

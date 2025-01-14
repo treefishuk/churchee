@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 
-namespace Churchee.Module.Identity.Registration
+namespace Churchee.Module.Identity.Registrations
 {
     public class ModuleRegistration : IModule
     {

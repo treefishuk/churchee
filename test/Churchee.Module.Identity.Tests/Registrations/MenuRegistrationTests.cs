@@ -1,4 +1,4 @@
-﻿using Churchee.Module.Identity.Registration;
+﻿using Churchee.Module.Identity.Registrations;
 using FluentAssertions;
 
 namespace Churchee.Module.Identity.Tests.Registrations

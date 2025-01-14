@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace Churchee.Module.Identity.Registration
+namespace Churchee.Module.Identity.Registrations
 {
     public class EntityRegistrations : IEntityRegistration
     {

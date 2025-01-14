@@ -2,7 +2,7 @@
 using Churchee.Common.Extensibility;
 using System.Collections.Generic;
 
-namespace Churchee.Module.Identity.Registration
+namespace Churchee.Module.Identity.Registrations
 {
     public class MenuRegistration : IMenuRegistration
     {

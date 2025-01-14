@@ -1,7 +1,7 @@
 ﻿using Churchee.Module.Identity.Abstractions;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Managers;
-using Churchee.Module.Identity.Registration;
+using Churchee.Module.Identity.Registrations;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;

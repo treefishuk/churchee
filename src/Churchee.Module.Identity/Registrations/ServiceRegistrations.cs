@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Churchee.Module.Identity.Registration
+namespace Churchee.Module.Identity.Registrations
 {
     public class ServiceRegistrations : IConfigureServicesAction
     {
