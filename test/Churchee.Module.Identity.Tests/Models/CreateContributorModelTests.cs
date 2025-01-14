@@ -1,6 +1,9 @@
 ﻿using Churchee.Common.ValueTypes;
 using Churchee.Module.Identity.Models;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Moq;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Identity.Tests.Models
@@ -25,7 +28,7 @@ namespace Churchee.Module.Identity.Tests.Models
             // Arrange
             var model = new CreateContributorModel(_roles) { Email = string.Empty };
             var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(model);
+            var validationContext = GetValidationContext(model);
 
             // Act
             var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
@@ -41,7 +44,7 @@ namespace Churchee.Module.Identity.Tests.Models
             // Arrange
             var model = new CreateContributorModel(_roles) { Email = "invalid-email" };
             var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(model);
+            var validationContext = GetValidationContext(model);
 
             // Act
             var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
@@ -55,16 +58,21 @@ namespace Churchee.Module.Identity.Tests.Models
         public void Should_Have_Error_When_Password_Is_Too_Short()
         {
             // Arrange
-            var model = new CreateContributorModel(_roles) { Password = "short" };
+            var model = new CreateContributorModel(_roles)
+            {
+                Email = "test@example.com",
+                Password = "TooShort!22",
+                ConfirmPassword = "TooShort!22"
+            };
             var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(model);
+            var validationContext = GetValidationContext(model);
 
             // Act
             var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeFalse();
-            validationResults.Should().ContainSingle(vr => vr.ErrorMessage == "The Password must be at least 10 and at max 100 characters long.");
+            validationResults.Should().ContainSingle(vr => vr.ErrorMessage == "Password must be at least 16 characters long.");
         }
 
         [Fact]
@@ -73,7 +81,7 @@ namespace Churchee.Module.Identity.Tests.Models
             // Arrange
             var model = new CreateContributorModel(_roles) { Password = "validPassword123", ConfirmPassword = "differentPassword" };
             var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(model);
+            var validationContext = GetValidationContext(model);
 
             // Act
             var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
@@ -90,11 +98,12 @@ namespace Churchee.Module.Identity.Tests.Models
             var model = new CreateContributorModel(_roles)
             {
                 Email = "test@example.com",
-                Password = "validPassword123",
-                ConfirmPassword = "validPassword123"
+                Password = "validPassword123456!",
+                ConfirmPassword = "validPassword123456!"
             };
+
+            var validationContext = GetValidationContext(model);
             var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(model);
 
             // Act
             var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
@@ -102,6 +111,33 @@ namespace Churchee.Module.Identity.Tests.Models
             // Assert
             isValid.Should().BeTrue();
             validationResults.Should().BeEmpty();
+        }
+
+        private ValidationContext GetValidationContext(object model)
+        {
+            var identityOptions = Options.Create(new IdentityOptions
+            {
+                Password = new PasswordOptions
+                {
+                    RequireDigit = true,
+                    RequiredLength = 16,
+                    RequireLowercase = true,
+                    RequireNonAlphanumeric = true,
+                    RequireUppercase = true,
+                    RequiredUniqueChars = 1
+                }
+            });
+
+            var serviceProvider = new Mock<IServiceProvider>();
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IOptions<IdentityOptions>)))
+                .Returns(identityOptions);
+
+            var validationContext = new ValidationContext(model, serviceProvider: serviceProvider.Object, items: null);
+
+            return validationContext;
+
         }
     }
 }

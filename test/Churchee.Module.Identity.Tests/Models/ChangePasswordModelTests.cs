@@ -64,6 +64,7 @@ namespace Churchee.Module.Identity.Tests.Models
                 NewPassword = "newPassword123456!",
                 ConfirmPassword = "newPassword123456!"
             };
+
             var validationResults = new List<ValidationResult>();
             var validationContext = new ValidationContext(model);
 
