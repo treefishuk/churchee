@@ -12,11 +12,10 @@
     <section class="login-section bg-gradient-primary-to-secondary">
 
 
-        <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+        <form method="post" asp-route-returnUrl="@Model.ReturnUrl" class="wrap">
 
             <h1>Log in to: <a href="/"><img class="logo" src="/img/churchee-gradient.svg" alt="churchee logo with a blue gradient" /></a></h1>
             <hr />
-            @Html.AntiForgeryToken()
 
             <input asp-for="RememberMe" type="hidden" />
 
@@ -44,9 +43,6 @@
                 <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">log in with a recovery code</a>.
             </p>
         </form>
-
-
-
 
     </section>
 

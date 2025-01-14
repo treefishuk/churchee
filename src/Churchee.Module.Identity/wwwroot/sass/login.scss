@@ -25,7 +25,7 @@ h1 {
     background: linear-gradient(45deg,#0d6efd,#6c757d) !important;
     padding: 1rem;
 
-    form {
+    .wrap {
         background: #c5ddec;
         padding: 2rem;
         width: 30rem;
@@ -45,9 +45,16 @@ h1 {
     .logo {
         height: 2.2rem;
     }
+
+    .sub-link {
+        margin-top: 1rem;
+        display: block;
+        text-decoration: none;
+        color: #3971c1;
+    }
 }
 
-button {
+button, .btn {
     display: inline-block;
     padding: 0.7rem 1rem;
     text-align: center;
@@ -142,4 +149,15 @@ input[type="checkbox"]:disabled {
     --form-control-color: var(--form-control-disabled);
     color: var(--form-control-disabled);
     cursor: not-allowed;
+}
+
+.white{
+    color: #fff;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #5a7495;
+    font-size: 1.1em;
 }

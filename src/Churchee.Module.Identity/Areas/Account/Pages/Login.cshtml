@@ -5,45 +5,37 @@
     Layout = "./_LoginLayout";
 }
 
-<main role="main" class="pb-3">
+<section class="login-section bg-gradient-primary-to-secondary">
+    <form id="account" method="post" autocomplete="off" class="wrap">
+        <h1>Log in to: <a href="/"><img class="logo" src="/img/churchee-gradient.svg" alt="churchee logo with a blue gradient" /></a></h1>
+        <hr />
 
-    <section class="login-section bg-gradient-primary-to-secondary">
-        <form id="account" method="post" autocomplete="off">
-            <h1>Log in to: <a href="/"><img class="logo" src="/img/churchee-gradient.svg" alt="churchee logo with a blue gradient" /></a></h1>
-            <hr />
-
-            @Html.AntiForgeryToken()
-
-            <div class="field">
-                @Html.LabelFor(m => m.Input.Email)
-                @Html.EditorFor(m => m.Input.Email)
-                @Html.ValidationMessageFor(m => m.Input.Email)
+        <div class="field">
+            @Html.LabelFor(m => m.Input.Email)
+            @Html.EditorFor(m => m.Input.Email)
+            @Html.ValidationMessageFor(m => m.Input.Email)
+        </div>
+        <div class="field">
+            @Html.LabelFor(m => m.Input.Password)
+            @Html.TextBoxFor(m => m.Input.Password, new { autocomplete = "off", type = "password", @class="text-box single-line" })
+            @Html.ValidationMessageFor(m => m.Input.Password)
+        </div>
+        <div class="field">
+            <div class="checkbox-wrap">
+                @Html.CheckBoxFor(m => m.Input.RememberMe)
+                @Html.LabelFor(m => m.Input.RememberMe)
+                @Html.ValidationMessageFor(m => m.Input.RememberMe)
             </div>
-            <div class="field">
-                @Html.LabelFor(m => m.Input.Password)
-                @Html.TextBoxFor(m => m.Input.Password, new { autocomplete = "off", type = "password", @class="text-box single-line" })
-                @Html.ValidationMessageFor(m => m.Input.Password)
-            </div>
-            <div class="field">
-                <div class="checkbox-wrap">
-                    @Html.CheckBoxFor(m => m.Input.RememberMe)
-                    @Html.LabelFor(m => m.Input.RememberMe)
-                    @Html.ValidationMessageFor(m => m.Input.RememberMe)
-                </div>
-            </div>
+        </div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div>
-                <button type="submit">Log in</button>
-            </div>
+        <div>
+            <button type="submit">Log in</button>
+        </div>
 
-            <div>
-            </div>
-        </form>
-    </section>
-
-
-</main>
-
-
+        <div>
+            <a id="forgot-password" class="sub-link" href="/account/ForgotPassword">Forgot your password?</a>
+        </div>
+    </form>
+</section>
