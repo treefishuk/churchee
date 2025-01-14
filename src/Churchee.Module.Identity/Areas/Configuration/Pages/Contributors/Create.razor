@@ -3,9 +3,11 @@
 @using Churchee.Common.Abstractions.Auth
 @using Churchee.Common.ValueTypes
 @using Churchee.Module.Identity.Features.Contributors.Queries
+@using Churchee.Module.Identity.Features.HIBP.Queries
 @using Churchee.Module.Identity.Features.Roles.Queries
 @using Churchee.Module.UI.Components
 @using MediatR
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Radzen
@@ -42,6 +44,15 @@
         if (emailCheck != null)
         {
             NotificationService.Notify(NotificationSeverity.Error, "E-mail address already registered");
+
+            return;
+        }
+
+        var hibpResult = await Mediator.Send(new CheckPasswordAgainstHIBPCommand(InputModel.Password));
+
+        if (!hibpResult.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Password found in leaked passwords database. Please try something else");
 
             return;
         }

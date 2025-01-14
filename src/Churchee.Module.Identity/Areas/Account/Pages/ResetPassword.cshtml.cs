@@ -1,6 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Churchee.Module.Identity.Attributes;
+using Churchee.Module.Identity.Features.HIBP.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,10 +17,12 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
     public class ResetPasswordModel : PageModel
     {
         private readonly ChurcheeUserManager _userManager;
+        private readonly IMediator _mediator;
 
-        public ResetPasswordModel(ChurcheeUserManager userManager)
+        public ResetPasswordModel(ChurcheeUserManager userManager, IMediator mediator)
         {
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         [BindProperty]
@@ -30,8 +35,8 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
             public string Email { get; set; } = default!;
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
+            [PasswordRequirements]
             public string Password { get; set; } = default!;
 
             [DataType(DataType.Password)]
@@ -67,10 +72,20 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
             }
 
             var user = await _userManager.FindByEmailAsync(Input.Email);
+
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToPage("./ResetPasswordConfirmation");
+            }
+
+            var hibpResult = await _mediator.Send(new CheckPasswordAgainstHIBPCommand(Input.Password));
+
+            if (!hibpResult.IsSuccess)
+            {
+                ModelState.AddModelError("Input.Password", "Password found in leaked passwords database. Please use something else");
+
+                return Page();
             }
 
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);

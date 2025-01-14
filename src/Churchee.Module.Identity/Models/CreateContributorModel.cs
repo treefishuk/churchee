@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.ValueTypes;
+using Churchee.Module.Identity.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Identity.Models
@@ -19,9 +20,9 @@ namespace Churchee.Module.Identity.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(maximumLength: 100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 10)]
         [DataType(DataTypes.Password)]
         [Display(Name = "Password")]
+        [PasswordRequirements]
         public string Password { get; set; }
 
         [DataType(DataTypes.Password)]
