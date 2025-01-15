@@ -52,6 +52,8 @@
         if (user == null || !(await UserManager.IsEmailConfirmedAsync(user)))
         {
             NotificationService.Notify(NotificationSeverity.Error, "Failed to send password reset");
+
+            return;
         }
 
         var code = await UserManager.GeneratePasswordResetTokenAsync(user);
@@ -76,6 +78,13 @@
     private async Task UpdateContributor()
     {
         var user = await UserManager.FindByIdAsync(Id.ToString());
+
+        if (user == null || !(await UserManager.IsEmailConfirmedAsync(user)))
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to update Contributor");
+
+            return;
+        }
 
         var rolesNames = InputModel.Roles.Items.Where(w => InputModel.Roles.SelectedValues.Contains(w.Value)).Select(s => s.Text).ToList();
 

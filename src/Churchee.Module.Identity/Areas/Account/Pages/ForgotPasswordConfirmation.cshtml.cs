@@ -8,6 +8,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
     {
         public void OnGet()
         {
+            // This method is intentionally left empty.
         }
     }
 }
