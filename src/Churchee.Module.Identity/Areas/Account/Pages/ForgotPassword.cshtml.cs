@@ -62,7 +62,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
 
                 var message = "Reset Password Link: " + callbackUrl;
 
-                await _emailSender.SendEmailAsync(user.Email, "Reset your password", message);
+                await _emailSender.SendEmailAsync(user.Email, user.UserName, "Reset your password", message, message);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

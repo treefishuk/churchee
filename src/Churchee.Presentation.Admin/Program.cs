@@ -3,6 +3,7 @@ using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Helpers;
 using Churchee.Data.EntityFramework;
+using Churchee.EmailConfiguration.MailGun.Infrastructure;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
@@ -67,7 +68,17 @@ namespace Churchee.Presentation.Admin
 
             builder.Services.AddServicesActions();
             builder.Services.AddScoped<CurrentPage>();
-            builder.Services.AddScoped<IEmailService, LoggerEmailService>();
+
+            if (builder.Environment.IsDevelopment() == true)
+            {
+                builder.Services.AddScoped<IEmailService, LoggerEmailService>();
+
+            }
+            else
+            {
+                builder.Services.AddScoped<IEmailService, MailGunEmailService>();
+            }
+
 
             builder.Services.RegisterAllTypes<IMenuRegistration>(ServiceLifetime.Scoped);
             builder.Services.RegisterAllTypes<IScriptRegistrations>(ServiceLifetime.Scoped);

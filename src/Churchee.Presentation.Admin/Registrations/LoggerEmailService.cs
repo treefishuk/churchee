@@ -11,7 +11,7 @@ namespace Churchee.Presentation.Admin.Registrations
             _logger = logger;
         }
 
-        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+        public async Task SendEmailAsync(string toEmail, string toName, string subject, string htmlMessage, string plainTextMessage)
         {
             await Task.Run(() => _logger.LogInformation(htmlMessage));
         }

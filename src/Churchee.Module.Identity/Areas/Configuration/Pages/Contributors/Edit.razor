@@ -69,7 +69,7 @@
 
         var message = "Reset Password Link: " + callbackUrl;
 
-        await EmailService.SendEmailAsync(user.Email, "Reset your password", message);
+        await EmailService.SendEmailAsync(user.Email, user.UserName, "Reset your password", message, message);
 
         NotificationService.Notify(NotificationSeverity.Success, "Password Reset send to Contributor");
     }

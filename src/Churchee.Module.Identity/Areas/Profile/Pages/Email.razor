@@ -106,6 +106,6 @@ else
         var code = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         var callbackUrl = $"{baseUri}Management/Profile/ConfirmEmailChange?user={user.Id}&email={newEmail}&code={code}";
-        await _emailService.SendEmailAsync(user.Email, "Confirm Email", $"Please confirm your email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Click Here To Confirm</a>.");
+        await _emailService.SendEmailAsync(user.Email, user.UserName, "Confirm Email", $"Please confirm your email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Click Here To Confirm</a>.", $"Please confirm your email, open the following in a browser to confirm: {HtmlEncoder.Default.Encode(callbackUrl)}");
     }
 }
