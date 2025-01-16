@@ -1,10 +1,5 @@
 ﻿using Churchee.Common.ResponseTypes;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Churchee.Common.Tests.ResponseTypes
 {
@@ -27,7 +22,7 @@ namespace Churchee.Common.Tests.ResponseTypes
             cut.AddError("Test", "Thing");
 
             cut.IsSuccess.Should().BeFalse();
-            cut.Errors.Count().Should().Be(1);
+            cut.Errors.Count.Should().Be(1);
         }
 
     }

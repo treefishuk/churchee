@@ -70,7 +70,7 @@ namespace Churchee.Common.Tests.Domain
 
             //assert
             cut.DomainEvents.Should().NotBeNull();
-            cut.DomainEvents.Count().Should().Be(1);
+            cut.DomainEvents.Count.Should().Be(1);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Churchee.Common.Tests.Domain
 
             //assert
             cut.DomainEvents.Should().NotBeNull();
-            cut.DomainEvents.Count().Should().Be(0);
+            cut.DomainEvents.Count.Should().Be(0);
         }
 
 
@@ -117,7 +117,7 @@ namespace Churchee.Common.Tests.Domain
 
             //assert
             cut.DomainEvents.Should().NotBeNull();
-            cut.DomainEvents.Count().Should().Be(0);
+            cut.DomainEvents.Count.Should().Be(0);
         }
 
         [Fact]

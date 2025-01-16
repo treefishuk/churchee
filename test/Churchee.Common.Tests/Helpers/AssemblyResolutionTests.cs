@@ -30,7 +30,7 @@ namespace Churchee.Common.Tests.Helpers
             var result = AssemblyResolution.GetModuleAssemblies(assemblies);
 
             // Assert
-            result.Count().Should().Be(2);
+            result.Length.Should().Be(2);
         }
 
         private class TestModule1 : IModule

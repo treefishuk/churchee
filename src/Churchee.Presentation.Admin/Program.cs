@@ -69,7 +69,7 @@ namespace Churchee.Presentation.Admin
             builder.Services.AddServicesActions();
             builder.Services.AddScoped<CurrentPage>();
 
-            if (builder.Environment.IsDevelopment() == true)
+            if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddScoped<IEmailService, LoggerEmailService>();
 
@@ -103,7 +103,7 @@ namespace Churchee.Presentation.Admin
             });
 
 
-            if (builder.Environment.IsDevelopment() == false)
+            if (!builder.Environment.IsDevelopment())
             {
                 builder.Services.AddHsts(options =>
                 {

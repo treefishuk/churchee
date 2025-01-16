@@ -3,6 +3,7 @@
 @using System.Reflection
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Logging
+@using Radzen
 
 
 <ChurcheeErrorBoundry>
@@ -38,6 +39,9 @@
     [Inject]
     protected ILogger<RazorEditor> Logger { get; set; } = default!;
 
+    [Inject]
+    protected NotificationService NotificationService { get; set; } = default!;
+
     [Parameter]
     public string Value { get; set; } = default!;
 
@@ -64,7 +68,7 @@
         {
             Logger.LogError(ex, "OnEditorChange Error");
 
-            throw;
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to update editor, please re-load page and re-try");
         }
 
 
@@ -85,9 +89,9 @@
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "OnEditorChange Error");
+            Logger.LogError(ex, "OnEditorDidInit Error");
 
-            throw;
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to initialise editor, please re-load page and re-try");
         }
     }
 
