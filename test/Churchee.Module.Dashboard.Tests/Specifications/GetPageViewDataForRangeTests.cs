@@ -20,10 +20,10 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
             criteria.Should().NotBeNull();
-            criteria.Filter.Should().NotBeNull();
-            criteria.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
+            criteria?.Filter.Should().NotBeNull();
+            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
 
-            var compiledCriteria = criteria.Filter.Compile();
+            var compiledCriteria = criteria!.Filter.Compile();
             var validPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 10, 2), Device = "Device1", UserAgent = "UserAgent1" };
             compiledCriteria(validPageView).Should().BeTrue();
         }
@@ -40,10 +40,10 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
             criteria.Should().NotBeNull();
-            criteria.Filter.Should().NotBeNull();
-            criteria.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
+            criteria?.Filter.Should().NotBeNull();
+            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
 
-            var compiledCriteria = criteria.Filter.Compile();
+            var compiledCriteria = criteria!.Filter.Compile();
             var invalidPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 9, 30), Device = "Device1", UserAgent = "UserAgent1" };
             compiledCriteria(invalidPageView).Should().BeFalse();
         }
@@ -60,10 +60,10 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
             criteria.Should().NotBeNull();
-            criteria.Filter.Should().NotBeNull();
-            criteria.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
+            criteria?.Filter.Should().NotBeNull();
+            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
 
-            var compiledCriteria = criteria.Filter.Compile();
+            var compiledCriteria = criteria!.Filter.Compile();
             var invalidPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 10, 2), Device = "", UserAgent = "UserAgent1" };
             compiledCriteria(invalidPageView).Should().BeFalse();
         }
@@ -80,10 +80,10 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
             criteria.Should().NotBeNull();
-            criteria.Filter.Should().NotBeNull();
-            criteria.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
+            criteria?.Filter.Should().NotBeNull();
+            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
 
-            var compiledCriteria = criteria.Filter.Compile();
+            var compiledCriteria = criteria!.Filter.Compile();
             var invalidPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 10, 2), Device = "Device1", UserAgent = "" };
             compiledCriteria(invalidPageView).Should().BeFalse();
         }

@@ -19,8 +19,8 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
             criteria.Should().NotBeNull();
-            criteria.Filter.Should().NotBeNull();
-            criteria.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
+            criteria?.Filter.Should().NotBeNull();
+            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
         }
 
         [Fact]
@@ -34,8 +34,8 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
-            var compiledCriteria = criteria.Filter.Compile();
-            var testPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 9, 30) };
+            var compiledCriteria = criteria!.Filter.Compile();
+            PageView testPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 9, 30) };
             compiledCriteria(testPageView).Should().BeTrue();
         }
 
@@ -50,7 +50,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
-            var compiledCriteria = criteria.Filter.Compile();
+            var compiledCriteria = criteria!.Filter.Compile();
             var testPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2025, 9, 30) };
             compiledCriteria(testPageView).Should().BeFalse();
         }

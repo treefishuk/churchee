@@ -43,15 +43,15 @@ namespace Churchee.Module.Events.Tests.Registrations
             var eventEntityType = modelBuilder.Model.FindEntityType(typeof(Event));
 
             // Assert Table Name
-            eventDateEntityType.GetTableName().Should().Be("EventDates");
+            eventDateEntityType?.GetTableName().Should().Be("EventDates");
 
             // Assert Keys
 
-            var foreignKeys = eventDateEntityType.GetForeignKeys();
+            var foreignKeys = eventDateEntityType?.GetForeignKeys();
 
-            var entityForignKey = foreignKeys.Where(w => w.PrincipalEntityType == eventEntityType);
+            var entityForeignKey = foreignKeys?.Where(w => w.PrincipalEntityType == eventEntityType);
 
-            entityForignKey.SingleOrDefault().DeleteBehavior.Should().Be(DeleteBehavior.Cascade);
+            entityForeignKey?.SingleOrDefault()?.DeleteBehavior.Should().Be(DeleteBehavior.Cascade);
 
 
         }

@@ -62,7 +62,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             return mockDataStore.Object;
         }
 
-        private Event GetTestEvent()
+        private static Event GetTestEvent()
         {
             var testEvent = new Event.Builder()
                 .SetApplicationTenantId(Guid.NewGuid())
@@ -76,7 +76,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             return testEvent;
         }
 
-        private UpdateEventCommand GetCommand()
+        private static UpdateEventCommand GetCommand()
         {
             Guid id = Guid.NewGuid();
             string title = "Updated Title";

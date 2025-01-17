@@ -48,7 +48,7 @@ namespace Churchee.Module.Events.Tests.Features.Queries.GetDetailById
             return mockDataStore.Object;
         }
 
-        private GetDetailByIdQuery GetQuery()
+        private static GetDetailByIdQuery GetQuery()
         {
             return new GetDetailByIdQuery(Guid.NewGuid());
         }

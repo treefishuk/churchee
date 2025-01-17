@@ -231,6 +231,11 @@ dotnet_naming_style.begins_with_i.word_separator =
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
 dotnet_diagnostic.S2589.severity = error
 dotnet_diagnostic.S6605.severity = none
+csharp_prefer_system_threading_lock = true:suggestion
+
+# CS8604: Possible null reference argument.
+dotnet_diagnostic.CS8604.severity = warning
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
@@ -265,3 +270,5 @@ dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:sil
 dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
 dotnet_style_qualification_for_field = false:silent
 dotnet_diagnostic.CA1860.severity = error
+dotnet_diagnostic.CA1826.severity = warning
+dotnet_diagnostic.CA1829.severity = warning

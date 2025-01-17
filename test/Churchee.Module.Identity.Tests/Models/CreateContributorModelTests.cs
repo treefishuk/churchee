@@ -113,7 +113,7 @@ namespace Churchee.Module.Identity.Tests.Models
             validationResults.Should().BeEmpty();
         }
 
-        private ValidationContext GetValidationContext(object model)
+        private static ValidationContext GetValidationContext(object model)
         {
             var identityOptions = Options.Create(new IdentityOptions
             {

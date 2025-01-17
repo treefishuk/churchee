@@ -89,6 +89,11 @@ namespace Churchee.Data.EntityFramework.Tests.Extensions
 
         public class TestEntity : IHasIsActive
         {
+            public TestEntity()
+            {
+                TestProperty = string.Empty;
+            }
+
             public int Id { get; set; }
             public string TestProperty { get; set; }
             public bool IsActive { get; set; }
@@ -96,12 +101,23 @@ namespace Churchee.Data.EntityFramework.Tests.Extensions
 
         public class AnotherTestEntity
         {
+            public AnotherTestEntity()
+            {
+                TestProperty = string.Empty;
+            }
+
             public int Id { get; set; }
             public string TestProperty { get; set; }
         }
 
         public class TestEntityWithProtectedProperty
         {
+
+            public TestEntityWithProtectedProperty()
+            {
+                ProtectedProperty = string.Empty;
+            }
+
             public int Id { get; set; }
 
             [EncryptProperty]

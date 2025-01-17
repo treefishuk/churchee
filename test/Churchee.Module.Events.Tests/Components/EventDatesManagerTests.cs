@@ -24,7 +24,7 @@ namespace Churchee.Module.Events.Tests.Components
             cut.Find(".btn-add").Click();
 
             //assert
-            cut.Instance.Dates.Count().Should().Be(1);
+            cut.Instance.Dates.Count.Should().Be(1);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace Churchee.Module.Events.Tests.Components
             cut.Find(".btn-remove").Click();
 
             //assert
-            cut.Instance.Dates.Count().Should().Be(0);
+            cut.Instance.Dates.Count.Should().Be(0);
         }
     }
 }

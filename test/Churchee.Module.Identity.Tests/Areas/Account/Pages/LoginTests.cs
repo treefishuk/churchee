@@ -68,7 +68,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
 
                 // Assert
                 _loginModel.ModelState.IsValid.Should().BeFalse();
-                _loginModel.ModelState[string.Empty].Errors.Should().ContainSingle(e => e.ErrorMessage == "Some error");
+                _loginModel?.ModelState[string.Empty]?.Errors.Should().ContainSingle(e => e.ErrorMessage == "Some error");
             }
 
             [Fact]
@@ -131,7 +131,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
 
                 // Assert
                 result.Should().BeOfType<PageResult>();
-                _loginModel.ModelState[string.Empty].Errors.Should().ContainSingle(e => e.ErrorMessage == "Invalid login attempt.");
+                _loginModel?.ModelState[string.Empty]?.Errors.Should().ContainSingle(e => e.ErrorMessage == "Invalid login attempt.");
             }
         }
     }

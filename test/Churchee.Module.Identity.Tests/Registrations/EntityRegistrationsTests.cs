@@ -54,7 +54,9 @@ namespace Churchee.Module.Identity.Tests.Registrations
         public void Dispose()
         {
             _msSqlContainer.StopAsync().GetAwaiter().GetResult();
-            _msSqlContainer.DisposeAsync();
+            _msSqlContainer.DisposeAsync().GetAwaiter().GetResult();
+            GC.SuppressFinalize(this);
+
         }
     }
 

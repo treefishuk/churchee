@@ -49,7 +49,6 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             var fileName = "image";
             var folderPath = "path/to/";
             var extension = ".jpg";
-            var suffix = "t";
             var streamBytes = new byte[] { 1, 2, 3 };
             var width = 200;
             var overrideExisting = true;
@@ -73,7 +72,6 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             var fileName = "image";
             var folderPath = "path/to/";
             var extension = ".jpg";
-            var suffix = "ct";
             var streamBytes = new byte[] { 1, 2, 3 };
             var width = 200;
             var overrideExisting = true;

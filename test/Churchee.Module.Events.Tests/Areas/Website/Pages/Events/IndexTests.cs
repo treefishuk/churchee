@@ -44,7 +44,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             //act
             var cut = RenderComponent<Index>();
 
-            cut.FindAll(".delete-row").First().Click();
+            cut.FindAll(".delete-row")[0].Click();
 
             //assert
             NotificationService.Notifications.Count.Should().Be(1);
@@ -66,7 +66,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             //act
             var cut = RenderComponent<Index>();
 
-            cut.FindAll(".delete-row").First().Click();
+            cut.FindAll(".delete-row")[0].Click();
 
             //assert
             NotificationService.Notifications.Count.Should().Be(1);
