@@ -69,14 +69,16 @@ namespace Churchee.Presentation.Admin
             builder.Services.AddServicesActions();
             builder.Services.AddScoped<CurrentPage>();
 
-            if (builder.Environment.IsDevelopment())
-            {
-                builder.Services.AddScoped<IEmailService, LoggerEmailService>();
+            string emailService = builder.Configuration.GetSection("Email").GetValue<string>("Service");
 
-            }
-            else
+            switch (emailService)
             {
-                builder.Services.AddScoped<IEmailService, MailGunEmailService>();
+                case "MailGun":
+                    builder.Services.AddScoped<IEmailService, MailGunEmailService>();
+                    break;
+                default:
+                    builder.Services.AddScoped<IEmailService, LoggerEmailService>();
+                    break;
             }
 
 

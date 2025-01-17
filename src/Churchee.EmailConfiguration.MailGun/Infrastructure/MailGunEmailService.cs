@@ -19,11 +19,11 @@ namespace Churchee.EmailConfiguration.MailGun.Infrastructure
         private readonly HttpClient _httpClient;
 
 
-        public MailGunEmailService(ILogger logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public MailGunEmailService(ILogger<MailGunEmailService> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _configuration = configuration;
-            _httpClient = httpClientFactory.CreateClient("Mailgun");
+            _httpClient = httpClientFactory.CreateClient("MailGun");
         }
 
         public async Task SendEmailAsync(string toEmail, string toName, string subject, string htmlMessage, string plainTextMessage)
@@ -34,11 +34,10 @@ namespace Churchee.EmailConfiguration.MailGun.Infrastructure
 
                 using MultipartFormDataContent form = [];
 
-                void SetFormParam(string key, string value) =>
-                form.Add(new StringContent(value, Encoding.UTF8, MediaTypeNames.Text.Plain), key);
+                void SetFormParam(string key, string value) => form.Add(new StringContent(value, Encoding.UTF8, MediaTypeNames.Text.Plain), key);
 
                 SetFormParam("from", $"{options.FromName} <{options.FromEmail}>");
-                SetFormParam("to", $"{toName} <{toEmail}>");
+                SetFormParam("to", toEmail);
                 SetFormParam("subject", subject);
                 SetFormParam("text", plainTextMessage);
                 SetFormParam("html", htmlMessage);
