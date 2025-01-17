@@ -11,7 +11,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string FileName { get; private set; }
 
-        public string Extention { get; private set; }
+        public string Extension { get; private set; }
 
         public string LinkUrl { get; private set; }
 
@@ -49,7 +49,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             public Builder SetExtention(string extention)
             {
-                _command.Extention = extention;
+                _command.Extension = extention;
                 return this;
             }
 
@@ -107,39 +107,19 @@ namespace Churchee.Module.Site.Features.Media.Commands
                     throw new InvalidOperationException("Name must be provided.");
                 }
 
-                if (string.IsNullOrWhiteSpace(_command.FileName))
+                if (!string.IsNullOrWhiteSpace(_command.Base64Image) && string.IsNullOrWhiteSpace(_command.FileName))
                 {
                     throw new InvalidOperationException("FileName must be provided.");
                 }
 
-                if (string.IsNullOrWhiteSpace(_command.Extention))
+                if (!string.IsNullOrWhiteSpace(_command.Base64Image) && string.IsNullOrWhiteSpace(_command.Extension))
                 {
-                    throw new InvalidOperationException("Extention must be provided.");
-                }
-
-                if (string.IsNullOrWhiteSpace(_command.LinkUrl))
-                {
-                    throw new InvalidOperationException("LinkUrl must be provided.");
+                    throw new InvalidOperationException("Extension must be provided.");
                 }
 
                 if (string.IsNullOrWhiteSpace(_command.Description))
                 {
                     throw new InvalidOperationException("Description must be provided.");
-                }
-
-                if (string.IsNullOrWhiteSpace(_command.AdditionalContent))
-                {
-                    throw new InvalidOperationException("AdditionalContent must be provided.");
-                }
-
-                if (string.IsNullOrWhiteSpace(_command.CssClass))
-                {
-                    throw new InvalidOperationException("CssClass must be provided.");
-                }
-
-                if (string.IsNullOrWhiteSpace(_command.Base64Image))
-                {
-                    throw new InvalidOperationException("Base64Image must be provided.");
                 }
 
                 if (_command.Order < 0)

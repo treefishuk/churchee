@@ -40,34 +40,12 @@ namespace Churchee.Module.Site.Entities
 
         public void UpdateDetails(string title, string description, string html, string linkUrl, string cssClass, int order)
         {
-            if (!string.IsNullOrEmpty(title))
-            {
-                Title = title;
-            }
-
-            if (!string.IsNullOrEmpty(description))
-            {
-                Description = description;
-            }
-
-            if (!string.IsNullOrEmpty(html))
-            {
-                Html = html;
-            }
-
-            if (!string.IsNullOrEmpty(linkUrl))
-            {
-                LinkUrl = linkUrl;
-            }
-
-
-            if (!string.IsNullOrEmpty(cssClass))
-            {
-                CssClass = cssClass;
-            }
-
+            Title = title;
+            Description = description;
+            LinkUrl = linkUrl;
+            Html = html;
+            CssClass = cssClass;
             Order = order;
-
         }
 
         public string Title { get; protected set; }

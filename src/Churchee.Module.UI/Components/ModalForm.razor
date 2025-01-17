@@ -34,6 +34,9 @@
     [Inject]
     public ILogger<Form> Logger { get; set; } = default!;
 
+    [Inject]
+    public NotificationService NotificationService { get; set; } = default!;
+
     [Parameter]
     public EventCallback OnCancelForm { get; set; }
 
@@ -83,6 +86,8 @@
         catch (Exception ex)
         {
             Logger.Log(LogLevel.Error, ex, "Error Submitting form");
+
+            NotificationService.Notify(NotificationSeverity.Error, "Error Submitting form, please try again. If issue persists, please contact support");    
         }
     }
 }
