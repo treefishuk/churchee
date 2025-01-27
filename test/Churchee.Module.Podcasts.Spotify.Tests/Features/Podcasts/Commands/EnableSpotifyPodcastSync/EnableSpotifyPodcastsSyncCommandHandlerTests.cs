@@ -89,7 +89,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
             await _handler.Handle(command, cancellationToken);
 
             // Assert
-            _jobServiceMock.Verify(x => x.ScheduleJob($"{tenantId}_SpotifyPodcasts", It.IsAny<Expression<Func<Task>>>(), Cron.Daily), Times.Once);
+            _jobServiceMock.Verify(x => x.ScheduleJob($"{tenantId}_SpotifyPodcasts", It.IsAny<Expression<Func<Task>>>(), Cron.Hourly), Times.Once);
         }
 
         [Fact]

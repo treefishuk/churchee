@@ -50,7 +50,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             string podcastsUrl = await _settingStore.GetSettingValue(_podcastsNameId, applicationTenantId);
 
-            _jobService.ScheduleJob($"{applicationTenantId}_SpotifyPodcasts", () => SyncPodcasts(request, applicationTenantId, podcastsUrl, CancellationToken.None), Cron.Daily);
+            _jobService.ScheduleJob($"{applicationTenantId}_SpotifyPodcasts", () => SyncPodcasts(request, applicationTenantId, podcastsUrl, CancellationToken.None), Cron.Hourly);
 
             _jobService.QueueJob(() => SyncPodcasts(request, applicationTenantId, podcastsUrl, CancellationToken.None));
 
