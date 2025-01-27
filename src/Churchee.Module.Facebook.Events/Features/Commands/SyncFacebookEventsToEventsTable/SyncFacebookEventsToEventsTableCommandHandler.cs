@@ -71,46 +71,56 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
         public async Task SyncFacebookEvents(Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            var client = _clientFactory.CreateClient("Facebook");
 
-            var tokenRepo = _dataStore.GetRepository<Token>();
-
-            string facebookPageAccessToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.FacebookPageAccessToken, applicationTenantId), s => s.Value, cancellationToken);
-
-            string pageId = await _settingStore.GetSettingValue(Guid.Parse("3de048ae-d711-4609-9b66-97564a9d0d68"), applicationTenantId);
-
-            var feedResponseItems = await GetFeedResult(client, pageId, facebookPageAccessToken);
-
-            if (!feedResponseItems.Any())
+            try
             {
-                return;
-            }
+                var client = _clientFactory.CreateClient("Facebook");
 
-            var eventIds = feedResponseItems.Where(w => !string.IsNullOrEmpty(w.Story) && (w.Story.Contains("created an event") || w.Story.Contains("added an event"))).Select(s => s.Id.Replace($"{pageId}_", "")).ToList();
+                var tokenRepo = _dataStore.GetRepository<Token>();
 
-            if (eventIds.Count == 0)
-            {
-                return;
-            }
+                string facebookPageAccessToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.FacebookPageAccessToken, applicationTenantId), s => s.Value, cancellationToken);
 
-            var repo = _dataStore.GetRepository<Event>();
+                string pageId = await _settingStore.GetSettingValue(Guid.Parse("3de048ae-d711-4609-9b66-97564a9d0d68"), applicationTenantId);
 
-            Guid pageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
+                var feedResponseItems = await GetFeedResult(client, pageId, facebookPageAccessToken);
 
-            foreach (string eventId in eventIds)
-            {
-                var dbPost = await repo.ApplySpecification(new GetEventByFacebookIdSpecification(eventId)).FirstOrDefaultAsync(cancellationToken: cancellationToken);
-
-                if (dbPost != null)
+                if (!feedResponseItems.Any())
                 {
-                    continue;
+                    return;
                 }
 
-                await CreateNewEvent(applicationTenantId, client, facebookPageAccessToken, repo, pageTypeId, eventId, cancellationToken);
+                var eventIds = feedResponseItems.Where(w => !string.IsNullOrEmpty(w.Story) && (w.Story.Contains("created an event") || w.Story.Contains("added an event"))).Select(s => s.Id.Replace($"{pageId}_", "")).ToList();
 
+                if (eventIds.Count == 0)
+                {
+                    return;
+                }
+
+                var repo = _dataStore.GetRepository<Event>();
+
+                Guid pageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
+
+                foreach (string eventId in eventIds)
+                {
+                    var dbPost = await repo.ApplySpecification(new GetEventByFacebookIdSpecification(eventId)).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+
+                    if (dbPost != null)
+                    {
+                        continue;
+                    }
+
+                    await CreateNewEvent(applicationTenantId, client, facebookPageAccessToken, repo, pageTypeId, eventId, cancellationToken);
+
+                }
+
+                await _dataStore.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Syncing Facebook Events");
             }
 
-            await _dataStore.SaveChangesAsync(cancellationToken);
+
 
         }
 
