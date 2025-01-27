@@ -8,6 +8,7 @@ using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Tokens.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace Churchee.Module.Facebook.Events.Features.Commands
@@ -21,8 +22,9 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
         private readonly ISettingStore _settingStore;
         private readonly IConfiguration _configuration;
         private readonly JsonSerializerOptions _options;
+        private readonly ILogger _logger;
 
-        public EnableFacebookIntegrationCommandHandler(IHttpClientFactory clientFactory, ICurrentUser currentUser, ISettingStore settingStore, IConfiguration configuration, IDataStore dataStore)
+        public EnableFacebookIntegrationCommandHandler(IHttpClientFactory clientFactory, ICurrentUser currentUser, ISettingStore settingStore, IConfiguration configuration, IDataStore dataStore, ILogger<EnableFacebookIntegrationCommandHandler> logger)
         {
             _clientFactory = clientFactory;
             _currentUser = currentUser;
@@ -30,6 +32,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
             _configuration = configuration;
             _dataStore = dataStore;
             _options = GetOptions();
+            _logger = logger;
         }
 
         public async Task<CommandResponse> Handle(EnableFacebookIntegrationCommand request, CancellationToken cancellationToken)
@@ -44,6 +47,15 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
             string redirectUri = $"{request.Domain}/management/integrations/facebook-events/auth?state={stateId}";
 
             var client = CreateClient();
+
+            if (client == null)
+            {
+                var response = new CommandResponse();
+
+                response.AddError("Missing Facebook API Url Setting", "");
+
+                return response;
+            }
 
             var accessToken = await GetAccessToken(facebookAppId, appSecret, stateId, redirectUri, request.Token, client, cancellationToken);
 
@@ -130,6 +142,13 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
         private HttpClient CreateClient()
         {
             var facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("Api");
+
+            if (string.IsNullOrEmpty(facebookApiUrl))
+            {
+                _logger.LogError("Missing Facebook API Setting");
+
+                return null;
+            }
 
             var client = _clientFactory.CreateClient();
 
