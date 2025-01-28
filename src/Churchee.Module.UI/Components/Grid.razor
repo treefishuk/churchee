@@ -8,12 +8,6 @@
 @typeparam TItem
 @inject IConfiguration Config
 
-
-<div class="search-column-container">
-    <input @bind="searchTerm" @bind:event="oninput" placeholder="Search..." />
-    <RadzenDataGridColumnPicker TItem="YourModel" Columns="@(radzenGrid?.Columns)" />
-</div>
-
 <RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" PageSize="20" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized">
     <Columns>
 
