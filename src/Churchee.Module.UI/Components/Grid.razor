@@ -8,7 +8,7 @@
 @typeparam TItem
 @inject IConfiguration Config
 
-<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" PageSize="20" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized">
+<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="true" PageSize="20" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized">
     <Columns>
 
         @if (ShowDetail)
