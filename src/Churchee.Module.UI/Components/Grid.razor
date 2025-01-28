@@ -1,20 +1,26 @@
 ﻿@using MediatR
 @using Microsoft.Extensions.Configuration
+@using Microsoft.JSInterop
 @using Radzen
 @using Radzen.Blazor
 @using System.ComponentModel.DataAnnotations
 @using System.Reflection
 @typeparam TItem
-@inject NavigationManager _navigationManager
 @inject IConfiguration Config
 
-<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="20" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem">
+
+<div class="search-column-container">
+    <input @bind="searchTerm" @bind:event="oninput" placeholder="Search..." />
+    <RadzenDataGridColumnPicker TItem="YourModel" Columns="@(radzenGrid?.Columns)" />
+</div>
+
+<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" PageSize="20" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized">
     <Columns>
 
         @if (ShowDetail)
         {
 
-            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
                 <Template Context="data">
                     <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/details/@(((dynamic)data).Id)">
                         <span class="rz-button-box">
@@ -28,7 +34,7 @@
         @if (ShowEdit)
         {
 
-            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
                 <Template Context="data">
                     <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/edit/@(((dynamic)data).Id)">
                         <span class="rz-button-box">
@@ -41,6 +47,9 @@
 
         @foreach (var prop in typeof(TItem).GetProperties().Where(x => x.CanWrite))
         {
+            bool visible = Columns == null || (Columns.Count() > 0 && Columns.Select(s => s.Property).Contains(prop.Name));
+
+
             string dataType = prop.PropertyType.Name;
 
             var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
@@ -57,12 +66,14 @@
 
             if (dataType == DataTypes.Text)
             {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" />
+                string width = Columns?.FirstOrDefault(w => w.Property == prop.Name)?.Width ?? "";
+
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" Visible="visible" Width=@width />
             }
 
             if (dataType == typeof(bool).Name)
             {
-                <RadzenDataGridColumn TItem="TItem" Title="@prop.Name.ToSentence()" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center">
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center" Visible="visible">
                     <Template Context="data">
                         @{
                             var properyValue = prop.GetValue(data);
@@ -84,17 +95,17 @@
 
             if (dataType == DataTypes.Date || (dataTypeAttribute == null && dataType == typeof(DateTime).Name))
             {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy}" Width="200px" />
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy}" Width="160px" Visible="visible" />
             }
 
             if (dataType == DataTypes.DateTime)
             {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" />
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" Visible="visible" />
             }
 
             if (dataType == DataTypes.ImageUrl)
             {
-                <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
                     <Template Context="data">
 
                         @{
@@ -127,15 +138,15 @@
 
 
         }
-        
+
 
 
         @if (OnDeleteSet)
         {
-            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
                 <Template Context="data">
                     <RadzenButton Icon="delete" class="delete-row" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteActions(data)"></RadzenButton>
-               </Template>
+                </Template>
             </RadzenDataGridColumn>
         }
 
@@ -145,15 +156,24 @@
 
 @code {
 
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = default!;
+
     async Task DeleteActions(TItem item)
     {
         await OnDelete.InvokeAsync(item);
         await radzenGrid.Reload();
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        prefix = _navigationManager.Uri;
+        prefix = NavigationManager.Uri;
+
+        Columns = await LoadColumnSettingsAsync();
+
     }
 
     RadzenDataGrid<TItem> radzenGrid = default!;
@@ -188,4 +208,60 @@
     public EventCallback<TItem> OnDelete { get; set; }
 
     private bool OnDeleteSet => OnDelete.HasDelegate;
+
+    private List<ColumnInfo> Columns = new List<ColumnInfo>();
+
+    async Task ColumnResized(DataGridColumnResizedEventArgs<TItem> args)
+    {
+        // Load existing column settings
+        string key = GetLocalStorageKey();
+
+        var resizedColumn = Columns.FirstOrDefault(c => c.Property == args.Column.Property);
+        if (resizedColumn != null)
+        {
+            resizedColumn.Width = $"{args.Width}px";
+        }
+        else
+        {
+            Columns.Add(new ColumnInfo { Property = args.Column.Property, Width = $"{args.Width}px" });
+        }
+
+        // Save the updated column settings
+        await JSRuntime.InvokeVoidAsync("localStorageHelper.save", key, Columns);
+    }
+
+    /// <summary>
+    /// Only used to print the changes to the console.
+    /// </summary>
+    async Task ColumnsChanged(DataGridPickedColumnsChangedEventArgs<TItem> args)
+    {
+        var columnsSelected = args.Columns.Select(c => new ColumnInfo { Property = c.Property, Width = c.Width });
+
+        string key = GetLocalStorageKey();
+
+        await JSRuntime.InvokeVoidAsync("localStorageHelper.save", key, columnsSelected);
+    }
+
+    private string GetLocalStorageKey()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        return $"columnSettings_{uri.AbsolutePath}";
+    }
+
+    private async Task<List<ColumnInfo>> LoadColumnSettingsAsync()
+    {
+        string key = GetLocalStorageKey();
+
+        return await JSRuntime.InvokeAsync<List<ColumnInfo>>("localStorageHelper.load", key);
+    }
+
+
+    private class ColumnInfo
+    {
+        public string Width { get; set; } = string.Empty;
+
+        public string Property { get; set; } = string.Empty;
+    }
+
+
 }
