@@ -169,6 +169,9 @@
     async Task GetData(int days)
     {
         data = await Mediator.Send(new GetDashboardDataQuery(days));
+
+        StateHasChanged();
+
     }
 
 }
