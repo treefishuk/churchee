@@ -12,6 +12,11 @@ namespace Churchee.Module.Tenancy.Entities
 
         public ApplicationHost(string host, Guid applicationTenantId) : base(applicationTenantId)
         {
+            if (string.IsNullOrEmpty(host))
+            {
+                throw new ArgumentNullException(nameof(host));
+            }
+
             Host = host;
         }
 
