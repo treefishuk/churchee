@@ -44,6 +44,11 @@ namespace Churchee.Module.Hangfire.Services
             _backgroundJobClient.Enqueue<T>(methodCall);
         }
 
+        public void RemoveScheduledJob(string recurringJobId)
+        {
+            _recurringJobManager.RemoveIfExists(recurringJobId);
+        }
+
         public void ScheduleJob(string recurringJobId, Expression<Func<Task>> methodCall, Func<string> cronExpression)
         {
             _recurringJobManager.AddOrUpdate(recurringJobId, methodCall, cronExpression);
