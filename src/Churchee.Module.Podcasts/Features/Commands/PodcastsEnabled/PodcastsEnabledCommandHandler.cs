@@ -24,7 +24,6 @@ namespace Churchee.Module.Podcasts.Features.Commands
 
         public async Task<CommandResponse> Handle(PodcastsEnabledCommand request, CancellationToken cancellationToken)
         {
-
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
             Guid listingTypeId = Guid.NewGuid();
@@ -128,7 +127,6 @@ namespace Churchee.Module.Podcasts.Features.Commands
                 await _dataStore.SaveChangesAsync(cancellationToken);
             }
         }
-
 
         private async Task CreatePageTypes(Guid applicationTenantId, Guid listingPageTypeId, Guid detailsPageTypeId, CancellationToken cancellationToken)
         {
