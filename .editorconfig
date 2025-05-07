@@ -272,3 +272,8 @@ dotnet_style_qualification_for_field = false:silent
 dotnet_diagnostic.CA1860.severity = error
 dotnet_diagnostic.CA1826.severity = warning
 dotnet_diagnostic.CA1829.severity = warning
+
+
+[*.{cs,vb}]                                         //specify which files the spelling options apply to
+spelling_languages = en-us, en-gb                   //specifies the en-us and fr-fr dictionaries for use in spell checking
+spelling_exclusion_path = \.exclusion.dic             //defines a custom exclusion dictionary location and file
