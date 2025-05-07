@@ -17,6 +17,13 @@ namespace Churchee.Data.EntityFramework
         private readonly DbContext _dbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private const string CreatedDate = "CreatedDate";
+        private const string CreatedByUser = "CreatedByUser";
+        private const string CreatedById = "CreatedById";
+        private const string ModifiedDate = "ModifiedDate";
+        private const string ModifiedByName = "ModifiedByName";
+        private const string ModifiedById = "ModifiedById";
+
         public EFStorage(DbContext dbContext, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
@@ -66,17 +73,17 @@ namespace Churchee.Data.EntityFramework
                     switch (entry.State)
                     {
                         case EntityState.Modified:
-                            entry.Property("ModifiedDate").CurrentValue = DateTime.Now;
-                            entry.Property("ModifiedByName").CurrentValue = name;
-                            entry.Property("ModifiedById").CurrentValue = userId;
+                            entry.Property(ModifiedDate).CurrentValue = DateTime.Now;
+                            entry.Property(ModifiedByName).CurrentValue = name;
+                            entry.Property(ModifiedById).CurrentValue = userId;
                             break;
                         case EntityState.Added:
-                            if (entry.Property("CreatedDate").CurrentValue == null)
+                            if (entry.Property(CreatedDate).CurrentValue == null)
                             {
-                                entry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                                entry.Property(CreatedDate).CurrentValue = DateTime.Now;
                             }
-                            entry.Property("CreatedByUser").CurrentValue = name;
-                            entry.Property("CreatedById").CurrentValue = userId;
+                            entry.Property(CreatedByUser).CurrentValue = name;
+                            entry.Property(CreatedById).CurrentValue = userId;
                             break;
                         default:
                             return;
@@ -88,17 +95,17 @@ namespace Churchee.Data.EntityFramework
                 switch (entry.State)
                 {
                     case EntityState.Modified:
-                        entry.Property("ModifiedDate").CurrentValue = DateTime.Now;
-                        entry.Property("ModifiedByName").CurrentValue = "System";
-                        entry.Property("ModifiedById").CurrentValue = Guid.Empty;
+                        entry.Property(ModifiedDate).CurrentValue = DateTime.Now;
+                        entry.Property(ModifiedByName).CurrentValue = "System";
+                        entry.Property(ModifiedById).CurrentValue = Guid.Empty;
                         break;
                     case EntityState.Added:
-                        if (entry.Property("CreatedDate").CurrentValue == null)
+                        if (entry.Property(CreatedDate).CurrentValue == null)
                         {
-                            entry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                            entry.Property(CreatedDate).CurrentValue = DateTime.Now;
                         }
-                        entry.Property("CreatedByUser").CurrentValue = "System";
-                        entry.Property("CreatedById").CurrentValue = Guid.Empty;
+                        entry.Property(CreatedByUser).CurrentValue = "System";
+                        entry.Property(CreatedById).CurrentValue = Guid.Empty;
                         break;
                     default:
                         return;
