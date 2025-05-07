@@ -2,6 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Styles.Queries;
+using Churchee.Module.Site.Specifications;
 using FluentAssertions;
 using Moq;
 
@@ -32,7 +33,7 @@ namespace Churchee.Module.Site.Tests.Features.Styles.Queries.GetStyles
             cssStyles.SetStyles(styles);
 
             _repositoryMock
-                 .Setup(s => s.FirstOrDefaultAsync(It.IsAny<CancellationToken>()))
+                 .Setup(s => s.FirstOrDefaultAsync(It.IsAny<CssForActiveTenantSpecification>(), It.IsAny<CancellationToken>()))
                  .ReturnsAsync(cssStyles);
 
             // Act

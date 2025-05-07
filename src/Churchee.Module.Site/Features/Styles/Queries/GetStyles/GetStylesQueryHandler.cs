@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
 using MediatR;
 
 namespace Churchee.Module.Site.Features.Styles.Queries
@@ -15,7 +16,7 @@ namespace Churchee.Module.Site.Features.Styles.Queries
 
         public async Task<string> Handle(GetStylesQuery request, CancellationToken cancellationToken)
         {
-            var css = await _storage.GetRepository<Css>().FirstOrDefaultAsync(cancellationToken);
+            var css = await _storage.GetRepository<Css>().FirstOrDefaultAsync(new CssForActiveTenantSpecification(), cancellationToken);
 
             if (css == null)
             {

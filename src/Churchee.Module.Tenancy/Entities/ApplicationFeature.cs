@@ -11,6 +11,11 @@ namespace Churchee.Module.Tenancy.Entities
 
         public ApplicationFeature(string name, Guid applicationTenantId) : base(applicationTenantId)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             Name = name;
         }
 
