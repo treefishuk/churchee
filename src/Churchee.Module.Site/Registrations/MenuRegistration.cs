@@ -35,8 +35,8 @@ namespace Churchee.Module.Site.Registration
                     .AddChild(new MenuItem("Templates", "/management/templates", "code", 1, "Developer"))
                     .AddChild(new MenuItem("Styles", "/management/styles", "data_object", 1, "Developer"))
                     .AddChild(new MenuItem("Podcasts", "/management/podcasts", "graphic_eq"))
+                    .AddChild(new MenuItem("Videos", "/management/videos", "smart_display"))
                     .AddChild(new MenuItem("Events", "/management/events", "event"))
-
                 };
 
                 return list;

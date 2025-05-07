@@ -78,6 +78,11 @@ namespace Churchee.Module.Site.Features.Templates.Validation
                     continue; // Allow YouTube embeds
                 }
 
+                if (tag.Contains("@Model.EmbedUri"))
+                {
+                    continue; // Allow embeds from DB
+                }
+
                 return false; // Disallow other embeds
             }
 
