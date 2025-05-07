@@ -12,7 +12,7 @@ namespace Churchee.Module.X.Registrations
                 var list = new List<MenuItem>
                 {
                     new MenuItem("Integrations", "/management/integrations", "integration_instructions", 100)
-                    .AddChild(new MenuItem("X/Twitter Sync", "/management/integrations/x", "graphic_eq"))
+                    .AddChild(new MenuItem("X/Twitter Sync", "/management/integrations/x", "message"))
                 };
 
                 return list;

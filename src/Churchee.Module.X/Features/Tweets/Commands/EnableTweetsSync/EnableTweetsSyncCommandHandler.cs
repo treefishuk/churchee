@@ -13,6 +13,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 {
@@ -59,6 +60,15 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
             if (!response.IsSuccess)
             {
                 return response;
+            }
+
+            var newTemplatePath = "/Views/Shared/Components/Carousel/Tweets.cshtml";
+
+            if (!_dataStore.GetRepository<ViewTemplate>().AnyWithFiltersDisabled(a => a.Location == newTemplatePath && a.ApplicationTenantId == applicationTenantId))
+            {
+                _dataStore.GetRepository<ViewTemplate>().Create(new ViewTemplate(applicationTenantId, newTemplatePath, ViewTemplateData.TweetListing));
+
+                await _dataStore.SaveChangesAsync(cancellationToken);
             }
 
             try
@@ -197,12 +207,24 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             foreach (var tweet in deserializedResponse.Tweets)
             {
-                if (mediaItemsRepo.AnyWithFiltersDisabled(x => x.Title == tweet.Id))
+                if (mediaItemsRepo.AnyWithFiltersDisabled(x => x.Title == $"Tweet: {tweet.Id}"))
                 {
                     continue;
                 }
 
-                var newTweet = new MediaItem(applicationTenantId, $"Tweet: {tweet.Id}", $"https://twitter.com/{userName}/status/{tweet.Id}", "", tweet.Text, tweetsMediaFolder.Id)
+                string tweetContent = tweet.Text;
+
+                string linkPattern = @"(https?://[^\s]+)"; // Match HTTP/HTTPS URLs
+                string linkReplacement = "<a href=\"$1\">$1</a>";
+
+                tweetContent = Regex.Replace(tweetContent, linkPattern, linkReplacement);
+
+                string handlePattern = @"(?<!\S)@(\w+)"; // Ensure @username is not part of an email address
+                string handleReplacement = "<a href=\"https://x.com/$1\">@$1</a>";
+
+                tweetContent = Regex.Replace(tweetContent, handlePattern, handleReplacement);
+
+                var newTweet = new MediaItem(applicationTenantId, $"Tweet: {tweet.Id}", "/_content/Churchee.Module.X/img/tweet.png", "", tweetContent, tweetsMediaFolder.Id)
                 {
                     CreatedDate = tweet.CreatedAt
                 };
