@@ -6,7 +6,7 @@ namespace Hangfire
 {
     public static class HangfireExtensions
     {
-        internal static IGlobalConfiguration CreateDatabaseIfNotExists(this IGlobalConfiguration globalConfirguration, string connectionString)
+        internal static IGlobalConfiguration CreateDatabaseIfNotExists(this IGlobalConfiguration globalConfiguration, string connectionString)
         {
             var csBuilder = new SqlConnectionStringBuilder(connectionString);
 
@@ -26,7 +26,7 @@ namespace Hangfire
                 command.ExecuteNonQuery();
             }
 
-            return globalConfirguration;
+            return globalConfiguration;
         }
 
         public static void UseChurcheeHangfireDashboard(this IApplicationBuilder app)
