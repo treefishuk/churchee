@@ -71,7 +71,10 @@ namespace Churchee.Data.EntityFramework
                             entry.Property("ModifiedById").CurrentValue = userId;
                             break;
                         case EntityState.Added:
-                            entry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                            if (entry.Property("CreatedDate").CurrentValue == null)
+                            {
+                                entry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                            }
                             entry.Property("CreatedByUser").CurrentValue = name;
                             entry.Property("CreatedById").CurrentValue = userId;
                             break;
@@ -90,7 +93,10 @@ namespace Churchee.Data.EntityFramework
                         entry.Property("ModifiedById").CurrentValue = Guid.Empty;
                         break;
                     case EntityState.Added:
-                        entry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                        if (entry.Property("CreatedDate").CurrentValue == null)
+                        {
+                            entry.Property("CreatedDate").CurrentValue = DateTime.Now;
+                        }
                         entry.Property("CreatedByUser").CurrentValue = "System";
                         entry.Property("CreatedById").CurrentValue = Guid.Empty;
                         break;
