@@ -1,0 +1,112 @@
+﻿@page "/management/integrations/youtube"
+@inherits BasePage
+@using Churchee.Module.Videos.Features.Commands
+@using Churchee.Module.YouTube.Areas.Integrations.Models
+@using Churchee.Module.YouTube.Features.YouTube.Commands
+@using Churchee.Module.UI.Models
+@using Churchee.Module.YouTube.Features.YouTube.Queries
+@using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Churchee.Module.UI.Components
+@using Radzen.Blazor
+@using Radzen
+
+<PageName></PageName>
+
+@if (youTubeConfigured)
+{
+    <div>
+
+        @if (lastRun != null)
+        {
+            <b>Last Run: @lastRun.Value.ToShortDateString()</b>
+        }
+
+        <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+            <h1>YouTube Video Sync is set up!</h1>
+
+            <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+
+        </RadzenStack>
+
+    </div>
+
+}
+
+else
+{
+    <RadzenRow Gap="1rem">
+        <RadzenColumn class="rz-p-5">
+            <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm())>
+            </Form>
+        </RadzenColumn>
+        <RadzenColumn class="rz-p-5">
+            
+            <h3>Configuration Instructions</h3>
+
+
+        </RadzenColumn>
+    </RadzenRow>
+}
+
+
+@code{
+
+    bool youTubeConfigured = false;
+
+    DateTime? lastRun = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        InputModel = new InputModel();
+
+        var result = await Mediator.Send(new GetYouTubeSettingsRequest());
+
+        lastRun = result.LastRun;
+
+        youTubeConfigured = !string.IsNullOrEmpty(result.Handle);
+    }
+
+    private async Task DisableSync()
+    {
+        var result = await Mediator.Send(new DisableYouTubeSyncCommand());
+
+        if (result.IsSuccess)
+        {
+            youTubeConfigured = false;
+
+            NotificationService.Notify(NotificationSeverity.Success, "Integration Disabled");
+
+            InputModel = new InputModel();
+
+            StateHasChanged();
+        }
+    }
+
+    [SupplyParameterFromForm]
+    public InputModel InputModel { get; set; } = new();
+
+    private async Task ValidSubmitForm()
+    {
+        var videoEnabledResult = await Mediator.Send(new VideosEnabledCommand(InputModel.NameForContent));
+
+        if (!videoEnabledResult.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to enable Videos");
+        }
+
+        var enableYouTubeSyncResult = await Mediator.Send(new EnableYouTubeSyncCommand(InputModel.ApiKey, InputModel.Handle));
+
+        if (enableYouTubeSyncResult.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Success, "YouTube sync configured, Syncing will being shortly");
+
+            youTubeConfigured = true;
+
+            StateHasChanged();
+        }
+    }
+}
