@@ -217,12 +217,12 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
                 string linkPattern = @"(https?://[^\s]+)"; // Match HTTP/HTTPS URLs
                 string linkReplacement = "<a href=\"$1\">$1</a>";
 
-                tweetContent = Regex.Replace(tweetContent, linkPattern, linkReplacement);
+                tweetContent = Regex.Replace(tweetContent, linkPattern, linkReplacement, RegexOptions.None, TimeSpan.FromMilliseconds(500));
 
                 string handlePattern = @"(?<!\S)@(\w+)"; // Ensure @username is not part of an email address
                 string handleReplacement = "<a href=\"https://x.com/$1\">@$1</a>";
 
-                tweetContent = Regex.Replace(tweetContent, handlePattern, handleReplacement);
+                tweetContent = Regex.Replace(tweetContent, handlePattern, handleReplacement, RegexOptions.None, TimeSpan.FromMilliseconds(500));
 
                 var newTweet = new MediaItem(applicationTenantId, $"Tweet: {tweet.Id}", "/_content/Churchee.Module.X/img/tweet.png", "", tweetContent, tweetsMediaFolder.Id)
                 {
