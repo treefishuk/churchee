@@ -8,13 +8,12 @@ namespace Churchee.Module.Tenancy.Areas.Configuration.Churches.Create
         public CreateChurchInputModel()
         {
             Name = string.Empty;
-            CharityNumber = string.Empty;
         }
 
         [Required]
         public string Name { get; set; }
 
-        public string CharityNumber { get; set; }
+        public int? CharityNumber { get; set; }
 
     }
 }
