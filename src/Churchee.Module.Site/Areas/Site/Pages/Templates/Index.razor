@@ -21,13 +21,15 @@
     </div> 
 </SectionContent>
 
-<Grid TItem="TemplateListingResponse" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
+<Grid TItem="TemplateListingResponse" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
 
 @code {
 
     IEnumerable<TemplateListingResponse> listingData;
 
     bool isLoading = false;
+
+    int count = 0;
 
     async Task LoadData(LoadDataArgs args)
     {
@@ -40,6 +42,8 @@
                 orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Location asc" : args.OrderBy), CancellationToken);
 
         listingData = result.Data;
+
+        count = result.RecordsTotal;
 
         isLoading = false;
     }
