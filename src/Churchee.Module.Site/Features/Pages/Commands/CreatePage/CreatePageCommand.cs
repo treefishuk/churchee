@@ -5,12 +5,12 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 {
     public class CreatePageCommand : IRequest<CommandResponse>
     {
-        public CreatePageCommand(string title, string desciption, string pageTypeId, string parentId)
+        public CreatePageCommand(string title, string description, string pageTypeId, string parentId)
         {
             Title = title;
-            Description = desciption;
+            Description = description;
             PageTypeId = Guid.Parse(pageTypeId);
-            ParentId = parentId != null ? Guid.Parse(parentId) : null;
+            ParentId = string.IsNullOrEmpty(parentId) ? null : Guid.Parse(parentId);
         }
 
         public string Title { get; }
