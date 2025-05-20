@@ -1,5 +1,6 @@
 ﻿@page "/management/pagetypes"
 @inherits BasePage
+@using Churchee.Module.Site.Features.PageTypes.Commands
 @using Churchee.Module.Site.Features.PageTypes.Queries
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
@@ -16,7 +17,7 @@
     </div> 
 </SectionContent>
 
-<Grid TItem="GetPageTypesListingResponse" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
+<Grid TItem="GetPageTypesListingResponse" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="OnDelete"></Grid>
 
 @code {
 
@@ -37,6 +38,20 @@
         listingData = result.Data;
 
         isLoading = false;
+    }
+
+    async Task OnDelete(GetPageTypesListingResponse item)
+    {
+        var result = await Mediator.Send(new DeletePageTypeCommand(item.Id));
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove Page Type");
+
+            return;
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, "Page Type Deleted");
     }
 
 }
