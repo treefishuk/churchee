@@ -148,7 +148,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
 
             var videoRepo = _dataStore.GetRepository<Video>();
 
-            foreach (var item in deserializedResponse.Items)
+            foreach (var item in deserializedResponse.Items.Where(w => w.Snippet.ChannelId == channelId))
             {
                 var videoUri = $"https://youtu.be/{item.Id.VideoId}";
 
