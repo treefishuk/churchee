@@ -79,7 +79,8 @@
             formFieldStyles = "max-width:300px;";
         }
 
-        <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles">
+        <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles" AllowFloatingLabel="false"
+>
                     <ChildContent>
                         @{
                             if (dataType == typeof(int).Name)
