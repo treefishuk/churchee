@@ -82,7 +82,7 @@
         <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles">
                     <ChildContent>
                         @{
-                            if (dataType == typeof(int).Name || dataType == DataTypes.Number)
+                            if (dataType == typeof(int).Name)
                             {
                                 <RadzenNumeric TValue="int" Value="@(int.Parse(propertyStringValue))" Change=@((value) => OnFieldChange(prop, value)) />
                             }
@@ -92,7 +92,7 @@
                             }
                             if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                             {
-                                <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) />
+                                <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" @oninput="(e) => OnFieldChange(prop, e.Value?.ToString())" />
                             }
 
                             if (dataType == DataTypes.Password)
