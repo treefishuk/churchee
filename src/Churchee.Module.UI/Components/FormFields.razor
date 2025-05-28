@@ -82,9 +82,13 @@
         <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles">
                     <ChildContent>
                         @{
-                            if (dataType == typeof(int).Name)
+                            if (dataType == typeof(int).Name || dataType == DataTypes.Number)
                             {
                                 <RadzenNumeric TValue="int" Value="@(int.Parse(propertyStringValue))" Change=@((value) => OnFieldChange(prop, value)) />
+                            }
+                            if (Nullable.GetUnderlyingType(prop.PropertyType) == typeof(int))
+                            {
+                                <RadzenNumeric TValue="int?" Value="@(string.IsNullOrEmpty(propertyStringValue) ? (int?)null : int.Parse(propertyStringValue))" Change=@((value) => OnFieldChange(prop, value)) />
                             }
                             if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                             {
