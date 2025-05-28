@@ -45,14 +45,13 @@ namespace Churchee.Module.Events.Areas.Website.Models
 
         public string LocationName { get; set; }
 
-        public string City { get; set; }
-
         public string Street { get; set; }
+
+        public string City { get; set; }
 
         public string PostCode { get; set; }
 
         public string Country { get; set; }
-
 
         [DataType(DataTypes.GeoCoordinates)]
         public decimal? Latitude { get; set; }
