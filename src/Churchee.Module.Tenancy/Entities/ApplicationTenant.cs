@@ -61,6 +61,7 @@ namespace Churchee.Module.Tenancy.Entities
         public ICollection<ApplicationHost> Hosts { get; private set; }
 
         public ICollection<ApplicationFeature> Features { get; private set; }
+
         public bool Deleted { get; set; }
 
         public int SetName(string name)
@@ -74,6 +75,16 @@ namespace Churchee.Module.Tenancy.Entities
 
             return 1;
 
+        }
+
+        public void SetCharityNumber(int? charityNumber)
+        {
+            if (charityNumber == null)
+            {
+                return;
+            }
+
+            CharityNumber = charityNumber.Value;
         }
 
         public int AddHost(string hostname)

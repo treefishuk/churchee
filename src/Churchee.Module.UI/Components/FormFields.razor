@@ -79,16 +79,44 @@
             formFieldStyles = "max-width:300px;";
         }
 
-        <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles">
+        <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles" AllowFloatingLabel="false"
+>
                     <ChildContent>
                         @{
                             if (dataType == typeof(int).Name)
                             {
                                 <RadzenNumeric TValue="int" Value="@(int.Parse(propertyStringValue))" Change=@((value) => OnFieldChange(prop, value)) />
                             }
+                            if (Nullable.GetUnderlyingType(prop.PropertyType) == typeof(int))
+                            {
+                                <RadzenNumeric TValue="int?" Value="@(string.IsNullOrEmpty(propertyStringValue) ? (int?)null : int.Parse(propertyStringValue))" Change=@((value) => OnFieldChange(prop, value)) />
+                            }
                             if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                             {
-                                <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) />
+                            <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" @oninput="(e) => OnFieldChange(prop, e.Value?.ToString())" />
+                            }
+                            if (prop.PropertyType == typeof(List<string>))
+                            {
+                                var list = prop.GetValue(InputModel) as List<string>;
+
+                                if(list != null && list.Count > 0)
+                                {
+                                    <RadzenStack Gap="0">
+
+                                      @for (int i = 0; i < list.Count; i++)
+                                      {
+                                            string name = $"{prop.Name}_{i}";
+                                            var localIndex = i;
+
+                                            string style = i < list.Count - 1 ? "border-bottom: 1px solid #e0e9f2; border-radius:0" : string.Empty;
+
+                                            <RadzenTextBox Name="@name" Value="@list[i]" @oninput="(e) => OnFieldChange(prop, localIndex, e.Value?.ToString())" Style="@style" />
+                                      }
+
+                                    </RadzenStack>
+
+                                }
+
                             }
 
                             if (dataType == DataTypes.Password)
@@ -233,6 +261,23 @@
 
         await OnValueChanged.InvokeAsync(null);
     }
+
+    public async Task OnFieldChange(PropertyInfo info, int index, string? value)
+    {
+        if (info.GetValue(InputModel) is List<string> list)
+        {
+            if (index >= 0 && index < list.Count)
+            {
+                list[index] = value ?? string.Empty; // Ensure non-null assignment
+
+                // Get the FieldIdentifier for validation
+                FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
+                EditContext.NotifyFieldChanged(fieldIdentifier);
+
+                await OnValueChanged.InvokeAsync(null);
+            }
+        }
+}
 
     public async Task OnTextWithSlugFieldChange(PropertyInfo info, object value)
     {

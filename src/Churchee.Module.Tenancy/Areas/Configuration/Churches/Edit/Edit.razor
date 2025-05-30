@@ -1,0 +1,49 @@
+﻿@page "/management/configuration/churches/edit/{Id:guid}"
+@using Churchee.Module.Tenancy.Features.Churches.Commands
+@using Churchee.Module.Tenancy.Features.Churches.Queries
+@using Churchee.Module.UI.Components
+@using Radzen
+@inherits BasePage
+
+<PageName Name="Modify Church"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public EditChurchInputModel InputModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SetInputModelData();
+    }
+
+    private async Task SetInputModelData()
+    {
+        var result = await Mediator.Send(new GetInfoForEditQuery(Id), default);
+
+        InputModel = new EditChurchInputModel(result.CharityNumber, result.Domains);
+    }
+
+    private async Task ValidSubmitForm()
+    {
+
+        var result = await Mediator.Send(new UpdateChurchCommand(Id, InputModel.CharityNumber, InputModel.Domains), default);
+
+        if (result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = "Church updated successfully",
+                Detail = "The church has been updated successfully."
+            });
+
+            await SetInputModelData();
+        }
+    }
+}

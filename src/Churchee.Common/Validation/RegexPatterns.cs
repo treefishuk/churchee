@@ -7,7 +7,7 @@
         /// <summary>
         /// Only spaces, apostrophe, uppercase and lowercase letters supported
         /// </summary>
-        public const string BasicText = "^[a-zA-Z][a-zA-Z\\s']{0,20}[a-zA-Z]$";
+        public const string BasicText = "^[a-zA-Z\\s']{0,20}[a-zA-Z]$";
 
         public const string BasicTextAndNumbers = "^[a-zA-Z0-9][a-zA-Z0-9\\s']{0,20}[a-zA-Z0-9]$";
 

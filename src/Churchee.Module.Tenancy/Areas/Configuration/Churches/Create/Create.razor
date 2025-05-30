@@ -6,16 +6,14 @@
 @using MediatR
 @using Radzen
 
-<PageName Name="Create Page Type"></PageName>
+<PageName Name="Add Church"></PageName>
 
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
 @code {
+
     [SupplyParameterFromForm]
     public CreateChurchInputModel InputModel { get; set; } = new();
-
-    [Parameter]
-    public Guid Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,13 +26,11 @@
 
     private async Task ValidSubmitForm()
     {
-
         var result = await Mediator.Send(new AddChurchCommand(InputModel.Name, InputModel.CharityNumber ?? 0), default);
 
         if (result.IsSuccess)
         {
             NavigationManager.NavigateTo("/management/configuration/churches");
         }
-
     }
 }
