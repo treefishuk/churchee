@@ -62,7 +62,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
                 return response;
             }
 
-            var newTemplatePath = "/Views/Shared/Components/Carousel/Tweets.cshtml";
+            string newTemplatePath = "/Views/Shared/Components/Carousel/Tweets.cshtml";
 
             if (!_dataStore.GetRepository<ViewTemplate>().AnyWithFiltersDisabled(a => a.Location == newTemplatePath && a.ApplicationTenantId == applicationTenantId))
             {
@@ -107,7 +107,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
-            var getUserIdUrl = $"https://api.twitter.com/2/users/by/username/{accountName}";
+            string getUserIdUrl = $"https://api.twitter.com/2/users/by/username/{accountName}";
 
             var getUserIdResponse = await httpClient.GetAsync(getUserIdUrl, cancellationToken);
 
@@ -120,7 +120,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
                 return response;
             }
 
-            var getUserIdResponseString = await getUserIdResponse.Content.ReadAsStringAsync();
+            string getUserIdResponseString = await getUserIdResponse.Content.ReadAsStringAsync(cancellationToken);
 
             if (string.IsNullOrEmpty(getUserIdResponseString))
             {
@@ -142,7 +142,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
                 return response;
             }
 
-            var userId = getUserIdResponseClass.GetId();
+            string userId = getUserIdResponseClass.GetId();
 
             await _settingStore.AddOrUpdateSetting(Guid.Parse(SettingKeys.XUserId), applicationTenantId, "X/Twitter Identifier", userId);
 
@@ -172,7 +172,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             string userName = await _settingStore.GetSettingValue(Guid.Parse(SettingKeys.XUserAccount), applicationTenantId);
 
-            var getTweetsUrl = $"https://api.twitter.com/2/users/{userId}/tweets?tweet.fields=created_at&max_results=10";
+            string getTweetsUrl = $"https://api.twitter.com/2/users/{userId}/tweets?tweet.fields=created_at&max_results=10";
 
             var response = await httpClient.GetAsync(getTweetsUrl, cancellationToken);
 

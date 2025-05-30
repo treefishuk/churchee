@@ -69,7 +69,12 @@ namespace Churchee.Presentation.Admin
             builder.Services.AddServicesActions();
             builder.Services.AddScoped<CurrentPage>();
 
-            string emailService = builder.Configuration.GetSection("Email").GetValue<string>("Service");
+            string? emailService = builder.Configuration.GetSection("Email").GetValue<string>("Service");
+
+            if (string.IsNullOrEmpty(emailService))
+            {
+                emailService = "Logger";
+            }
 
             switch (emailService)
             {

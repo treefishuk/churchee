@@ -72,7 +72,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
 
             var response = new CommandResponse();
 
-            var getIdUrl = $"https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@{request.Handle}&key={request.ApiKey}";
+            string getIdUrl = $"https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@{request.Handle}&key={request.ApiKey}";
 
             var httpClient = _httpClientFactory.CreateClient();
 
@@ -87,7 +87,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
                 return response;
             }
 
-            var getChannelIdResponseString = await getChannelId.Content.ReadAsStringAsync();
+            string getChannelIdResponseString = await getChannelId.Content.ReadAsStringAsync(cancellationToken);
 
             if (string.IsNullOrEmpty(getChannelIdResponseString))
             {
@@ -109,7 +109,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
                 return response;
             }
 
-            var channelId = getUserIdResponseClass.ChannelId;
+            string channelId = getUserIdResponseClass.ChannelId;
 
             await _settingStore.AddOrUpdateSetting(SettingKeys.ChannelId, applicationTenantId, "YouTube Channel Id", channelId);
 
@@ -126,7 +126,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
 
             string apiKey = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.ApiKeyToken, applicationTenantId), s => s.Value, cancellationToken);
 
-            var getVideosUrl = $"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults=10&key={apiKey}";
+            string getVideosUrl = $"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults=10&key={apiKey}";
 
             var httpClient = _httpClientFactory.CreateClient();
 
@@ -150,9 +150,9 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
 
             foreach (var item in deserializedResponse.Items.Where(w => w.Snippet.ChannelId == channelId))
             {
-                var videoUri = $"https://youtu.be/{item.Id.VideoId}";
+                string videoUri = $"https://youtu.be/{item.Id.VideoId}";
 
-                var alreadyExists = videoRepo.AnyWithFiltersDisabled(w => w.VideoUri == videoUri && w.ApplicationTenantId == applicationTenantId);
+                bool alreadyExists = videoRepo.AnyWithFiltersDisabled(w => w.VideoUri == videoUri && w.ApplicationTenantId == applicationTenantId);
 
                 if (!alreadyExists)
                 {
@@ -166,7 +166,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
 
         private async Task AddNewVideo(Guid applicationTenantId, string videosPath, YouTubeVideo item, CancellationToken cancellationToken)
         {
-            Guid videoDetailPageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.VideoDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
+            var videoDetailPageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.VideoDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
 
             if (videoDetailPageTypeId == Guid.Empty)
             {
