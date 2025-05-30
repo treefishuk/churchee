@@ -58,59 +58,57 @@ namespace Churchee.Data.EntityFramework
                 return;
             }
 
-            if (_httpContextAccessor.HttpContext != null)
+            var (userId, name) = GetUserInfo();
+
+            switch (entry.State)
+            {
+                case EntityState.Modified:
+                    SetModifiedFields(entry, name, userId);
+                    break;
+                case EntityState.Added:
+                    SetCreatedFields(entry, name, userId);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private (Guid UserId, string Name) GetUserInfo()
+        {
+            var userId = Guid.Empty;
+
+            string name = "System";
+
+            if (_httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 var user = _httpContextAccessor.HttpContext.User;
 
-                if (user != null && user.Identity.IsAuthenticated)
-                {
-                    var nameClaim = user.Claims.FirstOrDefault(w => w.Type == ClaimTypes.Name);
-                    var idClaim = user.Claims.FirstOrDefault(w => w.Type == ClaimTypes.NameIdentifier);
+                var nameClaim = user.Claims.FirstOrDefault(w => w.Type == ClaimTypes.Name);
 
-                    string name = nameClaim?.Value ?? "Unknown";
-                    var userId = idClaim != null ? Guid.Parse(idClaim.Value) : Guid.Empty;
+                var idClaim = user.Claims.FirstOrDefault(w => w.Type == ClaimTypes.NameIdentifier);
 
-                    switch (entry.State)
-                    {
-                        case EntityState.Modified:
-                            entry.Property(ModifiedDate).CurrentValue = DateTime.Now;
-                            entry.Property(ModifiedByName).CurrentValue = name;
-                            entry.Property(ModifiedById).CurrentValue = userId;
-                            break;
-                        case EntityState.Added:
-                            if (entry.Property(CreatedDate).CurrentValue == null)
-                            {
-                                entry.Property(CreatedDate).CurrentValue = DateTime.Now;
-                            }
-                            entry.Property(CreatedByUser).CurrentValue = name;
-                            entry.Property(CreatedById).CurrentValue = userId;
-                            break;
-                        default:
-                            return;
-                    }
-                }
+                name = nameClaim?.Value ?? "Unknown";
+                userId = idClaim != null ? Guid.Parse(idClaim.Value) : Guid.Empty;
             }
-            else
+
+            return (userId, name);
+        }
+
+        private static void SetCreatedFields(EntityEntry entry, string name, Guid userId)
+        {
+            if (entry.Property(CreatedDate).CurrentValue == null)
             {
-                switch (entry.State)
-                {
-                    case EntityState.Modified:
-                        entry.Property(ModifiedDate).CurrentValue = DateTime.Now;
-                        entry.Property(ModifiedByName).CurrentValue = "System";
-                        entry.Property(ModifiedById).CurrentValue = Guid.Empty;
-                        break;
-                    case EntityState.Added:
-                        if (entry.Property(CreatedDate).CurrentValue == null)
-                        {
-                            entry.Property(CreatedDate).CurrentValue = DateTime.Now;
-                        }
-                        entry.Property(CreatedByUser).CurrentValue = "System";
-                        entry.Property(CreatedById).CurrentValue = Guid.Empty;
-                        break;
-                    default:
-                        return;
-                }
+                entry.Property(CreatedDate).CurrentValue = DateTime.Now;
             }
+            entry.Property(CreatedByUser).CurrentValue = name;
+            entry.Property(CreatedById).CurrentValue = userId;
+        }
+
+        private static void SetModifiedFields(EntityEntry entry, string name, Guid userId)
+        {
+            entry.Property(ModifiedDate).CurrentValue = DateTime.Now;
+            entry.Property(ModifiedByName).CurrentValue = name;
+            entry.Property(ModifiedById).CurrentValue = userId;
         }
     }
 }

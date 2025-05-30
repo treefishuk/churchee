@@ -2,9 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
 using Churchee.Module.Tenancy.Events;
-using Churchee.Module.Tenancy.Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Tenancy.Features.Churches.Commands
@@ -17,8 +15,8 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands
 
         public AddChurchCommandHandler(IDataStore store, IConfiguration configuration)
         {
-            _store = store ?? throw new NullReferenceException(nameof(store));
-            _configuration = configuration ?? throw new NullReferenceException(nameof(configuration));
+            _store = store ?? throw new ArgumentNullException(nameof(store));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<CommandResponse> Handle(AddChurchCommand request, CancellationToken cancellationToken)

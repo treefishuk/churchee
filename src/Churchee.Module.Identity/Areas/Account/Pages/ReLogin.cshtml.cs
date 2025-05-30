@@ -42,7 +42,10 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
 
             await _signInManager.RefreshSignInAsync(user);
 
-            returnUrl ??= Url.Content("~/");
+            if (!Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = Url.Content("~/");
+            }
 
             return Redirect(returnUrl);
         }
