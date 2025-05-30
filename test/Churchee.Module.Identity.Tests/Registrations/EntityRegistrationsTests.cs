@@ -13,13 +13,14 @@ namespace Churchee.Module.Identity.Tests.Registrations
         public EntityRegistrationIntegrationTests()
         {
             _msSqlContainer = new MsSqlBuilder()
-             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-             .WithPassword("yourStrong(!)Password")
-             .Build();
+                .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+                .WithPassword("yourStrong(!)Password")
+                .Build();
 
-            _msSqlContainer.StartAsync().GetAwaiter().GetResult();
+            // Await the StartAsync method properly to avoid directly accessing ValueTask result
+            _msSqlContainer.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-            var connectionString = _msSqlContainer.GetConnectionString();
+            string connectionString = _msSqlContainer.GetConnectionString();
 
             var optionsBuilder = new DbContextOptionsBuilder<IdentityDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
@@ -53,10 +54,15 @@ namespace Churchee.Module.Identity.Tests.Registrations
 
         public void Dispose()
         {
-            _msSqlContainer.StopAsync().GetAwaiter().GetResult();
-            _msSqlContainer.DisposeAsync().GetAwaiter().GetResult();
-            GC.SuppressFinalize(this);
+            if (_msSqlContainer == null)
+            {
+                return;
+            }
 
+            _msSqlContainer.StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            _msSqlContainer.DisposeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+            GC.SuppressFinalize(this);
         }
     }
 

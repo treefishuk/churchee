@@ -20,7 +20,7 @@ namespace Churchee.Module.Identity.Tests.Features.Roles.Queries
         private readonly Mock<IRepository<ApplicationRole>> _repositoryMock;
         private readonly Mock<ChurcheeUserManager> _userManagerMock;
         private readonly GetAllSelectableRolesForUserQueryHandler _handler;
-        private readonly Faker _faker = new Faker("en");
+        private readonly Faker _faker = new("en");
         public GetAllSelectableRolesForUserQueryHandlerTests()
         {
             _dataStoreMock = new Mock<IDataStore>();
@@ -40,8 +40,8 @@ namespace Churchee.Module.Identity.Tests.Features.Roles.Queries
 
             var roles = new List<MultiSelectItem>
             {
-                    new MultiSelectItem(Guid.Parse("298dccb4-01f8-448b-826b-3e9696240409"), "Admin", true),
-                    new MultiSelectItem(Guid.Parse("2c198722-01ea-480f-b69a-f96c4b81359f"), "User", true)
+                    new(Guid.Parse("298dccb4-01f8-448b-826b-3e9696240409"), "Admin", true),
+                    new(Guid.Parse("2c198722-01ea-480f-b69a-f96c4b81359f"), "User", true)
             };
 
             _userManagerMock.Setup(um => um.FindByIdAsync(user.Id.ToString())).ReturnsAsync(user);
@@ -90,7 +90,7 @@ namespace Churchee.Module.Identity.Tests.Features.Roles.Queries
             // Arrange
             var userId = Guid.NewGuid();
 
-            _userManagerMock.Setup(um => um.FindByIdAsync(userId.ToString())).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(um => um.FindByIdAsync(userId.ToString())).ReturnsAsync((ApplicationUser?)null);
 
             var query = new GetAllSelectableRolesForUserQuery(userId);
 

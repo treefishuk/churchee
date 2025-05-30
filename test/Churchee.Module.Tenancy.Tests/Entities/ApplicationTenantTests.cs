@@ -11,8 +11,8 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var name = "Test Tenant";
-            var charityNumber = 12345;
+            string name = "Test Tenant";
+            int charityNumber = 12345;
 
             // Act
             var tenant = new ApplicationTenant(tenantId, name, charityNumber);
@@ -32,7 +32,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         {
             // Arrange
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Old Name", 12345);
-            var newName = "New Name";
+            string newName = "New Name";
 
             // Act
             tenant.SetName(newName);
@@ -48,7 +48,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Old Name", 12345);
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => tenant.SetName(null));
+            Assert.Throws<ArgumentNullException>(() => tenant.SetName(string.Empty));
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         {
             // Arrange
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Test Tenant", 12345);
-            var hostname = "test.example.com";
+            string hostname = "test.example.com";
 
             // Act
             tenant.AddHost(hostname);
@@ -73,7 +73,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Test Tenant", 12345);
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => tenant.AddHost(null));
+            Assert.Throws<ArgumentNullException>(() => tenant.AddHost(string.Empty));
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         {
             // Arrange
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Test Tenant", 12345);
-            var hostname = "test.example.com";
+            string hostname = "test.example.com";
             tenant.AddHost(hostname);
             var hostId = tenant.Hosts.First().Id;
 
@@ -110,7 +110,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         {
             // Arrange
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Test Tenant", 12345);
-            var featureName = "Test Feature";
+            string featureName = "Test Feature";
 
             // Act
             tenant.AddFeature(featureName);
@@ -127,7 +127,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Test Tenant", 12345);
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => tenant.AddFeature(null));
+            Assert.Throws<ArgumentNullException>(() => tenant.AddFeature(string.Empty));
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         {
             // Arrange
             var tenant = new ApplicationTenant(Guid.NewGuid(), "Test Tenant", 12345);
-            var featureName = "Test Feature";
+            string featureName = "Test Feature";
             tenant.AddFeature(featureName);
             var featureId = tenant.Features.First().Id;
 

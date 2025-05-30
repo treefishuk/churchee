@@ -102,7 +102,7 @@ namespace Churchee.Data.EntityFramework.Tests.Registrations
 
         }
 
-        private X509Certificate2 CreateSelfSignedCertificate()
+        private static X509Certificate2 CreateSelfSignedCertificate()
         {
             using var rsa = RSA.Create(2048);
             var request = new CertificateRequest(
