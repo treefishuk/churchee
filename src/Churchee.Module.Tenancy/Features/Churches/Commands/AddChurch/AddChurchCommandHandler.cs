@@ -2,7 +2,10 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
 using Churchee.Module.Tenancy.Events;
+using Churchee.Module.Tenancy.Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Server.HttpSys;
+using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Tenancy.Features.Churches.Commands
 {
@@ -10,15 +13,23 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands
     {
 
         private readonly IDataStore _store;
+        private readonly IConfiguration _configuration;
 
-        public AddChurchCommandHandler(IDataStore store)
+        public AddChurchCommandHandler(IDataStore store, IConfiguration configuration)
         {
-            _store = store;
+            _store = store ?? throw new NullReferenceException(nameof(store));
+            _configuration = configuration ?? throw new NullReferenceException(nameof(configuration));
         }
 
         public async Task<CommandResponse> Handle(AddChurchCommand request, CancellationToken cancellationToken)
         {
             var newEntity = new ApplicationTenant(Guid.NewGuid(), request.Name, request.CharityNumber);
+
+            string subDomainTemplate = _configuration.GetRequiredSection("Tenants").GetValue<string>("Domain") ?? string.Empty;
+
+            string hostEntry = subDomainTemplate.Replace("*", newEntity.DevName);
+
+            newEntity.AddHost(hostEntry);
 
             newEntity.AddDomainEvent(new TenantAddedEvent(newEntity.Id));
 
