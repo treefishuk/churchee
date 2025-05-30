@@ -19,7 +19,7 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands.UpdateChurch
         {
             var repo = _store.GetRepository<ApplicationTenant>();
 
-            var entity = await repo.GetByIdAsync(request.Id);
+            var entity = await repo.GetByIdAsync(request.Id, cancellationToken);
 
             entity.SetCharityNumber(request.CharityNumber);
 

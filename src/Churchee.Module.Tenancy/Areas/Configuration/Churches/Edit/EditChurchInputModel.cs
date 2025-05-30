@@ -4,8 +4,9 @@
     {
         public EditChurchInputModel()
         {
-
+            Domains = new List<string>();
         }
+
         public EditChurchInputModel(int? charityNumber, IEnumerable<string> domains)
         {
             CharityNumber = charityNumber;

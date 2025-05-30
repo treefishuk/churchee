@@ -19,9 +19,9 @@
 
     var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
 
-    var properyValue = prop.GetValue(InputModel);
+    var propertyValue = prop.GetValue(InputModel);
 
-    string propertyStringValue = properyValue?.ToString() ?? string.Empty;
+    string propertyStringValue = propertyValue?.ToString() ?? string.Empty;
 
     if (dataTypeAttribute != null)
     {
@@ -152,11 +152,11 @@
                             {
                                 int rows = 2;
 
-                                var maxlengthDataAttribute = prop.GetCustomAttribute<MaxLengthAttribute>();
+                                var maxLengthDataAttribute = prop.GetCustomAttribute<MaxLengthAttribute>();
 
-                                if (maxlengthDataAttribute != null)
+                                if (maxLengthDataAttribute != null)
                                 {
-                                    rows = Math.Max(2, (maxlengthDataAttribute.Length / 50));
+                                    rows = Math.Max(2, (maxLengthDataAttribute.Length / 50));
                                 }
 
                                 <RadzenTextArea Name="@prop.Name" Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) class="w-100" Rows="rows" aria-label="TextArea" />
@@ -264,20 +264,17 @@
 
     public async Task OnFieldChange(PropertyInfo info, int index, string? value)
     {
-        if (info.GetValue(InputModel) is List<string> list)
+        if (info.GetValue(InputModel) is List<string> list && index >= 0 && index < list.Count)
         {
-            if (index >= 0 && index < list.Count)
-            {
-                list[index] = value ?? string.Empty; // Ensure non-null assignment
+            list[index] = value ?? string.Empty; // Ensure non-null assignment
 
-                // Get the FieldIdentifier for validation
-                FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
-                EditContext.NotifyFieldChanged(fieldIdentifier);
+            // Get the FieldIdentifier for validation
+            FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
+            EditContext.NotifyFieldChanged(fieldIdentifier);
 
-                await OnValueChanged.InvokeAsync(null);
-            }
+            await OnValueChanged.InvokeAsync(null);
         }
-}
+    }
 
     public async Task OnTextWithSlugFieldChange(PropertyInfo info, object value)
     {
@@ -303,7 +300,7 @@
 
     async Task OnFileChangeAsync(Upload upload)
     {
-        _logger.LogInformation("{upload} value changed", upload);
+        _logger.LogInformation("{Upload} value changed", upload);
 
         await OnValueChanged.InvokeAsync(null);
     }
@@ -331,7 +328,7 @@
             _notificationService.Notify(NotificationSeverity.Error, "Error uploading file");
         }
 
-        _logger.LogInformation("{name} value error", name);
+        _logger.LogInformation("{Name} value error", name);
     }
 
     private static Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
