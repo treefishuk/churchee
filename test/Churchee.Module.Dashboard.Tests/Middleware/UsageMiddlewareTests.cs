@@ -33,12 +33,12 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
 
             var dbContextMock = new Mock<DbContext>();
             var tenantResolverMock = new Mock<ITenantResolver>();
-            var nextCalled = false;
-            RequestDelegate next = (HttpContext _) =>
+            bool nextCalled = false;
+            Task next(HttpContext _)
             {
                 nextCalled = true;
                 return Task.CompletedTask;
-            };
+            }
             var middleware = new UsageMiddleware(next, logger.Object, serviceProvider.Object);
 
             // Act
@@ -56,6 +56,9 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
             var logger = new Mock<ILogger<UsageMiddleware>>();
             var serviceProvider = new Mock<IServiceProvider>();
 
+
+            var mockDbContext = new Mock<DbContext>();
+
             var serviceScope = new Mock<IServiceScope>();
             serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
 
@@ -68,16 +71,20 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
                 .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
                 .Returns(serviceScopeFactory.Object);
 
+            serviceProvider
+                .Setup(x => x.GetService(typeof(DbContext)))
+                .Returns(mockDbContext.Object);
+
 
             context.Connection.RemoteIpAddress = IPAddress.Parse("127.0.0.1");
-            context.Request.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0";
+            context.Request.Headers.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0";
             context.Request.Path = "/test";
-            context.Request.Headers["Referer"] = "http://example.com";
+            context.Request.Headers.Referer = "http://example.com";
 
             var tenantResolverMock = new Mock<ITenantResolver>();
             tenantResolverMock.Setup(tr => tr.GetTenantId()).Returns(Guid.NewGuid());
 
-            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask, logger.Object, serviceProvider.Object);
+            var middleware = new UsageMiddleware(_ => Task.CompletedTask, logger.Object, serviceProvider.Object);
 
             // Act
             await middleware.LogRequest(context, tenantResolverMock.Object);
@@ -111,7 +118,7 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
 
             var tenantResolverMock = new Mock<ITenantResolver>();
 
-            var middleware = new UsageMiddleware((HttpContext _) => Task.CompletedTask, logger.Object, serviceProvider.Object);
+            var middleware = new UsageMiddleware(_ => Task.CompletedTask, logger.Object, serviceProvider.Object);
 
             // Act
             await middleware.InvokeAsync(context, tenantResolverMock.Object);
@@ -125,7 +132,7 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
         {
             // Arrange
             var context = new DefaultHttpContext();
-            context.Request.Headers["User-Agent"] = "Googlebot";
+            context.Request.Headers.UserAgent = "Googlebot";
 
             var logger = new Mock<ILogger<UsageMiddleware>>();
             var serviceProvider = new Mock<IServiceProvider>();
