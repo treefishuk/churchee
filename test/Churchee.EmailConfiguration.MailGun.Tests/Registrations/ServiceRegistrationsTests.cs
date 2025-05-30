@@ -14,7 +14,7 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Registrations
             services.AddHttpClient();
 
             //Arrange
-            var inMemorySettings = new Dictionary<string, string> {
+            var inMemorySettings = new Dictionary<string, string?> {
                 {"MailGunOptions:APIKey", "test-api-key"},
                 {"MailGunOptions:BaseUrl", "https://api.mailgun.net/v3/"},
                 {"MailGunOptions:Domain", "example.com"},

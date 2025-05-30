@@ -5,13 +5,22 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
     public class GetYouTubeVideosApiResponse
     {
+        public GetYouTubeVideosApiResponse()
+        {
+            Items = new List<YouTubeVideo>();
+        }
+
         [JsonPropertyName("items")]
         public List<YouTubeVideo> Items { get; set; }
     }
 
-    // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
     public class Default
     {
+        public Default()
+        {
+            Url = string.Empty;
+        }
+
         [JsonPropertyName("url")]
         public string Url { get; set; }
 
@@ -24,6 +33,11 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
     public class High
     {
+        public High()
+        {
+            Url = string.Empty;
+        }
+
         [JsonPropertyName("url")]
         public string Url { get; set; }
 
@@ -36,6 +50,12 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
     public class Id
     {
+        public Id()
+        {
+            Kind = string.Empty;
+            VideoId = string.Empty;
+        }
+
         [JsonPropertyName("kind")]
         public string Kind { get; set; }
 
@@ -45,6 +65,14 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
     public class YouTubeVideo
     {
+        public YouTubeVideo()
+        {
+            Kind = string.Empty;
+            Etag = string.Empty;
+            Id = new Id();
+            Snippet = new Snippet();
+        }
+
         [JsonPropertyName("kind")]
         public string Kind { get; set; }
 
@@ -60,6 +88,11 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
     public class Medium
     {
+        public Medium()
+        {
+            Url = string.Empty;
+        }
+
         [JsonPropertyName("url")]
         public string Url { get; set; }
 
@@ -73,6 +106,16 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
     public class Snippet
     {
+        public Snippet()
+        {
+            ChannelId = string.Empty;
+            Title = string.Empty;
+            Description = string.Empty;
+            ChannelTitle = string.Empty;
+            Thumbnails = new Thumbnails();
+            LiveBroadcastContent = string.Empty;
+        }
+
         [JsonPropertyName("publishedAt")]
         public DateTime PublishedAt { get; set; }
 
@@ -100,6 +143,13 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
     public class Thumbnails
     {
+        public Thumbnails()
+        {
+            Default = new Default();
+            Medium = new Medium();
+            High = new High();
+        }
+
         [JsonPropertyName("default")]
         public Default Default { get; set; }
 

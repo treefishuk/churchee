@@ -42,8 +42,8 @@ namespace Churchee.Module.Identity.Tests.Managers
             // Create a mock ClaimsPrincipal
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, "testuser"),
-                new Claim(ClaimTypes.NameIdentifier, "1")
+                new(ClaimTypes.Name, "testuser"),
+                new(ClaimTypes.NameIdentifier, "1")
             }));
 
             // Set up the IUserClaimsPrincipalFactory mock to return the mock ClaimsPrincipal
@@ -81,10 +81,10 @@ namespace Churchee.Module.Identity.Tests.Managers
         public async Task PasswordSignInAsync_ShouldCallIdentitySeedCreateAsync()
         {
             // Arrange
-            var userName = "testuser";
-            var password = "password";
-            var isPersistent = false;
-            var lockoutOnFailure = false;
+            string userName = "testuser";
+            string password = "password";
+            bool isPersistent = false;
+            bool lockoutOnFailure = false;
 
             _identitySeedMock.Setup(seed => seed.CreateAsync()).Returns(Task.CompletedTask);
 
@@ -102,10 +102,10 @@ namespace Churchee.Module.Identity.Tests.Managers
         public async Task PasswordSignInAsync_ShouldReturnSignInResult()
         {
             // Arrange
-            var userName = "testuser";
-            var password = "password";
-            var isPersistent = false;
-            var lockoutOnFailure = false;
+            string userName = "testuser";
+            string password = "password";
+            bool isPersistent = false;
+            bool lockoutOnFailure = false;
 
             _identitySeedMock.Setup(seed => seed.CreateAsync()).Returns(Task.CompletedTask);
             _userManagerMock.Setup(um => um.FindByNameAsync(userName)).ReturnsAsync(new ApplicationUser(Guid.NewGuid(), userName, "no-one@churchee.com"));
@@ -124,13 +124,13 @@ namespace Churchee.Module.Identity.Tests.Managers
         public async Task PasswordSignInAsync_ShouldReturnFailedResult_WhenUserNotFound()
         {
             // Arrange
-            var userName = "nonexistentuser";
-            var password = "password";
-            var isPersistent = false;
-            var lockoutOnFailure = false;
+            string userName = "nonexistentuser";
+            string password = "password";
+            bool isPersistent = false;
+            bool lockoutOnFailure = false;
 
             _identitySeedMock.Setup(seed => seed.CreateAsync()).Returns(Task.CompletedTask);
-            _userManagerMock.Setup(um => um.FindByNameAsync(userName)).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(um => um.FindByNameAsync(userName)).ReturnsAsync((ApplicationUser?)null);
 
             // Act
             var result = await _signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
@@ -143,10 +143,10 @@ namespace Churchee.Module.Identity.Tests.Managers
         public async Task PasswordSignInAsync_ShouldReturnFailedResult_WhenPasswordIsIncorrect()
         {
             // Arrange
-            var userName = "testuser";
-            var password = "wrongpassword";
-            var isPersistent = false;
-            var lockoutOnFailure = false;
+            string userName = "testuser";
+            string password = "wrongpassword";
+            bool isPersistent = false;
+            bool lockoutOnFailure = false;
 
             _identitySeedMock.Setup(seed => seed.CreateAsync()).Returns(Task.CompletedTask);
             _userManagerMock.Setup(um => um.FindByNameAsync(userName)).ReturnsAsync(new ApplicationUser(Guid.NewGuid(), userName, "no-one@churchee.com"));

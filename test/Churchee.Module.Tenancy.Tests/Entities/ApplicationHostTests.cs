@@ -8,7 +8,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         public void Constructor_ShouldInitializeProperties()
         {
             // Arrange
-            var host = "test.example.com";
+            string host = "test.example.com";
             var tenantId = Guid.NewGuid();
 
             // Act
@@ -43,7 +43,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         public void DefaultConstructor_ShouldInitializeHostToEmptyString()
         {
             // Act
-            var applicationHost = (ApplicationHost)Activator.CreateInstance(typeof(ApplicationHost), nonPublic: true);
+            var applicationHost = (ApplicationHost?)Activator.CreateInstance(typeof(ApplicationHost), nonPublic: true);
 
             // Assert
             Assert.NotNull(applicationHost);
