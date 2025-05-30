@@ -34,10 +34,10 @@ namespace Churchee.Module.Dashboard.Middleware
         {
             try
             {
-                var ipAddress = context.Connection.RemoteIpAddress?.ToString();
-                var userAgent = context.Request.Headers.UserAgent.ToString();
-                var url = context.Request.Path.ToString();
-                var referrer = context.Request.Headers.Referer.ToString();
+                string ipAddress = context.Connection.RemoteIpAddress?.ToString();
+                string userAgent = context.Request.Headers.UserAgent.ToString();
+                string url = context.Request.Path.ToString();
+                string referrer = context.Request.Headers.Referer.ToString();
 
                 if (url.EndsWith(".css"))
                 {
@@ -46,16 +46,16 @@ namespace Churchee.Module.Dashboard.Middleware
 
                 var deviceDetector = new DeviceDetectorNET.DeviceDetector(userAgent);
 
+                deviceDetector.Parse();
+
                 if (deviceDetector.IsBot())
                 {
                     return;
                 }
 
-                deviceDetector.Parse();
-
-                var device = deviceDetector.GetDeviceName();         // Mobile, Tablet, Desktop
-                var os = deviceDetector.GetOs().Match?.Name;          // Windows, Android, iOS
-                var browser = deviceDetector.GetClient().Match?.Name; // Chrome, Firefox, etc.
+                string device = deviceDetector.GetDeviceName();         // Mobile, Tablet, Desktop
+                string os = deviceDetector.GetOs().Match?.Name;          // Windows, Android, iOS
+                string browser = deviceDetector.GetClient().Match?.Name; // Chrome, Firefox, etc.
 
                 if (!string.IsNullOrEmpty(ipAddress))
                 {
@@ -71,13 +71,11 @@ namespace Churchee.Module.Dashboard.Middleware
                         ViewedAt = DateTime.UtcNow
                     };
 
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var dbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
+                    using var scope = _serviceProvider.CreateScope();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
 
-                        dbContext.Set<PageView>().Add(pageView);
-                        await dbContext.SaveChangesAsync();
-                    }
+                    dbContext.Set<PageView>().Add(pageView);
+                    await dbContext.SaveChangesAsync();
 
                 }
             }
