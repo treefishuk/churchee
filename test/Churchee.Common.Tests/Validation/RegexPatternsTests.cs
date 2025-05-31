@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Churchee.Common.Tests.Validation
 {
-    public class RegexPatternsTests
+    public partial class RegexPatternsTests
     {
         private readonly Faker _faker;
 
@@ -14,6 +14,9 @@ namespace Churchee.Common.Tests.Validation
             _faker = new Faker();
         }
 
+        [GeneratedRegex(RegexPattern.Name, RegexOptions.ExplicitCapture)]
+        private static partial Regex NameRegex();
+
         [Fact]
         public void RegexPattern_Name_GivenValidName_Passes()
         {
@@ -21,37 +24,43 @@ namespace Churchee.Common.Tests.Validation
             string input = _faker.Name.FullName();
 
             //act
-            var match = Regex.Match(input, RegexPattern.Name, RegexOptions.IgnoreCase);
+            var match = NameRegex().IsMatch(input);
 
             //assert
-            match.Success.Should().BeTrue();
+            match.Should().BeTrue();
         }
+
+        [GeneratedRegex(RegexPattern.Phone, RegexOptions.ExplicitCapture)]
+        private static partial Regex PhoneRegex();
 
         [Fact]
         public void RegexPattern_Phone_GivenValidLandline_Passes()
         {
             //arrange
-            string phoneNumber = _faker.Phone.PhoneNumber("01#########");
+            string input = _faker.Phone.PhoneNumber("01#########");
 
             //act
-            var match = Regex.Match(phoneNumber, RegexPattern.Phone, RegexOptions.IgnoreCase);
+            var match = PhoneRegex().IsMatch(input);
 
             //assert
-            match.Success.Should().BeTrue();
+            match.Should().BeTrue();
         }
 
         [Fact]
         public void RegexPattern_Phone_GivenValidMobile_Passes()
         {
             //arrange
-            string phoneNumber = _faker.Phone.PhoneNumber("07#########");
+            string input = _faker.Phone.PhoneNumber("07#########");
 
             //act
-            var match = Regex.Match(phoneNumber, RegexPattern.Phone, RegexOptions.IgnoreCase);
+            var match = PhoneRegex().IsMatch(input);
 
             //assert
-            match.Success.Should().BeTrue();
+            match.Should().BeTrue();
         }
+
+        [GeneratedRegex(RegexPattern.SingleLowercaseWord, RegexOptions.ExplicitCapture)]
+        private static partial Regex SingleLowercaseWordRegex();
 
         [Fact]
         public void RegexPattern_SingleLowercaseWord_GivenValidString_Passes()
@@ -60,11 +69,12 @@ namespace Churchee.Common.Tests.Validation
             string input = "test";
 
             //act
-            var match = Regex.Match(input, RegexPattern.SingleLowercaseWord, RegexOptions.ExplicitCapture);
+            var match = SingleLowercaseWordRegex().IsMatch(input);
 
             //assert
-            match.Success.Should().BeTrue();
+            match.Should().BeTrue();
         }
+
 
         [Fact]
         public void RegexPattern_SingleLowercaseWord_GivenInValidString_Fails()
@@ -73,11 +83,14 @@ namespace Churchee.Common.Tests.Validation
             string input = "Test";
 
             //act
-            var match = Regex.Match(input, RegexPattern.SingleLowercaseWord, RegexOptions.ExplicitCapture);
+            var match = SingleLowercaseWordRegex().IsMatch(input);
 
             //assert
-            match.Success.Should().BeFalse();
+            match.Should().BeFalse();
         }
+
+        [GeneratedRegex(RegexPattern.BasicText, RegexOptions.ExplicitCapture)]
+        private static partial Regex BasicTextRegex();
 
         [Fact]
         public void RegexPattern_BasicText_GivenValidString_IsTrue()
@@ -86,10 +99,10 @@ namespace Churchee.Common.Tests.Validation
             string input = "I'm a basic string";
 
             //act
-            var match = Regex.Match(input, RegexPattern.BasicText, RegexOptions.ExplicitCapture);
+            var match = BasicTextRegex().IsMatch(input);
 
             //assert
-            match.Success.Should().BeTrue();
+            match.Should().BeTrue();
         }
 
         [Fact]
@@ -99,10 +112,10 @@ namespace Churchee.Common.Tests.Validation
             string input = "I-am-invalid!";
 
             //act
-            var match = Regex.Match(input, RegexPattern.BasicText, RegexOptions.ExplicitCapture);
+            var match = BasicTextRegex().IsMatch(input);
 
             //assert
-            match.Success.Should().BeFalse();
+            match.Should().BeFalse();
         }
     }
 }

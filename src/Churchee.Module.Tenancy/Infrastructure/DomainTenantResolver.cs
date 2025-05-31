@@ -85,9 +85,9 @@ namespace Churchee.Module.Tenancy.Infrastructure
         {
             var repo = _storage.Set<ApplicationHost>();
 
-            string tenantDevname = repo.AsNoTracking().Where(w => w.Host == domain).Select(s => s.ApplicationTenant.DevName).FirstOrDefault() ?? string.Empty;
+            string tenantDevName = repo.AsNoTracking().Where(w => w.Host == domain).Select(s => s.ApplicationTenant.DevName).FirstOrDefault() ?? string.Empty;
 
-            return tenantDevname;
+            return tenantDevName;
         }
     }
 }
