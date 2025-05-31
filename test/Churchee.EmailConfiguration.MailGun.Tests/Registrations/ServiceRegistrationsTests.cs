@@ -46,5 +46,16 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Registrations
             Assert.NotNull(httpClient.DefaultRequestHeaders.Authorization.Parameter);
         }
 
+        [Fact]
+
+        public void ServiceRegistrations_Priority200()
+        {
+            // Arrange & Act
+            var cut = new ServiceRegistrations();
+
+            // Assert
+            Assert.Equal(200, cut.Priority);
+        }
+
     }
 }
