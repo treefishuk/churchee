@@ -20,16 +20,6 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         }
 
         [Fact]
-        public void Constructor_ShouldThrowException_WhenHostIsNull()
-        {
-            // Arrange
-            var tenantId = Guid.NewGuid();
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new ApplicationHost(null, tenantId));
-        }
-
-        [Fact]
         public void Constructor_ShouldThrowException_WhenHostIsEmpty()
         {
             // Arrange

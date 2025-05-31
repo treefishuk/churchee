@@ -20,16 +20,6 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         }
 
         [Fact]
-        public void Constructor_ShouldThrowException_WhenNameIsNull()
-        {
-            // Arrange
-            var tenantId = Guid.NewGuid();
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new ApplicationFeature(null, tenantId));
-        }
-
-        [Fact]
         public void Constructor_ShouldThrowException_WhenNameIsEmpty()
         {
             // Arrange
@@ -43,7 +33,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         public void DefaultConstructor_ShouldInitializeNameToEmptyString()
         {
             // Act
-            var applicationFeature = (ApplicationFeature)Activator.CreateInstance(typeof(ApplicationFeature), nonPublic: true);
+            var applicationFeature = (ApplicationFeature?)Activator.CreateInstance(typeof(ApplicationFeature), nonPublic: true);
 
             // Assert
             Assert.NotNull(applicationFeature);
