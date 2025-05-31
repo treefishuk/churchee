@@ -339,6 +339,11 @@ namespace Churchee.Data.EntityFramework.Tests
         // Test Entity
         public class TestEntity : IEntity
         {
+            public TestEntity()
+            {
+                Name = string.Empty;
+            }
+
             public Guid Id { get; set; }
             public string Name { get; set; }
             public bool Deleted { get; set; }

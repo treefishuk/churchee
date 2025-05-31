@@ -41,8 +41,7 @@
 
         @foreach (var prop in typeof(TItem).GetProperties().Where(x => x.CanWrite))
         {
-            bool visible = Columns == null || (Columns.Count() > 0 && Columns.Select(s => s.Property).Contains(prop.Name));
-
+            bool visible = Columns == null || (Columns.Any() && Columns.Select(s => s.Property).Contains(prop.Name));
 
             string dataType = prop.PropertyType.Name;
 

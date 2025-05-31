@@ -69,7 +69,7 @@
 
             if (crumbs.Any())
             {
-                lastLink = crumbs.Last().Key;
+                lastLink = crumbs.GetLast().Key;
             }
 
             crumbs.Add(new KeyValuePair<string, string>($"{lastLink}/{link}", link.ToTitleCase()));

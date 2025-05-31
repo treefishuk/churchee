@@ -170,8 +170,6 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             string userId = await _settingStore.GetSettingValue(Guid.Parse(SettingKeys.XUserId), applicationTenantId);
 
-            string userName = await _settingStore.GetSettingValue(Guid.Parse(SettingKeys.XUserAccount), applicationTenantId);
-
             string getTweetsUrl = $"https://api.twitter.com/2/users/{userId}/tweets?tweet.fields=created_at&max_results=10";
 
             var response = await httpClient.GetAsync(getTweetsUrl, cancellationToken);
