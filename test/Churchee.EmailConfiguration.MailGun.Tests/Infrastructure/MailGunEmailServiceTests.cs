@@ -43,7 +43,7 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Infrastructure
         }
 
 
-        private IConfiguration SetUpInValidOptions()
+        private static IConfiguration SetUpInValidOptions()
         {
             var configForSmsApi = new Dictionary<string, string?>
             {
@@ -54,7 +54,7 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Infrastructure
                 .Build();
         }
 
-        private IConfiguration SetUpValidOptions()
+        private static IConfiguration SetUpValidOptions()
         {
             var configForSmsApi = new Dictionary<string, string?>
             {
