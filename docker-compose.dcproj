@@ -15,5 +15,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="test\Churchee.Module.Facebook.Events.Tests\Features\Commands\DisableFacebookSync\DisableFacebookSyncCommandHandlerTests.cs" />
+    <None Include="test\Churchee.Module.Facebook.Events.Tests\Features\Commands\EnableFacebookIntegration\EnableFacebookIntegrationCommandHandlerTests.cs" />
   </ItemGroup>
 </Project>

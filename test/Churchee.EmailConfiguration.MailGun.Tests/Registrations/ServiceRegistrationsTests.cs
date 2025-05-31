@@ -1,3 +1,4 @@
+using Churchee.Common.Exceptions;
 using Churchee.EmailConfiguration.MailGun.Registrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,6 +46,33 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Registrations
             Assert.Equal("Basic", httpClient.DefaultRequestHeaders.Authorization.Scheme);
             Assert.NotNull(httpClient.DefaultRequestHeaders.Authorization.Parameter);
         }
+
+
+        [Fact]
+        public void ServiceRegistrations_Should_Return_MissingConfirgurationSettingException_When_Missing_Settings()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            services.AddHttpClient();
+
+            //Arrange
+            var inMemorySettings = new Dictionary<string, string?>();
+
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
+
+            services.AddSingleton(configuration);
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var serviceRegistrations = new ServiceRegistrations();
+
+            // Act & Assert
+            Assert.Throws<MissingConfirgurationSettingException>(() => serviceRegistrations.Execute(services, serviceProvider));
+
+        }
+
 
         [Fact]
 
