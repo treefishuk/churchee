@@ -64,7 +64,7 @@ namespace Churchee.Module.Podcasts.Tests.Areas.Shared.Pages
                 Messages.CollectionChanged += OnMessagesChanged;
             }
 
-            private void OnMessagesChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            private void OnMessagesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             {
                 if (e.NewItems != null)
                 {

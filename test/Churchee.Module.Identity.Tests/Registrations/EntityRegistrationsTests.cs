@@ -60,7 +60,7 @@ namespace Churchee.Module.Identity.Tests.Registrations
             }
 
             _msSqlContainer.StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            _msSqlContainer.DisposeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            _msSqlContainer.DisposeAsync().AsTask().GetAwaiter().GetResult();
 
             GC.SuppressFinalize(this);
         }
