@@ -36,9 +36,10 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
             try
             {
-                _recurringJobManager.RemoveIfExists($"{_currentUser.GetApplicationTenantId()}_FacebookEvents");
 
                 var applicationTenantId = await _currentUser.GetApplicationTenantId();
+
+                _recurringJobManager.RemoveIfExists($"{applicationTenantId}_FacebookEvents");
 
                 await _settingStore.ClearSetting(_pageId, applicationTenantId);
 

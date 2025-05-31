@@ -53,6 +53,22 @@ namespace Churchee.Common.Tests.ValueTypes
             // Assert
             results.Should().BeEmpty();
         }
+
+        [Fact]
+        public void Path_Property_SetAndGet_WorksCorrectly()
+        {
+            // Arrange
+            var upload = new Upload();
+            var expectedPath = "/uploads/file.txt";
+
+            // Act
+            upload.Path = expectedPath;
+            var actualPath = upload.Path;
+
+            // Assert
+            Assert.Equal(expectedPath, actualPath);
+        }
+
     }
 
 }
