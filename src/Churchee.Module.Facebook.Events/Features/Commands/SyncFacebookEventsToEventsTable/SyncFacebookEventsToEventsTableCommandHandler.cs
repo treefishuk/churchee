@@ -15,7 +15,6 @@ using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
 using Hangfire;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Event = Churchee.Module.Events.Entities.Event;
@@ -102,7 +101,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
                 foreach (string eventId in eventIds)
                 {
-                    var dbPost = await repo.ApplySpecification(new GetEventByFacebookIdSpecification(eventId)).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+                    var dbPost = await repo.FirstOrDefaultAsync(new GetEventByFacebookIdSpecification(eventId), cancellationToken);
 
                     if (dbPost != null)
                     {
