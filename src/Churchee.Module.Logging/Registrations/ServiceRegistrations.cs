@@ -18,7 +18,6 @@ namespace Churchee.Data.EntityFramework
         {
             var config = serviceProvider.GetRequiredService<IConfiguration>();
 
-
             var sinkOpts = new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true, AutoCreateSqlDatabase = true };
 
             var logger = new LoggerConfiguration()
