@@ -43,13 +43,13 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Registrations
 
             Assert.NotNull(httpClient);
             Assert.Equal(new Uri("https://api.mailgun.net/v3/example.com/messages"), httpClient.BaseAddress);
-            Assert.Equal("Basic", httpClient.DefaultRequestHeaders.Authorization.Scheme);
-            Assert.NotNull(httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            Assert.Equal("Basic", httpClient?.DefaultRequestHeaders?.Authorization?.Scheme);
+            Assert.NotNull(httpClient?.DefaultRequestHeaders?.Authorization?.Parameter);
         }
 
 
         [Fact]
-        public void ServiceRegistrations_Should_Return_MissingConfirgurationSettingException_When_Missing_Settings()
+        public void ServiceRegistrations_Should_Return_MissingConfigurationSettingException_When_Missing_Settings()
         {
             // Arrange
             var services = new ServiceCollection();
