@@ -1,14 +1,36 @@
 ﻿using Churchee.Module.Logging.Infrastructure;
+using Churchee.Module.Logging.Registrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog.Extensions.Logging;
+using Testcontainers.MsSql;
 
 namespace Churchee.Module.Logging.Tests.Registrations
 {
-    public class ServiceRegistrationsTests
+    public class ServiceRegistrationsTests : IAsyncLifetime
     {
+        private readonly MsSqlContainer _msSqlContainer;
+
+        public ServiceRegistrationsTests()
+        {
+            _msSqlContainer = new MsSqlBuilder()
+             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+             .WithPassword("yourStrong(!)Password")
+             .Build();
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _msSqlContainer.StartAsync();
+        }
+
+        public async Task DisposeAsync()
+        {
+            await _msSqlContainer.DisposeAsync().AsTask();
+        }
+
         [Fact]
         public void ServiceRegistrations_Registers_LoggerProvider_And_LogsDbContext()
         {
@@ -18,8 +40,9 @@ namespace Churchee.Module.Logging.Tests.Registrations
             // Use in-memory configuration for connection string
             var inMemorySettings = new Dictionary<string, string?>
             {
-                {"ConnectionStrings:LogsConnection", "Server=(localdb)\\mssqllocaldb;Database=LogsTestDb;Trusted_Connection=True;"}
+                {"ConnectionStrings:LogsConnection", _msSqlContainer.GetConnectionString()}
             };
+
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
@@ -28,7 +51,7 @@ namespace Churchee.Module.Logging.Tests.Registrations
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var registrations = new Churchee.Data.EntityFramework.ServiceRegistrations();
+            var registrations = new ServiceRegistrations();
 
             // Act
             registrations.Execute(services, serviceProvider);
@@ -48,7 +71,7 @@ namespace Churchee.Module.Logging.Tests.Registrations
         public void Priority_ShouldBe5000()
         {
             // Arrange
-            var registrations = new Churchee.Data.EntityFramework.ServiceRegistrations();
+            var registrations = new ServiceRegistrations();
 
             // Act & Assert
             Assert.Equal(5000, registrations.Priority);
