@@ -34,7 +34,7 @@ namespace Churchee.Module.Events.Features.Commands
 
             string imagePath = await CreateImageAndReturnPath(request, applicationTenantId, cancellationToken);
 
-            Guid pageTypeId = _dataStore.GetRepository<PageType>()
+            var pageTypeId = _dataStore.GetRepository<PageType>()
                 .ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId))
                 .Select(s => s.Id)
                 .FirstOrDefault();
@@ -72,6 +72,7 @@ namespace Churchee.Module.Events.Features.Commands
                 .SetLongitude(request.Longitude)
                 .SetDates(request.Start, request.End)
                 .SetImageUrl(imagePath)
+                .SetPublished(true)
                 .Build();
 
             repo.Create(newEvent);
@@ -100,7 +101,7 @@ namespace Churchee.Module.Events.Features.Commands
 
                 string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, false, cancellationToken);
 
-                var bytes = ms.ConvertStreamToByteArray();
+                byte[] bytes = ms.ConvertStreamToByteArray();
 
                 _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
 

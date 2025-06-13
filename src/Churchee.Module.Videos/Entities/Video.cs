@@ -23,6 +23,7 @@ namespace Churchee.Module.Videos.Entities
             Url = $"/{videosPath.ToLowerInvariant()}/{title.ToURL()}";
             SourceName = sourceName;
             SourceId = sourceId;
+            Published = true;
         }
 
         public string ThumbnailUrl { get; private set; }
