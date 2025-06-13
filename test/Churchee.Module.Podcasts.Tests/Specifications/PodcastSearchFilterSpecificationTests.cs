@@ -29,7 +29,6 @@ namespace Churchee.Module.Podcasts.Tests.Specifications
             result.Count().Should().Be(4);
         }
 
-
         [Fact]
         public void PodcastSearchFilterSpecification_Should_Return_ItemsThatContainText_When_SearchTextProvided()
         {

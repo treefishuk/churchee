@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Churchee.Common.Abstractions.Auth;
+﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Storage;
 using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Tokens.Entities;

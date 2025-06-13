@@ -23,4 +23,8 @@
 	  <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
 	</ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(MSBuildProjectName).Tests" />
+  </ItemGroup>
+
 </Project>

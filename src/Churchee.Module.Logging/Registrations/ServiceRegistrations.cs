@@ -8,7 +8,8 @@ using Serilog;
 using Serilog.Extensions.Logging;
 using Serilog.Sinks.MSSqlServer;
 using System;
-namespace Churchee.Data.EntityFramework
+
+namespace Churchee.Module.Logging.Registrations
 {
     public class ServiceRegistrations : IConfigureServicesAction
     {
@@ -18,14 +19,13 @@ namespace Churchee.Data.EntityFramework
         {
             var config = serviceProvider.GetRequiredService<IConfiguration>();
 
-
-            var sinkOpts = new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true, AutoCreateSqlDatabase = true };
+            var sinkOptions = new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true, AutoCreateSqlDatabase = true };
 
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.MSSqlServer(
                     connectionString: config.GetConnectionString("LogsConnection"),
-                    sinkOptions: sinkOpts,
+                    sinkOptions: sinkOptions,
                     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
                 .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
             .CreateLogger();
