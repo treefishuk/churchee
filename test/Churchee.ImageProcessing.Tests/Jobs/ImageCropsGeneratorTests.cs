@@ -23,9 +23,9 @@ namespace Churchee.ImageProcessing.Tests.Jobs
         {
             // Arrange
             var applicationTenantId = Guid.NewGuid();
-            var originalImagePath = "path/to/image.jpg";
-            var streamBytes = new byte[] { 1, 2, 3 };
-            var overrideExisting = true;
+            string originalImagePath = "path/to/image.jpg";
+            byte[] streamBytes = new byte[] { 1, 2, 3 };
+            bool overrideExisting = true;
 
             _imageProcessorMock.Setup(p => p.ResizeImage(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>()))
                 .Returns(new MemoryStream());
@@ -36,9 +36,9 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             await _imageCropsGenerator.CreateCrops(applicationTenantId, originalImagePath, streamBytes, overrideExisting);
 
             // Assert
-            _imageProcessorMock.Verify(p => p.ResizeImage(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>()), Times.Exactly(7));
-            _imageProcessorMock.Verify(p => p.CreateCrop(It.IsAny<Stream>(), It.IsAny<int>(), It.IsAny<string>()), Times.Exactly(7));
-            _blobStoreMock.Verify(b => b.SaveAsync(applicationTenantId, It.IsAny<string>(), It.IsAny<Stream>(), overrideExisting, default), Times.Exactly(14));
+            _imageProcessorMock.Verify(p => p.ResizeImage(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>()), Times.Exactly(14));
+            _imageProcessorMock.Verify(p => p.CreateCrop(It.IsAny<Stream>(), It.IsAny<int>(), It.IsAny<string>()), Times.Exactly(14));
+            _blobStoreMock.Verify(b => b.SaveAsync(applicationTenantId, It.IsAny<string>(), It.IsAny<Stream>(), overrideExisting, default), Times.Exactly(28));
         }
 
         [Fact]
@@ -46,12 +46,12 @@ namespace Churchee.ImageProcessing.Tests.Jobs
         {
             // Arrange
             var applicationTenantId = Guid.NewGuid();
-            var fileName = "image";
-            var folderPath = "path/to/";
-            var extension = ".jpg";
-            var streamBytes = new byte[] { 1, 2, 3 };
-            var width = 200;
-            var overrideExisting = true;
+            string fileName = "image";
+            string folderPath = "path/to/";
+            string extension = ".jpg";
+            byte[] streamBytes = new byte[] { 1, 2, 3 };
+            int width = 200;
+            bool overrideExisting = true;
 
             _imageProcessorMock.Setup(p => p.ResizeImage(It.IsAny<Stream>(), width, 0, extension))
                 .Returns(new MemoryStream());
@@ -69,12 +69,12 @@ namespace Churchee.ImageProcessing.Tests.Jobs
         {
             // Arrange
             var applicationTenantId = Guid.NewGuid();
-            var fileName = "image";
-            var folderPath = "path/to/";
-            var extension = ".jpg";
-            var streamBytes = new byte[] { 1, 2, 3 };
-            var width = 200;
-            var overrideExisting = true;
+            string fileName = "image";
+            string folderPath = "path/to/";
+            string extension = ".jpg";
+            byte[] streamBytes = new byte[] { 1, 2, 3 };
+            int width = 200;
+            bool overrideExisting = true;
 
             _imageProcessorMock.Setup(p => p.CreateCrop(It.IsAny<Stream>(), width, extension))
                 .Returns(new MemoryStream());
