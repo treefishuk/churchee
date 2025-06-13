@@ -3,6 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 
 namespace Churchee.ImageProcessing
@@ -47,28 +48,9 @@ namespace Churchee.ImageProcessing
 
             var returnStream = new MemoryStream();
 
-            ImageEncoder encoder;
-
             string normalizedExtension = extension.ToUpperInvariant();
 
-            if (normalizedExtension == ".JPG" || normalizedExtension == ".JPEG")
-            {
-                //Encode here for quality
-                encoder = new JpegEncoder()
-                {
-                    Quality = 100
-                };
-            }
-            else
-            {
-                encoder = new PngEncoder()
-                {
-                    CompressionLevel = PngCompressionLevel.BestCompression,
-                    BitDepth = PngBitDepth.Bit8,
-                    FilterMethod = PngFilterMethod.Adaptive,
-                    TransparentColorMode = PngTransparentColorMode.Preserve
-                };
-            }
+            var encoder = SetEncoder(normalizedExtension);
 
             //This saves to the memoryStream with encoder
             image.Save(returnStream, encoder);
@@ -76,6 +58,37 @@ namespace Churchee.ImageProcessing
             returnStream.Position = 0;
 
             return returnStream;
+        }
+
+        private static ImageEncoder SetEncoder(string normalizedExtension)
+        {
+            if (normalizedExtension == ".JPG" || normalizedExtension == ".JPEG")
+            {
+                //Encode here for quality
+                return new JpegEncoder()
+                {
+                    Quality = 100
+                };
+            }
+            if (normalizedExtension == ".WEBP")
+            {
+                return new WebpEncoder()
+                {
+                    FileFormat = WebpFileFormatType.Lossy,
+                    Quality = 75,
+                    Method = WebpEncodingMethod.BestQuality,
+                    FilterStrength = 60,
+                    NearLossless = false,
+                    NearLosslessQuality = 60
+                };
+            }
+            return new PngEncoder()
+            {
+                CompressionLevel = PngCompressionLevel.BestCompression,
+                BitDepth = PngBitDepth.Bit8,
+                FilterMethod = PngFilterMethod.Adaptive,
+                TransparentColorMode = PngTransparentColorMode.Preserve
+            };
         }
 
         private static void ProportionalMutation(int width, int height, Image image)
