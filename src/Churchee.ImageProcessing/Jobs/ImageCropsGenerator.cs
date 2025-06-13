@@ -17,34 +17,41 @@ namespace Churchee.ImageProcessing.Jobs
 
         public async Task CreateCrops(Guid applicationTenantId, string originalImagePath, byte[] streamBytes, bool overrideExisting)
         {
-            await CreateImageSize(applicationTenantId, originalImagePath, "t", streamBytes, 200, overrideExisting);
-            await CreateImageSize(applicationTenantId, originalImagePath, "s", streamBytes, 576, overrideExisting);
-            await CreateImageSize(applicationTenantId, originalImagePath, "m", streamBytes, 768, overrideExisting);
-            await CreateImageSize(applicationTenantId, originalImagePath, "l", streamBytes, 992, overrideExisting);
-            await CreateImageSize(applicationTenantId, originalImagePath, "xl", streamBytes, 1200, overrideExisting);
-            await CreateImageSize(applicationTenantId, originalImagePath, "xxl", streamBytes, 1400, overrideExisting);
-            await CreateImageSize(applicationTenantId, originalImagePath, "hd", streamBytes, 1920, overrideExisting);
+            await CreateImageSizes(applicationTenantId, originalImagePath, "t", streamBytes, 200, overrideExisting);
+            await CreateImageSizes(applicationTenantId, originalImagePath, "s", streamBytes, 576, overrideExisting);
+            await CreateImageSizes(applicationTenantId, originalImagePath, "m", streamBytes, 768, overrideExisting);
+            await CreateImageSizes(applicationTenantId, originalImagePath, "l", streamBytes, 992, overrideExisting);
+            await CreateImageSizes(applicationTenantId, originalImagePath, "xl", streamBytes, 1200, overrideExisting);
+            await CreateImageSizes(applicationTenantId, originalImagePath, "xxl", streamBytes, 1400, overrideExisting);
+            await CreateImageSizes(applicationTenantId, originalImagePath, "hd", streamBytes, 1920, overrideExisting);
 
-            await CreateImageCrop(applicationTenantId, originalImagePath, "ct", streamBytes, 200, overrideExisting);
-            await CreateImageCrop(applicationTenantId, originalImagePath, "cs", streamBytes, 576, overrideExisting);
-            await CreateImageCrop(applicationTenantId, originalImagePath, "cm", streamBytes, 768, overrideExisting);
-            await CreateImageCrop(applicationTenantId, originalImagePath, "cl", streamBytes, 992, overrideExisting);
-            await CreateImageCrop(applicationTenantId, originalImagePath, "cxl", streamBytes, 1200, overrideExisting);
-            await CreateImageCrop(applicationTenantId, originalImagePath, "cxxl", streamBytes, 1400, overrideExisting);
-            await CreateImageCrop(applicationTenantId, originalImagePath, "chd", streamBytes, 1920, overrideExisting);
+            await CreateImageCrops(applicationTenantId, originalImagePath, "ct", streamBytes, 200, overrideExisting);
+            await CreateImageCrops(applicationTenantId, originalImagePath, "cs", streamBytes, 576, overrideExisting);
+            await CreateImageCrops(applicationTenantId, originalImagePath, "cm", streamBytes, 768, overrideExisting);
+            await CreateImageCrops(applicationTenantId, originalImagePath, "cl", streamBytes, 992, overrideExisting);
+            await CreateImageCrops(applicationTenantId, originalImagePath, "cxl", streamBytes, 1200, overrideExisting);
+            await CreateImageCrops(applicationTenantId, originalImagePath, "cxxl", streamBytes, 1400, overrideExisting);
+            await CreateImageCrops(applicationTenantId, originalImagePath, "chd", streamBytes, 1920, overrideExisting);
         }
 
-        private async Task CreateImageSize(Guid applicationTenantId, string originalImagePath, string suffix, byte[] streamBytes, int width, bool overrideExisting)
+        private async Task CreateImageSizes(Guid applicationTenantId, string originalImagePath, string suffix, byte[] streamBytes, int width, bool overrideExisting)
         {
             var (fileName, extension, folderPath) = GetFileInfo(originalImagePath);
 
+            string imagePath = $"{folderPath}{fileName}_{suffix}";
+
+            await CreateImageSize(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, extension);
+
+            await CreateImageSize(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, ".webp");
+        }
+
+        private async Task CreateImageSize(Guid applicationTenantId, string suffix, byte[] streamBytes, int width, bool overrideExisting, string imagePath, string extension)
+        {
             using var stream = new MemoryStream(streamBytes);
 
-            string cropPath = $"{folderPath}{fileName}_{suffix}{extension}";
+            var imageStream = _imageProcessor.ResizeImage(stream, width, 0, extension);
 
-            var smallImageStream = _imageProcessor.ResizeImage(stream, width, 0, extension);
-
-            await _blobStore.SaveAsync(applicationTenantId, cropPath, smallImageStream, overrideExisting, default);
+            await _blobStore.SaveAsync(applicationTenantId, $"{imagePath}{extension}", imageStream, overrideExisting, default);
         }
 
         private static (string fileName, string extension, string folderPath) GetFileInfo(string originalImagePath)
@@ -58,17 +65,24 @@ namespace Churchee.ImageProcessing.Jobs
             return (fileName, extension, folderPath);
         }
 
-        private async Task CreateImageCrop(Guid applicationTenantId, string originalImagePath, string suffix, byte[] streamBytes, int width, bool overrideExisting)
+        private async Task CreateImageCrops(Guid applicationTenantId, string originalImagePath, string suffix, byte[] streamBytes, int width, bool overrideExisting)
         {
             var (fileName, extension, folderPath) = GetFileInfo(originalImagePath);
 
-            using var stream = new MemoryStream(streamBytes);
+            string imagePath = $"{folderPath}{fileName}_{suffix}";
 
-            string cropPath = $"{folderPath}{fileName}_{suffix}{extension}";
+            await CreateImageCrop(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, extension);
+
+            await CreateImageCrop(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, ".webp");
+        }
+
+        private async Task CreateImageCrop(Guid applicationTenantId, string suffix, byte[] streamBytes, int width, bool overrideExisting, string imagePath, string extension)
+        {
+            using var stream = new MemoryStream(streamBytes);
 
             var smallImageStream = _imageProcessor.CreateCrop(stream, width, extension);
 
-            await _blobStore.SaveAsync(applicationTenantId, cropPath, smallImageStream, overrideExisting, default);
+            await _blobStore.SaveAsync(applicationTenantId, $"{imagePath}{extension}", smallImageStream, overrideExisting, default);
         }
     }
 }
