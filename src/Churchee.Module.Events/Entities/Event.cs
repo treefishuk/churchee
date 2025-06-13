@@ -188,6 +188,12 @@ namespace Churchee.Module.Events.Entities
                 return this;
             }
 
+            public Builder SetPublished(bool published)
+            {
+                _event.Published = published;
+                return this;
+            }
+
             public Event Build()
             {
                 _event.Id = Guid.NewGuid();

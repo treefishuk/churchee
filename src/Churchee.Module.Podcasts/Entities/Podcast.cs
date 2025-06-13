@@ -27,6 +27,7 @@ namespace Churchee.Module.Podcasts.Entities
             SourceName = sourceName;
             SourceId = sourceId;
             Content = description;
+            Published = true;
         }
 
         public string? Content { get; private set; }
