@@ -5,12 +5,12 @@ using MediatR;
 
 namespace Churchee.Module.Site.EventHandlers
 {
-    public class TenantAddedEventHandler : INotificationHandler<TenantAddedEvent>
+    public class AddDefaultPagesForNewTenantHandler : INotificationHandler<TenantAddedEvent>
     {
 
         private readonly IDataStore _storage;
 
-        public TenantAddedEventHandler(IDataStore store)
+        public AddDefaultPagesForNewTenantHandler(IDataStore store)
         {
             _storage = store;
         }
