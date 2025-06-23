@@ -40,6 +40,7 @@ namespace Churchee.Module.Events.Features.Commands
                 .FirstOrDefault();
 
             string parentSlug = "/events";
+
             Guid? parentId = null;
 
             var parentPage = _dataStore.GetRepository<Page>().ApplySpecification(new EventListingPageSpecification()).FirstOrDefault();
@@ -75,11 +76,38 @@ namespace Churchee.Module.Events.Features.Commands
                 .SetPublished(true)
                 .Build();
 
+            AddUniqueSufficIfNeeded(newEvent);
+
             repo.Create(newEvent);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
             return new CommandResponse();
+        }
+
+        private void AddUniqueSufficIfNeeded(Event newEvent)
+        {
+            var repo = _dataStore.GetRepository<Event>();
+
+            // Ensure unique URL by adding/incrementing a numeric suffix if needed
+            string baseUrl = newEvent.Url;
+            string uniqueUrl = baseUrl;
+            int suffix = 1;
+
+            while (repo.GetQueryable().Any(a => a.Url == uniqueUrl))
+            {
+                // If baseUrl already ends with -number, increment it
+                int lastDash = baseUrl.LastIndexOf('-');
+                if (lastDash > 0 && int.TryParse(baseUrl[(lastDash + 1)..], out int existingNumber))
+                {
+                    baseUrl = baseUrl[..lastDash];
+                    suffix = existingNumber + 1;
+                }
+                uniqueUrl = $"{baseUrl}-{suffix}";
+                suffix++;
+            }
+
+            newEvent.Url = uniqueUrl;
         }
 
         private async Task<string> CreateImageAndReturnPath(CreateEventCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
