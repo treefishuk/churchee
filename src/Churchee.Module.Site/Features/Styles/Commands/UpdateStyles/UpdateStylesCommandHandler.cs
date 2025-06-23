@@ -1,4 +1,5 @@
-﻿using Churchee.Common.ResponseTypes;
+﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
@@ -10,15 +11,26 @@ namespace Churchee.Module.Site.Features.Styles.Commands
     {
 
         private readonly IDataStore _storage;
+        private readonly ICurrentUser _currentUser;
 
-        public UpdateStylesCommandHandler(IDataStore storage)
+        public UpdateStylesCommandHandler(IDataStore storage, ICurrentUser currentUser)
         {
             _storage = storage;
+            _currentUser = currentUser;
         }
 
         public async Task<CommandResponse> Handle(UpdateStylesCommand request, CancellationToken cancellationToken)
         {
-            var css = _storage.GetRepository<Css>().GetQueryable().First();
+            var css = _storage.GetRepository<Css>().GetQueryable().FirstOrDefault();
+
+            if (css == null)
+            {
+                var applicationTenantId = await _currentUser.GetApplicationTenantId();
+
+                css = new Css(applicationTenantId);
+
+                _storage.GetRepository<Css>().Create(css);
+            }
 
             css.SetStyles(request.Css);
 

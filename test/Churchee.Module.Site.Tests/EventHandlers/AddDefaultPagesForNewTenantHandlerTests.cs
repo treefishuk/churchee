@@ -7,14 +7,14 @@ using Moq;
 
 namespace Churchee.Module.Site.Tests.EventHandlers
 {
-    public class TenantAddedEventHandlerTests
+    public class AddDefaultPagesForNewTenantHandlerTests
     {
         private readonly Mock<IDataStore> _dataStoreMock;
         private readonly Mock<IRepository<Page>> _pageRepositoryMock;
         private readonly Mock<IRepository<PageType>> _pageTypeRepositoryMock;
-        private readonly TenantAddedEventHandler _handler;
+        private readonly AddDefaultPagesForNewTenantHandler _handler;
 
-        public TenantAddedEventHandlerTests()
+        public AddDefaultPagesForNewTenantHandlerTests()
         {
             _dataStoreMock = new Mock<IDataStore>();
             _pageRepositoryMock = new Mock<IRepository<Page>>();
@@ -23,7 +23,7 @@ namespace Churchee.Module.Site.Tests.EventHandlers
             _dataStoreMock.Setup(ds => ds.GetRepository<Page>()).Returns(_pageRepositoryMock.Object);
             _dataStoreMock.Setup(ds => ds.GetRepository<PageType>()).Returns(_pageTypeRepositoryMock.Object);
 
-            _handler = new TenantAddedEventHandler(_dataStoreMock.Object);
+            _handler = new AddDefaultPagesForNewTenantHandler(_dataStoreMock.Object);
         }
 
         [Fact]
