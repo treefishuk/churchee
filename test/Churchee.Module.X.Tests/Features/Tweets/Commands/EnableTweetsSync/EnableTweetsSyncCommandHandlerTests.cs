@@ -94,6 +94,127 @@
             Assert.Contains(result.Errors, e => e.Description.Contains("Failed to schedule job for syncing tweets"));
         }
 
+        [Fact]
+        public async Task Handle_CreatesViewTemplate_IfNotExists()
+        {
+            // Arrange
+            var handler = CreateHandlerWithHttpClientMock(HttpStatusCode.OK, "{\"data\":{\"id\":\"12345\"}}");
+            var command = new EnableTweetsSyncCommand("testuser", "token");
+
+            _viewTemplateRepo.Setup(x => x.AnyWithFiltersDisabled(It.IsAny<System.Linq.Expressions.Expression<Func<ViewTemplate, bool>>>())).Returns(false);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            _viewTemplateRepo.Verify(x => x.Create(It.IsAny<ViewTemplate>()), Times.Once);
+            _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.AtLeast(2));
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task Handle_DoesNotCreateViewTemplate_IfExists()
+        {
+            // Arrange
+            var handler = CreateHandlerWithHttpClientMock(HttpStatusCode.OK, "{\"data\":{\"id\":\"12345\"}}");
+            var command = new EnableTweetsSyncCommand("testuser", "token");
+
+            _viewTemplateRepo.Setup(x => x.AnyWithFiltersDisabled(It.IsAny<System.Linq.Expressions.Expression<Func<ViewTemplate, bool>>>())).Returns(true);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            _viewTemplateRepo.Verify(x => x.Create(It.IsAny<ViewTemplate>()), Times.Never);
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task Handle_StripsAtSymbol_FromAccountName_BeforeSavingSetting()
+        {
+            // Arrange
+            var handler = CreateHandlerWithHttpClientMock(HttpStatusCode.OK, "{\"data\":{\"id\":\"12345\"}}");
+            var command = new EnableTweetsSyncCommand("@account", "token");
+
+            _viewTemplateRepo.Setup(x => x.AnyWithFiltersDisabled(It.IsAny<System.Linq.Expressions.Expression<Func<ViewTemplate, bool>>>())).Returns(true);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            _settingStore.Verify(
+                x => x.AddOrUpdateSetting(
+                    It.IsAny<Guid>(),
+                    _tenantId,
+                    "X/Twitter UserName",
+                    "account" // Should be without '@'
+                ),
+                Times.Once
+            );
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task Handle_ReturnsError_WhenQueueJobThrows()
+        {
+            // Arrange
+            var handler = CreateHandlerWithHttpClientMock(HttpStatusCode.OK, "{\"data\":{\"id\":\"12345\"}}");
+            var command = new EnableTweetsSyncCommand("testuser", "token");
+
+            _viewTemplateRepo.Setup(x => x.AnyWithFiltersDisabled(It.IsAny<System.Linq.Expressions.Expression<Func<ViewTemplate, bool>>>())).Returns(false);
+            _jobService.Setup(x => x.QueueJob(It.IsAny<System.Linq.Expressions.Expression<Func<Task>>>())).Throws(new Exception("Queue error"));
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Contains(result.Errors, e => e.Description.Contains("Failed to queue job for syncing tweets"));
+        }
+
+        [Fact]
+        public async Task StoreUserId_ReturnsError_WhenResponseIsEmpty()
+        {
+            // Arrange
+            var handler = CreateHandlerWithHttpClientMock(HttpStatusCode.OK, "");
+            var method = handler.GetType().GetMethod("StoreUserId");
+
+            // Act
+            var response = await handler.StoreUserId("testuser", "token", _tenantId, CancellationToken.None);
+
+            // Assert
+            Assert.False(response.IsSuccess);
+            Assert.Contains(response.Errors, e => e.Description.Contains("Failed to get user ID from Twitter API"));
+        }
+
+        [Fact]
+        public async Task StoreUserId_ReturnsError_WhenDeserializationFails()
+        {
+            // Arrange
+            var handler = CreateHandlerWithHttpClientMock(HttpStatusCode.OK, "{\"unexpected\":\"value\"}");
+
+            // Act
+            var response = await handler.StoreUserId("testuser", "token", _tenantId, CancellationToken.None);
+
+            // Assert
+            Assert.False(response.IsSuccess);
+            Assert.Contains(response.Errors, e => e.Description.Contains("Failed to deserialize user ID from Twitter API response"));
+        }
+
+        [Fact]
+        public async Task StoreUserId_ReturnsError_WhenHttpFails()
+        {
+            // Arrange
+            var handler = CreateHandlerWithHttpClientMock(HttpStatusCode.BadRequest, "");
+
+            // Act
+            var response = await handler.StoreUserId("testuser", "token", _tenantId, CancellationToken.None);
+
+            // Assert
+            Assert.False(response.IsSuccess);
+            Assert.Contains(response.Errors, e => e.Description.Contains("Failed to get user ID from Twitter API"));
+        }
+
         private EnableTweetsSyncCommandHandler CreateHandlerWithHttpClientMock(HttpStatusCode statusCode, string content)
         {
             var httpMessageHandler = new Mock<HttpMessageHandler>();

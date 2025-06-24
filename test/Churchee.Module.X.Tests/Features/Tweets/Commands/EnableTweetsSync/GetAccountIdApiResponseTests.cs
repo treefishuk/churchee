@@ -22,6 +22,22 @@
         }
 
         [Fact]
+        public void GetId_ReturnsEmptyString_WhenDataIsNotPresent()
+        {
+            // Arrange
+            var response = new GetAccountIdApiResponse
+            {
+                Data = null
+            };
+
+            // Act
+            var id = response.GetId();
+
+            // Assert
+            Assert.Equal(string.Empty, id);
+        }
+
+        [Fact]
         public void Data_DefaultConstructor_InitializesPropertiesToEmpty()
         {
             // Arrange
