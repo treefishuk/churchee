@@ -40,12 +40,12 @@ namespace Churchee.ImageProcessing.Jobs
 
             string imagePath = $"{folderPath}{fileName}_{suffix}";
 
-            await CreateImageSize(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, extension);
+            await CreateImageSize(applicationTenantId, streamBytes, width, overrideExisting, imagePath, extension);
 
-            await CreateImageSize(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, ".webp");
+            await CreateImageSize(applicationTenantId, streamBytes, width, overrideExisting, imagePath, ".webp");
         }
 
-        private async Task CreateImageSize(Guid applicationTenantId, string suffix, byte[] streamBytes, int width, bool overrideExisting, string imagePath, string extension)
+        private async Task CreateImageSize(Guid applicationTenantId, byte[] streamBytes, int width, bool overrideExisting, string imagePath, string extension)
         {
             using var stream = new MemoryStream(streamBytes);
 
@@ -71,12 +71,12 @@ namespace Churchee.ImageProcessing.Jobs
 
             string imagePath = $"{folderPath}{fileName}_{suffix}";
 
-            await CreateImageCrop(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, extension);
+            await CreateImageCrop(applicationTenantId, streamBytes, width, overrideExisting, imagePath, extension);
 
-            await CreateImageCrop(applicationTenantId, suffix, streamBytes, width, overrideExisting, imagePath, ".webp");
+            await CreateImageCrop(applicationTenantId, streamBytes, width, overrideExisting, imagePath, ".webp");
         }
 
-        private async Task CreateImageCrop(Guid applicationTenantId, string suffix, byte[] streamBytes, int width, bool overrideExisting, string imagePath, string extension)
+        private async Task CreateImageCrop(Guid applicationTenantId, byte[] streamBytes, int width, bool overrideExisting, string imagePath, string extension)
         {
             using var stream = new MemoryStream(streamBytes);
 

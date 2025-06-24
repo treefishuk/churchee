@@ -41,21 +41,18 @@ namespace Churchee.Module.Events.Features.Queries
                 },
                 cancellationToken: cancellationToken);
 
-            ChangeImagesToThumnailImages(dataTableResponse);
+            ChangeImagesToThumbnailImages(dataTableResponse);
 
             return dataTableResponse;
         }
 
-        private static void ChangeImagesToThumnailImages(DataTableResponse<GetListingQueryResponseItem> dataTableResponse)
+        private static void ChangeImagesToThumbnailImages(DataTableResponse<GetListingQueryResponseItem> dataTableResponse)
         {
-            foreach (var item in dataTableResponse.Data)
+            foreach (var item in dataTableResponse.Data.Where(w => !string.IsNullOrEmpty(w.ImageUri)))
             {
-                if (!string.IsNullOrEmpty(item.ImageUri))
-                {
-                    var fileName = Path.GetFileNameWithoutExtension(item.ImageUri);
+                var fileName = Path.GetFileNameWithoutExtension(item.ImageUri);
 
-                    item.ImageUri = item.ImageUri.Replace(fileName, $"{fileName}_t");
-                }
+                item.ImageUri = item.ImageUri.Replace(fileName, $"{fileName}_t");
             }
         }
     }
