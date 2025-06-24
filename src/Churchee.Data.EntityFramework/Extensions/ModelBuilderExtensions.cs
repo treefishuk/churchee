@@ -38,8 +38,6 @@ namespace Churchee.Data.EntityFramework.Extensions
             }
         }
 
-        }
-
         public static void SetDefaultStringLengths(this ModelBuilder modelBuilder, int length)
         {
             foreach (var property in modelBuilder.Model.GetEntityTypes()
