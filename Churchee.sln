@@ -113,6 +113,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Module.Logging", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Module.Logging.Tests", "test\Churchee.Module.Logging.Tests\Churchee.Module.Logging.Tests.csproj", "{52F13FC1-9B4E-4FE4-A460-5F7AA503E0E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Module.X.Tests", "test\Churchee.Module.X.Tests\Churchee.Module.X.Tests.csproj", "{FAFCB790-57B2-47AC-A42D-AE0E3A44F68C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -283,6 +285,10 @@ Global
 		{52F13FC1-9B4E-4FE4-A460-5F7AA503E0E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52F13FC1-9B4E-4FE4-A460-5F7AA503E0E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52F13FC1-9B4E-4FE4-A460-5F7AA503E0E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAFCB790-57B2-47AC-A42D-AE0E3A44F68C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAFCB790-57B2-47AC-A42D-AE0E3A44F68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAFCB790-57B2-47AC-A42D-AE0E3A44F68C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAFCB790-57B2-47AC-A42D-AE0E3A44F68C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -333,6 +339,7 @@ Global
 		{64DE18EB-84E5-46EF-97C4-76CCFD441D7A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{854B2276-AC85-1845-BFDB-1DBF0461CA43} = {C4D09CE5-B353-466C-85D4-A0CD5523645A}
 		{52F13FC1-9B4E-4FE4-A460-5F7AA503E0E4} = {187811C7-20D5-435D-83B8-042B3227E714}
+		{FAFCB790-57B2-47AC-A42D-AE0E3A44F68C} = {332E7AE2-3FD8-4F68-9027-6C48B18ADAB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456111D9-BD96-4D2E-94D6-42EF29980C0B}
