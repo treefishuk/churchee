@@ -4,6 +4,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
 {
     public class EnableFacebookIntegrationCommandTests
     {
+        [Fact]
         public void EnableFacebookIntegrationCommandTests_PropertiesSetByConstructor()
         {
             // Arrange

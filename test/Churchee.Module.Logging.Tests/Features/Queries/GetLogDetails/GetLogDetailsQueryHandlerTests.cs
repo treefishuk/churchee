@@ -7,7 +7,7 @@ namespace Churchee.Module.Logging.Tests.Features.Queries
 {
     public class GetLogDetailsQueryHandlerTests
     {
-        private LogsDBContext CreateContextWithLog(Log log = null)
+        private static LogsDBContext CreateContextWithLog(Log? log = null)
         {
             var options = new DbContextOptionsBuilder<LogsDBContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())

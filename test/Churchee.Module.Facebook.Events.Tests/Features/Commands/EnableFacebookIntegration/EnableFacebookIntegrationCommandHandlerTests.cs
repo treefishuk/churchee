@@ -41,7 +41,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
             );
         }
 
-        private IConfiguration SetUpOptions(Dictionary<string, string?> options)
+        private static IConfiguration SetUpOptions(Dictionary<string, string?> options)
         {
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(options)
