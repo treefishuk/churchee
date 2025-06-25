@@ -27,7 +27,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public class Builder
         {
-            private readonly CreateMediaItemCommand _command;
+            private readonly CreateMediaItemCommand _command = new();
 
             public Builder SetName(string name)
             {
