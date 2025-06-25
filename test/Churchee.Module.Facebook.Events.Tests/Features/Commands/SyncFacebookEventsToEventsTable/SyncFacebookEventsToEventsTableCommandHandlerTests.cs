@@ -81,7 +81,6 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands.SyncFacebookEv
                     LogLevel.Error,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((o, t) => o.ToString() == "Error syncing Facebook events" && t.Name == "FormattedLogValues"),
-
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
@@ -250,8 +249,10 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands.SyncFacebookEv
                 cover = (object?)null
             });
 
-            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson, fbEventJson));
-            httpClient.BaseAddress = new Uri("http://localhost/");
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson, fbEventJson))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
 
             _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Returns(httpClient);
 
@@ -291,10 +292,11 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands.SyncFacebookEv
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error Syncing Facebook Events")),
+                    It.Is<It.IsAnyType>((o, t) => o.ToString() == "Error Syncing Facebook Events" && t.Name == "FormattedLogValues"),
                     It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
+
         }
 
     }

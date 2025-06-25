@@ -13,7 +13,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             RuleFor(x => x.Description).NotEmpty();
 
-            RuleFor(x => x.Extention).Must(ImageValidation.BeAValidImageExtension).WithMessage("only Jpeg and PNG images are supported");
+            RuleFor(x => x.FileExtension).Must(ImageValidation.BeAValidImageExtension).WithMessage("only Jpeg and PNG images are supported");
 
             RuleFor(x => x.Base64Image)
                 .Must(ImageValidation.BeValidImage)
@@ -22,7 +22,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
             RuleFor(x => x.Base64Image)
                 //.NotEmpty().WithMessage("Base64Image cannot be empty")
                 //.When(x => string.IsNullOrEmpty(x.Base64Image))
-                .Must((image, base64Image) => ImageValidation.BeExpectedFormat(base64Image, image.Extention))
+                .Must((image, base64Image) => ImageValidation.BeExpectedFormat(base64Image, image.FileExtension))
                 .WithMessage("File extention does not match image format");
         }
 

@@ -23,8 +23,8 @@
         <div class="rz-m-3">
 
             <RadzenSplitButton Click="@FolderAction"
-                               Text="Folder"
-                               ButtonStyle="ButtonStyle.Info" Disabled=AddMediaDisabled>
+            Text="Folder"
+            ButtonStyle="ButtonStyle.Info" Disabled=AddMediaDisabled>
 
                 <ChildContent>
 
@@ -45,39 +45,39 @@
 
 </SectionContent>
 
-        <RadzenStack Orientation="Orientation.Horizontal" Gap="0" AlignItems="AlignItems.Stretch" Style="height:100%;">
-            <RadzenTree @ref="tree" @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 500px; margin-right: 1rem; min-width: 500px; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; border:1px solid #d9d8d8">
-                <RadzenTreeLevel HasChildren=@HasChildren ChildrenProperty="Children" Text="@GetTextForNode" Template="@FolderTemplate" />
-            </RadzenTree>
-            <RadzenDataList Style="height:100%; width:100%; overflow:auto;"
-                        WrapItems="true"
-                        Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="12" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+<RadzenStack Orientation="Orientation.Horizontal" Gap="0" AlignItems="AlignItems.Stretch" Style="height:100%;">
+    <RadzenTree @ref="tree" @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 500px; margin-right: 1rem; min-width: 500px; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; border:1px solid #d9d8d8">
+        <RadzenTreeLevel HasChildren=@HasChildren ChildrenProperty="Children" Text="@GetTextForNode" Template="@FolderTemplate" />
+    </RadzenTree>
+    <RadzenDataList Style="height:100%; width:100%; overflow:auto;"
+    WrapItems="true"
+    Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="12" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
 
-            <Template Context="item">
+        <Template Context="item">
 
             <div style="width:25%; height: 100%; max-width: 25%; min-width: 150px; padding: 0; margin: 0; background: none; border: none;">
 
                 <RadzenCard Style="margin: 5px">
 
-                                <div class="rz-image-wrap" style="width:100%;">
-                                        <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
-                               </div>
+                    <div class="rz-image-wrap" style="width:100%;">
+                        <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
+                    </div>
 
-                                <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start" Style="padding: 1rem 0 0;">
-                                    <RadzenButton Click=@(args => OnEdit(item.Id)) Icon="edit" ButtonStyle="ButtonStyle.Primary" />
-                                    <RadzenButton Click=@(args => OnDelete(item.Id)) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
-                                    <RadzenButton Click=@(args => OpenImage(imagePrefix, item.MediaUrl)) Icon="open_in_new" ButtonStyle="ButtonStyle.Secondary" />
-                                </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start" Style="padding: 1rem 0 0;">
+                        <RadzenButton Click=@(args => OnEdit(item.Id)) Icon="edit" ButtonStyle="ButtonStyle.Primary" />
+                        <RadzenButton Click=@(args => OnDelete(item.Id)) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                        <RadzenButton Click=@(args => OpenImage(imagePrefix, item.MediaUrl)) Icon="open_in_new" ButtonStyle="ButtonStyle.Secondary" />
+                    </RadzenStack>
 
 
                 </RadzenCard>
 
             </div>
 
-            </Template>
-        </RadzenDataList>  
+        </Template>
+    </RadzenDataList>  
 
-        </RadzenStack>
+</RadzenStack>
 
 
 @code {
@@ -190,7 +190,21 @@
 
     private async Task ValidCreateSubmitForm()
     {
-        var result = await Mediator.Send(new CreateMediaItemCommand(createModel.Name, Path.GetFileNameWithoutExtension(createModel.File.FileName), Path.GetExtension(createModel.File.FileName), createModel.Description, createModel.AdditionalContent, activeFolderId, createModel.File.Value, createModel.LinkUrl, createModel.CssClass, createModel.Order));
+
+        var command = new CreateMediaItemCommand.Builder()
+        .SetName(createModel.Name)
+        .SetFileName(Path.GetFileNameWithoutExtension(createModel.File.FileName))
+        .SetExtension(Path.GetExtension(createModel.File.FileName))
+        .SetDescription(createModel.Description)
+        .SetAdditionalContent(createModel.AdditionalContent)
+        .SetFolderId(activeFolderId)
+        .SetBase64Image(createModel.File.Value)
+        .SetLinkUrl(createModel.LinkUrl)
+        .SetCssClass(createModel.CssClass)
+        .SetOrder(createModel.Order)
+        .Build();
+
+        var result = await Mediator.Send(command);
 
         if (result.IsSuccess)
         {
