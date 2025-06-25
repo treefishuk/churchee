@@ -13,15 +13,16 @@ namespace Churchee.Data.EntityFramework.Extensions
         public static void ApplyGlobalFilters<TInterface>(this ModelBuilder modelBuilder,
                Expression<Func<TInterface, bool>> expression)
         {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes()
-                .Where(entityType => entityType.GetRootType() == entityType && entityType.ClrType.GetInterface(typeof(TInterface).Name) != null))
+            foreach (var clrType in modelBuilder.Model.GetEntityTypes()
+                .Where(entityType => entityType.GetRootType() == entityType && entityType.ClrType.GetInterface(typeof(TInterface).Name) != null)
+                .Select(s => s.ClrType))
             {
-                var parameterType = Expression.Parameter(entityType.ClrType);
+                var parameterType = Expression.Parameter(clrType);
 
                 var expressionFilter = ReplacingExpressionVisitor.
                     Replace(expression.Parameters.Single(), parameterType, expression.Body);
 
-                var builder = modelBuilder.Entity(entityType.ClrType);
+                var builder = modelBuilder.Entity(clrType);
 
                 if (builder.Metadata.GetQueryFilter() != null)
                 {
@@ -33,7 +34,7 @@ namespace Churchee.Data.EntityFramework.Extensions
                     expressionFilter = Expression.AndAlso(currentExpressionFilter, expressionFilter);
                 }
 
-                modelBuilder.Entity(entityType.ClrType).
+                modelBuilder.Entity(clrType).
                     HasQueryFilter(Expression.Lambda(expressionFilter, parameterType));
             }
         }

@@ -26,7 +26,7 @@
         {
             // Arrange
             _currentUser.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(_tenantId);
-            _settingStore.Setup(x => x.GetSettingValue(It.IsAny<Guid>(), _tenantId)).ReturnsAsync((string?)null);
+            _settingStore.Setup(x => x.GetSettingValue(It.IsAny<Guid>(), _tenantId)).ReturnsAsync((string)null);
 
             var handler = CreateHandler();
             var query = new CheckXIntegrationStatusQuery();

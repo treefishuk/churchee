@@ -32,19 +32,20 @@ namespace Churchee.Module.Events.Features.Queries
                 }
             }
 
-            var response = new GetDetailByIdResponse(
-                title: entity.Title,
-                description: entity.Description,
-                content: entity.Content,
-                imageUrl: entity.ImageUrl,
-                locationName: entity.LocationName,
-                city: entity.City,
-                street: entity.Street,
-                postCode: entity.PostCode,
-                country: entity.Country,
-                latitude: entity.Latitude,
-                longitude: entity.Longitude,
-                dates: dateList);
+            var response = new GetDetailByIdResponse.Builder()
+                .SetTitle(entity.Title)
+                .SetDescription(entity.Description)
+                .SetContent(entity.Content)
+                .SetImageUrl(entity.ImageUrl)
+                .SetLocationName(entity.LocationName)
+                .SetCity(entity.City)
+                .SetStreet(entity.Street)
+                .SetPostCode(entity.PostCode)
+                .SetCountry(entity.Country)
+                .SetLatitude(entity.Latitude)
+                .SetLongitude(entity.Longitude)
+                .SetDates(dateList)
+                .Build();
 
             return response;
         }
