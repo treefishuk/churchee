@@ -8,6 +8,7 @@ namespace Churchee.Module.Tenancy.Entities
         private ApplicationHost()
         {
             Host = string.Empty;
+            ApplicationTenant = null!;
         }
 
         public ApplicationHost(string host, Guid applicationTenantId) : base(applicationTenantId)
@@ -18,6 +19,7 @@ namespace Churchee.Module.Tenancy.Entities
             }
 
             Host = host;
+            ApplicationTenant = null!;
         }
 
         public virtual ApplicationTenant ApplicationTenant { get; private set; }
