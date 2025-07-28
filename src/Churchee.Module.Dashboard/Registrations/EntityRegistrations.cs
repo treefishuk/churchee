@@ -17,6 +17,10 @@ namespace Churchee.Module.Dashboard.Registrations
 
                 etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.ViewedAt })
                    .IncludeProperties(i => new { i.IpAddress });
+
+                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.ViewedAt, i.Device, i.UserAgent })
+                   .IncludeProperties(i => new { i.IpAddress, i.Url, i.Referrer });
+
             });
         }
     }
