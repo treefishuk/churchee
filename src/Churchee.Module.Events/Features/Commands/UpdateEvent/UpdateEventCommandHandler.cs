@@ -70,21 +70,15 @@ namespace Churchee.Module.Events.Features.Commands
             var existingDates = eventEntity.EventDates;
 
             //Add new Dates
-            foreach (var date in request.Dates)
+            foreach (var date in request.Dates.Where(w => !existingDates.Any(a => a.Id == w.Id)))
             {
-                if (!existingDates.Any(a => a.Id == date.Id))
-                {
-                    eventEntity.AddDate(date.Id, date.Start, date.End);
-                }
+                eventEntity.AddDate(date.Id, date.Start, date.End);
             }
 
             //Remove Deleted Dates
-            foreach (var date in existingDates)
+            foreach (var date in existingDates.Where(w => !request.Dates.Exists(a => a.Id == w.Id)))
             {
-                if (!request.Dates.Exists(a => a.Id == date.Id))
-                {
-                    Event.RemoveDate(date);
-                }
+                Event.RemoveDate(date);
             }
         }
 

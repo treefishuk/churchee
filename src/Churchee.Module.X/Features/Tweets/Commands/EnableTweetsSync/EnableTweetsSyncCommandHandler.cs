@@ -133,7 +133,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             var getUserIdResponseClass = JsonSerializer.Deserialize<GetAccountIdApiResponse>(getUserIdResponseString);
 
-            if (getUserIdResponseClass == null)
+            if (getUserIdResponseClass == null || getUserIdResponseClass.Data == null || string.IsNullOrEmpty(getUserIdResponseClass.Data.Id))
             {
                 _logger.LogError("Failed to deserialize user ID from Twitter API response");
 

@@ -88,21 +88,22 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 
         private void SetupGetDetailByIdResponse()
         {
-            var mediatorResponse = new GetDetailByIdResponse(
-                title: "Title",
-                description: "Description",
-                content: "",
-                imageUrl: "/img/test.jpg",
-                locationName: "Somewhere",
-                city: "Emerald",
-                street: "Yellow Brick Road",
-                postCode: "OZ1 TWW",
-                country: "Kansas",
-                latitude: 39.105092049099866m,
-                longitude: -94.62311716634233m,
-                dates: [
+            var mediatorResponse = new GetDetailByIdResponse.Builder()
+                  .SetTitle("Title")
+                  .SetDescription("Description")
+                  .SetContent("")
+                  .SetImageUrl("/img/test.jpg")
+                  .SetLocationName("Somewhere")
+                  .SetCity("Emerald")
+                  .SetStreet("Yellow Brick Road")
+                  .SetPostCode("OZ1 TWW")
+                  .SetCountry("Kansas")
+                  .SetLatitude(39.105092049099866m)
+                  .SetLongitude(-94.62311716634233m)
+                  .SetDates([
                     new EventDateModel(DateTime.Now, DateTime.Now.AddMinutes(90))
-                ]);
+                  ])
+                  .Build();
 
             MockMediator.Setup(s => s.Send(It.IsAny<GetDetailByIdQuery>(), default)).ReturnsAsync(mediatorResponse);
         }

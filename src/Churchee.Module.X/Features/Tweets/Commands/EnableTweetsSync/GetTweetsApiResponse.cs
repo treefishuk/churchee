@@ -2,7 +2,6 @@
 
 namespace Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync
 {
-
     public class Tweet
     {
         public Tweet()
