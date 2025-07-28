@@ -24,14 +24,14 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
         public async Task Handle_ShouldReturnCorrectResponse()
         {
             // Arrange
-            Guid appTenantId = Guid.NewGuid();
+            var appTenantId = Guid.NewGuid();
             var query = new GetDashboardDataQuery(7);
             var cancellationToken = new CancellationToken();
 
             var pageViews = new List<PageView>
             {
-                new PageView(appTenantId) { IpAddress = "192.168.1.1", ViewedAt = DateTime.UtcNow.AddDays(-1), Device = "Device1", Url = "/page1", Referrer = "http://referrer1.com" },
-                new PageView(appTenantId) { IpAddress = "192.168.1.2", ViewedAt = DateTime.UtcNow.AddDays(-2), Device = "Device2", Url = "/page2", Referrer = "http://referrer2.com" }
+                new(appTenantId) { IpAddress = "192.168.1.1", ViewedAt = DateTime.UtcNow.AddDays(-1), Device = "Device1", Url = "/page1", Referrer = "http://referrer1.com" },
+                new(appTenantId) { IpAddress = "192.168.1.2", ViewedAt = DateTime.UtcNow.AddDays(-2), Device = "Device2", Url = "/page2", Referrer = "http://referrer2.com" }
             };
 
             var pastVisitorIps = new List<string> { "192.168.1.3" };
@@ -39,7 +39,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             _dataStoreMock.Setup(ds => ds.GetRepository<PageView>().GetListAsync(It.IsAny<GetPageViewDataForRange>(), cancellationToken))
                 .ReturnsAsync(pageViews);
 
-            _dataStoreMock.Setup(ds => ds.GetRepository<PageView>().GetListAsync(It.IsAny<GetIpsBeforeDateSpecification>(), It.IsAny<Expression<Func<PageView, string>>>(), cancellationToken))
+            _dataStoreMock.Setup(ds => ds.GetRepository<PageView>().GetDistinctListAsync(It.IsAny<GetIpsBeforeDateSpecification>(), It.IsAny<Expression<Func<PageView, string>>>(), cancellationToken))
                 .ReturnsAsync(pastVisitorIps);
 
             // Act
