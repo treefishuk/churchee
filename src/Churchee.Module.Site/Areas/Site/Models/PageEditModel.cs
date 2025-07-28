@@ -18,6 +18,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         [MaxLength(100)]
         [DataType(DataTypes.TextWithSlug)]
+        [Required]
         public string Title { get; set; }
 
         [MaxLength(200)]

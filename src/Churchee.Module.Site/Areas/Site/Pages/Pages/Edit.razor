@@ -24,7 +24,7 @@
 
 @if (_editContext != null)
 {
-        <EditForm EditContext="@_editContext" OnValidSubmit="ValidContentSubmitForm">
+        <EditForm EditContext="@_editContext" OnSubmit="HandleSubmit">
 
             <div class="sticky-formButtons">
 
@@ -48,7 +48,7 @@
         <RadzenTabs RenderMode="TabRenderMode.Client" class="pageEdit-tabs">
             <Tabs>
                     <RadzenTabsItem Text="Info">
-                        <FormFields EditContext="_editContext" FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "ContentItems")" OnValueChanged=UpdateFormState></FormFields>
+                        <FormFields EditContext="_editContext" FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "ContentItems")" OnValueChanged=SetFormInvalidState></FormFields>
                     </RadzenTabsItem>
 
                     <RadzenTabsItem Text="Content">
@@ -57,7 +57,7 @@
 
                             @foreach (var item in InputModel.ContentItems)
                             {
-                                <RadzenFormField Text="@($"{item.Title} ({item.DevName})")">
+                                <RadzenFormField Text="@($"{item.Title} ({item.DevName})")" AllowFloatingLabel="false">
                                     <ChildContent>
                                         @if (item.Type == EditorType.RichTextEditor)
                                         {
@@ -100,6 +100,8 @@
 @code {
     private bool _formInvalid;
 
+    private bool _submitClicked;
+
     private bool _isPublished = false;
 
     private EditContext _editContext;
@@ -110,6 +112,12 @@
     [Parameter]
     public Guid Id { get; set; }
 
+    [Inject]
+    public IServiceProvider _serviceProvider { get; set; } = default!;
+
+    [Inject]
+    public ILogger<Edit> _logger { get; set; } = default!;
+
     public string Submit { get; set; }
 
     public string Title { get; set; }
@@ -117,11 +125,16 @@
     protected override void OnParametersSet()
     {
         _editContext = new EditContext(InputModel);
+        SetFormInvalidState();
     }
 
-    private void UpdateFormState()
+    private void SetFormInvalidState()
     {
-        _formInvalid = !_editContext.Validate();
+        var validationResults = new List<ValidationResult>();
+        var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
+        Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
+
+        _formInvalid = validationResults.Any();
 
         StateHasChanged();
     }
@@ -166,6 +179,28 @@
             Title = s.Title,
             Value = s.Id.ToString()
         }).ToList();
+    }
+
+    private async Task HandleSubmit()
+    {
+
+        try
+        {
+            _submitClicked = true;
+
+            if (_editContext.Validate())
+            {
+                _logger.LogInformation("HandleValidSubmit");
+
+                await ValidContentSubmitForm();
+
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Log(LogLevel.Error, ex, "Error Submitting form");
+        }
+
     }
 
     private async Task ValidContentSubmitForm()
