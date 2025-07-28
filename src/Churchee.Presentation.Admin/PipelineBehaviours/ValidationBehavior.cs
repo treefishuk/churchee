@@ -2,7 +2,7 @@
 using FluentValidation;
 using MediatR;
 
-namespace Churchee.Presentation.Admin.PipelineBehavoirs
+namespace Churchee.Presentation.Admin.PipelineBehaviours
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

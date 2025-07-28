@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.ResponseTypes;
 using MediatR;
 
-namespace Churchee.Presentation.Admin.PipelineBehavoirs
+namespace Churchee.Presentation.Admin.PipelineBehaviours
 {
     public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
@@ -23,7 +23,7 @@ namespace Churchee.Presentation.Admin.PipelineBehavoirs
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception caught in pipeline: {message}", ex.Message);
+                _logger.LogError(ex, "Exception caught in pipeline: {Message}", ex.Message);
 
                 var response = new CommandResponse();
 
