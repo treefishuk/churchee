@@ -42,8 +42,8 @@ namespace Churchee.Module.Settings.Tests.Store
 
             var id = Guid.NewGuid();
             var tenantId = Guid.NewGuid();
-            var description = "Test Description";
-            var value = "Test Value";
+            string description = "Test Description";
+            string value = "Test Value";
 
             // Act
             await settingStore.AddOrUpdateSetting(id, tenantId, description, value);
@@ -64,9 +64,9 @@ namespace Churchee.Module.Settings.Tests.Store
 
             var id = Guid.NewGuid();
             var tenantId = Guid.NewGuid();
-            var description = "Test Description";
-            var oldValue = "Old Value";
-            var newValue = "Updated Value";
+            string description = "Test Description";
+            string oldValue = "Old Value";
+            string newValue = "Updated Value";
 
             context.Settings.Add(new Setting(id, tenantId, description, oldValue));
             await context.SaveChangesAsync();
@@ -89,8 +89,8 @@ namespace Churchee.Module.Settings.Tests.Store
 
             var id = Guid.NewGuid();
             var tenantId = Guid.NewGuid();
-            var description = "Test Description";
-            var value = "Test Value";
+            string description = "Test Description";
+            string value = "Test Value";
 
             context.Settings.Add(new Setting(id, tenantId, description, value));
             await context.SaveChangesAsync();
@@ -112,13 +112,13 @@ namespace Churchee.Module.Settings.Tests.Store
 
             var id = Guid.NewGuid();
             var tenantId = Guid.NewGuid();
-            var value = "Test Value";
+            string value = "Test Value";
 
             context.Settings.Add(new Setting(id, tenantId, "Test Description", value));
             await context.SaveChangesAsync();
 
             // Act
-            var result = await settingStore.GetSettingValue(id, tenantId);
+            string result = await settingStore.GetSettingValue(id, tenantId);
 
             // Assert
             Assert.Equal(value, result);
@@ -139,7 +139,7 @@ namespace Churchee.Module.Settings.Tests.Store
             await context.SaveChangesAsync();
 
             // Act
-            var result = await settingStore.GetSettingValue(id, tenantId);
+            string result = await settingStore.GetSettingValue(id, tenantId);
 
             // Assert
             Assert.Equal("Config Value", result);
@@ -156,7 +156,7 @@ namespace Churchee.Module.Settings.Tests.Store
             var tenantId = Guid.NewGuid();
 
             // Act
-            var result = await settingStore.GetSettingValue(id, tenantId);
+            string result = await settingStore.GetSettingValue(id, tenantId);
 
             // Assert
             Assert.Equal(string.Empty, result);
@@ -303,6 +303,11 @@ namespace Churchee.Module.Settings.Tests.Store
         }
 
         public Task<Common.Abstractions.DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(ISpecification<T> specification, string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TResult>> GetDistinctListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

@@ -15,6 +15,8 @@ namespace Churchee.Module.Dashboard.Registrations
 
                 etb.ToTable("PageViews");
 
+                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.ViewedAt })
+                   .IncludeProperties(i => new { i.IpAddress });
             });
         }
     }

@@ -21,7 +21,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
             var data = await _dataStore.GetRepository<PageView>().GetListAsync(new GetPageViewDataForRange(start), cancellationToken);
 
-            var pastVisitors = await _dataStore.GetRepository<PageView>().GetListAsync(new GetIpsBeforeDateSpecification(start), s => s.IpAddress, cancellationToken);
+            var pastVisitors = await _dataStore.GetRepository<PageView>().GetDistinctListAsync(new GetIpsBeforeDateSpecification(start), s => s.IpAddress, cancellationToken);
 
             var response = new GetDashboardDataResponse()
             {
@@ -41,9 +41,9 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
         {
             var startOfTheDay = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, DateTime.UtcNow.Day, 0, 0, 0, DateTimeKind.Utc);
 
-            int negativeNumber = (request.Days * -1);
+            int negativeNumber = request.Days * -1;
 
-            DateTime start = startOfTheDay.AddDays(negativeNumber);
+            var start = startOfTheDay.AddDays(negativeNumber);
             return start;
         }
 
@@ -93,14 +93,14 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private static GetDashboardDataResponseItem[] GetDevices(List<PageView> data)
         {
-            var totalRequestsAfterDate = data.Count;
+            int totalRequestsAfterDate = data.Count;
 
             return data
                 .GroupBy(record => new { record.Device })
                 .Select(group => new GetDashboardDataResponseItem
                 {
                     Name = group.Key.Device,
-                    Count = Math.Round(((double)group.Count() / totalRequestsAfterDate) * 100, 2)
+                    Count = Math.Round((double)group.Count() / totalRequestsAfterDate * 100, 2)
                 })
                 .Distinct()
                 .ToArray();
@@ -120,7 +120,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 .ToList();
 
             // Calculate the total number of records
-            var total = filteredList.Count;
+            int total = filteredList.Count;
 
             var groupedByReferrer = filteredList
                 .GroupBy(x => new { x.Referrer }).ToList();
@@ -128,7 +128,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             return groupedByReferrer.Select(x => new GetDashboardDataResponseItem
             {
                 Name = x.Key.Referrer,
-                Count = Math.Round(((double)x.Count() / total) * 100, 2)
+                Count = Math.Round((double)x.Count() / total * 100, 2)
             })
             .OrderByDescending(x => x.Count)
             .Take(5)

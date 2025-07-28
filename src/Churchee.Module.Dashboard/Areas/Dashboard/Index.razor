@@ -163,7 +163,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await GetData(0);
+        if (firstRender)
+        {
+            await GetData(0);
+        }
     }
 
     async Task GetData(int days)
