@@ -276,4 +276,4 @@ dotnet_diagnostic.CA1829.severity = warning
 
 [*.{cs,vb}]                                         //specify which files the spelling options apply to
 spelling_languages = en-us, en-gb                   //specifies the en-us and fr-fr dictionaries for use in spell checking
-spelling_exclusion_path = \.exclusion.dic             //defines a custom exclusion dictionary location and file
+spelling_exclusion_path = .\exclusion.dic             //defines a custom exclusion dictionary location and file

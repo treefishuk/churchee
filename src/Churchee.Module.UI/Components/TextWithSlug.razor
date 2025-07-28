@@ -9,7 +9,7 @@
 
 <RadzenFormField Text=@PropertyInfo.Name.ToSentence()>
     <ChildContent>
-        <RadzenTextBox Name="@Name" Value="@Value" Change=@((value) => OnChange(value)) />
+        <RadzenTextBox Name="@Name" Value="@Value" @oninput="(e) => OnFieldChange(PropertyInfo, e.Value?.ToString())" />
     </ChildContent>
     <Helper>
         <small class="rz-color-base-600">slug: @Slug</small>
@@ -24,6 +24,9 @@
     public PropertyInfo PropertyInfo { get; set; } = default!;
 
     [Parameter]
+    public EditContext EditContext { get; set; } = default!;
+
+    [Parameter]
     public object InputModel { get; set; } = default!;
 
     [Parameter]
@@ -31,6 +34,7 @@
 
     [Parameter]
     public string Name { get; set; } = default!;
+
 
     public string Slug { 
         get
@@ -50,13 +54,18 @@
         }
     }
 
-    public async Task OnChange(string value)
+    public async Task OnFieldChange(PropertyInfo info, object? value)
     {
-        Value = value;
 
-        StateHasChanged();
+        info.SetValue(InputModel, value);
 
-        await Change.InvokeAsync(Value);
+        // Get the FieldIdentifier with the EditContext from the field name
+        FieldIdentifier fieldIdentifier = EditContext.Field(info.Name);
+
+        // Validate the field when notifying change
+        EditContext.NotifyFieldChanged(fieldIdentifier);
+
+        await OnValueChanged.InvokeAsync(null);
     }
 
     private static Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
@@ -70,7 +79,7 @@
     }
 
     [Parameter]
-    public EventCallback<string> Change { get; set; }
+    public EventCallback<object> OnValueChanged { get; set; }
 
 }
 

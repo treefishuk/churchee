@@ -9,7 +9,7 @@ using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
 using Churchee.Module.Tenancy.Infrastructure;
 using Churchee.Module.UI.Models;
-using Churchee.Presentation.Admin.PipelineBehavoirs;
+using Churchee.Presentation.Admin.PipelineBehaviours;
 using Churchee.Presentation.Admin.Registrations;
 using FluentValidation;
 using Hangfire;

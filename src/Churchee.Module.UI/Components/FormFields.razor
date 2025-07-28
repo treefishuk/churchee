@@ -40,7 +40,7 @@
 
     if (dataType == DataTypes.TextWithSlug)
     {
-        <TextWithSlug Name="@prop.Name" PropertyInfo="@prop" InputModel="InputModel" Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value))></TextWithSlug>
+        <TextWithSlug Name="@prop.Name" PropertyInfo="@prop" InputModel="InputModel" Value="@propertyStringValue" OnValueChanged=@(OnValueChanged) EditContext="EditContext"></TextWithSlug>
     }
 
     if (dataType == DataTypes.Upload)
