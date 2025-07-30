@@ -17,7 +17,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string AdditionalContent { get; set; }
 
-        public string Base64Image { get; set; }
+        public string Base64Content { get; set; }
 
         public Guid? FolderId { get; set; }
 
@@ -73,9 +73,9 @@ namespace Churchee.Module.Site.Features.Media.Commands
                 return this;
             }
 
-            public Builder SetBase64Image(string base64Image)
+            public Builder SetBase64Content(string base64Image)
             {
-                _command.Base64Image = base64Image;
+                _command.Base64Content = base64Image;
                 return this;
             }
 

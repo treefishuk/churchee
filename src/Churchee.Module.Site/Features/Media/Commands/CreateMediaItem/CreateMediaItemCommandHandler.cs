@@ -27,7 +27,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
         {
             string folderPath = _dataStore.GetRepository<MediaFolder>().GetQueryable().Where(w => w.Id == request.FolderId).Select(s => s.Path).FirstOrDefault() ?? string.Empty;
 
-            byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
+            byte[] data = Convert.FromBase64String(request.Base64Content.Split(',')[1]);
 
             using var ms = new MemoryStream(data);
 
