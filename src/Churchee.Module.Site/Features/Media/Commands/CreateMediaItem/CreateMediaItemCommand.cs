@@ -45,7 +45,10 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             public Builder SetFileName(string fileName)
             {
-                _command.FileName = fileName;
+                string dashedFileName = string.Join("-", fileName.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+                _command.FileName = dashedFileName;
+
                 return this;
             }
 

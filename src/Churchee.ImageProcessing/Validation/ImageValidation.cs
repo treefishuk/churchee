@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Churchee.Common.Validation;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using System.Text.RegularExpressions;
 
@@ -8,8 +9,7 @@ namespace Churchee.ImageProcessing.Validation
     {
         public static bool BeAValidImageExtension(string extension)
         {
-            string[] validExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-            return Array.Exists(validExtensions, ext => ext.Equals(extension, StringComparison.OrdinalIgnoreCase));
+            return FileValidation.AllowedFormats.Contains(extension);
         }
 
         public static bool BeValidImage(string base64Image)

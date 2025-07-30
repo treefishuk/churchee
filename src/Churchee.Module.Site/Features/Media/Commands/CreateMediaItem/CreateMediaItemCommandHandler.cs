@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.Common.Validation;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Hangfire;
@@ -43,7 +44,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
-            if (!IsImageFile(finalFilePath))
+            if (!FileValidation.IsImageFile(finalFilePath))
             {
                 return new CommandResponse();
             }
@@ -55,11 +56,5 @@ namespace Churchee.Module.Site.Features.Media.Commands
             return new CommandResponse();
         }
 
-        private static bool IsImageFile(string filePath)
-        {
-            string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
-            string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
-            return imageExtensions.Contains(extension);
-        }
     }
 }

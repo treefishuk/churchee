@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.IO;
 
 namespace Churchee.Common.Validation
 {
     public static class FileValidation
     {
+        public static ImmutableArray<string> ImageFormats { get; } = [".jpg", ".jpeg", ".png", ".webp"];
+
+        public static ImmutableArray<string> AllowedFormats { get; } = [".jpg", ".jpeg", ".png", ".webp", ".mp3", ".pdf", ".mp4"];
+
         public static bool BeValidPdf(string base64File)
         {
             if (string.IsNullOrWhiteSpace(base64File))
@@ -96,6 +102,10 @@ namespace Churchee.Common.Validation
             }
         }
 
-
+        public static bool IsImageFile(string filePath)
+        {
+            string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
+            return ImageFormats.Contains(extension);
+        }
     }
 }
