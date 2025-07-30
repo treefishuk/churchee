@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Churchee.Common.Validation;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using System.Text.RegularExpressions;
 
@@ -8,8 +9,7 @@ namespace Churchee.ImageProcessing.Validation
     {
         public static bool BeAValidImageExtension(string extension)
         {
-            var validExtensions = new[] { ".jpg", ".jpeg", ".png" };
-            return Array.Exists(validExtensions, ext => ext.Equals(extension, StringComparison.OrdinalIgnoreCase));
+            return FileValidation.AllowedFormats.Contains(extension);
         }
 
         public static bool BeValidImage(string base64Image)
@@ -21,7 +21,7 @@ namespace Churchee.ImageProcessing.Validation
 
             try
             {
-                var base64Pattern = @"^[a-zA-Z0-9\+/]*={0,2}$";
+                string base64Pattern = @"^[a-zA-Z0-9\+/]*={0,2}$";
 
                 string base64Trimmed = base64Image.Split(',')[1];
 
@@ -30,7 +30,7 @@ namespace Churchee.ImageProcessing.Validation
                     return false;
                 }
 
-                var imageData = Convert.FromBase64String(base64Trimmed);
+                byte[] imageData = Convert.FromBase64String(base64Trimmed);
 
                 using var ms = new MemoryStream(imageData);
 
@@ -55,7 +55,7 @@ namespace Churchee.ImageProcessing.Validation
             {
                 string base64Trimmed = base64Image.Split(',')[1];
 
-                var imageData = Convert.FromBase64String(base64Trimmed);
+                byte[] imageData = Convert.FromBase64String(base64Trimmed);
 
                 var format = Image.DetectFormat(imageData);
 

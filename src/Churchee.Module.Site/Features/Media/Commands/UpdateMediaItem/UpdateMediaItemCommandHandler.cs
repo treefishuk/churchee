@@ -38,17 +38,17 @@ namespace Churchee.Module.Site.Features.Media.Commands
                 return response;
             }
 
-            if (!string.IsNullOrEmpty(request.Base64Image))
+            if (!string.IsNullOrEmpty(request.Base64Content))
             {
                 string folderPath = _dataStore.GetRepository<MediaFolder>().GetQueryable().Where(w => w.Id == entity.MediaFolderId).Select(s => s.Path).FirstOrDefault() ?? string.Empty;
 
-                byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
+                byte[] data = Convert.FromBase64String(request.Base64Content.Split(',')[1]);
 
                 using var ms = new MemoryStream(data);
 
                 var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-                string imagePath = $"/img/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.Extension}";
+                string imagePath = $"/img/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.FileExtension}";
 
                 string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
 

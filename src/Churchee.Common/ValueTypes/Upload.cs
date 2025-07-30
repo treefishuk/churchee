@@ -9,6 +9,7 @@ namespace Churchee.Common.ValueTypes
         public string FileName { get; set; }
         public string Path { get; set; }
         public long? Size { get; set; }
+        public string SupportedFileTypes { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

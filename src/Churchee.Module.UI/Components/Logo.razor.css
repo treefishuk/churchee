@@ -4,10 +4,10 @@
     display: flex;
 }
 
-    .logo img {
-        height: 1.7rem;
-        margin-bottom: 0.2rem;
-        -webkit-filter: invert(1);
-        filter: invert(1);
-        min-width: 6rem;
-    }
+.logo img {
+    height: 1.7rem;
+    margin-bottom: 0.2rem;
+    -webkit-filter: invert(1);
+    filter: invert(1);
+    min-width: 6rem;
+}

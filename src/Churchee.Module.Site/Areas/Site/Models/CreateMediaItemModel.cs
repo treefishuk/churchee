@@ -17,15 +17,15 @@ namespace Churchee.Module.Site.Areas.Site.Models
         }
 
         [Required]
+        [ValidateComplexType]
+        [DataType(DataTypes.MediaUpload)]
+        public Upload File { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         [Required]
         public string Description { get; set; }
-
-        [Required]
-        [ValidateComplexType]
-        [DataType(DataTypes.ImageUpload)]
-        public Upload File { get; set; }
 
         [DataType(DataTypes.Url)]
         public string LinkUrl { get; set; }

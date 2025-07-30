@@ -16655,14 +16655,6 @@ a:focus-visible .rz-fieldset-toggler {
   display: inline-flex;
 }
 
-.rz-chart-tooltip {
-  position: absolute;
-  transform: translate(-50%, -100%);
-  transition: top 0.2s, left 0.2s;
-  top: 0;
-  left: 0;
-}
-
 .rz-chart-tooltip-content {
   background: var(--rz-chart-tooltip-background);
   color: var(--rz-chart-tooltip-color);
@@ -16672,6 +16664,13 @@ a:focus-visible .rz-fieldset-toggler {
   white-space: nowrap;
 }
 
+.rz-chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  transition: top 0.2s, left 0.2s;
+  top: 0;
+  left: 0;
+}
 .rz-chart-tooltip:not(.rz-pie-tooltip) .rz-chart-tooltip-content {
   margin-bottom: 15px;
 }
@@ -20049,35 +20048,35 @@ button.rz-colorpicker-trigger .rzi:before {
   --rz-base-dark: #757575;
   --rz-base-darker: #212121;
   --rz-primary: #286875;
-  --rz-primary-light: #538691;
+  --rz-primary-light: rgb(83, 134.2, 144.6);
   --rz-primary-lighter: rgba(40, 104, 117, 0.12);
-  --rz-primary-dark: #20535e;
-  --rz-primary-darker: #1b4750;
+  --rz-primary-dark: rgb(32, 83.2, 93.6);
+  --rz-primary-darker: rgb(27.2, 70.72, 79.56);
   --rz-secondary: #45a6af;
-  --rz-secondary-light: #6ab8bf;
+  --rz-secondary-light: rgb(106.2, 183.8, 191);
   --rz-secondary-lighter: rgba(69, 166, 175, 0.12);
-  --rz-secondary-dark: #37858c;
-  --rz-secondary-darker: #2f7177;
+  --rz-secondary-dark: rgb(55.2, 132.8, 140);
+  --rz-secondary-darker: rgb(46.92, 112.88, 119);
   --rz-info: #2196f3;
-  --rz-info-light: #4dabf5;
+  --rz-info-light: rgb(77.4, 171, 245.4);
   --rz-info-lighter: rgba(33, 150, 243, 0.2);
-  --rz-info-dark: #1a78c2;
-  --rz-info-darker: #1666a5;
+  --rz-info-dark: rgb(26.4, 120, 194.4);
+  --rz-info-darker: rgb(22.44, 102, 165.24);
   --rz-success: #03c183;
-  --rz-success-light: #35cd9c;
+  --rz-success-light: rgb(53.4, 205.4, 155.8);
   --rz-success-lighter: rgba(3, 193, 131, 0.16);
-  --rz-success-dark: #029a69;
-  --rz-success-darker: #028359;
+  --rz-success-dark: rgb(2.4, 154.4, 104.8);
+  --rz-success-darker: rgb(2.04, 131.24, 89.08);
   --rz-warning: #ff9800;
-  --rz-warning-light: #ffad33;
+  --rz-warning-light: rgb(255, 172.6, 51);
   --rz-warning-lighter: rgba(255, 152, 0, 0.2);
-  --rz-warning-dark: #cc7a00;
-  --rz-warning-darker: #ad6700;
+  --rz-warning-dark: rgb(204, 121.6, 0);
+  --rz-warning-darker: rgb(173.4, 103.36, 0);
   --rz-danger: #f44336;
-  --rz-danger-light: #f6695e;
+  --rz-danger-light: rgb(246.2, 104.6, 94.2);
   --rz-danger-lighter: rgba(244, 67, 54, 0.2);
-  --rz-danger-dark: #c3362b;
-  --rz-danger-darker: #a62e25;
+  --rz-danger-dark: rgb(195.2, 53.6, 43.2);
+  --rz-danger-darker: rgb(165.92, 45.56, 36.72);
   --rz-on-base: #212121;
   --rz-on-base-light: #212121;
   --rz-on-base-lighter: #212121;
@@ -20706,7 +20705,7 @@ button.rz-colorpicker-trigger .rzi:before {
   --rz-datafilter-item-padding-inline-start: 2rem;
   --rz-datafilter-item-indentation: 0.25rem;
   --rz-datafilter-item-path-width: 1rem;
-  --rz-datafilter-item-path-height: calc(0.25rem + (var(--rz-input-height) / 2));
+  --rz-datafilter-item-path-height: calc(0.25rem + var(--rz-input-height) / 2);
   --rz-datafilter-item-path-border: var(--rz-border-normal);
   --rz-datafilter-item-path-border-radius: calc(2 * var(--rz-border-radius));
   /* DataList */
@@ -21635,4 +21634,22 @@ img {
 .rz-menu.rz-dash-menu > li > .rz-navigation-item-wrapper > .rz-navigation-item-link {
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+.file-thumb-wrap {
+  position: relative;
+  text-align: center;
+}
+
+.file-thumb-wrap img {
+  height: 200px;
+}
+
+.file-thumb-wrap span {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #fff;
 }

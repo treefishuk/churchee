@@ -60,7 +60,21 @@
                 <RadzenCard Style="margin: 5px">
 
                     <div class="rz-image-wrap" style="width:100%;">
-                        <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
+
+                        @if (IsImageFile(item.MediaUrlSmall))
+                        {
+                            <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
+                        }    
+                        else
+                        {
+                            <div class="file-thumb-wrap">
+                                <img src=" /_content/Churchee.Module.UI/img/file.png" alt="File Image" crossorigin />
+                                <span>@(Path.GetExtension(item.MediaUrl))</span>
+                            </div>
+
+                            <strong class="file-title">@item.Title</strong>
+                        }
+
                     </div>
 
                     <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start" Style="padding: 1rem 0 0;">
@@ -90,6 +104,14 @@
 
     readonly string[] ProtectedPaths = new string[] { "Banners/", "Images/", "Fonts/", "Video/" };
 
+    private static bool IsImageFile(string filePath)
+    {
+        string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+        string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
+        return imageExtensions.Contains(extension);
+    }
+
+
     bool DeleteFolderDisabled
     {
         get
@@ -99,15 +121,18 @@
                 return true;
             }
 
-            var active = (GetMediaFoldersQueryResponseItem)activeFolder;
-
-            if (ProtectedPaths.Contains(active.Path))
+            if (ProtectedPaths.Contains(ActiveFolderItem.Path))
             {
                 return true;
             }
 
             return false;
         }
+    }
+
+    private GetMediaFoldersQueryResponseItem ActiveFolderItem
+    {
+        get => activeFolder as GetMediaFoldersQueryResponseItem;
     }
 
     private RadzenTree tree;
@@ -174,31 +199,41 @@
         editModel.CssClass = selected.CssClass ?? string.Empty;
         editModel.Order = selected.Order;
 
+        editModel.File = new Common.ValueTypes.Upload { SupportedFileTypes = ActiveFolderItem.SupportedFileTypes };
+
         await DialogService.OpenAsync("Edit Media Item", ds =>
-            @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidEditSubmitForm(id)) />
+            @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnEditModalFormChange" OnSave=@(async () => await ValidEditSubmitForm(id)) />,
+            new DialogOptions() { Width = "700px"}
         );
     }
 
     private async Task AddMediaItem()
     {
-        await DialogService.OpenAsync("Add Media Item", ds =>
-            @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidCreateSubmitForm()) />
-        );
+        createModel = new CreateMediaItemModel
+        {
+            File = new Common.ValueTypes.Upload { SupportedFileTypes =  ActiveFolderItem.SupportedFileTypes}
+        };
+
+       await DialogService.OpenAsync("Add Media Item", ds =>
+            @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnCreateModalFormChange" OnSave=@(async () => await ValidCreateSubmitForm()) />,
+            new DialogOptions() { Width = "700px"}
+        );    
+
     }
 
     IEnumerable<GetMediaFoldersQueryResponseItem> Directories = new List<GetMediaFoldersQueryResponseItem>();
 
     private async Task ValidCreateSubmitForm()
     {
-
         var command = new CreateMediaItemCommand.Builder()
+        .SetSupportedFileTypes(ActiveFolderItem.SupportedFileTypes)
         .SetName(createModel.Name)
         .SetFileName(Path.GetFileNameWithoutExtension(createModel.File.FileName))
         .SetExtension(Path.GetExtension(createModel.File.FileName))
         .SetDescription(createModel.Description)
         .SetAdditionalContent(createModel.AdditionalContent)
         .SetFolderId(activeFolderId)
-        .SetBase64Image(createModel.File.Value)
+        .SetBase64Content(createModel.File.Value)
         .SetLinkUrl(createModel.LinkUrl)
         .SetCssClass(createModel.CssClass)
         .SetOrder(createModel.Order)
@@ -231,6 +266,7 @@
     private async Task ValidEditSubmitForm(Guid id)
     {
         var command = new UpdateMediaItemCommand.Builder()
+            .SetSupportedFileTypes(ActiveFolderItem.SupportedFileTypes)
             .SetId(id)
             .SetName(editModel.Name)
             .SetFileName(Path.GetFileNameWithoutExtension(editModel.File.FileName))
@@ -271,6 +307,22 @@
         return item.Title;
     }
 
+    private void OnCreateModalFormChange()
+    {
+        if (string.IsNullOrEmpty(createModel.Name) && !string.IsNullOrEmpty(createModel.File.FileName))
+        {
+            createModel.Name = Path.GetFileNameWithoutExtension(createModel.File.FileName).Replace("-", " ").Replace("_", " ");
+        }
+    }
+
+    private void OnEditModalFormChange()
+    {
+        if (string.IsNullOrEmpty(editModel.Name) && !string.IsNullOrEmpty(editModel.File.FileName))
+        {
+            editModel.Name = Path.GetFileNameWithoutExtension(editModel.File.FileName).Replace("-", " ").Replace("_", " ");
+        }
+    }
+
     private readonly RenderFragment<RadzenTreeItem> FolderTemplate = (context) => builder =>
     {
         builder.OpenComponent<RadzenIcon>(0);
@@ -284,11 +336,9 @@
     {
         activeFolder = args.Value;
 
-        var active = args.Value as GetMediaFoldersQueryResponseItem;
+        activeFolderId = ActiveFolderItem.Id;
 
-        activeFolderId = active.Id;
-
-        data = await Mediator.Send(new GetMediaListForFolderQuery(active.Id));
+        data = await Mediator.Send(new GetMediaListForFolderQuery(ActiveFolderItem.Id));
 
     }
 
@@ -387,7 +437,7 @@
         }
         if (!result.IsSuccess)
         {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Media Folder was not remmoved." });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Media Folder was not removed." });
         }
 
         Directories = await Mediator.Send(new GetMediaFoldersQuery(null));

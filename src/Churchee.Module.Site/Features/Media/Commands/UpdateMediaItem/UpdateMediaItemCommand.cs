@@ -11,7 +11,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string FileName { get; private set; }
 
-        public string Extension { get; private set; }
+        public string FileExtension { get; private set; }
 
         public string LinkUrl { get; private set; }
 
@@ -21,13 +21,22 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string CssClass { get; private set; }
 
-        public string Base64Image { get; private set; }
+        public string Base64Content { get; private set; }
+
+        public string SupportedFileTypes { get; private set; }
 
         public int Order { get; private set; }
 
         public class Builder
         {
-            private readonly UpdateMediaItemCommand _command = new UpdateMediaItemCommand();
+            private readonly UpdateMediaItemCommand _command = new();
+
+            public Builder SetSupportedFileTypes(string supportedFileTypes)
+            {
+                _command.SupportedFileTypes = supportedFileTypes;
+                return this;
+            }
+
 
             public Builder SetId(Guid id)
             {
@@ -49,7 +58,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             public Builder SetExtention(string extention)
             {
-                _command.Extension = extention;
+                _command.FileExtension = extention;
                 return this;
             }
 
@@ -79,7 +88,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             public Builder SetBase64Image(string base64Image)
             {
-                _command.Base64Image = base64Image;
+                _command.Base64Content = base64Image;
                 return this;
             }
 
@@ -107,12 +116,12 @@ namespace Churchee.Module.Site.Features.Media.Commands
                     throw new InvalidOperationException("Name must be provided.");
                 }
 
-                if (!string.IsNullOrWhiteSpace(_command.Base64Image) && string.IsNullOrWhiteSpace(_command.FileName))
+                if (!string.IsNullOrWhiteSpace(_command.Base64Content) && string.IsNullOrWhiteSpace(_command.FileName))
                 {
                     throw new InvalidOperationException("FileName must be provided.");
                 }
 
-                if (!string.IsNullOrWhiteSpace(_command.Base64Image) && string.IsNullOrWhiteSpace(_command.Extension))
+                if (!string.IsNullOrWhiteSpace(_command.Base64Content) && string.IsNullOrWhiteSpace(_command.FileExtension))
                 {
                     throw new InvalidOperationException("Extension must be provided.");
                 }

@@ -17,17 +17,25 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string AdditionalContent { get; set; }
 
-        public string Base64Image { get; set; }
+        public string Base64Content { get; set; }
 
         public Guid? FolderId { get; set; }
 
         public string CssClass { get; set; }
+
+        public string SupportedFileTypes { get; set; }
 
         public int Order { get; set; }
 
         public class Builder
         {
             private readonly CreateMediaItemCommand _command = new();
+
+            public Builder SetSupportedFileTypes(string supportedFileTypes)
+            {
+                _command.SupportedFileTypes = supportedFileTypes;
+                return this;
+            }
 
             public Builder SetName(string name)
             {
@@ -37,7 +45,10 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             public Builder SetFileName(string fileName)
             {
-                _command.FileName = fileName;
+                string dashedFileName = string.Join("-", fileName.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
+                _command.FileName = dashedFileName;
+
                 return this;
             }
 
@@ -65,9 +76,9 @@ namespace Churchee.Module.Site.Features.Media.Commands
                 return this;
             }
 
-            public Builder SetBase64Image(string base64Image)
+            public Builder SetBase64Content(string base64Image)
             {
-                _command.Base64Image = base64Image;
+                _command.Base64Content = base64Image;
                 return this;
             }
 
