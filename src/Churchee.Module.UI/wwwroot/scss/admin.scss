@@ -57,3 +57,21 @@
         padding-right: 0 !important;
     }
 }
+
+.file-thumb-wrap { 
+    position: relative;
+    text-align: center;
+}
+
+.file-thumb-wrap img {
+    height: 200px;
+}
+
+.file-thumb-wrap span {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #fff;
+}

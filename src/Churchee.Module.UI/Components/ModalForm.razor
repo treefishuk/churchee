@@ -37,6 +37,9 @@
     [Inject]
     public NotificationService NotificationService { get; set; } = default!;
 
+    [Inject]
+    public IServiceProvider _serviceProvider { get; set; } = default!;
+
     [Parameter]
     public EventCallback OnCancelForm { get; set; }
 
@@ -65,7 +68,11 @@
 
     private void UpdateFormState()
     {
-        _formInvalid = !_editContext.Validate();
+        var validationResults = new List<ValidationResult>();
+        var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
+        Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
+
+        _formInvalid = validationResults.Any();
 
         StateHasChanged();
     }

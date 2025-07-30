@@ -59,9 +59,22 @@
 
                 <RadzenCard Style="margin: 5px">
 
-
                     <div class="rz-image-wrap" style="width:100%;">
-                        <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
+
+                        @if (IsImageFile(item.MediaUrlSmall))
+                        {
+                            <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
+                        }    
+                        else
+                        {
+                            <div class="file-thumb-wrap">
+                                <img src=" /_content/Churchee.Module.UI/img/file.png" alt="File Image" crossorigin />
+                                <span>@(Path.GetExtension(item.MediaUrl))</span>
+                            </div>
+
+                            <strong class="file-title">@item.Title</strong>
+                        }
+
                     </div>
 
                     <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start" Style="padding: 1rem 0 0;">
@@ -90,6 +103,14 @@
     private IJSRuntime JSRuntime { get; set; }
 
     readonly string[] ProtectedPaths = new string[] { "Banners/", "Images/", "Fonts/", "Video/" };
+
+    private static bool IsImageFile(string filePath)
+    {
+        string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+        string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
+        return imageExtensions.Contains(extension);
+    }
+
 
     bool DeleteFolderDisabled
     {
@@ -281,6 +302,14 @@
         var item = data as GetMediaFoldersQueryResponseItem;
 
         return item.Title;
+    }
+
+    private void OnModalFormChange()
+    {
+        if (string.IsNullOrEmpty(createModel.Name) && !string.IsNullOrEmpty(createModel.File.FileName))
+        {
+            createModel.Name = createModel.File.FileName;
+        }
     }
 
     private readonly RenderFragment<RadzenTreeItem> FolderTemplate = (context) => builder =>
