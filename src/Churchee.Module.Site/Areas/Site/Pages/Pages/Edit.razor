@@ -61,7 +61,22 @@
                                     <ChildContent>
                                         @if (item.Type == EditorType.RichTextEditor)
                                         {
-                                            <RadzenHtmlEditor @bind-Value=@item.Value style="height: 300px;" />
+                                            <RadzenHtmlEditor @bind-Value=@item.Value style="height: 300px;">
+                                                <RadzenHtmlEditorFormatBlock />
+                                                <RadzenHtmlEditorUndo />
+                                                <RadzenHtmlEditorRedo />
+                                                <RadzenHtmlEditorSeparator />
+                                                <RadzenHtmlEditorBold />
+                                                <RadzenHtmlEditorItalic />
+                                                <RadzenHtmlEditorUnderline />
+                                                <RadzenHtmlEditorStrikeThrough />
+                                                <RadzenHtmlEditorSeparator />
+                                                <RadzenHtmlEditorColor />
+                                                <RadzenHtmlEditorBackground />
+                                                <RadzenHtmlEditorRemoveFormat />
+                                                <RadzenHtmlEditorSource />
+                                                <RadzenHtmlEditorLink />
+                                            </RadzenHtmlEditor>
                                         }
                                         @if (item.Type == EditorType.Number)
                                         {
