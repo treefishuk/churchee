@@ -202,7 +202,7 @@
         editModel.File = new Common.ValueTypes.Upload { SupportedFileTypes = ActiveFolderItem.SupportedFileTypes };
 
         await DialogService.OpenAsync("Edit Media Item", ds =>
-            @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidEditSubmitForm(id)) />,
+            @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnEditModalFormChange" OnSave=@(async () => await ValidEditSubmitForm(id)) />,
             new DialogOptions() { Width = "700px"}
         );
     }
@@ -215,7 +215,7 @@
         };
 
        await DialogService.OpenAsync("Add Media Item", ds =>
-            @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidCreateSubmitForm()) />,
+            @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnCreateModalFormChange" OnSave=@(async () => await ValidCreateSubmitForm()) />,
             new DialogOptions() { Width = "700px"}
         );    
 
@@ -307,11 +307,19 @@
         return item.Title;
     }
 
-    private void OnModalFormChange()
+    private void OnCreateModalFormChange()
     {
         if (string.IsNullOrEmpty(createModel.Name) && !string.IsNullOrEmpty(createModel.File.FileName))
         {
-            createModel.Name = createModel.File.FileName;
+            createModel.Name = Path.GetFileNameWithoutExtension(createModel.File.FileName).Replace("-", " ").Replace("_", " ");
+        }
+    }
+
+    private void OnEditModalFormChange()
+    {
+        if (string.IsNullOrEmpty(editModel.Name) && !string.IsNullOrEmpty(editModel.File.FileName))
+        {
+            editModel.Name = Path.GetFileNameWithoutExtension(editModel.File.FileName).Replace("-", " ").Replace("_", " ");
         }
     }
 

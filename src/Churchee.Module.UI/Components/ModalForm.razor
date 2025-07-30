@@ -49,6 +49,9 @@
     [Parameter]
     public EventCallback<object> OnSave { get; set; }
 
+    [Parameter]
+    public EventCallback<object> OnChange { get; set; }
+
     private bool _submitClicked;
 
     private bool _formInvalid;
@@ -66,13 +69,15 @@
         await OnCancelForm.InvokeAsync();
     }
 
-    private void UpdateFormState()
+    private async void UpdateFormState()
     {
         var validationResults = new List<ValidationResult>();
         var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
         Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
 
         _formInvalid = validationResults.Any();
+
+        await OnChange.InvokeAsync(InputModel);
 
         StateHasChanged();
     }
