@@ -21653,3 +21653,7 @@ img {
   font-size: 1.2rem;
   color: #fff;
 }
+
+.rz-html-editor-dropdown-item > * {
+  margin: 0;
+}
