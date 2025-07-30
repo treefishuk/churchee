@@ -23,11 +23,20 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string Base64Image { get; private set; }
 
+        public string SupportedFileTypes { get; private set; }
+
         public int Order { get; private set; }
 
         public class Builder
         {
-            private readonly UpdateMediaItemCommand _command = new UpdateMediaItemCommand();
+            private readonly UpdateMediaItemCommand _command = new();
+
+            public Builder SetSupportedFileTypes(string supportedFileTypes)
+            {
+                _command.SupportedFileTypes = supportedFileTypes;
+                return this;
+            }
+
 
             public Builder SetId(Guid id)
             {

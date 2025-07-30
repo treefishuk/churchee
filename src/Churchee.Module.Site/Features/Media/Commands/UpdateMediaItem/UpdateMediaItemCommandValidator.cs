@@ -12,14 +12,18 @@ namespace Churchee.Module.Site.Features.Media.Commands
             RuleFor(x => x.Description).NotEmpty();
 
             RuleFor(x => x.Extension)
-                .Must((command, extension) => string.IsNullOrEmpty(extension) || ImageValidation.BeAValidImageExtension(extension)).WithMessage("only Jpeg and PNG images are supported");
+                .Must((command, extension) => string.IsNullOrEmpty(extension) || ImageValidation.BeAValidImageExtension(extension))
+                .When(w => w.SupportedFileTypes.Contains(".png") || w.SupportedFileTypes.Contains(".jpg"))
+                .WithMessage("only Jpeg and PNG images are supported");
 
             RuleFor(x => x.Base64Image)
                 .Must((command, base64Image) => string.IsNullOrEmpty(base64Image) || ImageValidation.BeValidImage(base64Image))
+                .When(w => w.SupportedFileTypes.Contains(".png") || w.SupportedFileTypes.Contains(".jpg"))
                 .WithMessage("Uploaded file doesn't appear to be an image.");
 
             RuleFor(x => x.Base64Image)
                 .Must((command, base64Image) => string.IsNullOrEmpty(base64Image) || ImageValidation.BeExpectedFormat(base64Image, command.Extension))
+                .When(w => w.SupportedFileTypes.Contains(".png") || w.SupportedFileTypes.Contains(".jpg"))
                 .WithMessage("File extention does not match image format");
         }
 

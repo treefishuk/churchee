@@ -196,6 +196,10 @@
         editModel.CssClass = selected.CssClass ?? string.Empty;
         editModel.Order = selected.Order;
 
+        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
+
+        editModel.File = new Common.ValueTypes.Upload { SupportedFileTypes = active.SupportedFileTypes };
+
         await DialogService.OpenAsync("Edit Media Item", ds =>
             @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidEditSubmitForm(id)) />
         );
@@ -263,7 +267,10 @@
 
     private async Task ValidEditSubmitForm(Guid id)
     {
+        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
+
         var command = new UpdateMediaItemCommand.Builder()
+            .SetSupportedFileTypes(active.SupportedFileTypes)
             .SetId(id)
             .SetName(editModel.Name)
             .SetFileName(Path.GetFileNameWithoutExtension(editModel.File.FileName))
