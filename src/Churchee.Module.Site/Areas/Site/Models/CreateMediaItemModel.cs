@@ -24,7 +24,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         [Required]
         [ValidateComplexType]
-        [DataType(DataTypes.ImageUpload)]
+        [DataType(DataTypes.MediaUpload)]
         public Upload File { get; set; }
 
         [DataType(DataTypes.Url)]

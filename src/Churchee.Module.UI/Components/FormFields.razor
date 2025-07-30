@@ -63,6 +63,20 @@
         }
     }
 
+    if (dataType == DataTypes.MediaUpload)
+    {
+        var upload = prop.GetValue(InputModel) as Upload;
+
+        if(upload != null)
+        {
+            <RadzenFormField Text=@prop.Name.ToSentence() AllowFloatingLabel="false">
+
+                <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept=@(upload.SupportedFileTypes) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select document" }})" />
+
+            </RadzenFormField>
+        }
+    }
+
     if (dataType == DataTypes.CheckboxList)
     {
         var multiSelect = prop.GetValue(InputModel) as MultiSelect ?? new MultiSelect(Enumerable.Empty<MultiSelectItem>());
@@ -70,7 +84,7 @@
         <RadzenCheckBoxList @bind-Value=@(multiSelect.SelectedValues) Data="@multiSelect.Items" TValue="Guid" TextProperty="Text" ValueProperty="Value" class="mb-5" Orientation=Orientation.Vertical></RadzenCheckBoxList>
     }
 
-    if (dataType != DataTypes.Hidden && dataType != DataTypes.TextWithSlug && dataType != DataTypes.Upload && dataType != DataTypes.ImageUpload && dataType != DataTypes.CheckboxList)
+    if (dataType != DataTypes.Hidden && dataType != DataTypes.TextWithSlug && dataType != DataTypes.Upload && dataType != DataTypes.ImageUpload && dataType != DataTypes.MediaUpload && dataType != DataTypes.CheckboxList)
     {
         var formFieldStyles = string.Empty;
 
@@ -79,8 +93,7 @@
             formFieldStyles = "max-width:300px;";
         }
 
-        <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles" AllowFloatingLabel="false"
->
+        <RadzenFormField Text=@prop.Name.ToSentence() Style="@formFieldStyles" AllowFloatingLabel="false">
                     <ChildContent>
                         @{
                             if (dataType == typeof(int).Name)

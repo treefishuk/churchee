@@ -59,6 +59,7 @@
 
                 <RadzenCard Style="margin: 5px">
 
+
                     <div class="rz-image-wrap" style="width:100%;">
                         <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
                     </div>
@@ -181,9 +182,17 @@
 
     private async Task AddMediaItem()
     {
-        await DialogService.OpenAsync("Add Media Item", ds =>
+        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
+
+        createModel = new CreateMediaItemModel
+        {
+            File = new Common.ValueTypes.Upload { SupportedFileTypes =  active.SupportedFileTypes}
+        };
+
+       await DialogService.OpenAsync("Add Media Item", ds =>
             @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidCreateSubmitForm()) />
-        );
+        );    
+
     }
 
     IEnumerable<GetMediaFoldersQueryResponseItem> Directories = new List<GetMediaFoldersQueryResponseItem>();
@@ -191,7 +200,10 @@
     private async Task ValidCreateSubmitForm()
     {
 
+        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
+
         var command = new CreateMediaItemCommand.Builder()
+        .SetSupportedFileTypes(active.SupportedFileTypes)
         .SetName(createModel.Name)
         .SetFileName(Path.GetFileNameWithoutExtension(createModel.File.FileName))
         .SetExtension(Path.GetExtension(createModel.File.FileName))
@@ -387,7 +399,7 @@
         }
         if (!result.IsSuccess)
         {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Media Folder was not remmoved." });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Media Folder was not removed." });
         }
 
         Directories = await Mediator.Send(new GetMediaFoldersQuery(null));

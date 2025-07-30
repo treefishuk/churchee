@@ -15,6 +15,7 @@
         public const string Password = "Password";
         public const string Url = "Url";
         public const string ImageUpload = "ImageUpload";
+        public const string MediaUpload = "MediaUpload";
         public const string ImageUrl = "ImageUrl";
         public const string GeoCoordinates = "GeoCoordinates";
         public const string PostalCode = "PostalCode";

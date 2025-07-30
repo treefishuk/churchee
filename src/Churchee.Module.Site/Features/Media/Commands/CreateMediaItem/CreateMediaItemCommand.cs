@@ -23,11 +23,19 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
         public string CssClass { get; set; }
 
+        public string SupportedFileTypes { get; set; }
+
         public int Order { get; set; }
 
         public class Builder
         {
             private readonly CreateMediaItemCommand _command = new();
+
+            public Builder SetSupportedFileTypes(string supportedFileTypes)
+            {
+                _command.SupportedFileTypes = supportedFileTypes;
+                return this;
+            }
 
             public Builder SetName(string name)
             {

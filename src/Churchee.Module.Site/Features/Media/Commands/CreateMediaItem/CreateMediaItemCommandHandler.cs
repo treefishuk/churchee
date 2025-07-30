@@ -33,21 +33,33 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string imagePath = $"/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.FileExtension}";
+            string filePath = $"/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.FileExtension}";
 
-            string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, true, cancellationToken);
+            string finalFilePath = await _blobStore.SaveAsync(applicationTenantId, filePath, ms, true, cancellationToken);
 
-            var media = new MediaItem(applicationTenantId, request.Name, imagePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl, request.CssClass);
+            var media = new MediaItem(applicationTenantId, request.Name, filePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl, request.CssClass);
 
             _dataStore.GetRepository<MediaItem>().Create(media);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
-            var bytes = ms.ConvertStreamToByteArray();
+            if (!IsImageFile(finalFilePath))
+            {
+                return new CommandResponse();
+            }
 
-            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
+            byte[] bytes = ms.ConvertStreamToByteArray();
+
+            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalFilePath, bytes, true));
 
             return new CommandResponse();
+        }
+
+        private static bool IsImageFile(string filePath)
+        {
+            string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+            string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
+            return imageExtensions.Contains(extension);
         }
     }
 }
