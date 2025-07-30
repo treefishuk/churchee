@@ -121,15 +121,18 @@
                 return true;
             }
 
-            var active = (GetMediaFoldersQueryResponseItem)activeFolder;
-
-            if (ProtectedPaths.Contains(active.Path))
+            if (ProtectedPaths.Contains(ActiveFolderItem.Path))
             {
                 return true;
             }
 
             return false;
         }
+    }
+
+    private GetMediaFoldersQueryResponseItem ActiveFolderItem
+    {
+        get => activeFolder as GetMediaFoldersQueryResponseItem;
     }
 
     private RadzenTree tree;
@@ -196,9 +199,7 @@
         editModel.CssClass = selected.CssClass ?? string.Empty;
         editModel.Order = selected.Order;
 
-        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
-
-        editModel.File = new Common.ValueTypes.Upload { SupportedFileTypes = active.SupportedFileTypes };
+        editModel.File = new Common.ValueTypes.Upload { SupportedFileTypes = ActiveFolderItem.SupportedFileTypes };
 
         await DialogService.OpenAsync("Edit Media Item", ds =>
             @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidEditSubmitForm(id)) />
@@ -207,11 +208,9 @@
 
     private async Task AddMediaItem()
     {
-        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
-
         createModel = new CreateMediaItemModel
         {
-            File = new Common.ValueTypes.Upload { SupportedFileTypes =  active.SupportedFileTypes}
+            File = new Common.ValueTypes.Upload { SupportedFileTypes =  ActiveFolderItem.SupportedFileTypes}
         };
 
        await DialogService.OpenAsync("Add Media Item", ds =>
@@ -224,11 +223,8 @@
 
     private async Task ValidCreateSubmitForm()
     {
-
-        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
-
         var command = new CreateMediaItemCommand.Builder()
-        .SetSupportedFileTypes(active.SupportedFileTypes)
+        .SetSupportedFileTypes(ActiveFolderItem.SupportedFileTypes)
         .SetName(createModel.Name)
         .SetFileName(Path.GetFileNameWithoutExtension(createModel.File.FileName))
         .SetExtension(Path.GetExtension(createModel.File.FileName))
@@ -267,10 +263,8 @@
 
     private async Task ValidEditSubmitForm(Guid id)
     {
-        var active = (GetMediaFoldersQueryResponseItem)activeFolder;
-
         var command = new UpdateMediaItemCommand.Builder()
-            .SetSupportedFileTypes(active.SupportedFileTypes)
+            .SetSupportedFileTypes(ActiveFolderItem.SupportedFileTypes)
             .SetId(id)
             .SetName(editModel.Name)
             .SetFileName(Path.GetFileNameWithoutExtension(editModel.File.FileName))
@@ -332,11 +326,9 @@
     {
         activeFolder = args.Value;
 
-        var active = args.Value as GetMediaFoldersQueryResponseItem;
+        activeFolderId = ActiveFolderItem.Id;
 
-        activeFolderId = active.Id;
-
-        data = await Mediator.Send(new GetMediaListForFolderQuery(active.Id));
+        data = await Mediator.Send(new GetMediaListForFolderQuery(ActiveFolderItem.Id));
 
     }
 
