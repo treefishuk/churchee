@@ -1,11 +1,14 @@
 ﻿using FluentAssertions;
 using Hangfire;
 using Hangfire.SqlServer;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Moq;
 using System.Data.Common;
+using System.Net;
 using Testcontainers.MsSql;
 
 namespace Churchee.Module.Hangfire.Tests.Extensions
@@ -50,36 +53,43 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
 
 
         [Fact]
-        public void HangfireExtensions_UseChurcheeHangfireDashboard_SetsRoute()
+        public async Task HangfireExtensions_UseChurcheeHangfireDashboard_SetsRoute()
         {
-            //arrange
-            var globalConfigurationMock = new Mock<IGlobalConfiguration>();
-
-            var services = new ServiceCollection();
-
-            services.AddHangfire(configuration => configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(GetHangfireConnectionString(), new SqlServerStorageOptions
+            // arrange
+            using var host = await new HostBuilder()
+                .ConfigureWebHost(webBuilder =>
                 {
-                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                    QueuePollInterval = TimeSpan.Zero,
-                    UseRecommendedIsolationLevel = true,
-                    DisableGlobalLocks = true,
-                }));
+                    webBuilder
+                        .UseTestServer()
+                        .ConfigureServices(services =>
+                        {
+                            services.AddHangfire(configuration => configuration
+                                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                                .UseSimpleAssemblyNameTypeSerializer()
+                                .UseRecommendedSerializerSettings()
+                                .UseSqlServerStorage(GetHangfireConnectionString(), new SqlServerStorageOptions
+                                {
+                                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                                    QueuePollInterval = TimeSpan.Zero,
+                                    UseRecommendedIsolationLevel = true,
+                                    DisableGlobalLocks = true,
+                                }));
 
-            var serviceProvider = services.BuildServiceProvider();
+                        })
+                        .Configure(app =>
+                        {
+                            HangfireExtensions.UseChurcheeHangfireDashboard(app);
+                        });
+                })
+                .StartAsync();
 
-            var builder = new ApplicationBuilder(serviceProvider);
+            // act
+            var response = await host.GetTestClient().GetAsync("/jobs");
 
-            //act
+            // assert
+            response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
 
-            HangfireExtensions.UseChurcheeHangfireDashboard(builder);
-
-            //assert builds
-            builder.Build();
         }
 
 

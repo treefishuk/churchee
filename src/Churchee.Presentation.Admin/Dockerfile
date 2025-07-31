@@ -18,11 +18,11 @@ COPY ["src/Churchee.Module.Tenancy/Churchee.Module.Tenancy.csproj", "src/Churche
 RUN dotnet restore "./src/Churchee.Presentation.Admin/./Churchee.Presentation.Admin.csproj"
 COPY . .
 WORKDIR "/src/src/Churchee.Presentation.Admin"
-RUN dotnet build "./Churchee.Presentation.Admin.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Churchee.Presentation.Admin.csproj" -c "$BUILD_CONFIGURATION" -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Churchee.Presentation.Admin.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Churchee.Presentation.Admin.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

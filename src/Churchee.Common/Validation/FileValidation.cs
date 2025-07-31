@@ -58,12 +58,7 @@ namespace Churchee.Common.Validation
                 }
 
                 // Check for frame sync (0xFF 0xFB)
-                if (bytes.Length >= 2 && bytes[0] == 0xFF && (bytes[1] & 0xE0) == 0xE0)
-                {
-                    return true;
-                }
-
-                return false;
+                return bytes.Length >= 2 && bytes[0] == 0xFF && (bytes[1] & 0xE0) == 0xE0;
             }
             catch
             {
