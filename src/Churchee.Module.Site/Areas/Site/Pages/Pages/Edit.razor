@@ -115,8 +115,6 @@
 @code {
     private bool _formInvalid;
 
-    private bool _submitClicked;
-
     private bool _isPublished = false;
 
     private EditContext _editContext;
@@ -201,8 +199,6 @@
 
         try
         {
-            _submitClicked = true;
-
             if (_editContext.Validate())
             {
                 _logger.LogInformation("HandleValidSubmit");
@@ -224,22 +220,29 @@
 
         var properties = new List<KeyValuePair<Guid, string>>();
 
-        bool unpublish = (Submit == "Unpublish");
+        var command = new UpdatePageCommand.Builder()
+            .SetTitle(InputModel.Title)
+            .SetDescription(InputModel.Description)
+            .SetParentId(InputModel.Parent.Value)
+            .SetPublish(Submit)
+            .SetPageId(Id)
+            .SetOrder(InputModel.Order)
+            .SetContent(content)
+            .SetProperties(properties)
+            .Build();
 
-        bool publish = (Submit == "Publish");
-
-        var result = await Mediator.Send(new UpdatePageCommand(InputModel.Title, InputModel.Description, InputModel.Parent.Value, unpublish, publish, Id, InputModel.Order, content, properties), default);
+        var result = await Mediator.Send(command, default);
 
         NotificationService.Notify(result, "Saved Successfully");
 
         if (result.IsSuccess)
         {
-            if (publish)
+            if (command.Publish)
             {
                 _isPublished = true;
             }
 
-            if (unpublish)
+            if (command.Unpublish)
             {
                 _isPublished = false;
             }
