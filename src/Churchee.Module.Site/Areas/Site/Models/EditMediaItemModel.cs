@@ -35,7 +35,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         [Required]
         public int Order { get; set; }
 
-        [DataType(DataTypes.Html)]
+        [DataType(DataTypes.HtmlNoLinks)]
         public string AdditionalContent { get; set; }
 
 

@@ -45,7 +45,7 @@ namespace Churchee.Module.Site.Registration
             {
                 etb.ToTable("MediaItems");
                 etb.Property(e => e.Id);
-                etb.Property(e => e.Html).HasMaxLength(560);
+                etb.Property(e => e.Html).HasMaxLength(1000);
             });
 
             modelBuilder.Entity<MediaFolder>(etb =>
