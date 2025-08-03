@@ -56,6 +56,7 @@ $listbox-header-icon-margin: 0 !default;
 }
 
 .rz-listbox-item {
+  cursor: default;
   padding: var(--rz-listbox-item-padding);
   margin: var(--rz-listbox-item-margin);
 
@@ -86,6 +87,7 @@ $listbox-header-icon-margin: 0 !default;
     width: 0;
     border: none;
     line-height: var(--rz-input-line-height);
+    font-family: inherit;
 
     &:focus {
       outline: none;
