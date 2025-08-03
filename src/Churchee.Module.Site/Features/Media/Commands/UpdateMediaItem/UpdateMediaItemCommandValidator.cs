@@ -18,6 +18,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             RuleFor(x => x.FileExtension)
                 .Must(m => FileValidation.AllowedFormats.Contains(m))
+                .When(m => !string.IsNullOrEmpty(m.FileExtension))
                 .WithMessage("File format is not supported.");
 
             RuleFor(x => x.Base64Content)
