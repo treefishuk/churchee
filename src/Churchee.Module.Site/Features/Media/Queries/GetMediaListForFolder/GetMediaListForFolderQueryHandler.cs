@@ -19,7 +19,18 @@ namespace Churchee.Module.Site.Features.Media.Queries
             var response = await _storage.GetRepository<Entities.MediaItem>()
                 .GetQueryable()
                 .Where(w => w.MediaFolderId == request.MediaFolderId)
-                .Select(s => new GetMediaListForFolderQueryResponseItem(s.Id, s.Title, s.Description, s.Html, s.MediaUrl, s.LinkUrl, s.CssClass, s.Order ?? 10)).ToListAsync(cancellationToken);
+                .Select(s => new GetMediaListForFolderQueryResponseItem
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    Description = s.Description,
+                    AdditionalContent = s.Html,
+                    MediaUrl = s.MediaUrl,
+                    LinkUrl = s.LinkUrl,
+                    CssClass = s.CssClass,
+                    Order = s.Order ?? 10
+                })
+                .ToListAsync(cancellationToken);
 
             return response;
 
