@@ -153,6 +153,9 @@ namespace Churchee.Data.EntityFramework.Admin
             };
         }
 
-
+        public async Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            await _specificationEvaluator.GetQuery(GetQueryable(), specification).ExecuteDeleteAsync(cancellationToken);
+        }
     }
 }
