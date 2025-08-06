@@ -7,7 +7,7 @@ namespace Churchee.Module.Tenancy.Entities
         /// <summary>
         /// Required For EF
         /// </summary>
-        private ApplicationHost()
+        protected ApplicationHost()
         {
             Host = string.Empty;
             ApplicationTenant = null!;

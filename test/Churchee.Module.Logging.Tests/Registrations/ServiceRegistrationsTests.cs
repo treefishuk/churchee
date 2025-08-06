@@ -64,7 +64,7 @@ namespace Churchee.Module.Logging.Tests.Registrations
 
             var dbContext = serviceProvider.GetService<LogsDBContext>();
             Assert.NotNull(dbContext);
-            Assert.IsAssignableFrom<DbContext>(dbContext);
+            Assert.IsType<DbContext>(dbContext, exactMatch: false);
         }
 
         [Fact]
