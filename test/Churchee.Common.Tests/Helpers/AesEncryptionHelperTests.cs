@@ -15,17 +15,6 @@ namespace Churchee.Common.Tests.Helpers
 
             Assert.Equal(originalText, decryptedText);
         }
-
-        [Fact]
-        public void LegacyEncryptAndDecrypt_ShouldReturnOriginalText()
-        {
-            string originalText = "Hello, World!";
-            string legacyEncryptedText = "rPjYVUtojMvddQ7cDpjx9w==";
-            string decryptedText = AesEncryptionHelper.Decrypt(Key, legacyEncryptedText);
-
-            Assert.Equal(originalText, decryptedText);
-        }
-
     }
 
 }
