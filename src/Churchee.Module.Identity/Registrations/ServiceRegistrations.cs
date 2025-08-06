@@ -10,7 +10,7 @@ using System;
 
 namespace Churchee.Module.Identity.Registrations
 {
-    public class ServiceRegistrations : IConfigureServicesAction
+    public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 1;
 

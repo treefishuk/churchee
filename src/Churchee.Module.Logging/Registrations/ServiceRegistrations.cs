@@ -11,7 +11,7 @@ using System;
 
 namespace Churchee.Module.Logging.Registrations
 {
-    public class ServiceRegistrations : IConfigureServicesAction
+    public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 5000;
 

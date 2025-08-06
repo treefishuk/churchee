@@ -14,8 +14,8 @@ namespace Churchee.Common.Tests.Extensions
         {
             // Arrange
             var services = new ServiceCollection();
-            var mockAction1 = new Mock<IConfigureServicesAction>();
-            var mockAction2 = new Mock<IConfigureServicesAction>();
+            var mockAction1 = new Mock<IConfigureAdminServicesAction>();
+            var mockAction2 = new Mock<IConfigureAdminServicesAction>();
             mockAction1.Setup(a => a.Priority).Returns(1);
             mockAction2.Setup(a => a.Priority).Returns(2);
 
@@ -23,7 +23,7 @@ namespace Churchee.Common.Tests.Extensions
             services.AddSingleton(mockAction2.Object);
 
             // Act
-            services.AddServicesActions();
+            services.AddAdminServicesActions();
 
             // Assert
             mockAction1.Verify(a => a.Execute(It.IsAny<IServiceCollection>(), It.IsAny<IServiceProvider>()), Times.Once);

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Registration
 {
-    public class EntityRegistrations : IEntityRegistration
+    public class EntityRegistrations : IEntityRegistration, IFrontEndEntityRegistration
     {
         public void RegisterEntities(ModelBuilder modelBuilder)
         {
