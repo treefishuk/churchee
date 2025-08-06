@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Churchee.EmailConfiguration.MailGun.Registrations
 {
-    public class ServiceRegistrations : IConfigureServicesAction
+    public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 200;
 

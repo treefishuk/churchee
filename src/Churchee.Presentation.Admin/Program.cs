@@ -2,7 +2,7 @@ using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Helpers;
-using Churchee.Data.EntityFramework;
+using Churchee.Data.EntityFramework.Admin;
 using Churchee.EmailConfiguration.MailGun.Infrastructure;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Infrastructure;
@@ -66,7 +66,7 @@ namespace Churchee.Presentation.Admin
 
             builder.Services.AddCascadingAuthenticationState();
 
-            builder.Services.AddServicesActions();
+            builder.Services.AddAdminServicesActions();
             builder.Services.AddScoped<CurrentPage>();
 
             string? emailService = builder.Configuration.GetSection("Email").GetValue<string>("Service");

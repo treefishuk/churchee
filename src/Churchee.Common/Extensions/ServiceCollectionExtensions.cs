@@ -9,13 +9,29 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddServicesActions(this IServiceCollection services)
+        public static void AddAdminServicesActions(this IServiceCollection services)
         {
-            services.RegisterAllTypes<IConfigureServicesAction>(ServiceLifetime.Singleton);
+            services.RegisterAllTypes<IConfigureAdminServicesAction>(ServiceLifetime.Singleton);
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
 
-            var startUpActions = serviceProvider.GetServices<IConfigureServicesAction>().OrderBy(a => a.Priority);
+            var startUpActions = serviceProvider.GetServices<IConfigureAdminServicesAction>().OrderBy(a => a.Priority);
+
+            foreach (var action in startUpActions)
+            {
+                action.Execute(services, serviceProvider);
+
+                serviceProvider = services.BuildServiceProvider();
+            }
+        }
+
+        public static void AddSiteServicesActions(this IServiceCollection services)
+        {
+            services.RegisterAllTypes<IConfigureSiteServicesAction>(ServiceLifetime.Singleton);
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            var startUpActions = serviceProvider.GetServices<IConfigureSiteServicesAction>().OrderBy(a => a.Priority);
 
             foreach (var action in startUpActions)
             {

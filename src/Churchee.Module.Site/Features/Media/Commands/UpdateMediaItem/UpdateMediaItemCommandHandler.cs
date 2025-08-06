@@ -54,7 +54,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
                 entity.UpdateMediaUrl(imagePath);
 
-                var bytes = ms.ConvertStreamToByteArray();
+                byte[] bytes = ms.ConvertStreamToByteArray();
 
                 _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
             }

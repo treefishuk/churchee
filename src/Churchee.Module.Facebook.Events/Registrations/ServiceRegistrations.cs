@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Churchee.Module.Facebook.Events.Registrations
 {
-    public class ServiceRegistrations : IConfigureServicesAction
+    public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 200;
 

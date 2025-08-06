@@ -10,7 +10,7 @@ using System;
 
 namespace Churchee.Module.Hangfire.Registrations
 {
-    public class ServiceRegistrations : IConfigureServicesAction
+    public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 200;
 

@@ -6,7 +6,7 @@ using System;
 
 namespace Churchee.Blobstorage.Providers.Registrations
 {
-    internal class ServiceRegistrations : IConfigureServicesAction
+    internal class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 1000;
 
