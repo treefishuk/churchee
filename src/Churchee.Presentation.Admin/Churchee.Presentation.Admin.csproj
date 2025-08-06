@@ -29,7 +29,7 @@
 
 	<ItemGroup>
     <ProjectReference Include="..\Churchee.Blobstorage.Providers\Churchee.Blobstorage.Providers.csproj" />
-    <ProjectReference Include="..\Churchee.Data.EntityFramework\Churchee.Data.EntityFramework.csproj" />
+    <ProjectReference Include="..\Churchee.Data.EntityFramework.Admin\Churchee.Data.EntityFramework.Admin.csproj" />
     <ProjectReference Include="..\Churchee.EmailConfiguration.MailGun\Churchee.EmailConfiguration.MailGun.csproj" />
     <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
     <ProjectReference Include="..\Churchee.Module.Dashboard\Churchee.Module.Dashboard.csproj" />
