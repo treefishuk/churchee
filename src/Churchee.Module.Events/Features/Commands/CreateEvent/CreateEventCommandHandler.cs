@@ -3,6 +3,7 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
+using Churchee.Module.Events.Helpers;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
@@ -76,38 +77,13 @@ namespace Churchee.Module.Events.Features.Commands
                 .SetPublished(true)
                 .Build();
 
-            AddUniqueSufficIfNeeded(newEvent);
+            SuffixGeneration.AddUniqueSufficIfNeeded(newEvent, _dataStore);
 
             repo.Create(newEvent);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
             return new CommandResponse();
-        }
-
-        private void AddUniqueSufficIfNeeded(Event newEvent)
-        {
-            var repo = _dataStore.GetRepository<Event>();
-
-            // Ensure unique URL by adding/incrementing a numeric suffix if needed
-            string baseUrl = newEvent.Url;
-            string uniqueUrl = baseUrl;
-            int suffix = 1;
-
-            while (repo.GetQueryable().Any(a => a.Url == uniqueUrl))
-            {
-                // If baseUrl already ends with -number, increment it
-                int lastDash = baseUrl.LastIndexOf('-');
-                if (lastDash > 0 && int.TryParse(baseUrl[(lastDash + 1)..], out int existingNumber))
-                {
-                    baseUrl = baseUrl[..lastDash];
-                    suffix = existingNumber + 1;
-                }
-                uniqueUrl = $"{baseUrl}-{suffix}";
-                suffix++;
-            }
-
-            newEvent.Url = uniqueUrl;
         }
 
         private async Task<string> CreateImageAndReturnPath(CreateEventCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
