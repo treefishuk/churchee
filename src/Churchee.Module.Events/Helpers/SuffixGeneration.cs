@@ -3,10 +3,9 @@ using Churchee.Module.Events.Entities;
 
 namespace Churchee.Module.Events.Helpers
 {
-    public class SuffixGeneration
+    public static class SuffixGeneration
     {
-
-        public static void AddUniqueSufficIfNeeded(Event newEvent, IDataStore dataStore)
+        public static void AddUniqueSuffixIfNeeded(Event newEvent, IDataStore dataStore)
         {
             var repo = dataStore.GetRepository<Event>();
 

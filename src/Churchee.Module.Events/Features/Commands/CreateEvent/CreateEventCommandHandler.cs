@@ -77,7 +77,7 @@ namespace Churchee.Module.Events.Features.Commands
                 .SetPublished(true)
                 .Build();
 
-            SuffixGeneration.AddUniqueSufficIfNeeded(newEvent, _dataStore);
+            SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore);
 
             repo.Create(newEvent);
 

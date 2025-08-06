@@ -33,6 +33,8 @@ namespace Churchee.Common.Abstractions.Storage
 
         Task PermanentDelete(Guid id);
 
+        Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken);
+
         Task SoftDelete(Guid id);
 
         void Update(T entity);

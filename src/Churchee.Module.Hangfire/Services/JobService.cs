@@ -53,5 +53,11 @@ namespace Churchee.Module.Hangfire.Services
         {
             _recurringJobManager.AddOrUpdate(recurringJobId, methodCall, cronExpression);
         }
+
+        public void ScheduleJob<T>(string recurringJobId, Expression<Func<T, Task>> methodCall, Func<string> cronExpression)
+        {
+            _recurringJobManager.AddOrUpdate<T>(recurringJobId, methodCall, cronExpression);
+        }
+
     }
 }
