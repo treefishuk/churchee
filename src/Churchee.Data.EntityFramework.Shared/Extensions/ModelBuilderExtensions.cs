@@ -20,10 +20,10 @@ namespace Churchee.Data.EntityFramework.Shared.Extensions
 
                 var builder = modelBuilder.Entity(clrType);
 
-                if (builder.Metadata.GetQueryFilter() != null)
-                {
-                    var currentQueryFilter = builder.Metadata.GetQueryFilter();
+                var currentQueryFilter = builder.Metadata.GetQueryFilter();
 
+                if (currentQueryFilter != null)
+                {
                     var currentExpressionFilter = ReplacingExpressionVisitor.Replace(
                         currentQueryFilter.Parameters.Single(), parameterType, currentQueryFilter.Body);
 

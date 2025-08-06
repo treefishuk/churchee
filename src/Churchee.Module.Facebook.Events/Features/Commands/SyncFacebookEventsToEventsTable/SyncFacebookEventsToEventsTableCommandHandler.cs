@@ -4,6 +4,7 @@ using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
+using Churchee.Module.Events.Helpers;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Facebook.Events.API;
 using Churchee.Module.Facebook.Events.Helpers;
@@ -97,7 +98,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
                 var repo = _dataStore.GetRepository<Event>();
 
-                Guid pageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
+                var pageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
 
                 foreach (string eventId in eventIds)
                 {
@@ -169,6 +170,8 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             await ConvertImageToLocalImage(newEvent, applicationTenantId, cancellationToken);
 
+            SuffixGeneration.AddUniqueSufficIfNeeded(newEvent, _dataStore);
+
             repo.Create(newEvent);
         }
 
@@ -202,7 +205,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             facebookEvent.SetImageUrl($"/img/events/{friendlyFileName}");
 
-            var bytes = stream.ConvertStreamToByteArray();
+            byte[] bytes = stream.ConvertStreamToByteArray();
 
             _jobShedularService.QueueJob<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
         }

@@ -22,9 +22,9 @@ namespace Churchee.Data.EntityFramework.Site
             _logger = logger;
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
             var entityRegistrations = _serviceProvider.GetServices<IFrontEndEntityRegistration>();
 
@@ -32,12 +32,12 @@ namespace Churchee.Data.EntityFramework.Site
             {
                 _logger.LogInformation("Site Entity Registration: {Entity}", reg.GetType().FullName);
 
-                reg.RegisterEntities(builder);
+                reg.RegisterEntities(modelBuilder);
             }
 
-            builder.ApplyGlobalFilters<ITenantedEntity>(a => a.ApplicationTenantId == _tenantResolver.GetTenantId());
+            modelBuilder.ApplyGlobalFilters<ITenantedEntity>(a => a.ApplicationTenantId == _tenantResolver.GetTenantId());
 
-            builder.ApplyGlobalFilters<IEntity>(a => a.Deleted == false);
+            modelBuilder.ApplyGlobalFilters<IEntity>(a => !a.Deleted);
 
         }
 
