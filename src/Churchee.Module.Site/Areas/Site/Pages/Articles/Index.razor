@@ -1,4 +1,4 @@
-﻿@page "/management/feed"
+﻿@page "/management/articles"
 @inherits BasePage
 @using Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
 @using Churchee.Module.Site.Features.Blog.Responses
@@ -10,6 +10,12 @@
 @using Churchee.Module.UI.Components
 
 <PageName></PageName>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/articles/create">Create</a>
+    </div>
+</SectionContent>
 
 <Grid TItem="GetListBlogItemsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
 

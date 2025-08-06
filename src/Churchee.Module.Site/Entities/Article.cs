@@ -1,6 +1,4 @@
-﻿using Churchee.Module.Site.Helpers;
-
-namespace Churchee.Module.Site.Entities
+﻿namespace Churchee.Module.Site.Entities
 {
     public class Article : WebContent
     {
@@ -9,7 +7,7 @@ namespace Churchee.Module.Site.Entities
 
         }
 
-        public Article(Guid applicationTenantId, Guid pageTypeId, Guid parentId, string title, string url, string descrition) : base(applicationTenantId, title, url, descrition)
+        public Article(Guid applicationTenantId, Guid pageTypeId, Guid parentId, string title, string url, string description) : base(applicationTenantId, title, url, description)
         {
             PageTypeId = pageTypeId;
             ParentId = parentId;

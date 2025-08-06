@@ -3,7 +3,6 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
-using Churchee.Module.Events.Helpers;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;

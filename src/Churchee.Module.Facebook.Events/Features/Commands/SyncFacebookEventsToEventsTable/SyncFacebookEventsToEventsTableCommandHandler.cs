@@ -4,7 +4,6 @@ using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
-using Churchee.Module.Events.Helpers;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Facebook.Events.API;
 using Churchee.Module.Facebook.Events.Helpers;

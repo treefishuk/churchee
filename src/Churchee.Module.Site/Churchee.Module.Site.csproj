@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Areas\Site\Pages\Feed\Index.cshtml.cs" />
+    <Compile Remove="Areas\Site\Pages\Articles\Index.cshtml.cs" />
     <Compile Remove="Areas\Site\Pages\Pages\Create.cshtml.cs" />
     <Compile Remove="Areas\Site\Pages\Pages\Index.cshtml.cs" />
     <Compile Remove="Areas\Site\Pages\Pages\Index.cshtml.GridItem.cs" />
@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Areas\Site\Pages\Feed\Index.cshtml" />
+    <Content Remove="Areas\Site\Pages\Articles\Index.cshtml" />
     <Content Remove="Areas\Site\Pages\Pages\Create.cshtml" />
     <Content Remove="Areas\Site\Pages\Pages\Index.cshtml" />
     <Content Remove="Areas\Site\Pages\Styles\Index.cshtml" />

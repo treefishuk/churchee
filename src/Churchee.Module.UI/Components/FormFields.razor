@@ -228,14 +228,32 @@
                                     <RadzenHtmlEditorOrderedList />
                                 </RadzenHtmlEditor>
                             }
+                            if (dataType == DataTypes.HtmlFullPage)
+                            {
 
+                                <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) Style="height: 100vh">
+                                    <RadzenHtmlEditorFormatBlock />
+                                    <RadzenHtmlEditorUndo />
+                                    <RadzenHtmlEditorRedo />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorBold />
+                                    <RadzenHtmlEditorItalic />
+                                    <RadzenHtmlEditorUnderline />
+                                    <RadzenHtmlEditorStrikeThrough />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorRemoveFormat />
+                                    <RadzenHtmlEditorSource />
+                                    <RadzenHtmlEditorUnorderedList />
+                                    <RadzenHtmlEditorOrderedList />
+                                </RadzenHtmlEditor>
+                            }
 
 
                             if (dataType == typeof(DropdownInput).Name)
                             {
                                 var dropdown = prop.GetValue(InputModel) as DropdownInput ?? new DropdownInput();
 
-                                <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" TValue="DropdownInput" Value="dropdown" Change=@((value) => OnDropdownFieldChange(prop, value)) />
+                                <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" Value="dropdown.Value" Change=@((value) => OnDropdownFieldChange(prop, value)) />
                             }
                         }
 
