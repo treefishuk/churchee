@@ -311,5 +311,10 @@ namespace Churchee.Module.Settings.Tests.Store
         {
             throw new NotImplementedException();
         }
+
+        public Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
