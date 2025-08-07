@@ -28,6 +28,7 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetArticleById
                     Content = s.Content,
                     CreatedAt = s.CreatedDate,
                     IsPublished = s.Published,
+                    PublishOnDate = s.LastPublishedDate,
                     ParentName = s.Parent != null ? s.Parent.Title : string.Empty,
                     ParentId = s.Parent != null ? s.Parent.Id : Guid.Empty,
                 },

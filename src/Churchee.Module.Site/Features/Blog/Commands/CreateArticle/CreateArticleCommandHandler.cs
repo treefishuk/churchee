@@ -39,6 +39,10 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             var newArticle = new Article(applicationTenantId, detailPageTypeId, request.ParentPageId, request.Title, url, request.Description);
 
+            newArticle.SetContent(request.Content);
+
+            newArticle.SetPublishDate(request.PublishOnDate);
+
             SuffixGeneration.AddUniqueSuffixIfNeeded(newArticle, _dataStore);
 
             articleRepo.Create(newArticle);

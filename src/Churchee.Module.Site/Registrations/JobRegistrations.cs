@@ -1,10 +1,10 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Queue;
-using Churchee.Module.Dashboard.Jobs;
+using Churchee.Module.Site.Jobs;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Churchee.Module.Dashboard.Registrations
+namespace Churchee.Module.Site.Registration
 {
     public class JobRegistrations : IConfigureAdminServicesAction
     {
@@ -12,11 +12,11 @@ namespace Churchee.Module.Dashboard.Registrations
 
         public void Execute(IServiceCollection serviceCollection, IServiceProvider serviceProvider)
         {
-            serviceCollection.AddScoped<ClearOldPageViews>();
+            serviceCollection.AddScoped<PublishArticlesJob>();
 
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
-            jobService.ScheduleJob<ClearOldPageViews>($"ClearOldPageViews", x => x.ExecuteAsync(CancellationToken.None), Cron.Daily);
+            jobService.ScheduleJob<PublishArticlesJob>($"PublishArticles", x => x.ExecuteAsync(CancellationToken.None), Cron.Daily);
         }
     }
 }

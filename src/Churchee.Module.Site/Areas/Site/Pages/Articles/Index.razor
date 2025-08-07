@@ -1,5 +1,6 @@
 ﻿@page "/management/articles"
 @inherits BasePage
+@using Churchee.Module.Site.Features.Blog.Commands
 @using Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
 @using Churchee.Module.Site.Features.Blog.Responses
 @using MediatR
@@ -17,7 +18,7 @@
     </div>
 </SectionContent>
 
-<Grid TItem="GetListBlogItemsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
+<Grid TItem="GetListBlogItemsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="OnDelete"></Grid>
 
 @code {
 
@@ -38,5 +39,19 @@
         listingData = result.Data;
 
         isLoading = false;
+    }
+
+    async Task OnDelete(GetListBlogItemsResponseItem item)
+    {
+        var result = await Mediator.Send(new DeleteArticleCommand(item.Id));
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove Article");
+
+            return;
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, "Article Deleted");
     }
 }

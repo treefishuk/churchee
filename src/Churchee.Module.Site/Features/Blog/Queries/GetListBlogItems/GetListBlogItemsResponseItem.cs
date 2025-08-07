@@ -8,6 +8,8 @@
 
         public string Url { get; set; }
 
+        public bool Published { get; set; }
+
         public DateTime? Modified { get; set; }
     }
 }
