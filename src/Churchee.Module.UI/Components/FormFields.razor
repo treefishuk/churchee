@@ -231,7 +231,8 @@
                             if (dataType == DataTypes.HtmlFullPage)
                             {
 
-                                <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) Style="height: 100vh">
+                                <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) Style="height: 100vh" UploadUrl="/management/upload/image" UploadComplete="OnImageUploadComplete">
+                                    <RadzenHtmlEditorImage />
                                     <RadzenHtmlEditorFormatBlock />
                                     <RadzenHtmlEditorUndo />
                                     <RadzenHtmlEditorRedo />
@@ -354,6 +355,12 @@
         _logger.LogInformation("{Upload} value changed", upload);
 
         await OnValueChanged.InvokeAsync(null);
+    }
+
+
+    async Task OnImageUploadComplete(UploadCompleteEventArgs args)
+    {
+        _logger.LogInformation("Image Uploaded");
     }
 
     private static Nullable<T> GetParsed<T>(PropertyInfo info, object inputModel) where T: struct

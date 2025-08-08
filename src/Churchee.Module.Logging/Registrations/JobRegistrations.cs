@@ -4,6 +4,7 @@ using Churchee.Module.Logging.Jobs;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading;
 
 namespace Churchee.Module.Logging.Registrations
 {
@@ -17,7 +18,7 @@ namespace Churchee.Module.Logging.Registrations
 
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
-            jobService.ScheduleJob<ClearLogsJob>($"ClearLogs", x => x.ExecuteAsync(), Cron.Monthly);
+            jobService.ScheduleJob<ClearLogsJob>($"ClearLogs", x => x.ExecuteAsync(CancellationToken.None), Cron.Monthly);
         }
     }
 }

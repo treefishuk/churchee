@@ -32,7 +32,7 @@ namespace Churchee.Presentation.Admin
             {
                 string csp = "base-uri 'self'; " +
                            "default-src 'self'; " +
-                           "img-src data: https:; " +
+                           "img-src data: https: blob:; " +
                            "object-src 'none'; " +
                            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
                            "style-src 'self' 'unsafe-inline' fonts.googleapis.com;" +

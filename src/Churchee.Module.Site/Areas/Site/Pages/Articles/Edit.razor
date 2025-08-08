@@ -133,7 +133,8 @@
     {
        await DialogService.OpenAsync("Update Content", ds =>
 
-                                @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh">
+                                @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh" UploadUrl="/upload/image" >
+                                    <RadzenHtmlEditorImage />                                    
                                     <RadzenHtmlEditorFormatBlock />
                                     <RadzenHtmlEditorUndo />
                                     <RadzenHtmlEditorRedo />

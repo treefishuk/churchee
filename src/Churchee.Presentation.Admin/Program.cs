@@ -61,6 +61,7 @@ namespace Churchee.Presentation.Admin
             builder.Services.AddHttpClient();
 
             // Add services to the container.
+            builder.Services.AddControllers();
             builder.Services.AddRazorComponents()
                             .AddInteractiveServerComponents();
 
@@ -89,7 +90,6 @@ namespace Churchee.Presentation.Admin
 
             builder.Services.RegisterAllTypes<IMenuRegistration>(ServiceLifetime.Scoped);
             builder.Services.RegisterAllTypes<IScriptRegistrations>(ServiceLifetime.Scoped);
-
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
             builder.Services.AddValidatorsFromAssemblies(assemblies);
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandlingBehavior<,>));
@@ -160,7 +160,7 @@ namespace Churchee.Presentation.Admin
                 .AddAdditionalAssemblies(AssemblyResolution.GetModuleAssemblies());
 
             app.MapRazorPages();
-
+            app.MapControllers();
             app.UseChurcheeHangfireDashboard();
 
             app.Run();
