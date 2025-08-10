@@ -9,7 +9,6 @@ namespace Churchee.Module.UI.Models
         public ImageUploadModel()
         {
             File = new Upload();
-            Name = string.Empty;
             Description = string.Empty;
         }
 
@@ -19,14 +18,8 @@ namespace Churchee.Module.UI.Models
         public Upload File { get; set; }
 
         [Required]
-        public string Name { get; set; }
-
-        [Required]
         public string Description { get; set; }
 
         public int? Width { get; set; }
-
-        public int? Height { get; set; }
-
     }
 }

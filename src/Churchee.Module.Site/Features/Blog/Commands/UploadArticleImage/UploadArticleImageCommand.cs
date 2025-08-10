@@ -15,22 +15,18 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
         public string Base64Content { get; set; }
 
+        public int? Width { get; set; }
+
         public class Builder
         {
             private readonly UploadArticleImageCommand _command = new();
-
-            public Builder SetName(string name)
-            {
-                _command.Name = name;
-                return this;
-            }
 
             public Builder SetFileName(string fileName)
             {
                 string dashedFileName = string.Join("-", fileName.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
                 _command.FileName = dashedFileName;
-
+                _command.Name = fileName.ToSentence();
                 return this;
             }
 
@@ -49,6 +45,12 @@ namespace Churchee.Module.Site.Features.Blog.Commands
             public Builder SetBase64Content(string base64Image)
             {
                 _command.Base64Content = base64Image;
+                return this;
+            }
+
+            public Builder SetWidth(int? width)
+            {
+                _command.Width = width;
                 return this;
             }
 

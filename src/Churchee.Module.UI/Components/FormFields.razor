@@ -382,9 +382,9 @@
 
     async Task OpenImageUploadEditor()
     {
-       await _dialogService.OpenAsync("Update Content", ds =>
+       await _dialogService.OpenAsync("Insert image", ds =>
 
-            @<ModalForm InputModel="ImageUploadModel" OnCancelForm=@(async () => await OnCancelImageUpload(ds)) OnSave=@(async () => await ValidImageUpload()) />,
+            @<ModalForm InputModel="ImageUploadModel" OnCancelForm=@(async () => await OnCancelImageUpload(ds)) OnSave=@(async () => await ValidImageUpload(ds)) />,
             new DialogOptions() { Width = "700px"}
 
         );    
@@ -400,9 +400,10 @@
         });
     }
 
-    private async Task ValidImageUpload()
+    private async Task ValidImageUpload(DialogService ds)
     {
         await OnImageSubmit.InvokeAsync(ImageUploadModel);
+        ds.Close();
     }
 
     void OnFileError(UploadErrorEventArgs args, string name)
