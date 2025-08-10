@@ -10,6 +10,8 @@
 @using Churchee.Module.UI.Models
 @using Radzen
 @using Radzen.Blazor
+@using Radzen.Blazor.Rendering
+@using Path = System.IO.Path;
 
 <PageName Name="Create Article"></PageName>
 
@@ -23,6 +25,8 @@
 @code {
     [SupplyParameterFromForm]
     public CreateArticleModel InputModel { get; set; } = new();
+
+    public ImageUploadModel ImageUploadModel { get; set; } = new();
 
     [Parameter]
     public Guid Id { get; set; }
@@ -78,7 +82,7 @@
     {
        await DialogService.OpenAsync("Update Content", ds =>
 
-                                @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh" UploadUrl="/upload/image" >
+                                @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh">
                                     <RadzenHtmlEditorFormatBlock />
                                     <RadzenHtmlEditorUndo />
                                     <RadzenHtmlEditorRedo />
@@ -92,10 +96,58 @@
                                     <RadzenHtmlEditorSource />
                                     <RadzenHtmlEditorUnorderedList />
                                     <RadzenHtmlEditorOrderedList />
-                                    <RadzenHtmlEditorImage />                                    
+                                    <EditorButton Title="Insert Image" Click=@OpenImageUploadEditor Icon="image"/>
                                 </RadzenHtmlEditor>,
             new DialogOptions() { Width = "100%", Height = "100%"}
         );    
 
+    }
+
+    async Task OpenImageUploadEditor()
+    {
+       await DialogService.OpenAsync("Insert image", ds =>
+
+            @<ModalForm InputModel="ImageUploadModel" OnCancelForm=@(async () => await OnCancelImageUpload(ds)) OnSave=@(async () => await OnSaveImageUpload(ds)) />,
+            new DialogOptions() { Width = "700px"}
+
+        );    
+
+    }
+
+    private async Task OnCancelImageUpload(DialogService ds)
+    {
+        await Task.Run(() =>
+        {
+            ds.Close();
+            ImageUploadModel = new ImageUploadModel();
+        });
+    }
+
+    private async Task OnSaveImageUpload(DialogService ds)
+    {
+        await OnImageSubmit(ImageUploadModel);
+
+        await Task.Run(() =>
+        {
+            ds.Close();
+        });
+
+    }
+
+    private async Task OnImageSubmit(ImageUploadModel model)
+    {
+        NotificationService.Notify(NotificationSeverity.Success, "Image Added");
+
+        var command = new UploadArticleImageCommand.Builder()
+        .SetFileName(Path.GetFileNameWithoutExtension(model.File.FileName))
+        .SetExtension(Path.GetExtension(model.File.FileName))
+        .SetDescription(model.Description)
+        .SetBase64Content(model.File.Value)
+        .SetWidth(model.Width)
+        .Build();
+
+        var result = await Mediator.Send(command);
+
+        InputModel.Content += result.ImageHtml;
     }
 }

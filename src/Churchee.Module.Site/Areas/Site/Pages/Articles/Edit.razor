@@ -37,12 +37,13 @@
     [SupplyParameterFromForm]
     public EditArticleModel InputModel { get; set; } = new();
 
+    public ImageUploadModel ImageUploadModel { get; set; } = new();
+
     [Parameter]
     public Guid Id { get; set; }
 
     [Inject]
     private DialogService DialogService { get; set; } = default!;
-
 
     public bool IsPublished { get; set; }
 
@@ -91,26 +92,6 @@
         }
     }
 
-
-    private async Task OnImageSubmit(ImageUploadModel model)
-    {
-        NotificationService.Notify(NotificationSeverity.Success, "Image Added");
-
-        var command = new UploadArticleImageCommand.Builder()
-        .SetFileName(Path.GetFileNameWithoutExtension(model.File.FileName))
-        .SetExtension(Path.GetExtension(model.File.FileName))
-        .SetDescription(model.Description)
-        .SetBase64Content(model.File.Value)
-        .SetWidth(model.Width)
-        .Build();
-
-        var result = await Mediator.Send(command);
-
-        InputModel.Content += result.ImageHtml;
-
-    }
-
-
     private async Task<IEnumerable<DropdownInput>> GetParentOptions()
     {
         return await Mediator.Send(new GetParentArticlePagesDropdownDataQuery(), default);
@@ -150,7 +131,6 @@
         InputModel.PublishOnDate = null;
     }
 
-    
     private async Task OpenContentEditor()
     {
        await DialogService.OpenAsync("Update Content", ds =>
@@ -175,18 +155,14 @@
         );    
 
     }
-        
-    public ImageUploadModel ImageUploadModel { get; set; } = new();
 
-    async Task OpenImageUploadEditor()
+    private async Task OpenImageUploadEditor()
     {
        await DialogService.OpenAsync("Insert image", ds =>
 
             @<ModalForm InputModel="ImageUploadModel" OnCancelForm=@(async () => await OnCancelImageUpload(ds)) OnSave=@(async () => await OnSaveImageUpload(ds)) />,
             new DialogOptions() { Width = "700px"}
-
         );    
-
     }
 
     private async Task OnCancelImageUpload(DialogService ds)
@@ -206,6 +182,24 @@
         {
             ds.Close();
         });
+
+    }
+
+    private async Task OnImageSubmit(ImageUploadModel model)
+    {
+        NotificationService.Notify(NotificationSeverity.Success, "Image Added");
+
+        var command = new UploadArticleImageCommand.Builder()
+        .SetFileName(Path.GetFileNameWithoutExtension(model.File.FileName))
+        .SetExtension(Path.GetExtension(model.File.FileName))
+        .SetDescription(model.Description)
+        .SetBase64Content(model.File.Value)
+        .SetWidth(model.Width)
+        .Build();
+
+        var result = await Mediator.Send(command);
+
+        InputModel.Content += result.ImageHtml;
 
     }
 }
