@@ -55,10 +55,6 @@
     <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\HtmlEditor\Commands\" />
-  </ItemGroup>
-
 
 
 </Project>
