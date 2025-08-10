@@ -28,9 +28,8 @@ namespace Churchee.Module.Site.Areas.Site.Models
         [DataType(DataType.Date)]
         public DateTime? PublishOnDate { get; set; }
 
-
         [Required]
-        [DataType(DataTypes.Html)]
+        [DataType(DataTypes.HtmlTall)]
         public string Content { get; set; }
 
 

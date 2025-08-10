@@ -3,6 +3,7 @@
 @using Churchee.Module.Site.Areas.Site.Models
 @using Churchee.Module.Site.Features.Blog.Commands
 @using Churchee.Module.Site.Features.Blog.Queries
+@using Churchee.Module.Site.Features.Media.Commands
 @using Churchee.Module.Site.Features.PageTypes.Queries
 @using Churchee.Module.Site.Features.Pages.Commands
 @using Churchee.Module.Site.Features.Pages.Commands.CreatePage
@@ -15,7 +16,7 @@
 <PageName Name="Edit Article"></PageName>
 
 
-<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm())>
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) OnImageSubmit="OnImageSubmit" >
 
     <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@(() => OpenContentEditor())">Distraction Free Mode</RadzenButton>
 
@@ -86,8 +87,28 @@
         {
             NavigationManager.NavigateTo("/management/articles");
         }
+    }
+
+
+    private async Task OnImageSubmit(ImageUploadModel model)
+    {
+        NotificationService.Notify(NotificationSeverity.Success, "Image Added");
+
+
+        var command = new UploadArticleImageCommand.Builder()
+        .SetName(model.Name)
+        .SetFileName(Path.GetFileNameWithoutExtension(model.File.FileName))
+        .SetExtension(Path.GetExtension(model.File.FileName))
+        .SetDescription(model.Description)
+        .SetBase64Content(model.File.Value)
+        .Build();
+
+        var result = await Mediator.Send(command);
+
+        InputModel.Content += result.ImageHtml;
 
     }
+
 
     private async Task<IEnumerable<DropdownInput>> GetParentOptions()
     {
@@ -134,7 +155,6 @@
        await DialogService.OpenAsync("Update Content", ds =>
 
                                 @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh" UploadUrl="/upload/image" >
-                                    <RadzenHtmlEditorImage />                                    
                                     <RadzenHtmlEditorFormatBlock />
                                     <RadzenHtmlEditorUndo />
                                     <RadzenHtmlEditorRedo />
@@ -148,6 +168,7 @@
                                     <RadzenHtmlEditorSource />
                                     <RadzenHtmlEditorUnorderedList />
                                     <RadzenHtmlEditorOrderedList />
+                                    <RadzenHtmlEditorImage />                                    
                                 </RadzenHtmlEditor>,
             new DialogOptions() { Width = "100%", Height = "100%"}
         );    

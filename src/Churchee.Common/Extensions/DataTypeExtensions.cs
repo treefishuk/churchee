@@ -10,7 +10,7 @@
         public const string Currency = "Currency";
         public const string Text = "Text";
         public const string Html = "Html";
-        public const string HtmlFullPage = "HtmlFullPage";
+        public const string HtmlTall = "HtmlFullPage";
         public const string HtmlNoLinks = "HtmlNoLinks";
         public const string MultilineText = "MultilineText";
         public const string EmailAddress = "EmailAddress";

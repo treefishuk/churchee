@@ -61,7 +61,6 @@ namespace Churchee.Presentation.Admin
             builder.Services.AddHttpClient();
 
             // Add services to the container.
-            builder.Services.AddControllers();
             builder.Services.AddRazorComponents()
                             .AddInteractiveServerComponents();
 
@@ -160,7 +159,6 @@ namespace Churchee.Presentation.Admin
                 .AddAdditionalAssemblies(AssemblyResolution.GetModuleAssemblies());
 
             app.MapRazorPages();
-            app.MapControllers();
             app.UseChurcheeHangfireDashboard();
 
             app.Run();

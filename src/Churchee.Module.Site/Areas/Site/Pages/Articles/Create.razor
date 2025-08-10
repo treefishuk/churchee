@@ -78,7 +78,7 @@
     {
        await DialogService.OpenAsync("Update Content", ds =>
 
-                                @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh">
+                                @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh" UploadUrl="/upload/image" >
                                     <RadzenHtmlEditorFormatBlock />
                                     <RadzenHtmlEditorUndo />
                                     <RadzenHtmlEditorRedo />
@@ -92,6 +92,7 @@
                                     <RadzenHtmlEditorSource />
                                     <RadzenHtmlEditorUnorderedList />
                                     <RadzenHtmlEditorOrderedList />
+                                    <RadzenHtmlEditorImage />                                    
                                 </RadzenHtmlEditor>,
             new DialogOptions() { Width = "100%", Height = "100%"}
         );    

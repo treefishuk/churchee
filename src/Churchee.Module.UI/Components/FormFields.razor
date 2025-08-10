@@ -10,6 +10,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Linq.Expressions
 @using Microsoft.AspNetCore.Mvc.Rendering
+@using Radzen.Blazor.Rendering
     
 <RadzenStack>
 
@@ -228,11 +229,10 @@
                                     <RadzenHtmlEditorOrderedList />
                                 </RadzenHtmlEditor>
                             }
-                            if (dataType == DataTypes.HtmlFullPage)
+                            if (dataType == DataTypes.HtmlTall)
                             {
 
-                                <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) Style="height: 100vh" UploadUrl="/management/upload/image" UploadComplete="OnImageUploadComplete">
-                                    <RadzenHtmlEditorImage />
+                                <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) Style="height: 420px">
                                     <RadzenHtmlEditorFormatBlock />
                                     <RadzenHtmlEditorUndo />
                                     <RadzenHtmlEditorRedo />
@@ -246,8 +246,9 @@
                                     <RadzenHtmlEditorSource />
                                     <RadzenHtmlEditorUnorderedList />
                                     <RadzenHtmlEditorOrderedList />
+                                    <EditorButton Title="Insert Image" Click=@OpenImageUploadEditor Icon="image"/>
                                 </RadzenHtmlEditor>
-                            }
+                            }       
 
 
                             if (dataType == typeof(DropdownInput).Name)
@@ -283,6 +284,9 @@
     protected ILogger<Form> _logger { get; set; } = default!;
 
     [Inject]
+    protected DialogService _dialogService { get; set; } = default!;
+
+    [Inject]
     protected NotificationService _notificationService { get; set; } = default!;
 
     [Parameter]
@@ -299,6 +303,9 @@
 
     [Parameter]
     public bool SubmitClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<ImageUploadModel> OnImageSubmit { get; set; }
 
     public async Task OnFieldChange(PropertyInfo info, object? value)
     {
@@ -357,12 +364,6 @@
         await OnValueChanged.InvokeAsync(null);
     }
 
-
-    async Task OnImageUploadComplete(UploadCompleteEventArgs args)
-    {
-        _logger.LogInformation("Image Uploaded");
-    }
-
     private static Nullable<T> GetParsed<T>(PropertyInfo info, object inputModel) where T: struct
     {
         var value = info.GetValue(inputModel);
@@ -373,6 +374,35 @@
         }
 
         return null;
+    }
+
+
+    public ImageUploadModel ImageUploadModel { get; set; } = new();
+
+
+    async Task OpenImageUploadEditor()
+    {
+       await _dialogService.OpenAsync("Update Content", ds =>
+
+            @<ModalForm InputModel="ImageUploadModel" OnCancelForm=@(async () => await OnCancelImageUpload(ds)) OnSave=@(async () => await ValidImageUpload()) />,
+            new DialogOptions() { Width = "700px"}
+
+        );    
+
+    }
+
+    private async Task OnCancelImageUpload(DialogService ds)
+    {
+        await Task.Run(() =>
+        {
+            ds.Close();
+            ImageUploadModel = new ImageUploadModel();
+        });
+    }
+
+    private async Task ValidImageUpload()
+    {
+        await OnImageSubmit.InvokeAsync(ImageUploadModel);
     }
 
     void OnFileError(UploadErrorEventArgs args, string name)

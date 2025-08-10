@@ -22,7 +22,7 @@
             @ChildContent
      </FormButtons>
 
-     <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=SetFormInvalidState EditContext="_editContext"></FormFields>
+     <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=SetFormInvalidState EditContext="_editContext" OnImageSubmit=OnImageSubmit></FormFields>
 
 </EditForm>
 
@@ -42,6 +42,9 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<ImageUploadModel> OnImageSubmit { get; set; }
 
     [Inject]
     public IServiceProvider _serviceProvider { get; set; } = default!;
