@@ -55,7 +55,6 @@
     private async Task<IEnumerable<DropdownInput>> GetParentOptions()
     {
         return await Mediator.Send(new GetParentPagesDropdownDataQuery(), default);
-
     }
 
     private async Task ValidSubmitForm()

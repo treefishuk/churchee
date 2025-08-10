@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
 using Churchee.Module.UI.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
@@ -15,18 +11,22 @@ namespace Churchee.Module.Site.Features.Pages.Queries
     {
 
         private readonly IDataStore _storage;
+        private readonly ICurrentUser _currentUser;
 
-        public GetParentPagesDropdownDataQueryHandler(IDataStore storage)
+        public GetParentPagesDropdownDataQueryHandler(IDataStore storage, ICurrentUser currentUser)
         {
             _storage = storage;
+            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<DropdownInput>> Handle(GetParentPagesDropdownDataQuery request, CancellationToken cancellationToken)
         {
-            return await _storage.GetRepository<Page>()
-                .GetQueryable()
-                .Select(s => new DropdownInput { Title = s.Title, Value = s.Id.ToString() })
-                .ToListAsync(cancellationToken);
+            var applicationTenantId = await _currentUser.GetApplicationTenantId();
+
+            return await _storage.GetRepository<Page>().GetListAsync(new PagesWithNonProtectedPageTypesSpecification(applicationTenantId, request.CurrentPage),
+                selector: s => new DropdownInput { Title = s.Title, Value = s.Id.ToString() },
+                cancellationToken: cancellationToken);
+
         }
     }
 }

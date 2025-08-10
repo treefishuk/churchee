@@ -172,7 +172,7 @@
             Parent = new DropdownInput
             {
                 Title = result.ParentName,
-                Value = result.ParentId?.ToString(),
+                Value = result.ParentId?.ToString().ToUpperInvariant(),
                 Data = dropdownData ?? new List<DropdownInput>(),
             },
             ContentItems = result.ContentItems.ToList()
@@ -183,15 +183,10 @@
     }
 
 
-    private async Task<List<DropdownInput>> GetParentOptions()
+    private async Task<IEnumerable<DropdownInput>> GetParentOptions()
     {
-        var data = await Mediator.Send(new GetListingQuery(null, string.Empty), default);
+        return await Mediator.Send(new GetParentPagesDropdownDataQuery(Id), default);
 
-        return data.Select(s => new DropdownInput
-        {
-            Title = s.Title,
-            Value = s.Id.ToString()
-        }).ToList();
     }
 
     private async Task HandleSubmit()

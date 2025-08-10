@@ -16,7 +16,7 @@
         <DataAnnotationsValidator />
 
         <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=UpdateFormState EditContext="_editContext"></FormFields>
-            <div class="mt-2">
+            <div class="rz-mt-5">
                 <div class="sticky-formButtons">
 
                     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">

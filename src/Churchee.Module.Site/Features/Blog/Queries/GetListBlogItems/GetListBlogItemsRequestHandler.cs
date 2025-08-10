@@ -42,7 +42,8 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
                     Id = s.Id,
                     Title = s.Title,
                     Modified = s.ModifiedDate,
-                    Url = s.Url
+                    Url = s.Url,
+                    Published = s.Published
                 })
                 .ToListAsync(cancellationToken);
 

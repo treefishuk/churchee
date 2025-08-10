@@ -1,18 +1,18 @@
 ﻿using Churchee.Common.Storage;
-using Churchee.Module.Events.Entities;
+using Churchee.Module.Site.Entities;
 
-namespace Churchee.Module.Events.Helpers
+namespace Churchee.Module.Site.Helpers
 {
     public static class SuffixGeneration
     {
-        public static void AddUniqueSuffixIfNeeded(Event newEvent, IDataStore dataStore)
+        public static void AddUniqueSuffixIfNeeded(WebContent webContent, IDataStore dataStore)
         {
-            var repo = dataStore.GetRepository<Event>();
+            var repo = dataStore.GetRepository<WebContent>();
 
             // Ensure unique URL by adding/incrementing a numeric suffix if needed
-            string baseUrl = newEvent.Url;
+            string baseUrl = webContent.Url;
             string uniqueUrl = baseUrl;
-            int suffix = 1;
+            int suffix = 2;
 
             while (repo.GetQueryable().Any(a => a.Url == uniqueUrl))
             {
@@ -27,7 +27,7 @@ namespace Churchee.Module.Events.Helpers
                 suffix++;
             }
 
-            newEvent.Url = uniqueUrl;
+            webContent.Url = uniqueUrl;
         }
 
     }

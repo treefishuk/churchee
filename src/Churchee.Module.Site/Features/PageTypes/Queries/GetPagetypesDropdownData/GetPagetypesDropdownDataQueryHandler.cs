@@ -1,18 +1,18 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.PageTypes.Queries
 {
 
-    public class GetPagetypesDropdownDataQueryHandler : IRequestHandler<GetPagetypesDropdownDataQuery, IEnumerable<SelectListItem>>
+    public class GetPageTypesDropdownDataQueryHandler : IRequestHandler<GetPagetypesDropdownDataQuery, IEnumerable<SelectListItem>>
     {
 
         private readonly IDataStore _storage;
 
-        public GetPagetypesDropdownDataQueryHandler(IDataStore storage)
+        public GetPageTypesDropdownDataQueryHandler(IDataStore storage)
         {
             _storage = storage;
         }
@@ -21,8 +21,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries
         {
             var repo = _storage.GetRepository<PageType>();
 
-            return await repo.GetQueryable().Select(s => new SelectListItem { Text = s.Name, Value = s.Id.ToString() }).ToListAsync(cancellationToken);
-
+            return await repo.GetListAsync(new NonProtectedPageTypesSpecification(), s => new SelectListItem { Text = s.Name, Value = s.Id.ToString() }, cancellationToken);
         }
     }
 }
