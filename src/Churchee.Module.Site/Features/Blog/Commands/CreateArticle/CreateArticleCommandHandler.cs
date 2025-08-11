@@ -43,7 +43,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             newArticle.SetPublishDate(request.PublishOnDate);
 
-            SuffixGeneration.AddUniqueSuffixIfNeeded(newArticle, _dataStore);
+            SuffixGeneration.AddUniqueSuffixIfNeeded(newArticle, _dataStore.GetRepository<Article>());
 
             articleRepo.Create(newArticle);
 

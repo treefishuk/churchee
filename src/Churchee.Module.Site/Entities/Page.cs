@@ -5,7 +5,7 @@ namespace Churchee.Module.Site.Entities
 {
     public class Page : WebContent
     {
-        protected Page()
+        public Page()
         {
             PageContent = new List<PageContent>();
         }
