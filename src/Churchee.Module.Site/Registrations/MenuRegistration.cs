@@ -37,6 +37,7 @@ namespace Churchee.Module.Site.Registration
                     .AddChild(new MenuItem("Podcasts", "/management/podcasts", "graphic_eq"))
                     .AddChild(new MenuItem("Videos", "/management/videos", "smart_display"))
                     .AddChild(new MenuItem("Events", "/management/events", "event"))
+                    .AddChild(new MenuItem("Redirects", "/management/redirects", "call_split"))
                 };
 
                 return list;

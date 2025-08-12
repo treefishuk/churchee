@@ -1,0 +1,52 @@
+﻿@page "/management/redirects/create"
+@inherits BasePage
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.PageTypes.Commands.CreatePageType
+@using Churchee.Module.Site.Features.Pages.Queries
+@using Churchee.Module.Site.Features.Redirects.Commands
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Radzen
+
+<PageName Name="Create Page Type"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    [SupplyParameterFromForm]
+    public CreateRedirectModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var dropdownData = await GetDropdownOptions();
+
+        InputModel = new CreateRedirectModel()
+        {
+            Page = new DropdownInput
+            {
+                Data = dropdownData ?? new List<DropdownInput>()
+            }
+        };
+
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new CreateRedirectCommand(InputModel.Path, Guid.Parse(InputModel.Page.Value)), default);
+
+        if (result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/redirects");
+        }
+    }
+
+    private async Task<IEnumerable<DropdownInput>> GetDropdownOptions()
+    {
+        return await Mediator.Send(new GetAllPagesDropdownDataQuery(), default);
+    }
+}

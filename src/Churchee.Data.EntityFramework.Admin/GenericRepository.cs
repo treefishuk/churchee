@@ -82,12 +82,8 @@ namespace Churchee.Data.EntityFramework.Admin
             return await _dbSet.CountAsync(cancellationToken);
         }
 
-        public void PermanentDelete(T entity)
-        {
-            _dbSet.Remove(entity);
-        }
 
-        public async Task SoftDelete(Guid id)
+        public async Task SoftDelete<TId>(TId id)
         {
             var entity = await _dbSet.FindAsync(id);
 
@@ -144,6 +140,11 @@ namespace Churchee.Data.EntityFramework.Admin
                 Draw = take,
                 Data = data
             };
+        }
+
+        public void PermanentDelete(T entity)
+        {
+            _dbSet.Remove(entity);
         }
 
         public async Task PermanentDelete(Guid id)
