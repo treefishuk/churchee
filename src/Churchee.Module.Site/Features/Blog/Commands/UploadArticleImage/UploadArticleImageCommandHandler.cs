@@ -39,14 +39,13 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             string fileName = Path.GetFileNameWithoutExtension(request.FileName).ToDevName();
 
-            var (folderPath, folderId) = await GetFolderPath(applicationTenantId, cancellationToken);
+            string folderPath = await GetFolderPath(applicationTenantId, cancellationToken);
 
             string filePath = $"/{folderPath.ToDevName()}{fileName.ToDevName()}.webp";
 
             byte[] bytes = Convert.FromBase64String(request.Base64Content.Split(',')[1]);
 
             using var stream = new MemoryStream(bytes);
-
 
             var imageStream = _imageProcessor.ResizeImage(stream, request.Width ?? 1920, 0, ".webp");
 
@@ -118,7 +117,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
             };
         }
 
-        private async Task<(string folderPath, Guid folderId)> GetFolderPath(Guid applicationTenantId, CancellationToken cancellationToken)
+        private async Task<string> GetFolderPath(Guid applicationTenantId, CancellationToken cancellationToken)
         {
             var folderRepo = _dataStore.GetRepository<MediaFolder>();
 
@@ -126,7 +125,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             if (folder != null)
             {
-                return (folder.Path, folder.Id);
+                return folder.Path;
             }
 
             var imagesFolder = folderRepo.GetQueryable().Where(w => w.Path == "Images/").FirstOrDefault();
@@ -151,7 +150,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
                 await _dataStore.SaveChangesAsync(cancellationToken);
             }
 
-            return (uploadsFolder.Path, uploadsFolder.Id);
+            return uploadsFolder.Path;
         }
     }
 }
