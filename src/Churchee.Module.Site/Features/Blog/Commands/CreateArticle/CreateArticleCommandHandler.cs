@@ -27,8 +27,6 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             var articleRepo = _dataStore.GetRepository<Article>();
 
-            var pageTypeRepo = _dataStore.GetRepository<PageType>();
-
             var detailPageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(Helpers.PageTypes.BlogDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
 
             string parentUrl = await pageRepo.FirstOrDefaultAsync(new PageFromIdSpecification(request.ParentPageId), s => s.Url, cancellationToken);

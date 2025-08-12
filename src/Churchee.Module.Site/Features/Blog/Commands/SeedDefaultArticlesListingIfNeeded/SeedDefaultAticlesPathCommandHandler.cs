@@ -36,8 +36,6 @@ namespace Churchee.Module.Site.Features.Blog.Commands
                 return new CommandResponse();
             }
 
-            var articleDetail = new PageType(Guid.NewGuid(), Helpers.PageTypes.BlogDetailPageTypeId, applicationTenantId, false, "Blog Detail", false);
-
             return new CommandResponse();
         }
 
