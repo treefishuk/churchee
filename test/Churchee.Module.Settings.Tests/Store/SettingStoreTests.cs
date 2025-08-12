@@ -257,7 +257,7 @@ namespace Churchee.Module.Settings.Tests.Store
             throw new NotImplementedException();
         }
 
-        public Task SoftDelete(Guid id)
+        public Task SoftDelete<TId>(TId id)
         {
             throw new NotImplementedException();
         }

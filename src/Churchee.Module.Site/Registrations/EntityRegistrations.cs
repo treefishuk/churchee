@@ -20,7 +20,8 @@ namespace Churchee.Module.Site.Registration
                 etb.Property(t => t.Order).HasDefaultValue(10);
 
                 etb.HasMany(m => m.RedirectUrls)
-                .WithOne()
+                .WithOne(o => o.WebContent)
+                .HasForeignKey(f => f.WebContentId)
                 .OnDelete(DeleteBehavior.NoAction);
 
                 etb.HasOne(d => d.PageType)
