@@ -1,4 +1,5 @@
-﻿using Churchee.Common.Abstractions.Auth;
+﻿using Ardalis.Specification;
+using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
@@ -84,6 +85,8 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
 
             _mockEventRepository.Setup(r => r.GetQueryable()).Returns(existingEvents.AsQueryable());
 
+            _mockPageRepository.Setup(x => x.ApplySpecification(It.IsAny<ISpecification<Page>>(), false)).Returns(Enumerable.Empty<Page>().AsQueryable());
+
             _mockCurrentUser.Setup(s => s.GetApplicationTenantId()).ReturnsAsync(Guid.NewGuid());
 
             var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object);
@@ -124,7 +127,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             await cut.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockEventRepository.Verify(r => r.Create(It.Is<Event>(e => e.Url == "/events/my-event-1")), Times.Once);
+            _mockEventRepository.Verify(r => r.Create(It.Is<Event>(e => e.Url == "/events/my-event-2")), Times.Once);
         }
 
         [Fact]
@@ -191,7 +194,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             mockDataStore.Setup(s => s.GetRepository<PageType>()).Returns(_mockPageTypeRepository.Object);
             mockDataStore.Setup(s => s.GetRepository<Page>()).Returns(_mockPageRepository.Object);
             mockDataStore.Setup(s => s.GetRepository<Event>()).Returns(_mockEventRepository.Object);
-
             return mockDataStore.Object;
         }
     }

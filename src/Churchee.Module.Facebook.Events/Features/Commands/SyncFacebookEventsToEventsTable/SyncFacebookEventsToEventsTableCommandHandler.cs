@@ -169,7 +169,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             await ConvertImageToLocalImage(newEvent, applicationTenantId, cancellationToken);
 
-            SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore);
+            SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore.GetRepository<Event>());
 
             repo.Create(newEvent);
         }

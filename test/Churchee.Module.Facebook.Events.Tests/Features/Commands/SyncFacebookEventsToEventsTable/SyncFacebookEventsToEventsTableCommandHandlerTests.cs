@@ -147,7 +147,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands.SyncFacebookEv
                     new { id = "page-id_1", story = "Some other story" }
                 }
             };
-            var feedJson = JsonSerializer.Serialize(feed);
+            string feedJson = JsonSerializer.Serialize(feed);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson));
 
@@ -187,7 +187,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands.SyncFacebookEv
                     new { id = "page-id_1", story = "Someone created an event" }
                 }
             };
-            var feedJson = JsonSerializer.Serialize(feed);
+            string feedJson = JsonSerializer.Serialize(feed);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson));
 
@@ -235,10 +235,10 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands.SyncFacebookEv
                     new { id = "page-id_1", story = "Someone created an event" }
                 }
             };
-            var feedJson = JsonSerializer.Serialize(feed);
+            string feedJson = JsonSerializer.Serialize(feed);
 
             // Simulate Facebook event details
-            var fbEventJson = JsonSerializer.Serialize(new
+            string fbEventJson = JsonSerializer.Serialize(new
             {
                 id = "1",
                 name = "Test Event",
