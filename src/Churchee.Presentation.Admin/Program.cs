@@ -95,7 +95,10 @@ namespace Churchee.Presentation.Admin
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 
-            builder.Services.RunSeedActions();
+            if (builder.Configuration.GetValue<bool>("data:seed"))
+            {
+                builder.Services.RunSeedActions();
+            }
 
             builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
