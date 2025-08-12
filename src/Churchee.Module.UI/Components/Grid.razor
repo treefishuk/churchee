@@ -114,12 +114,12 @@
 
                             if (!string.IsNullOrEmpty(imageUrl) && imageUrl.StartsWith("https"))
                             {
-                                <img src="@(imageUrl)" crossorigin="" />
+                                <img src="@(imageUrl)" crossorigin="anonymous" />
                             }
 
                             if (!string.IsNullOrEmpty(imageUrl) && !imageUrl.StartsWith("https"))
                             {
-                                <img src="@($"{ImagePrefix}{imageUrl}")" crossorigin="" />
+                                <img src="@($"{ImagePrefix}{imageUrl}")" crossorigin="anonymous" />
 
                             }
                         }

@@ -11,7 +11,7 @@
         <RadzenProgressBarCircular Style="width:100%" ProgressBarStyle="ProgressBarStyle.Primary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"></RadzenProgressBarCircular>
     }
 
-<img src="@FullImageUrl" @onload="OnImageLoad" @onerror="HandleError" alt="@AltText" style="display:@(isLoading ? "none" : "block"); width:100%; height:auto; @Styles" crossorigin />
+    <img src="@FullImageUrl" @onload="OnImageLoad" @onerror="HandleError" alt="@AltText" style="display:@(isLoading ? "none" : "block"); width:100%; height:auto; @Styles" crossorigin="anonymous" />
 
 
 @code {
