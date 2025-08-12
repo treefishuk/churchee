@@ -83,11 +83,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 new() { Url = "/events/my-event" }
             };
 
-            var existingPages = new List<Page>
-            {
-                new() { Url = "/events/my-event" }
-            };
-
             _mockEventRepository.Setup(r => r.GetQueryable()).Returns(existingEvents.AsQueryable());
 
             _mockPageRepository.Setup(x => x.ApplySpecification(It.IsAny<ISpecification<Page>>(), false)).Returns(Enumerable.Empty<Page>().AsQueryable());

@@ -6,7 +6,7 @@ namespace Churchee.Module.Site.Entities
 {
     public class WebContent : AggregateRoot, IHierarchical<WebContent>, ISourced
     {
-        public WebContent()
+        protected WebContent()
         {
             Children = [];
         }
