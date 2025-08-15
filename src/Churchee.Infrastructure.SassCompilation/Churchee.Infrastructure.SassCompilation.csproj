@@ -73,8 +73,6 @@
 	</UsingTask>
 
 
-
-
 	<Target Name="DownloadAndExtractBootstrap" BeforeTargets="BeforeBuild" Condition="'@(ExistingBootstrapScss-&gt;Count())' == '0'">
 
 		<!-- Make sure temp and target dirs exist -->
