@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Utilities;
+using Churchee.Infrastructure.SassCompilation.Exceptions;
 using Churchee.Infrastructure.SassCompilation.tools;
 using System.Diagnostics;
 
@@ -9,7 +10,7 @@ namespace Churchee.Infrastructure.SassCompilation
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(20);
 
 
-        public async Task<string> CompileStringAsync(string scss, bool compressed = true, CancellationToken ct = default)
+        public async Task<string> CompileStringAsync(string scss, bool compressed, CancellationToken cancelationToken)
         {
             string sassTempDir = Path.Combine(Path.GetTempPath(), "sass-temp");
 
@@ -22,10 +23,10 @@ namespace Churchee.Infrastructure.SassCompilation
             // "-" tells sass to read from stdin
             string args = BuildArgs("-", compressed, bootstrapTempDir);
 
-            return await RunAsync(args, scss, binaryPath, ct);
+            return await RunAsync(args, scss, binaryPath, cancelationToken);
         }
 
-        private string BuildArgs(string input, bool compressed, string bootstrapTempDir)
+        private static string BuildArgs(string input, bool compressed, string bootstrapTempDir)
         {
             var sb = new System.Text.StringBuilder();
             sb.Append(input).Append(' ');
@@ -69,7 +70,7 @@ namespace Churchee.Infrastructure.SassCompilation
                 proc.StandardInput.Close();
             }
 
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(_timeout);
 
             var stdOutTask = proc.StandardOutput.ReadToEndAsync(ct);
@@ -89,7 +90,7 @@ namespace Churchee.Infrastructure.SassCompilation
 
             if (proc.ExitCode != 0 || !string.IsNullOrWhiteSpace(err))
             {
-                throw new Exception($"Sass error (code {proc.ExitCode}): {err}");
+                throw new SassCompilationException($"Sass error (code {proc.ExitCode}): {err}");
             }
 
             return css;

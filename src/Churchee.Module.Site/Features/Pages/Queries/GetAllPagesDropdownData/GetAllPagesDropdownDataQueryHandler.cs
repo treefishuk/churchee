@@ -21,8 +21,6 @@ namespace Churchee.Module.Site.Features.Pages.Queries
 
         public async Task<IEnumerable<DropdownInput>> Handle(GetAllPagesDropdownDataQuery request, CancellationToken cancellationToken)
         {
-            var applicationTenantId = await _currentUser.GetApplicationTenantId();
-
             return await _storage.GetRepository<Page>().GetListAsync(new AllPagesSpecification(),
                 selector: s => new DropdownInput { Title = s.Title, Value = s.Id.ToString() },
                 cancellationToken: cancellationToken);

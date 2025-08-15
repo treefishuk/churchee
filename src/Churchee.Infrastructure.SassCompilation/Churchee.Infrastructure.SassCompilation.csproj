@@ -56,18 +56,14 @@
 		<Exec Command="curl -L -o &quot;$(BootstrapZip)&quot; https://github.com/twbs/bootstrap/archive/v$(BootstrapVersion).zip" />
 
 		<!-- Windows extraction -->
-		<Exec Condition="'$(OS)' == 'Windows_NT'"
-			  Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Expand-Archive -Path \&quot;$(BootstrapZip)\&quot; -DestinationPath \&quot;$(BootstrapTempDir)\&quot; -Force&quot;" />
+		<Exec Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Expand-Archive -Path \&quot;$(BootstrapZip)\&quot; -DestinationPath \&quot;$(BootstrapTempDir)\&quot; -Force&quot;" />
 
-		<Exec Condition="'$(OS)' == 'Windows_NT'"
-			  Command="cmd /c &quot;if exist &quot;$(BootstrapTempDir)\bootstrap-$(BootstrapVersion)&quot; ( rmdir /S /Q &quot;wwwroot\lib\bootstrap\scss&quot; &amp;&amp; move &quot;$(BootstrapTempDir)\bootstrap-$(BootstrapVersion)\scss&quot; &quot;wwwroot\lib\bootstrap\scss&quot; )&quot;" />
+		<Exec Condition="'$(OS)' == 'Windows_NT'" Command="cmd /c &quot;if exist &quot;$(BootstrapTempDir)\bootstrap-$(BootstrapVersion)&quot; ( rmdir /S /Q &quot;wwwroot\lib\bootstrap\scss&quot; &amp;&amp; move &quot;$(BootstrapTempDir)\bootstrap-$(BootstrapVersion)\scss&quot; &quot;wwwroot\lib\bootstrap\scss&quot; )&quot;" />
 
 		<!-- Linux/macOS extraction -->
-		<Exec Condition="'$(OS)' != 'Windows_NT'"
-			  Command="unzip -o $(BootstrapZip) -d $(BootstrapTempDir)" />
+		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="unzip -o $(BootstrapZip) -d $(BootstrapTempDir)" />
 
-		<Exec Condition="'$(OS)' != 'Windows_NT'"
-			  Command="bash -c 'if [ -d &quot;$(BootstrapTempDir)/bootstrap-$(BootstrapVersion)&quot; ]; then rm -rf wwwroot/lib/bootstrap/scss; mv $(BootstrapTempDir)/bootstrap-$(BootstrapVersion)/scss wwwroot/lib/bootstrap/scss; fi'" />
+		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="bash -c 'if [ -d &quot;$(BootstrapTempDir)/bootstrap-$(BootstrapVersion)&quot; ]; then rm -rf wwwroot/lib/bootstrap/scss; mv $(BootstrapTempDir)/bootstrap-$(BootstrapVersion)/scss wwwroot/lib/bootstrap/scss; fi'" />
 
 		<!-- Cleanup temp files -->
 		
