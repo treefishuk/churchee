@@ -30,7 +30,7 @@ namespace Churchee.Infrastructure.SassCompilation
             _bootstrapTempDir = Path.Combine(_sassTempDir, "bootstrap");
             if (!Directory.Exists(_bootstrapTempDir))
             {
-                Task.Run(() => EmbeddedFileHelper.ExtractEmbeddedDirectoryToTempAsync(
+                Task.Run(() => EmbeddedFileHelper.ExtractEmbeddedSassDirectoryToTempAsync(
                     "Churchee.Infrastructure.SassCompilation.wwwroot.lib.bootstrap.scss", _bootstrapTempDir
                 )).Wait();
             }
@@ -40,21 +40,31 @@ namespace Churchee.Infrastructure.SassCompilation
         private async Task<string> ExtractDartSass(string resourcePrefix)
         {
             string tempDir = Path.Combine(_sassTempDir, "dart-sass");
-            if (!Directory.Exists(tempDir))
-            {
-                await EmbeddedFileHelper.ExtractEmbeddedDirectoryToTempAsync(resourcePrefix, tempDir);
-            }
-
             string binaryName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "sass.bat" : "sass";
             string binaryPath = Path.Combine(tempDir, binaryName);
 
             if (!File.Exists(binaryPath))
+            {
+                await EmbeddedFileHelper.ExtractEmbeddedToolsDirectoryToTempAsync(resourcePrefix, tempDir);
+            }
+
+            if (!File.Exists(binaryPath))
+            {
                 throw new FileNotFoundException($"Dart Sass binary not found at {binaryPath}");
+            }
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var chmod = Process.Start("chmod", $"+x {binaryPath}");
-                chmod.WaitForExit();
+                void MakeExecutableRecursively(string path)
+                {
+                    foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                    {
+                        var chmod = Process.Start("chmod", $"+x \"{file}\"");
+                        chmod.WaitForExit();
+                    }
+                }
+
+                MakeExecutableRecursively(Path.GetDirectoryName(binaryPath)!);
             }
 
             return binaryPath;

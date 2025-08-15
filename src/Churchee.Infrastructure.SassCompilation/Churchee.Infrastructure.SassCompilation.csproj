@@ -34,8 +34,7 @@
 	<ItemGroup>
 		<EmbeddedResource Include="wwwroot\**\*" />
 		<!-- Dart Sass binaries -->
-		<EmbeddedResource Include="tools\dart-sass\win-x64\**\*" Condition="'$(OS)' == 'Windows_NT'" />
-		<EmbeddedResource Include="tools\dart-sass\linux-x64\**\*" Condition="'$(OS)' != 'Windows_NT'" />
+		<EmbeddedResource Include="tools\dart-sass\**\*" />
 	</ItemGroup>
 
 	<ItemGroup>
