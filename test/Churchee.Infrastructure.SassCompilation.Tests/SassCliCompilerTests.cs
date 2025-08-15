@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Configuration;
-
 namespace Churchee.Infrastructure.SassCompilation.Tests
 {
     public class SassCliCompilerTests
@@ -8,13 +6,7 @@ namespace Churchee.Infrastructure.SassCompilation.Tests
 
         public SassCliCompilerTests()
         {
-            // Test environment points to bin output
-            var env = new TestHostEnv
-            {
-                ContentRootPath = Directory.GetCurrentDirectory(),
-                WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")
-            };
-            _cliService = new SassCliCompiler(env, new ConfigurationBuilder().Build());
+            _cliService = new SassCliCompiler();
         }
 
         [Fact]
