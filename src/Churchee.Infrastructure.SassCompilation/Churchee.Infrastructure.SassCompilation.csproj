@@ -1,0 +1,109 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+	<BootstrapVersion>5.3.7</BootstrapVersion>
+	<BootstrapZip>$(BaseIntermediateOutputPath)bootstrap.zip</BootstrapZip>
+	<BootstrapTempDir>$(BaseIntermediateOutputPath)bootstrap-temp</BootstrapTempDir>
+	<BootstrapTargetDir>wwwroot/lib/bootstrap/scss</BootstrapTargetDir>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+		<None Include="tools/dart-sass/linux-x64/sass">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+		<None Include="tools/dart-sass/win-x64/sass.bat">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="wwwroot\**\*" />
+		<!-- Dart Sass binaries -->
+		<EmbeddedResource Include="tools\dart-sass\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Count existing SCSS files -->
+		<ExistingBootstrapScss Include="$(BootstrapTargetDir)/**/*.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+
+	<!-- Inline RenameDir task -->
+	<UsingTask TaskName="RenameDir" TaskFactory="CodeTaskFactory" AssemblyName="Microsoft.Build.Tasks.Core">
+		<ParameterGroup>
+			<Source ParameterType="System.String" />
+			<Destination ParameterType="System.String" />
+		</ParameterGroup>
+		<Task>
+			<Using Namespace="System.IO" />
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+        if (string.IsNullOrWhiteSpace(Source) || string.IsNullOrWhiteSpace(Destination))
+            throw new ArgumentException("Source and Destination must be set for RenameDir.");
+
+        if (Directory.Exists(Source))
+        {
+            if (Directory.Exists(Destination))
+                Directory.Delete(Destination, true);
+            Directory.Move(Source, Destination);
+        }
+        return true;
+      ]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+
+	<Target Name="DownloadAndExtractBootstrap" BeforeTargets="BeforeBuild" Condition="'@(ExistingBootstrapScss-&gt;Count())' == '0'">
+
+		<!-- Make sure temp and target dirs exist -->
+		<MakeDir Directories="$(BootstrapTempDir)" />
+		<MakeDir Directories="$(BootstrapTargetDir)" />
+
+		<!-- Download Bootstrap full source zip -->
+		<Exec Command="curl -L -o &quot;$(BootstrapZip)&quot; https://github.com/twbs/bootstrap/archive/v$(BootstrapVersion).zip" />
+
+		<!-- Windows extraction -->
+		<Exec Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Expand-Archive -Path \&quot;$(BootstrapZip)\&quot; -DestinationPath \&quot;$(BootstrapTempDir)\&quot; -Force&quot;" />
+
+		<!-- Linux/macOS extraction -->
+		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="unzip -o $(BootstrapZip) -d $(BootstrapTempDir)" />
+
+		<!-- Rename bootstrap-x.y.z folder to just 'bootstrap' -->
+		<RenameDir Source="$(BootstrapTempDir)/bootstrap-$(BootstrapVersion)" Destination="$(BootstrapTempDir)/bootstrap" />
+
+		<!-- Include only files under the scss/ folder of the extracted tree.
+         Pattern 'bootstrap-*/scss/**/*.*' ensures RecursiveDir is relative to scss/. -->
+		<ItemGroup>
+			<BootstrapScssFiles Include="$(BootstrapTempDir)/bootstrap/scss/**/*.*" />
+		</ItemGroup>
+
+		<!-- Copy to your wwwroot/lib/bootstrap/scss while preserving subfolders under scss/ -->
+		<Copy SourceFiles="@(BootstrapScssFiles)" DestinationFolder="$(BootstrapTargetDir)/%(BootstrapScssFiles.RecursiveDir)" />
+
+		<!-- Cleanup temp files -->
+		<RemoveDir Directories="$(BootstrapTempDir)" />
+		<Delete Files="$(BootstrapZip)" />
+
+	</Target>
+
+
+</Project>

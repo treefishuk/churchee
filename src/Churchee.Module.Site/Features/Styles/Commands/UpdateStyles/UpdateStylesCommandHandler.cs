@@ -1,9 +1,12 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Churchee.Module.Site.Features.Styles.Commands
 {
@@ -12,37 +15,57 @@ namespace Churchee.Module.Site.Features.Styles.Commands
 
         private readonly IDataStore _storage;
         private readonly ICurrentUser _currentUser;
+        private readonly ISassComplier _sassCompiler;
+        private readonly ILogger _logger;
+        private readonly IJobService _jobService;
 
-        public UpdateStylesCommandHandler(IDataStore storage, ICurrentUser currentUser)
+        public UpdateStylesCommandHandler(IDataStore storage, ICurrentUser currentUser, ISassComplier sassCompiler, ILogger<UpdateStylesCommandHandler> logger, IJobService jobService)
         {
             _storage = storage;
             _currentUser = currentUser;
+            _sassCompiler = sassCompiler;
+            _logger = logger;
+            _jobService = jobService;
         }
 
         public async Task<CommandResponse> Handle(UpdateStylesCommand request, CancellationToken cancellationToken)
         {
-            var css = _storage.GetRepository<Css>().GetQueryable().FirstOrDefault();
 
-            if (css == null)
+            var response = new CommandResponse();
+
+            var applicationTenantId = await _currentUser.GetApplicationTenantId();
+
+            try
             {
-                var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-                css = new Css(applicationTenantId);
+                var css = _storage.GetRepository<Css>().GetQueryable().FirstOrDefault();
 
-                _storage.GetRepository<Css>().Create(css);
+                if (css == null)
+                {
+
+                    css = new Css(applicationTenantId);
+
+                    _storage.GetRepository<Css>().Create(css);
+                }
+
+                css.SetStyles(request.Css);
+
+                await _storage.SaveChangesAsync(cancellationToken);
+
+                _jobService.QueueJob<StylesCompilerHelper>(s => s.CompileStylesAsync(applicationTenantId, request.Css, CancellationToken.None));
+
+                return new CommandResponse();
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "Failed to compile SCSS");
+
+                response.AddError("Failed to compile SCSS", "Css");
+
+                return response;
             }
 
-            css.SetStyles(request.Css);
-
-            using var reader = new StringReader(css.Styles);
-
-            var minifier = new CssMinifier();
-
-            css.SetMinifiedStyles(minifier.Minify(reader));
-
-            await _storage.SaveChangesAsync(cancellationToken);
-
-            return new CommandResponse();
         }
     }
 }

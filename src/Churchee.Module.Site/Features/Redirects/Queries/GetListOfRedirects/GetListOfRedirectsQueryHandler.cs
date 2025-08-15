@@ -33,15 +33,15 @@ namespace Churchee.Module.Site.Features.Redirects.Queries
             string orderby = $"{request.OrderBy} {request.OrderByDirection}";
 
             var items = await query
-                .OrderBy(orderby)
-                .Skip(request.Skip)
-                .Take(request.Take)
                 .Select(s => new GetListOfRedirectsResponseItem
                 {
                     Id = s.Id,
                     Path = s.Path,
                     RedirectsTo = s.WebContent.Title
                 })
+                .OrderBy(orderby)
+                .Skip(request.Skip)
+                .Take(request.Take)
                 .ToListAsync(cancellationToken);
 
             return new DataTableResponse<GetListOfRedirectsResponseItem>
