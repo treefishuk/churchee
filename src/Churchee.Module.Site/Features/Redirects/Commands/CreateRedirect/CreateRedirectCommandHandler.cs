@@ -7,8 +7,8 @@ namespace Churchee.Module.Site.Features.Redirects.Commands
 {
     public class CreateRedirectCommandHandler : IRequestHandler<CreateRedirectCommand, CommandResponse>
     {
-
         private readonly IDataStore _storage;
+        private static readonly char PathSeparator = '/';
 
         public CreateRedirectCommandHandler(IDataStore storage)
         {
@@ -17,9 +17,9 @@ namespace Churchee.Module.Site.Features.Redirects.Commands
 
         public async Task<CommandResponse> Handle(CreateRedirectCommand request, CancellationToken cancellationToken)
         {
-            if (!request.Path.StartsWith('/'))
+            if (!request.Path.StartsWith(PathSeparator))
             {
-                request.Path = "/" + request.Path;
+                request.Path = PathSeparator + request.Path;
             }
 
             _storage.GetRepository<RedirectUrl>().Create(new RedirectUrl(path: request.Path, request.WebContentId));
