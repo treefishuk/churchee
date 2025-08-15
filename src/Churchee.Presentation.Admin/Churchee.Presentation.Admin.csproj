@@ -32,6 +32,7 @@
     <ProjectReference Include="..\Churchee.Data.EntityFramework.Admin\Churchee.Data.EntityFramework.Admin.csproj" />
     <ProjectReference Include="..\Churchee.EmailConfiguration.MailGun\Churchee.EmailConfiguration.MailGun.csproj" />
     <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
+    <ProjectReference Include="..\Churchee.Infrastructure.SassCompilation\Churchee.Infrastructure.SassCompilation.csproj" />
     <ProjectReference Include="..\Churchee.Module.Dashboard\Churchee.Module.Dashboard.csproj" />
     <ProjectReference Include="..\Churchee.Module.Events\Churchee.Module.Events.csproj" />
     <ProjectReference Include="..\Churchee.Module.Facebook.Events\Churchee.Module.Facebook.Events.csproj" />
