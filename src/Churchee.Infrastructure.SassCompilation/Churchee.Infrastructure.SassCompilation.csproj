@@ -44,7 +44,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="wwwroot\lib\" />
+	  <Folder Include="wwwroot\" />
 	</ItemGroup>
 
 	<!-- Inline RenameDir task -->
@@ -100,13 +100,9 @@
 		<!-- Copy to your wwwroot/lib/bootstrap/scss while preserving subfolders under scss/ -->
 		<Copy SourceFiles="@(BootstrapScssFiles)" DestinationFolder="$(BootstrapTargetDir)/%(BootstrapScssFiles.RecursiveDir)" />
 
-
-
-
-
 		<!-- Cleanup temp files -->
-		<!--<RemoveDir Directories="$(BootstrapTempDir)" />
-		<Delete Files="$(BootstrapZip)" />-->
+		<RemoveDir Directories="$(BootstrapTempDir)" />
+		<Delete Files="$(BootstrapZip)" />
 
 	</Target>
 
