@@ -15,21 +15,8 @@
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
   </ItemGroup>
-
-
-	<ItemGroup>
-		<None Include="..\..\src\Churchee.Infrastructure.SassCompilation\wwwroot\lib\bootstrap\scss\**\*.*"
-			  Link="wwwroot/lib/bootstrap/scss/%(RecursiveDir)%(Filename)%(Extension)">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Include="..\..\src\Churchee.Infrastructure.SassCompilation\tools\**\*.*"
-			  Link="tools/%(RecursiveDir)%(Filename)%(Extension)">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>		
-	</ItemGroup>
-
-
-	<ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Churchee.Infrastructure.SassCompilation\Churchee.Infrastructure.SassCompilation.csproj" />
   </ItemGroup>
 

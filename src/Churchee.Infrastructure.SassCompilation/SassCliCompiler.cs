@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Utilities;
+using Churchee.Infrastructure.SassCompilation.tools;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
@@ -8,46 +9,66 @@ namespace Churchee.Infrastructure.SassCompilation
 {
     public sealed class SassCliCompiler : ISassComplier
     {
-        private readonly string _sassPath;
-        private readonly string _contentRoot;
+        private readonly string _sassTempDir;
+        private readonly string _sassBinaryPath;
+        private readonly string _bootstrapTempDir;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(20);
 
         public SassCliCompiler(IWebHostEnvironment env, IConfiguration config)
         {
-            _contentRoot = env.ContentRootPath;
-            // Allow override via env var or appSettings; else use bundled binary
-            _sassPath = config["Sass:BinaryPath"]
-                        ?? Path.Combine(_contentRoot,
-                            "tools",
-                            "dart-sass",
-                            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win-x64" : "linux-x64",
-                            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "sass.bat" : "sass");
+            _sassTempDir = Path.Combine(Path.GetTempPath(), "sass-temp");
+            Directory.CreateDirectory(_sassTempDir);
+
+            // 1. Extract Dart Sass binary recursively
+            string sassResourcePrefix = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "Churchee.Infrastructure.SassCompilation.tools.dart_sass.win_x64"   // embed the full folder
+                : "Churchee.Infrastructure.SassCompilation.tools.dart_sass.linux_x64"; // embed the single binary
+
+            _sassBinaryPath = ExtractDartSass(sassResourcePrefix).Result;
+
+            // 2. Extract Bootstrap SCSS recursively
+            _bootstrapTempDir = Path.Combine(_sassTempDir, "bootstrap");
+            if (!Directory.Exists(_bootstrapTempDir))
+            {
+                Task.Run(() => EmbeddedFileHelper.ExtractEmbeddedDirectoryToTempAsync(
+                    "Churchee.Infrastructure.SassCompilation.wwwroot.lib.bootstrap.scss", _bootstrapTempDir
+                )).Wait();
+            }
+
         }
 
-        public async Task<string> CompileFileAsync(
-            string inputFile,
-            IEnumerable<string>? loadPaths = null,
-            bool compressed = true,
-            CancellationToken ct = default)
+        private async Task<string> ExtractDartSass(string resourcePrefix)
         {
-            string args = BuildArgs(inputFile, compressed, loadPaths);
-            return await RunAsync(args, null, ct);
+            string tempDir = Path.Combine(_sassTempDir, "dart-sass");
+            if (!Directory.Exists(tempDir))
+            {
+                await EmbeddedFileHelper.ExtractEmbeddedDirectoryToTempAsync(resourcePrefix, tempDir);
+            }
+
+            string binaryName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "sass.bat" : "sass";
+            string binaryPath = Path.Combine(tempDir, binaryName);
+
+            if (!File.Exists(binaryPath))
+                throw new FileNotFoundException($"Dart Sass binary not found at {binaryPath}");
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var chmod = Process.Start("chmod", $"+x {binaryPath}");
+                chmod.WaitForExit();
+            }
+
+            return binaryPath;
         }
 
-        public async Task<string> CompileStringAsync(
-            string scss,
-            IEnumerable<string>? loadPaths = null,
-            bool compressed = true,
-            CancellationToken ct = default)
+
+        public async Task<string> CompileStringAsync(string scss, bool compressed = true, CancellationToken ct = default)
         {
             // "-" tells sass to read from stdin
-            string args = BuildArgs("-", compressed, loadPaths);
+            string args = BuildArgs("-", compressed);
             return await RunAsync(args, scss, ct);
         }
 
-        private static string BuildArgs(string input,
-                                        bool compressed,
-                                        IEnumerable<string>? loadPaths)
+        private string BuildArgs(string input, bool compressed)
         {
             var sb = new System.Text.StringBuilder();
             sb.Append(input).Append(' ');
@@ -55,23 +76,19 @@ namespace Churchee.Infrastructure.SassCompilation
               .Append("--silence-deprecation=import ")
               .Append("--silence-deprecation=global-builtin ")
               .Append("--silence-deprecation=color-functions ")
+              .Append("--verbose ")
+              .Append($"--load-path={_bootstrapTempDir} ")
               .Append(compressed ? "--style=compressed " : "--style=expanded ");
-            if (loadPaths != null)
-            {
-                foreach (string p in loadPaths)
-                {
-                    // multiple --load-path flags are allowed
-                    sb.Append("--load-path=").Append('"').Append(p).Append('"').Append(' ');
-                }
-            }
+
             return sb.ToString();
         }
 
         private async Task<string> RunAsync(string args, string? stdin, CancellationToken ct)
         {
+
             var psi = new ProcessStartInfo
             {
-                FileName = _sassPath,
+                FileName = _sassBinaryPath,
                 Arguments = args,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -82,10 +99,16 @@ namespace Churchee.Infrastructure.SassCompilation
 
             using var proc = new Process { StartInfo = psi };
 
-            if (!File.Exists(_sassPath))
+            if (!File.Exists(_sassBinaryPath))
             {
-                throw new FileNotFoundException("Sass binary not found", _sassPath);
+                throw new FileNotFoundException("Sass binary not found", _sassBinaryPath);
             }
+
+            if (!Directory.Exists(_bootstrapTempDir))
+            {
+                throw new FileNotFoundException("bootstrap Sass path not found", _bootstrapTempDir);
+            }
+
 
             proc.Start();
 
@@ -98,8 +121,8 @@ namespace Churchee.Infrastructure.SassCompilation
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(_timeout);
 
-            var stdOutTask = proc.StandardOutput.ReadToEndAsync();
-            var stdErrTask = proc.StandardError.ReadToEndAsync();
+            var stdOutTask = proc.StandardOutput.ReadToEndAsync(ct);
+            var stdErrTask = proc.StandardError.ReadToEndAsync(ct);
 
             await Task.WhenAny(Task.Run(() => proc.WaitForExit(), cts.Token), Task.Delay(Timeout.Infinite, cts.Token))
                       .ConfigureAwait(false);

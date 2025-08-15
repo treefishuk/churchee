@@ -21,13 +21,12 @@ namespace Churchee.Infrastructure.SassCompilation.Tests
         public async Task CanCompile_BootstrapWithOverrides()
         {
             string dbVars = "$primary: #4a148c; $body-bg: #f7f7fb;";
-            string dbCustom = "body { font-family: Arial; }";
 
-            string bootstrapPath = Path.Combine("wwwroot", "lib", "bootstrap", "scss");
+            string dbCustom = "body { font-family: Arial; }";
 
             string css = await _cliService.CompileStringAsync(
                 dbVars + "\n@import \"bootstrap\";\n" + dbCustom,
-                [bootstrapPath],
+                //dbVars + dbCustom,
                 compressed: true
             );
 
