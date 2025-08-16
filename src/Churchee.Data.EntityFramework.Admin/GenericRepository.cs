@@ -82,6 +82,15 @@ namespace Churchee.Data.EntityFramework.Admin
             return await _dbSet.CountAsync(cancellationToken);
         }
 
+        public async Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            return await _specificationEvaluator.GetQuery(GetQueryable(), specification).CountAsync(cancellationToken);
+        }
+
+        public async Task<int> GetDistinctCountAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        {
+            return await _specificationEvaluator.GetQuery(_dbSet.AsNoTracking(), specification).Select(selector).Distinct().CountAsync(cancellationToken);
+        }
 
         public async Task SoftDelete<TId>(TId id)
         {
@@ -115,6 +124,27 @@ namespace Churchee.Data.EntityFramework.Admin
         public async Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).Select(selector).ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<TResult>> GetListAsync<TKey, TResult>(ISpecification<T> specification, Expression<Func<T, TKey>> groupBy, Expression<Func<IGrouping<TKey, T>, TResult>> selector, CancellationToken cancellationToken)
+        {
+            var query = _specificationEvaluator.GetQuery(GetQueryable(), specification);
+
+            return await query
+                .GroupBy(groupBy)
+                .Select(selector)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<TResult>> GetListAsync<TKey, TResult>(ISpecification<T> specification, Expression<Func<T, TKey>> groupBy, Expression<Func<IGrouping<TKey, T>, TResult>> selector, int take, CancellationToken cancellationToken)
+        {
+            var query = _specificationEvaluator.GetQuery(GetQueryable(), specification);
+
+            return await query
+                .GroupBy(groupBy)
+                .Select(selector)
+                .Take(take)
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<List<TResult>> GetDistinctListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
@@ -158,5 +188,7 @@ namespace Churchee.Data.EntityFramework.Admin
         {
             await _specificationEvaluator.GetQuery(GetQueryable(), specification).ExecuteDeleteAsync(cancellationToken);
         }
+
+
     }
 }

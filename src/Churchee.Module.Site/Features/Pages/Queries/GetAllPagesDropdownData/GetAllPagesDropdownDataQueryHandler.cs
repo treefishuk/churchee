@@ -1,5 +1,4 @@
-﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Storage;
+﻿using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
 using Churchee.Module.UI.Models;
@@ -11,12 +10,10 @@ namespace Churchee.Module.Site.Features.Pages.Queries
     {
 
         private readonly IDataStore _storage;
-        private readonly ICurrentUser _currentUser;
 
-        public GetAllPagesDropdownDataQueryHandler(IDataStore storage, ICurrentUser currentUser)
+        public GetAllPagesDropdownDataQueryHandler(IDataStore storage)
         {
             _storage = storage;
-            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<DropdownInput>> Handle(GetAllPagesDropdownDataQuery request, CancellationToken cancellationToken)

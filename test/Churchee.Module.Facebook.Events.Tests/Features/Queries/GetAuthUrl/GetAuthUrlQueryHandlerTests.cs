@@ -85,7 +85,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             var query = new GetAuthUrlQuery("https://example.com", "page123");
 
             // Act & Assert
-            await Assert.ThrowsAsync<MissingConfirgurationSettingException>(() =>
+            await Assert.ThrowsAsync<MissingConfigurationSettingException>(() =>
                 handler.Handle(query, CancellationToken.None));
         }
     }

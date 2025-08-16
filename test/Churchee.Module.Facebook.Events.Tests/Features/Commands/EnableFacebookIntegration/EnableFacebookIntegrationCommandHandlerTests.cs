@@ -82,7 +82,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
             var command = new EnableFacebookIntegrationCommand("token", "https://domain.com");
 
             // Act & Assert
-            await Assert.ThrowsAsync<MissingConfirgurationSettingException>(() =>
+            await Assert.ThrowsAsync<MissingConfigurationSettingException>(() =>
                 handler.Handle(command, CancellationToken.None));
         }
 

@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.2" />
     <PackageReference Include="bunit" Version="1.39.5" />
     <PackageReference Include="coverlet.collector" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -28,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Churchee.Data.EntityFramework.Admin\Churchee.Data.EntityFramework.Admin.csproj" />
     <ProjectReference Include="..\..\src\Churchee.Module.Dashboard\Churchee.Module.Dashboard.csproj" />
   </ItemGroup>
 

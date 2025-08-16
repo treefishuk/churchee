@@ -49,11 +49,29 @@ namespace Churchee.Common.Abstractions.Storage
 
         Task<int> CountAsync(CancellationToken cancellationToken);
 
+        Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken);
+
+        Task<int> GetDistinctCountAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
+
         Task<List<T>> GetListAsync(ISpecification<T> specification, CancellationToken cancellationToken);
 
         Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
 
+        Task<List<TResult>> GetListAsync<TKey, TResult>(
+            ISpecification<T> specification,
+            Expression<Func<T, TKey>> groupBy,
+            Expression<Func<IGrouping<TKey, T>, TResult>> selector,
+            CancellationToken cancellationToken);
+
+        Task<List<TResult>> GetListAsync<TKey, TResult>(
+            ISpecification<T> specification,
+            Expression<Func<T, TKey>> groupBy,
+            Expression<Func<IGrouping<TKey, T>, TResult>> selector,
+            int take,
+            CancellationToken cancellationToken);
+
         Task<List<TResult>> GetDistinctListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
+
 
         Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(ISpecification<T> specification, string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
     }

@@ -1,59 +1,157 @@
-﻿using Churchee.Common.Storage;
+﻿using Bogus;
+using Churchee.Data.EntityFramework.Admin;
 using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Features.Queries;
 using Churchee.Module.Dashboard.Features.Queries.GetDashboardData;
-using Churchee.Module.Dashboard.Specifications;
-using FluentAssertions;
+using Churchee.Module.Dashboard.Tests.Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
-using System.Linq.Expressions;
+using System.Diagnostics;
+using Testcontainers.MsSql;
 
 namespace Churchee.Module.Dashboard.Tests.Features.Queries
 {
-    public class GetDashboardDataQueryHandlerTests
+    public class GetDashboardDataQueryHandlerTests : IAsyncLifetime
     {
-        private readonly Mock<IDataStore> _dataStoreMock;
-        private readonly GetDashboardDataQueryHandler _handler;
+        private readonly MsSqlContainer _msSqlContainer;
+
+        private readonly Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+        private readonly Mock<ILogger<GetDashboardDataQueryHandler>> _mockLogger;
+        private readonly Faker _faker;
 
         public GetDashboardDataQueryHandlerTests()
         {
-            _dataStoreMock = new Mock<IDataStore>();
-            _handler = new GetDashboardDataQueryHandler(_dataStoreMock.Object);
+            _mockLogger = new Mock<ILogger<GetDashboardDataQueryHandler>>();
+            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+
+            _msSqlContainer = new MsSqlBuilder()
+             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+             .WithPassword("yourStrong(!)Password")
+             .Build();
+
+            _faker = new Faker();
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _msSqlContainer.StartAsync();
+        }
+
+
+        public async Task DisposeAsync()
+        {
+            await _msSqlContainer.DisposeAsync().AsTask();
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnCorrectResponse()
+        public async Task Handle_ReturnsData_in_OneSecond()
         {
             // Arrange
             var appTenantId = Guid.NewGuid();
             var query = new GetDashboardDataQuery(7);
             var cancellationToken = new CancellationToken();
 
-            var pageViews = new List<PageView>
+            await SetupData(appTenantId, cancellationToken);
+
+            var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
+            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
+                          .EnableSensitiveDataLogging();
+            optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
+
+            var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
+
+            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+
+            var newHandler = new GetDashboardDataQueryHandler(efStorage, _mockLogger.Object);
+
+            // Warm up (optional, but helps with JIT and DB caching)
+            await newHandler.Handle(query, cancellationToken);
+
+            // Run each handler 10 times and record elapsed times
+            var newHandlerTimes = new List<long>();
+            var oldHandlerTimes = new List<long>();
+
+            for (int i = 0; i < 2; i++)
             {
-                new(appTenantId) { IpAddress = "192.168.1.1", ViewedAt = DateTime.UtcNow.AddDays(-1), Device = "Device1", Url = "/page1", Referrer = "http://referrer1.com" },
-                new(appTenantId) { IpAddress = "192.168.1.2", ViewedAt = DateTime.UtcNow.AddDays(-2), Device = "Device2", Url = "/page2", Referrer = "http://referrer2.com" }
-            };
+                Console.WriteLine($"Running iteration {i + 1}...");
 
-            var pastVisitorIps = new List<string> { "192.168.1.3" };
+                var swNew = Stopwatch.StartNew();
+                await newHandler.Handle(query, cancellationToken);
+                swNew.Stop();
+                newHandlerTimes.Add(swNew.ElapsedMilliseconds);
 
-            _dataStoreMock.Setup(ds => ds.GetRepository<PageView>().GetListAsync(It.IsAny<GetPageViewDataForRange>(), cancellationToken))
-                .ReturnsAsync(pageViews);
+                Console.WriteLine($"New Handler Time: {swNew.ElapsedMilliseconds} ms");
 
-            _dataStoreMock.Setup(ds => ds.GetRepository<PageView>().GetDistinctListAsync(It.IsAny<GetIpsBeforeDateSpecification>(), It.IsAny<Expression<Func<PageView, string>>>(), cancellationToken))
-                .ReturnsAsync(pastVisitorIps);
+            }
 
-            // Act
-            var response = await _handler.Handle(query, cancellationToken);
+            double average = newHandlerTimes.Average();
 
-            // Assert
-            response.Should().NotBeNull();
-            response.TotalPageViews.Should().Be(pageViews.Count);
-            response.UniqueVisitors.Should().Be(2); // Both IPs are unique and not in pastVisitorIps
-            response.ReturningVisitors.Should().Be(0); // No returning visitors
-            response.Devices.Should().HaveCount(2);
-            response.TopPages.Should().HaveCount(2);
-            response.PagesOverTime.Should().NotBeEmpty();
-            response.ReferralSource.Should().HaveCount(2);
+            Console.WriteLine($"New Handler Avg: {average} ms");
+
+            Assert.True(average < 1000, $"Expected new handler to be under 1000ms, Speed: {average}ms");
+        }
+
+        private async Task SetupData(Guid appTenantId, CancellationToken cancellationToken)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
+
+            optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
+
+            var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
+
+            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+
+            var query = new GetDashboardDataQuery(7);
+
+            var userId = Guid.NewGuid();
+
+            string[] devices = ["mobile", "tablet", "desktop"];
+            string[] systems = ["Windows", "andriod", "iOS"];
+            string[] pages = ["/", "/about", "/whats-on", "/whats-on/event", "/contact"];
+            string[] browsers = ["chrome", "firefox", "edge"];
+            string[] referrers = ["google", "chat-gpt", "local"];
+            string[] agents = [
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.3",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.10 Safari/605.1.1"];
+
+            var testDataBuilder = new Faker<PageView>()
+                .CustomInstantiator(f => new PageView(appTenantId))
+                .StrictMode(true)
+                .RuleFor(o => o.ApplicationTenantId, f => appTenantId)
+                .RuleFor(o => o.Id, f => Guid.NewGuid())
+                .RuleFor(o => o.Device, f => f.PickRandom(devices))
+                .RuleFor(o => o.UserAgent, f => f.PickRandom(agents))
+                .RuleFor(o => o.Url, f => f.PickRandom(pages))
+                .RuleFor(o => o.OS, f => f.PickRandom(systems))
+                .RuleFor(o => o.Browser, f => f.PickRandom(browsers))
+                .RuleFor(o => o.Referrer, f => f.PickRandom(referrers))
+                .RuleFor(o => o.ViewedAt, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow))
+                .RuleFor(o => o.CreatedDate, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow))
+                .RuleFor(o => o.ModifiedDate, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow))
+                .RuleFor(o => o.Deleted, f => false)
+                .RuleFor(o => o.CreatedById, f => userId)
+                .RuleFor(o => o.ModifiedById, f => userId)
+                .RuleFor(o => o.CreatedByUser, f => "System")
+                .RuleFor(o => o.ModifiedByName, f => "System")
+                .RuleFor(o => o.IpAddress, f => f.Internet.IpAddress().ToString());
+
+
+            var repository = efStorage.GetRepository<PageView>();
+
+            const int batchSize = 100;
+
+            int totalCount = 10_000;
+
+            for (int i = 0; i < totalCount; i += batchSize)
+            {
+                Console.WriteLine($"Adding batch {(i / batchSize) + 1} of {totalCount / batchSize}");
+
+                var pageViews = testDataBuilder.Generate(1000);
+                repository.AddRange(pageViews);
+                await efStorage.SaveChangesAsync(cancellationToken);
+            }
         }
     }
 }

@@ -66,7 +66,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Registrations
             var serviceRegistrations = new ServiceRegistrations();
 
             // Act & Assert
-            Assert.Throws<MissingConfirgurationSettingException>(() =>
+            Assert.Throws<MissingConfigurationSettingException>(() =>
                 serviceRegistrations.Execute(services, serviceProvider));
         }
 

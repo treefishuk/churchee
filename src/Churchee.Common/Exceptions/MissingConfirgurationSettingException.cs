@@ -2,17 +2,17 @@
 
 namespace Churchee.Common.Exceptions
 {
-    public class MissingConfirgurationSettingException : Exception
+    public class MissingConfigurationSettingException : Exception
     {
-        public MissingConfirgurationSettingException() : base("A configuration setting is missing")
+        public MissingConfigurationSettingException() : base("A configuration setting is missing")
         {
         }
 
-        public MissingConfirgurationSettingException(string message) : base(message)
+        public MissingConfigurationSettingException(string message) : base(message)
         {
         }
 
-        public MissingConfirgurationSettingException(string message, Exception innerException) : base(message, innerException)
+        public MissingConfigurationSettingException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

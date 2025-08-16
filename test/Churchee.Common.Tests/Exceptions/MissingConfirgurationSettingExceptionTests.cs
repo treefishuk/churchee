@@ -10,7 +10,7 @@ namespace Churchee.Common.Tests.Exceptions
         public void MissingConfirgurationSettingException_WithEmptyConstructor_SetsPropertiesCorrectly()
         {
             //arrange & act
-            var cut = new MissingConfirgurationSettingException();
+            var cut = new MissingConfigurationSettingException();
 
             //assert
             cut.Message.Should().Be("A configuration setting is missing");
@@ -21,7 +21,7 @@ namespace Churchee.Common.Tests.Exceptions
         public void MissingConfirgurationSettingException_WithMessage_SetsMessage()
         {
             //arrange & act
-            var cut = new MissingConfirgurationSettingException("Test");
+            var cut = new MissingConfigurationSettingException("Test");
 
             //assert
             cut.Message.Should().Be("Test");
@@ -34,7 +34,7 @@ namespace Churchee.Common.Tests.Exceptions
             var innerException = new InvalidOperationException("Invalid Opperation");
 
             //act
-            var cut = new MissingConfirgurationSettingException("Test", innerException);
+            var cut = new MissingConfigurationSettingException("Test", innerException);
 
             //assert
             cut.Message.Should().Be("Test");
