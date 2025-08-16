@@ -18,8 +18,8 @@ namespace Churchee.Infrastructure.SassCompilation.Tests
 
             string css = await _cliService.CompileStringAsync(
                 dbVars + "\n@import \"bootstrap\";\n" + dbCustom,
-                //dbVars + dbCustom,
-                compressed: true
+                compressed: true,
+                cancelationToken: CancellationToken.None
             );
 
             Assert.Contains("body", css);
