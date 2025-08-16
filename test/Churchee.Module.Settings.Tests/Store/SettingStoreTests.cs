@@ -291,6 +291,15 @@ namespace Churchee.Module.Settings.Tests.Store
         {
             throw new NotImplementedException();
         }
+        public Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetDistinctCountAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
 
         public Task<List<T>> GetListAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         {
@@ -298,6 +307,15 @@ namespace Churchee.Module.Settings.Tests.Store
         }
 
         public Task<List<TResult>> GetListAsync<TResult>(ISpecification<T> specification, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<List<TResult>> GetListAsync<TKey, TResult>(ISpecification<T> specification, Expression<Func<T, TKey>> groupBy, Expression<Func<IGrouping<TKey, T>, TResult>> selector, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TResult>> GetListAsync<TKey, TResult>(ISpecification<T> specification, Expression<Func<T, TKey>> groupBy, Expression<Func<IGrouping<TKey, T>, TResult>> selector, int take, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -313,6 +331,11 @@ namespace Churchee.Module.Settings.Tests.Store
         }
 
         public Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SoftDelete(Guid id)
         {
             throw new NotImplementedException();
         }
