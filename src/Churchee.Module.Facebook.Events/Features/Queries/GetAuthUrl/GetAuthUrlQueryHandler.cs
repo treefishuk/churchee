@@ -33,7 +33,7 @@ namespace Churchee.Module.Facebook.Events.Features.Queries
 
             if (string.IsNullOrEmpty(facebookAppId))
             {
-                throw new MissingConfirgurationSettingException(nameof(facebookAppId));
+                throw new MissingConfigurationSettingException(nameof(facebookAppId));
             }
 
             string stateId = Guid.NewGuid().ToString();

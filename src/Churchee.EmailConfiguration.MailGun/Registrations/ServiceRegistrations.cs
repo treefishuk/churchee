@@ -17,7 +17,7 @@ namespace Churchee.EmailConfiguration.MailGun.Registrations
         {
             var config = serviceProvider.GetRequiredService<IConfiguration>();
 
-            var options = config.GetSection("MailGunOptions").Get<MailGunOptions>() ?? throw new MissingConfirgurationSettingException("MailGunOptions Not Found");
+            var options = config.GetSection("MailGunOptions").Get<MailGunOptions>() ?? throw new MissingConfigurationSettingException("MailGunOptions Not Found");
 
             serviceCollection.AddHttpClient("MailGun", client =>
             {

@@ -163,7 +163,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
             if (string.IsNullOrEmpty(value))
             {
-                throw new MissingConfirgurationSettingException(key);
+                throw new MissingConfigurationSettingException(key);
             }
 
             return value;

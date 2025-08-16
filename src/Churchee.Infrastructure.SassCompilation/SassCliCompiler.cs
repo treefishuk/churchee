@@ -10,7 +10,7 @@ namespace Churchee.Infrastructure.SassCompilation
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(20);
 
 
-        public async Task<string> CompileStringAsync(string scss, bool compressed, CancellationToken cancelationToken)
+        public async Task<string> CompileStringAsync(string scss, bool compressed, CancellationToken cancellationToken)
         {
             string sassTempDir = Path.Combine(Path.GetTempPath(), "sass-temp");
 
@@ -23,7 +23,7 @@ namespace Churchee.Infrastructure.SassCompilation
             // "-" tells sass to read from stdin
             string args = BuildArgs("-", compressed, bootstrapTempDir);
 
-            return await RunAsync(args, scss, binaryPath, cancelationToken);
+            return await RunAsync(args, scss, binaryPath, cancellationToken);
         }
 
         private static string BuildArgs(string input, bool compressed, string bootstrapTempDir)

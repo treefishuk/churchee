@@ -17,7 +17,7 @@ namespace Churchee.Module.Facebook.Events.Registrations
 
             if (string.IsNullOrEmpty(facebookApiUrl))
             {
-                throw new MissingConfirgurationSettingException("Facebook API configuration is missing. Please ensure 'Facebook:Api' is set in the configuration.");
+                throw new MissingConfigurationSettingException("Facebook API configuration is missing. Please ensure 'Facebook:Api' is set in the configuration.");
             }
 
             serviceCollection.AddHttpClient("Facebook", client => { client.BaseAddress = new Uri(facebookApiUrl); });

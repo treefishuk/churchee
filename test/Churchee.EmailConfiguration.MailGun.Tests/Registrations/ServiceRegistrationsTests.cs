@@ -69,7 +69,7 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Registrations
             var serviceRegistrations = new ServiceRegistrations();
 
             // Act & Assert
-            Assert.Throws<MissingConfirgurationSettingException>(() => serviceRegistrations.Execute(services, serviceProvider));
+            Assert.Throws<MissingConfigurationSettingException>(() => serviceRegistrations.Execute(services, serviceProvider));
 
         }
 

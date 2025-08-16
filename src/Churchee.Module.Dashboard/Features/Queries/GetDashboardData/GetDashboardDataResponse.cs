@@ -13,6 +13,7 @@ namespace Churchee.Module.Dashboard.Features.Queries
             UniqueVisitors = 0;
             ReturningVisitors = 0;
             TotalPageViews = 0;
+            ErrorMessage = string.Empty;
         }
 
         public GetDashboardDataResponseItem[] Devices { get; set; }
@@ -25,6 +26,8 @@ namespace Churchee.Module.Dashboard.Features.Queries
         public int ReturningVisitors { get; set; }
 
         public int TotalPageViews { get; set; }
+
+        public string ErrorMessage { get; set; }
 
     }
 }

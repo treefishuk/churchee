@@ -30,7 +30,7 @@ namespace Churchee.EmailConfiguration.MailGun.Infrastructure
         {
             try
             {
-                var options = _configuration.GetSection("MailGunOptions").Get<MailGunOptions>() ?? throw new MissingConfirgurationSettingException("MailGunOptions Not Found");
+                var options = _configuration.GetSection("MailGunOptions").Get<MailGunOptions>() ?? throw new MissingConfigurationSettingException("MailGunOptions Not Found");
 
                 using MultipartFormDataContent form = [];
 

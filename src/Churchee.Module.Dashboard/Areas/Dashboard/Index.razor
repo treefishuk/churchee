@@ -142,6 +142,9 @@
     [Inject]
     private IMediator Mediator { get; set; } = default!;
 
+    [Inject]
+    protected NotificationService NotificationService { get; set; } = default!;
+
     async Task FilterClick(int days)
     {
         data = await Mediator.Send(new GetDashboardDataQuery(days));
@@ -172,6 +175,17 @@
     async Task GetData(int days)
     {
         data = await Mediator.Send(new GetDashboardDataQuery(days));
+
+        if(data.ErrorMessage != string.Empty)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = data.ErrorMessage,
+                Duration = 5000
+            });
+        }
 
         StateHasChanged();
 
