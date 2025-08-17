@@ -98,9 +98,10 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private async Task<int> GetReturnVisitors(DateTime start, GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
-            var notInQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new GetIpsBeforeDateSpecification(start));
 
-            int returnVisitors = await _dataStore.GetRepository<PageView>().GetDistinctCountAsync(new ReturnVisitorsSpecification(start, notInQuery),
+            var inQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new GetIpsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
+
+            int returnVisitors = await _dataStore.GetRepository<PageView>().GetDistinctCountAsync(new ReturnVisitorsSpecification(start, inQuery),
                 selector: s => s.IpAddress,
                 cancellationToken: cancellationToken);
 
@@ -109,7 +110,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private async Task<int> GetUniqueVisitors(DateTime start, GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
-            var notInQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new GetIpsBeforeDateSpecification(start));
+            var notInQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new GetIpsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
 
             int returnVisitors = await _dataStore.GetRepository<PageView>().GetDistinctCountAsync(new UniqueVisitorsSpecification(start, notInQuery),
                 selector: s => s.IpAddress,

@@ -11,6 +11,9 @@ namespace Churchee.Module.Dashboard.Specifications
             Query
                 .AsNoTracking()
                 .Where(x => !string.IsNullOrEmpty(x.Device)
+                    && !string.IsNullOrEmpty(x.UserAgent)
+                    && !x.UserAgent.Contains("Uptime-Kuma")
+                    && !x.UserAgent.Contains("uptimerobot")
                     && x.ViewedAt > startDate);
         }
 
