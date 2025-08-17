@@ -93,13 +93,13 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private async Task<int> GetTotalViews(DateTime start, CancellationToken cancellationToken)
         {
-            return await _dataStore.GetRepository<PageView>().CountAsync(new TotalViewsSpecification(start), cancellationToken);
+            return await _dataStore.GetRepository<PageView>().CountAsync(new PageViewsAfterDateSpecification(start), cancellationToken);
         }
 
         private async Task<int> GetReturnVisitors(DateTime start, GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
 
-            var inQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new GetIpsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
+            var inQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new PageViewsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
 
             int returnVisitors = await _dataStore.GetRepository<PageView>().GetDistinctCountAsync(new ReturnVisitorsSpecification(start, inQuery),
                 selector: s => s.IpAddress,
@@ -110,7 +110,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private async Task<int> GetUniqueVisitors(DateTime start, GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
-            var notInQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new GetIpsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
+            var notInQuery = _dataStore.GetRepository<PageView>().ApplySpecification(new PageViewsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
 
             int returnVisitors = await _dataStore.GetRepository<PageView>().GetDistinctCountAsync(new UniqueVisitorsSpecification(start, notInQuery),
                 selector: s => s.IpAddress,
@@ -121,7 +121,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private async Task<GetDashboardDataResponseItem[]> GetTopPages(DateTime start, GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
-            var data = await _dataStore.GetRepository<PageView>().GetListAsync(new TopPagesSpecification(start),
+            var data = await _dataStore.GetRepository<PageView>().GetListAsync(new PageViewsAfterDateSpecification(start),
                 groupBy: g => g.Url,
                 selector: s => new { s.Key, Count = s.Count() },
                 take: 5,
@@ -136,9 +136,9 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private async Task<GetDashboardDataResponseItem[]> GetDevices(DateTime start, GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
-            int total = await _dataStore.GetRepository<PageView>().CountAsync(new DevicesSpecification(start), cancellationToken);
+            int total = await _dataStore.GetRepository<PageView>().CountAsync(new PageViewsAfterDateSpecification(start), cancellationToken);
 
-            var data = await _dataStore.GetRepository<PageView>().GetListAsync(new DevicesSpecification(start),
+            var data = await _dataStore.GetRepository<PageView>().GetListAsync(new PageViewsAfterDateSpecification(start),
                 groupBy: g => g.Device,
                 selector: s => new { s.Key, Count = s.Count() },
                 take: 5,

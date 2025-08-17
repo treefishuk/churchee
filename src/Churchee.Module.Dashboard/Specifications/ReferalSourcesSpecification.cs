@@ -13,9 +13,6 @@ namespace Churchee.Module.Dashboard.Specifications
                 .Where(x => !string.IsNullOrEmpty(x.Referrer)
                    && !x.Referrer.StartsWith("/.")
                    && x.ViewedAt > startDate);
-
-
-
         }
 
     }
