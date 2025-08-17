@@ -137,29 +137,6 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var userId = Guid.NewGuid();
 
-            var bot = new PageView(appTenantId)
-            {
-                Url = "/",
-                UserAgent = string.Empty,
-                ViewedAt = DateTime.Now,
-                Deleted = false
-            };
-
-            var kuma = new PageView(appTenantId)
-            {
-                Url = "/",
-                UserAgent = "Uptime-Kuma/1.23.11",
-                ViewedAt = DateTime.Now,
-                Deleted = false
-            };
-            var uptimeRobot = new PageView(appTenantId)
-            {
-                Url = "/",
-                UserAgent = "Mozilla/5.0+(compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)",
-                ViewedAt = DateTime.Now,
-                Deleted = false
-            };
-
             var uniqueVisitor = new PageView(appTenantId)
             {
                 Url = "/",
@@ -202,7 +179,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var repository = efStorage.GetRepository<PageView>();
 
-            repository.AddRange([bot, kuma, uptimeRobot, recurringYesterday, recurringVisitorToday, uniqueVisitor, uniqueVisitor2]);
+            repository.AddRange([recurringYesterday, recurringVisitorToday, uniqueVisitor, uniqueVisitor2]);
 
             await efStorage.SaveChangesAsync(cancellationToken);
         }
