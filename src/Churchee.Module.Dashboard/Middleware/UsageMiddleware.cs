@@ -39,7 +39,8 @@ namespace Churchee.Module.Dashboard.Middleware
                 string url = context.Request.Path.ToString();
                 string referrer = context.Request.Headers.Referer.ToString();
 
-                if (url.EndsWith(".css"))
+                // Exit early for requests with any file extension (e.g., .css, .js, .png, .php, .html etc.)
+                if (Path.HasExtension(url))
                 {
                     return;
                 }
@@ -76,7 +77,6 @@ namespace Churchee.Module.Dashboard.Middleware
 
                     dbContext.Set<PageView>().Add(pageView);
                     await dbContext.SaveChangesAsync();
-
                 }
             }
             catch (Exception ex)

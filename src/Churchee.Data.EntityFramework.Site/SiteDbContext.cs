@@ -43,12 +43,22 @@ namespace Churchee.Data.EntityFramework.Site
 
         public override int SaveChanges()
         {
-            throw new InvalidOperationException("This context is read-only.");
+            if (ChangeTracker.Entries().All(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
+            {
+                throw new InvalidOperationException("This context is read-only except for PageView entities.");
+            }
+
+            return base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            throw new InvalidOperationException("This context is read-only.");
+            if (ChangeTracker.Entries().All(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
+            {
+                throw new InvalidOperationException("This context is read-only except for PageView entities.");
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
         }
 
     }
