@@ -75,7 +75,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         private async Task<GetDashboardDataResponseItem[]> GetPagesOverTime(DateTime start, GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
-            var data = await _dataStore.GetRepository<PageView>().GetListAsync(new PagesOverTimeSpecification(start),
+            var data = await _dataStore.GetRepository<PageView>().GetListAsync(new PageViewsAfterDateSpecification(start),
                 groupBy: g => g.ViewedAt.Hour,
                 selector: s => new
                 {
