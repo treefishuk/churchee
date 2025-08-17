@@ -49,11 +49,12 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
         public async Task Handle_Returns_Data_In_Under_One_Second()
         {
             // Arrange
-            var appTenantId = Guid.NewGuid();
             var query = new GetDashboardDataQuery(7);
             var cancellationToken = new CancellationToken();
 
-            await SetupLargeDataSet(appTenantId, cancellationToken);
+            var tenantId = Ids.TenantId;
+
+            await SetupLargeDataSet(tenantId, cancellationToken);
 
             var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
             optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
@@ -70,7 +71,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             await handler.Handle(query, cancellationToken);
 
             // Run each handler 10 times and record elapsed times
-            var newHandlerTimes = new List<long>();
+            var handlerTimes = new List<long>();
 
             for (int i = 0; i < 2; i++)
             {
@@ -79,15 +80,15 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 var swNew = Stopwatch.StartNew();
                 await handler.Handle(query, cancellationToken);
                 swNew.Stop();
-                newHandlerTimes.Add(swNew.ElapsedMilliseconds);
+                handlerTimes.Add(swNew.ElapsedMilliseconds);
 
-                Console.WriteLine($"New Handler Time: {swNew.ElapsedMilliseconds} ms");
+                Console.WriteLine($"Handler Time: {swNew.ElapsedMilliseconds} ms");
 
             }
 
-            double average = newHandlerTimes.Average();
+            double average = handlerTimes.Average();
 
-            Console.WriteLine($"New Handler Avg: {average} ms");
+            Console.WriteLine($"Handler Avg: {average} ms");
 
             Assert.True(average < 1000, $"Expected new handler to be under 1000ms, Speed: {average}ms");
         }
@@ -97,11 +98,12 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
         public async Task Handle_Returns_Correct_Counts()
         {
             // Arrange
-            var appTenantId = Guid.NewGuid();
             var query = new GetDashboardDataQuery(0);
             var cancellationToken = new CancellationToken();
 
-            await SetupCountsDataSet(appTenantId, cancellationToken);
+            var tenantId = Ids.TenantId;
+
+            await SetupCountsDataSet(tenantId, cancellationToken);
 
             var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
             optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
@@ -140,6 +142,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 Url = "/",
                 UserAgent = string.Empty,
                 ViewedAt = DateTime.Now,
+                Deleted = false
             };
 
             var kuma = new PageView(appTenantId)
@@ -147,12 +150,14 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 Url = "/",
                 UserAgent = "Uptime-Kuma/1.23.11",
                 ViewedAt = DateTime.Now,
+                Deleted = false
             };
             var uptimeRobot = new PageView(appTenantId)
             {
                 Url = "/",
                 UserAgent = "Mozilla/5.0+(compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)",
                 ViewedAt = DateTime.Now,
+                Deleted = false
             };
 
             var uniqueVisitor = new PageView(appTenantId)
@@ -162,6 +167,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 IpAddress = "192.168.0.1",
                 ViewedAt = DateTime.Now,
                 Device = "desktop",
+                Deleted = false
             };
 
             var uniqueVisitor2 = new PageView(appTenantId)
@@ -171,6 +177,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 IpAddress = "192.168.0.2",
                 ViewedAt = DateTime.Now,
                 Device = "desktop",
+                Deleted = false
             };
 
             var recurringYesterday = new PageView(appTenantId)
@@ -180,6 +187,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 IpAddress = "192.168.0.3",
                 ViewedAt = DateTime.Now.AddDays(-2),
                 Device = "desktop",
+                Deleted = false
             };
 
             var recurringVisitorToday = new PageView(appTenantId)
@@ -189,6 +197,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 IpAddress = "192.168.0.3",
                 ViewedAt = DateTime.Now,
                 Device = "desktop",
+                Deleted = false
             };
 
             var repository = efStorage.GetRepository<PageView>();

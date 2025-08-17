@@ -15,7 +15,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var startDate = new DateTime(2023, 10, 1);
 
             // Act
-            var spec = new GetPageViewDataForRange(startDate);
+            var spec = new PageViewsAfterDateSpecification(startDate);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
@@ -35,7 +35,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var startDate = new DateTime(2023, 10, 1);
 
             // Act
-            var spec = new GetPageViewDataForRange(startDate);
+            var spec = new PageViewsAfterDateSpecification(startDate);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
@@ -55,7 +55,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var startDate = new DateTime(2023, 10, 1);
 
             // Act
-            var spec = new GetPageViewDataForRange(startDate);
+            var spec = new PageViewsAfterDateSpecification(startDate);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
@@ -75,7 +75,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var startDate = new DateTime(2023, 10, 1);
 
             // Act
-            var spec = new GetPageViewDataForRange(startDate);
+            var spec = new PageViewsAfterDateSpecification(startDate);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
@@ -95,7 +95,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var startDate = new DateTime(2023, 10, 1);
 
             // Act
-            var spec = new GetPageViewDataForRange(startDate);
+            var spec = new PageViewsAfterDateSpecification(startDate);
 
             // Assert
             spec.AsNoTracking.Should().BeTrue();

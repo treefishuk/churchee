@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Churchee.Data.EntityFramework.Admin\Churchee.Data.EntityFramework.Admin.csproj" />
+    <ProjectReference Include="..\..\src\Churchee.Data.EntityFramework.Shared\Churchee.Data.EntityFramework.Shared.csproj" />
     <ProjectReference Include="..\..\src\Churchee.Module.Dashboard\Churchee.Module.Dashboard.csproj" />
   </ItemGroup>
 

@@ -45,6 +45,12 @@ namespace Churchee.Module.Dashboard.Middleware
                     return;
                 }
 
+                // Exit early for requests with no user agent, this is to avoid logging requests from bots or crawlers
+                if (string.IsNullOrEmpty(userAgent))
+                {
+                    return;
+                }
+
                 var deviceDetector = new DeviceDetectorNET.DeviceDetector(userAgent);
 
                 deviceDetector.Parse();
@@ -57,6 +63,12 @@ namespace Churchee.Module.Dashboard.Middleware
                 string device = deviceDetector.GetDeviceName();         // Mobile, Tablet, Desktop
                 string os = deviceDetector.GetOs().Match?.Name;          // Windows, Android, iOS
                 string browser = deviceDetector.GetClient().Match?.Name; // Chrome, Firefox, etc.
+
+                // If device is null or empty, we don't log the request
+                if (string.IsNullOrEmpty(device))
+                {
+                    return;
+                }
 
                 if (!string.IsNullOrEmpty(ipAddress))
                 {

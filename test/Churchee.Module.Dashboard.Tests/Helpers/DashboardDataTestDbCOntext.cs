@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Churchee.Common.Abstractions.Entities;
+using Churchee.Data.EntityFramework.Shared.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Dashboard.Tests.Helpers
 {
@@ -14,6 +16,12 @@ namespace Churchee.Module.Dashboard.Tests.Helpers
             var entityRegistrations = new Dashboard.Registrations.EntityRegistrations();
 
             entityRegistrations.RegisterEntities(builder);
+
+            var tenantId = Ids.TenantId;
+
+            builder.ApplyGlobalFilters<ITenantedEntity>(a => a.ApplicationTenantId == tenantId);
+
+            builder.ApplyGlobalFilters<IEntity>(a => !a.Deleted);
         }
 
     }
