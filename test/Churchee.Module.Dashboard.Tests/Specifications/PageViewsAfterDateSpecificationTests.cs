@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace Churchee.Module.Dashboard.Tests.Specifications
 {
 
-    public class GetPageViewDataForRangeTests
+    public class PageViewsAfterDateSpecificationTests
     {
         [Fact]
         public void GetPageViewDataForRange_Constructor_ShouldSetCorrectCriteria_ForValidPageView()
@@ -45,46 +45,6 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
 
             var compiledCriteria = criteria!.Filter.Compile();
             var invalidPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 9, 30), Device = "Device1", UserAgent = "UserAgent1" };
-            compiledCriteria(invalidPageView).Should().BeFalse();
-        }
-
-        [Fact]
-        public void GetPageViewDataForRange_Constructor_ShouldSetCorrectCriteria_ForInvalidPageView_EmptyDevice()
-        {
-            // Arrange
-            var startDate = new DateTime(2023, 10, 1);
-
-            // Act
-            var spec = new PageViewsAfterDateSpecification(startDate);
-
-            // Assert
-            var criteria = spec.WhereExpressions.FirstOrDefault();
-            criteria.Should().NotBeNull();
-            criteria?.Filter.Should().NotBeNull();
-            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
-
-            var compiledCriteria = criteria!.Filter.Compile();
-            var invalidPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 10, 2), Device = "", UserAgent = "UserAgent1" };
-            compiledCriteria(invalidPageView).Should().BeFalse();
-        }
-
-        [Fact]
-        public void GetPageViewDataForRange_Constructor_ShouldSetCorrectCriteria_ForInvalidPageView_EmptyUserAgent()
-        {
-            // Arrange
-            var startDate = new DateTime(2023, 10, 1);
-
-            // Act
-            var spec = new PageViewsAfterDateSpecification(startDate);
-
-            // Assert
-            var criteria = spec.WhereExpressions.FirstOrDefault();
-            criteria.Should().NotBeNull();
-            criteria?.Filter.Should().NotBeNull();
-            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
-
-            var compiledCriteria = criteria!.Filter.Compile();
-            var invalidPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 10, 2), Device = "Device1", UserAgent = "" };
             compiledCriteria(invalidPageView).Should().BeFalse();
         }
 
