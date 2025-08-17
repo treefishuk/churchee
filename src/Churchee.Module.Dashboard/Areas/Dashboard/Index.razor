@@ -147,7 +147,7 @@
 
     async Task FilterClick(int days)
     {
-        data = await Mediator.Send(new GetDashboardDataQuery(days));
+        await GetData(days);
 
         switch (days)
         {
