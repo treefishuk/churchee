@@ -1,4 +1,5 @@
 ﻿using Churchee.Module.Dashboard.Entities;
+using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +25,11 @@ namespace Churchee.Module.Dashboard.Middleware
 
             if (tenantResolver.GetTenantId() != Guid.Empty)
             {
-                _ = Task.Run(async () => { await LogRequest(context, tenantResolver); });
-            }
+                // Fire-and-forget background task, do not await or capture context
+                _ = Task.Run(() => LogRequest(context, tenantResolver));
 
-            await _next(context);
+                await _next(context);
+            }
         }
 
         internal async Task LogRequest(HttpContext context, ITenantResolver tenantResolver)
@@ -72,7 +74,21 @@ namespace Churchee.Module.Dashboard.Middleware
 
                 if (!string.IsNullOrEmpty(ipAddress))
                 {
-                    var pageView = new PageView(tenantResolver.GetTenantId())
+
+                    var tenantId = tenantResolver.GetTenantId();
+
+                    using var scope = _serviceProvider.CreateScope();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
+
+                    bool pageExists = dbContext.Set<WebContent>().Any(p => p.ApplicationTenantId == tenantId && p.Url == url);
+
+                    if (!pageExists)
+                    {
+                        // If the page does not exist, we don't log the request
+                        return;
+                    }
+
+                    var pageView = new PageView(tenantId)
                     {
                         IpAddress = ipAddress,
                         UserAgent = userAgent,
@@ -84,10 +100,8 @@ namespace Churchee.Module.Dashboard.Middleware
                         ViewedAt = DateTime.UtcNow
                     };
 
-                    using var scope = _serviceProvider.CreateScope();
-                    var dbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
-
                     dbContext.Set<PageView>().Add(pageView);
+
                     await dbContext.SaveChangesAsync();
                 }
             }
