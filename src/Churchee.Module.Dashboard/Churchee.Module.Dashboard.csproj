@@ -20,6 +20,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+	  <ProjectReference Include="..\Churchee.Module.Site\Churchee.Module.Site.csproj" />
 	  <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
 	  <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
 	</ItemGroup>
