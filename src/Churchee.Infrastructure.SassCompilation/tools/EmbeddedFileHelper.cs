@@ -22,7 +22,7 @@ namespace Churchee.Infrastructure.SassCompilation.tools
 
             var resources = GetResourcePathsByPrefix(ScssResourcePathPrefix);
 
-            if (resources.Count() == 0)
+            if (!resources.Any())
             {
                 throw new InvalidOperationException($"No resources found with prefix '{ScssResourcePathPrefix}'.");
             }
@@ -90,8 +90,16 @@ namespace Churchee.Infrastructure.SassCompilation.tools
         private static IEnumerable<string> GetResourcePathsByPrefix(string resourcePrefix)
         {
             var assembly = typeof(EmbeddedFileHelper).Assembly;
+
+            string[] resourceNames = assembly.GetManifestResourceNames();
+
+            foreach (string name in resourceNames)
+            {
+                Console.WriteLine($"Resource: {name}");
+            }
+
             string prefix = resourcePrefix.Replace("\\", ".") + ".";
-            return assembly.GetManifestResourceNames().Where(r => r.StartsWith(prefix));
+            return resourceNames.Where(r => r.StartsWith(prefix));
         }
 
         private static void MakeFilesExecutable(string binaryPath)
