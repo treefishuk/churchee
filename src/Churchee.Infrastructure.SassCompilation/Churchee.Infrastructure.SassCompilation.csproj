@@ -69,6 +69,12 @@
 		<Delete Files="$(BootstrapZip)" />
 
 	</Target>
+  
+  <Target Name="AddBootstrapScssAsEmbeddedResource" AfterTargets="DownloadAndExtractBootstrap">
+    <ItemGroup>
+      <EmbeddedResource Include="wwwroot\lib\bootstrap\scss\**\*" />
+    </ItemGroup>
+  </Target>
 
 
 </Project>
