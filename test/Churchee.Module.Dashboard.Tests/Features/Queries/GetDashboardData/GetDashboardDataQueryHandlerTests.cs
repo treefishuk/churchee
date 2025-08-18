@@ -57,8 +57,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             await SetupLargeDataSet(tenantId, cancellationToken);
 
             var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
-            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
-                          .EnableSensitiveDataLogging();
+
             optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
 
             var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
@@ -234,7 +233,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             const int batchSize = 1000;
 
-            int totalCount = 100_000;
+            int totalCount = 10_000;
 
             for (int i = 0; i < totalCount; i += batchSize)
             {

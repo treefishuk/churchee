@@ -45,15 +45,18 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
 
             services.AddSingleton(configurationMock.Object);
 
-            var serviceProvider = services.BuildServiceProvider();
+            var firstProvider = services.BuildServiceProvider();
             var cut = new ServiceRegistrations();
 
             // Act
-            cut.Execute(services, serviceProvider);
+            cut.Execute(services, firstProvider);
 
-            serviceProvider = services.BuildServiceProvider();
+            // Dispose the first provider immediately after Execute
+            firstProvider.Dispose();
 
-            // Assert
+            using var serviceProvider = services.BuildServiceProvider();
+
+            // Assert - only use the second provider for service resolution
             serviceProvider.GetService<IRecurringJobManager>().Should().NotBeNull();
             serviceProvider.GetService<IBackgroundJobClient>().Should().NotBeNull();
             serviceProvider.GetService<IHostedService>().Should().BeNull();
