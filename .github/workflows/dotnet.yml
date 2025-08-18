@@ -29,3 +29,14 @@ jobs:
       run: dotnet build Churchee.sln --no-restore
     - name: Test
       run: dotnet test Churchee.sln --no-build --verbosity normal
+    - name: Analyze with SonarCloud
+      uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
+      env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+      with:
+        args:
+          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+        projectBaseDir: .
