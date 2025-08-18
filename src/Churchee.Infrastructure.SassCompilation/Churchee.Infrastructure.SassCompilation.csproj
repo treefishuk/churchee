@@ -32,18 +32,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="wwwroot\**\*" />
 		<!-- Dart Sass binaries -->
 		<EmbeddedResource Include="tools\dart-sass\**\*" />
 	</ItemGroup>
-
+	
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+		
 	<ItemGroup>
 		<!-- Count existing SCSS files -->
 		<ExistingBootstrapScss Include="$(BootstrapTargetDir)/**/*.*" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="wwwroot\" />
 	</ItemGroup>
 	
 	<Target Name="DownloadAndExtractBootstrap" BeforeTargets="BeforeBuild" Condition="'@(ExistingBootstrapScss-&gt;Count())' == '0'">
@@ -73,6 +72,12 @@
 		<Delete Files="$(BootstrapZip)" />
 
 	</Target>
+  
+  <Target Name="AddBootstrapScssAsEmbeddedResource" AfterTargets="DownloadAndExtractBootstrap">
+    <ItemGroup>
+      <EmbeddedResource Include="wwwroot\lib\bootstrap\scss\**\*" />
+    </ItemGroup>
+  </Target>
 
 
 </Project>
