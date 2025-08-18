@@ -41,10 +41,6 @@
 		<!-- Count existing SCSS files -->
 		<ExistingBootstrapScss Include="$(BootstrapTargetDir)/**/*.*" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="wwwroot\" />
-	</ItemGroup>
 	
 	<Target Name="DownloadAndExtractBootstrap" BeforeTargets="BeforeBuild" Condition="'@(ExistingBootstrapScss-&gt;Count())' == '0'">
 
