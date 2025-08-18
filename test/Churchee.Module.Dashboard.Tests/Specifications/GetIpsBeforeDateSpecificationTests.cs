@@ -14,7 +14,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var date = new DateTime(2023, 10, 1);
 
             // Act
-            var spec = new GetIpsBeforeDateSpecification(date);
+            var spec = new PageViewsBeforeDateSpecification(date);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
@@ -30,7 +30,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var date = new DateTime(2024, 10, 1);
 
             // Act
-            var spec = new GetIpsBeforeDateSpecification(date);
+            var spec = new PageViewsBeforeDateSpecification(date);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
@@ -46,7 +46,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var date = new DateTime(2024, 10, 1);
 
             // Act
-            var spec = new GetIpsBeforeDateSpecification(date);
+            var spec = new PageViewsBeforeDateSpecification(date);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
@@ -62,7 +62,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var date = new DateTime(2023, 10, 1);
 
             // Act
-            var spec = new GetIpsBeforeDateSpecification(date);
+            var spec = new PageViewsBeforeDateSpecification(date);
 
             // Assert
             spec.AsNoTracking.Should().BeTrue();

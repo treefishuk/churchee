@@ -3,14 +3,14 @@ using Churchee.Module.Dashboard.Entities;
 
 namespace Churchee.Module.Dashboard.Specifications
 {
-    internal class PastVisitorsSpecification : Specification<PageView>
+    internal class PageViewsAfterDateSpecification : Specification<PageView>
     {
 
-        public PastVisitorsSpecification(DateTime startDate)
+        public PageViewsAfterDateSpecification(DateTime startDate)
         {
             Query
                 .AsNoTracking()
-                .Where(x => x.ViewedAt < startDate);
+                .Where(x => x.ViewedAt > startDate);
         }
 
     }

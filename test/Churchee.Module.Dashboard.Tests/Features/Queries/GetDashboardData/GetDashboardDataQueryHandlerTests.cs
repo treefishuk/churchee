@@ -46,14 +46,63 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
         }
 
         [Fact]
-        public async Task Handle_ReturnsData_in_OneSecond()
+        public async Task Handle_Returns_Data_In_Under_One_Second()
         {
             // Arrange
-            var appTenantId = Guid.NewGuid();
             var query = new GetDashboardDataQuery(7);
             var cancellationToken = new CancellationToken();
 
-            await SetupData(appTenantId, cancellationToken);
+            var tenantId = Ids.TenantId;
+
+            await SetupLargeDataSet(tenantId, cancellationToken);
+
+            var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
+
+            optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
+
+            var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
+
+            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+
+            var handler = new GetDashboardDataQueryHandler(efStorage, _mockLogger.Object);
+
+            // Warm up (optional, but helps with JIT and DB caching)
+            await handler.Handle(query, cancellationToken);
+
+            // Run each handler 10 times and record elapsed times
+            var handlerTimes = new List<long>();
+
+            for (int i = 0; i < 2; i++)
+            {
+                Console.WriteLine($"Running iteration {i + 1}...");
+
+                var swNew = Stopwatch.StartNew();
+                await handler.Handle(query, cancellationToken);
+                swNew.Stop();
+                handlerTimes.Add(swNew.ElapsedMilliseconds);
+
+                Console.WriteLine($"Handler Time: {swNew.ElapsedMilliseconds} ms");
+
+            }
+
+            double average = handlerTimes.Average();
+
+            Console.WriteLine($"Handler Avg: {average} ms");
+
+            Assert.True(average < 1000, $"Expected new handler to be under 1000ms, Speed: {average}ms");
+        }
+
+
+        [Fact]
+        public async Task Handle_Returns_Correct_Counts()
+        {
+            // Arrange
+            var query = new GetDashboardDataQuery(0);
+            var cancellationToken = new CancellationToken();
+
+            var tenantId = Ids.TenantId;
+
+            await SetupCountsDataSet(tenantId, cancellationToken);
 
             var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
             optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
@@ -66,34 +115,76 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var newHandler = new GetDashboardDataQueryHandler(efStorage, _mockLogger.Object);
 
-            // Warm up (optional, but helps with JIT and DB caching)
-            await newHandler.Handle(query, cancellationToken);
+            var response = await newHandler.Handle(query, cancellationToken);
 
-            // Run each handler 10 times and record elapsed times
-            var newHandlerTimes = new List<long>();
-            var oldHandlerTimes = new List<long>();
-
-            for (int i = 0; i < 2; i++)
-            {
-                Console.WriteLine($"Running iteration {i + 1}...");
-
-                var swNew = Stopwatch.StartNew();
-                await newHandler.Handle(query, cancellationToken);
-                swNew.Stop();
-                newHandlerTimes.Add(swNew.ElapsedMilliseconds);
-
-                Console.WriteLine($"New Handler Time: {swNew.ElapsedMilliseconds} ms");
-
-            }
-
-            double average = newHandlerTimes.Average();
-
-            Console.WriteLine($"New Handler Avg: {average} ms");
-
-            Assert.True(average < 1000, $"Expected new handler to be under 1000ms, Speed: {average}ms");
+            Assert.True(response.UniqueVisitors == 2, $"Expected 2 unique visitors, but got {response.UniqueVisitors}.");
+            Assert.True(response.ReturningVisitors == 1, $"Expected 1 returning visitor, but got {response.ReturningVisitors}.");
         }
 
-        private async Task SetupData(Guid appTenantId, CancellationToken cancellationToken)
+
+        private async Task SetupCountsDataSet(Guid appTenantId, CancellationToken cancellationToken)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
+
+            optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
+
+            var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
+
+            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+
+            var query = new GetDashboardDataQuery(0);
+
+            var userId = Guid.NewGuid();
+
+            var uniqueVisitor = new PageView(appTenantId)
+            {
+                Url = "/",
+                UserAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0",
+                IpAddress = "192.168.0.1",
+                ViewedAt = DateTime.Now,
+                Device = "desktop",
+                Deleted = false
+            };
+
+            var uniqueVisitor2 = new PageView(appTenantId)
+            {
+                Url = "/",
+                UserAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0",
+                IpAddress = "192.168.0.2",
+                ViewedAt = DateTime.Now,
+                Device = "desktop",
+                Deleted = false
+            };
+
+            var recurringYesterday = new PageView(appTenantId)
+            {
+                Url = "/",
+                UserAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0",
+                IpAddress = "192.168.0.3",
+                ViewedAt = DateTime.Now.AddDays(-2),
+                Device = "desktop",
+                Deleted = false
+            };
+
+            var recurringVisitorToday = new PageView(appTenantId)
+            {
+                Url = "/",
+                UserAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0",
+                IpAddress = "192.168.0.3",
+                ViewedAt = DateTime.Now,
+                Device = "desktop",
+                Deleted = false
+            };
+
+            var repository = efStorage.GetRepository<PageView>();
+
+            repository.AddRange([recurringYesterday, recurringVisitorToday, uniqueVisitor, uniqueVisitor2]);
+
+            await efStorage.SaveChangesAsync(cancellationToken);
+        }
+
+
+        private async Task SetupLargeDataSet(Guid appTenantId, CancellationToken cancellationToken)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
 
@@ -140,7 +231,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var repository = efStorage.GetRepository<PageView>();
 
-            const int batchSize = 100;
+            const int batchSize = 1000;
 
             int totalCount = 10_000;
 
@@ -148,7 +239,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             {
                 Console.WriteLine($"Adding batch {(i / batchSize) + 1} of {totalCount / batchSize}");
 
-                var pageViews = testDataBuilder.Generate(1000);
+                var pageViews = testDataBuilder.Generate(batchSize);
                 repository.AddRange(pageViews);
                 await efStorage.SaveChangesAsync(cancellationToken);
             }

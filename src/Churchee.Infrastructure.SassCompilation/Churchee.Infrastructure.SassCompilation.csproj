@@ -65,6 +65,8 @@
 
 		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="bash -c 'if [ -d &quot;$(BootstrapTempDir)/bootstrap-$(BootstrapVersion)&quot; ]; then rm -rf wwwroot/lib/bootstrap/scss; mv $(BootstrapTempDir)/bootstrap-$(BootstrapVersion)/scss wwwroot/lib/bootstrap/scss; fi'" />
 
+		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="ls -l wwwroot/lib/bootstrap/scss" />
+
 		<!-- Cleanup temp files -->
 		
 		<RemoveDir Directories="$(BootstrapTempDir)" />

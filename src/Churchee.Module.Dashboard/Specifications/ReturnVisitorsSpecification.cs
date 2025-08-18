@@ -6,11 +6,12 @@ namespace Churchee.Module.Dashboard.Specifications
     internal class ReturnVisitorsSpecification : Specification<PageView>
     {
 
-        public ReturnVisitorsSpecification(DateTime startDate, IQueryable<PageView> notInQuery)
+        public ReturnVisitorsSpecification(DateTime startDate, IQueryable<string> inQuery)
         {
             Query
                 .AsNoTracking()
-                .Where(x => x.ViewedAt > startDate && !notInQuery.Contains(x));
+                .Where(x => x.ViewedAt > startDate)
+                .Where(x => inQuery.Contains(x.IpAddress));
         }
 
     }

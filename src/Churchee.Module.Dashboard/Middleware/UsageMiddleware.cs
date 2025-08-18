@@ -1,4 +1,5 @@
 ﻿using Churchee.Module.Dashboard.Entities;
+using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +25,11 @@ namespace Churchee.Module.Dashboard.Middleware
 
             if (tenantResolver.GetTenantId() != Guid.Empty)
             {
-                _ = Task.Run(async () => { await LogRequest(context, tenantResolver); });
-            }
+                // Fire-and-forget background task, do not await or capture context
+                _ = Task.Run(() => LogRequest(context, tenantResolver));
 
-            await _next(context);
+                await _next(context);
+            }
         }
 
         internal async Task LogRequest(HttpContext context, ITenantResolver tenantResolver)
@@ -39,7 +41,14 @@ namespace Churchee.Module.Dashboard.Middleware
                 string url = context.Request.Path.ToString();
                 string referrer = context.Request.Headers.Referer.ToString();
 
-                if (url.EndsWith(".css"))
+                // Exit early for requests with any file extension (e.g., .css, .js, .png, .php, .html etc.)
+                if (Path.HasExtension(url))
+                {
+                    return;
+                }
+
+                // Exit early for requests with no user agent, this is to avoid logging requests from bots or crawlers
+                if (string.IsNullOrEmpty(userAgent))
                 {
                     return;
                 }
@@ -57,9 +66,29 @@ namespace Churchee.Module.Dashboard.Middleware
                 string os = deviceDetector.GetOs().Match?.Name;          // Windows, Android, iOS
                 string browser = deviceDetector.GetClient().Match?.Name; // Chrome, Firefox, etc.
 
+                // If device is null or empty, we don't log the request
+                if (string.IsNullOrEmpty(device))
+                {
+                    return;
+                }
+
                 if (!string.IsNullOrEmpty(ipAddress))
                 {
-                    var pageView = new PageView(tenantResolver.GetTenantId())
+
+                    var tenantId = tenantResolver.GetTenantId();
+
+                    using var scope = _serviceProvider.CreateScope();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
+
+                    bool pageExists = dbContext.Set<WebContent>().Any(p => p.ApplicationTenantId == tenantId && p.Url == url);
+
+                    if (!pageExists)
+                    {
+                        // If the page does not exist, we don't log the request
+                        return;
+                    }
+
+                    var pageView = new PageView(tenantId)
                     {
                         IpAddress = ipAddress,
                         UserAgent = userAgent,
@@ -71,12 +100,9 @@ namespace Churchee.Module.Dashboard.Middleware
                         ViewedAt = DateTime.UtcNow
                     };
 
-                    using var scope = _serviceProvider.CreateScope();
-                    var dbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
-
                     dbContext.Set<PageView>().Add(pageView);
-                    await dbContext.SaveChangesAsync();
 
+                    await dbContext.SaveChangesAsync();
                 }
             }
             catch (Exception ex)

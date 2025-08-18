@@ -33,6 +33,9 @@ namespace Churchee.Module.Dashboard.Tests.Middleware
 
             var dbContextMock = new Mock<DbContext>();
             var tenantResolverMock = new Mock<ITenantResolver>();
+
+            tenantResolverMock.Setup(tr => tr.GetTenantId()).Returns(Guid.NewGuid());
+
             bool nextCalled = false;
             Task next(HttpContext _)
             {
