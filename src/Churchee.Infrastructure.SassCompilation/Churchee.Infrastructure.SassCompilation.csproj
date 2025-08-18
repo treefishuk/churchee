@@ -32,11 +32,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="wwwroot\**\*" />
 		<!-- Dart Sass binaries -->
 		<EmbeddedResource Include="tools\dart-sass\**\*" />
 	</ItemGroup>
-
+	
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+		
 	<ItemGroup>
 		<!-- Count existing SCSS files -->
 		<ExistingBootstrapScss Include="$(BootstrapTargetDir)/**/*.*" />
