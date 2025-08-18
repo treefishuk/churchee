@@ -57,8 +57,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             await SetupLargeDataSet(tenantId, cancellationToken);
 
             var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
-            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information)
-                          .EnableSensitiveDataLogging();
+
             optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
 
             var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);

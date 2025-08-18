@@ -70,6 +70,9 @@ namespace Churchee.Infrastructure.SassCompilation.tools
 
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
 
+            // Log the file being created
+            Console.WriteLine($"[CreateScssFile] Creating file: {fullPath}");
+
             await using var stream = assembly.GetManifestResourceStream(resource) ?? throw new InvalidOperationException($"Resource '{resource}' not found.");
 
             using var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write);
