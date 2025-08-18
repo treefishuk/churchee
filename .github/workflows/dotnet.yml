@@ -22,6 +22,9 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore Churchee.sln
+
+    - name: Download and extract Bootstrap efore main build
+      run: dotnet msbuild src/Churchee.Infrastructure.SassCompilation/Churchee.Infrastructure.SassCompilation.csproj -t:DownloadAndExtractBootstrap
     - name: Build
       run: dotnet build Churchee.sln --no-restore
     - name: Test
