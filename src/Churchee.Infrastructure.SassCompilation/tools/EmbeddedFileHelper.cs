@@ -13,12 +13,19 @@ namespace Churchee.Infrastructure.SassCompilation.tools
         {
             if (Directory.Exists(bootstrapPath))
             {
+                Console.WriteLine($"[ExtractEmbeddedSassDirectoryToTempAsync] Directory already exists: {bootstrapPath}");
+
                 return;
             }
 
             Directory.CreateDirectory(bootstrapPath);
 
             var resources = GetResourcePathsByPrefix(ScssResourcePathPrefix);
+
+            if (resources.Count() == 0)
+            {
+                throw new InvalidOperationException($"No resources found with prefix '{ScssResourcePathPrefix}'.");
+            }
 
             foreach (string resource in resources)
             {
