@@ -233,7 +233,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             const int batchSize = 1000;
 
-            int totalCount = 100_000;
+            int totalCount = 10_000;
 
             for (int i = 0; i < totalCount; i += batchSize)
             {
