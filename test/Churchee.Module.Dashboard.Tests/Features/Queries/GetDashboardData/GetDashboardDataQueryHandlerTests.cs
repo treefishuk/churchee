@@ -202,7 +202,9 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             string[] systems = ["Windows", "andriod", "iOS"];
             string[] pages = ["/", "/about", "/whats-on", "/whats-on/event", "/contact"];
             string[] browsers = ["chrome", "firefox", "edge"];
-            string[] referrers = ["google", "chat-gpt", "local"];
+            string[] referrers = ["www.google.com", "chat-gpt.com", "example.com"];
+            string[] referrersFull = ["www.google.com/test", "chat-gpt.com", "example.com/some-page.html"];
+
             string[] agents = [
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.3",
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.10 Safari/605.1.1"];
@@ -218,6 +220,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 .RuleFor(o => o.OS, f => f.PickRandom(systems))
                 .RuleFor(o => o.Browser, f => f.PickRandom(browsers))
                 .RuleFor(o => o.Referrer, f => f.PickRandom(referrers))
+                .RuleFor(o => o.ReferrerFull, f => f.PickRandom(referrers))
                 .RuleFor(o => o.ViewedAt, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow))
                 .RuleFor(o => o.CreatedDate, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow))
                 .RuleFor(o => o.ModifiedDate, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow))

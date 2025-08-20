@@ -10,6 +10,8 @@
 
 <PageName Name="Dashboard"></PageName>
 
+<FullPageOverlay Visible="overlayVisible" />
+
 @if(data != null)
 {
     
@@ -127,10 +129,11 @@
         </RadzenCard>
     </RadzenColumn>
 
-</RadzenRow>
+    </RadzenRow>
 
- 
+
 }
+
 
 @code {
     readonly string[] colours = { "#6A8DAE", "#667584", "#5F9ED9", "#4D5359", "#232B33" };
@@ -138,6 +141,8 @@
     string filterRange = "Today";
 
     GetDashboardDataResponse data = null;
+
+    private bool overlayVisible = false;
 
     [Inject]
     private IMediator Mediator { get; set; } = default!;
@@ -174,6 +179,10 @@
 
     async Task GetData(int days)
     {
+        overlayVisible = true;
+
+        StateHasChanged();
+
         data = await Mediator.Send(new GetDashboardDataQuery(days));
 
         if(data.ErrorMessage != string.Empty)
@@ -186,6 +195,8 @@
                 Duration = 5000
             });
         }
+
+        overlayVisible = false;
 
         StateHasChanged();
 

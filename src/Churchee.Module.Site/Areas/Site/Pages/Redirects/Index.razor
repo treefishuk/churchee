@@ -20,7 +20,7 @@
     </div>
 </SectionContent>
 
-<Grid TItem="GetListOfRedirectsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false" OnDelete="OnDelete"></Grid>
+<Grid TItem="GetListOfRedirectsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false" OnDelete="OnDelete" Count="count"></Grid>
 
 @code {
 
@@ -28,17 +28,21 @@
 
     bool isLoading = false;
 
+    int count = 0;
+
     async Task LoadData(LoadDataArgs args)
     {
         isLoading = true;
 
         var result = await Mediator.Send(new GetListOfRedirectsQuery(
-            skip: args.Skip.Value,
-            take: args.Top.Value,
-            searchText: args.Filter,
+            skip: args.Skip ?? 0,
+            take: args.Top ?? 0,
+            searchText: args.Filter ?? string.Empty,
             orderBy: string.IsNullOrEmpty(args.OrderBy) ? "Path desc" : args.OrderBy), CancellationToken);
 
         listingData = result.Data;
+
+        count = result.RecordsTotal;
 
         isLoading = false;
     }

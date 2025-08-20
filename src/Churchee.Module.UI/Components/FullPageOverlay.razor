@@ -1,0 +1,12 @@
+﻿@using Radzen
+@using Radzen.Blazor
+@if (Visible)
+{
+    <div class="basepage-overlay">
+        <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+}

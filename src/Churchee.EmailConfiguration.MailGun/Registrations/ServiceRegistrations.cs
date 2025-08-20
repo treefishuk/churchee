@@ -22,8 +22,8 @@ namespace Churchee.EmailConfiguration.MailGun.Registrations
             serviceCollection.AddHttpClient("MailGun", client =>
             {
                 // Grab values from the configuration
-                var apiKey = options.APIKey;
-                var base64Auth = Convert.ToBase64String(Encoding.ASCII.GetBytes($"api:{apiKey}"));
+                string apiKey = options.APIKey;
+                string base64Auth = Convert.ToBase64String(Encoding.ASCII.GetBytes($"api:{apiKey}"));
                 // Set default values on the HttpClient
                 client.BaseAddress = new Uri($"{options.BaseUrl}{options.Domain}/messages");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Auth);

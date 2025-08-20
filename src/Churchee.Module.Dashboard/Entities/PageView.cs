@@ -23,6 +23,8 @@ namespace Churchee.Module.Dashboard.Entities
 
         public string Referrer { get; set; }
 
+        public string ReferrerFull { get; set; }
+
         public DateTime ViewedAt { get; set; }
     }
 }
