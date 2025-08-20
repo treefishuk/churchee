@@ -50,7 +50,7 @@ namespace Churchee.Module.Events.Features.Queries
         {
             foreach (var item in dataTableResponse.Data.Where(w => !string.IsNullOrEmpty(w.ImageUri)))
             {
-                var fileName = Path.GetFileNameWithoutExtension(item.ImageUri);
+                string fileName = Path.GetFileNameWithoutExtension(item.ImageUri);
 
                 item.ImageUri = item.ImageUri.Replace(fileName, $"{fileName}_t");
             }

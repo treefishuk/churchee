@@ -14,12 +14,17 @@
 
 <PageName></PageName>
 
+<FullPageOverlay Visible="overlayVisible"/>
+
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
-@code {
+
+    @code {
 
     [SupplyParameterFromForm]
     public StylesInputModel InputModel { get; set; } = new();
+
+    private bool overlayVisible = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,9 +35,12 @@
 
     private async Task ValidSubmitForm()
     {
+        overlayVisible = true;
+
         var result = await Mediator.Send(new UpdateStylesCommand(InputModel.Styles));
 
-        NotificationService.Notify(result);
+        overlayVisible = false;
 
+        NotificationService.Notify(result);
     }
 }
