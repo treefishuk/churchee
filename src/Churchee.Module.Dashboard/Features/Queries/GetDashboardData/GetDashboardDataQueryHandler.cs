@@ -25,7 +25,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             {
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                cts.CancelAfter(TimeSpan.FromSeconds(5)); // Set a 5s timeout
+                cts.CancelAfter(TimeSpan.FromSeconds(15)); // Set a 15s timeout
 
                 var start = GetStartDate(request);
 

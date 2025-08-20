@@ -39,7 +39,8 @@ namespace Churchee.Module.Dashboard.Middleware
                 string ipAddress = context.Connection.RemoteIpAddress?.ToString();
                 string userAgent = context.Request.Headers.UserAgent.ToString();
                 string url = context.Request.Path.ToString();
-                string referrer = context.Request.Headers.Referer.ToString();
+                string referrerFull = context.Request.Headers.Referer.ToString();
+                string referrerHost = string.IsNullOrEmpty(referrerFull) ? string.Empty : new Uri(referrerFull).Host;
 
                 // Exit early for requests with any file extension (e.g., .css, .js, .png, .php, .html etc.)
                 if (Path.HasExtension(url))
@@ -88,12 +89,14 @@ namespace Churchee.Module.Dashboard.Middleware
                         return;
                     }
 
+
                     var pageView = new PageView(tenantId)
                     {
                         IpAddress = ipAddress,
                         UserAgent = userAgent,
                         Url = url,
-                        Referrer = referrer,
+                        Referrer = referrerHost,
+                        ReferrerFull = referrerFull,
                         Device = device,
                         OS = os,
                         Browser = browser,
