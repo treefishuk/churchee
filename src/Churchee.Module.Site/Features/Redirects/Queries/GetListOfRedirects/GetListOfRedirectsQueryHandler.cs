@@ -1,4 +1,5 @@
-﻿using Churchee.Common.Abstractions;
+﻿using Ardalis.Specification;
+using Churchee.Common.Abstractions;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using MediatR;
@@ -19,26 +20,28 @@ namespace Churchee.Module.Site.Features.Redirects.Queries
         public async Task<DataTableResponse<GetListOfRedirectsResponseItem>> Handle(GetListOfRedirectsQuery request, CancellationToken cancellationToken)
         {
 
-            var repo = _storage.GetRepository<RedirectUrl>();
-
-            int count = repo.Count();
-
-            var query = repo.GetQueryable();
+            var redirectQuery = _storage.GetRepository<RedirectUrl>().GetQueryable();
+            var webContentQuery = _storage.GetRepository<WebContent>().GetQueryable();
 
             if (!string.IsNullOrEmpty(request.SearchText))
             {
-                query = query.Where(w => w.Path.Contains(request.SearchText));
+                redirectQuery = redirectQuery.Where(w => w.Path.Contains(request.SearchText));
             }
+
+            var joinedQuery = from r in redirectQuery
+                              join wc in webContentQuery on r.WebContentId equals wc.Id
+                              select new GetListOfRedirectsResponseItem
+                              {
+                                  Id = r.Id,
+                                  Path = r.Path,
+                                  RedirectsTo = wc.Title,
+                              };
+
+            int count = joinedQuery.Count();
 
             string orderby = $"{request.OrderBy} {request.OrderByDirection}";
 
-            var items = await query
-                .Select(s => new GetListOfRedirectsResponseItem
-                {
-                    Id = s.Id,
-                    Path = s.Path,
-                    RedirectsTo = s.WebContent.Title
-                })
+            var data = await joinedQuery
                 .OrderBy(orderby)
                 .Skip(request.Skip)
                 .Take(request.Take)
@@ -49,9 +52,8 @@ namespace Churchee.Module.Site.Features.Redirects.Queries
                 RecordsTotal = count,
                 RecordsFiltered = count,
                 Draw = request.Take,
-                Data = items
+                Data = data
             };
-
         }
     }
 

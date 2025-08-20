@@ -1,13 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Churchee.Module.Settings\Churchee.Module.Settings.csproj" />
-    <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
+    <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
   </ItemGroup>
 
 </Project>
