@@ -37,7 +37,7 @@ namespace Churchee.Module.Site.Features.Redirects.Queries
                                   RedirectsTo = wc.Title,
                               };
 
-            int count = joinedQuery.Count();
+            int count = await joinedQuery.CountAsync(cancellationToken: cancellationToken);
 
             string orderby = $"{request.OrderBy} {request.OrderByDirection}";
 
