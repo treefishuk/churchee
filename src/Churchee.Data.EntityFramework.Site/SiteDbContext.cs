@@ -43,7 +43,7 @@ namespace Churchee.Data.EntityFramework.Site
 
         public override int SaveChanges()
         {
-            if (ChangeTracker.Entries().All(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
+            if (ChangeTracker.Entries().Any(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
             {
                 throw new InvalidOperationException("This context is read-only except for PageView entities.");
             }
@@ -53,7 +53,7 @@ namespace Churchee.Data.EntityFramework.Site
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            if (ChangeTracker.Entries().All(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
+            if (ChangeTracker.Entries().Any(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
             {
                 throw new InvalidOperationException("This context is read-only except for PageView entities.");
             }
