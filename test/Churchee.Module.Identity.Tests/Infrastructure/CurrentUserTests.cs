@@ -1,7 +1,7 @@
 ﻿using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
-using Churchee.Module.Identity.Tests.Extensions;
+using Churchee.Module.Identity.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -18,7 +18,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public CurrentUserTests()
         {
             _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            _mockUserManager = ChurcheeUserManagerMockExtensions.CreateMockChurcheeUserManager();
+            _mockUserManager = ChurcheeManagerHelpers.CreateMockChurcheeUserManager();
             _currentUser = new CurrentUser(_mockHttpContextAccessor.Object, _mockUserManager.Object);
         }
 
