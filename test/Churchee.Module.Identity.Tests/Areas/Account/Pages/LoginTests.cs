@@ -133,8 +133,92 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
                 result.Should().BeOfType<PageResult>();
                 _loginModel?.ModelState[string.Empty]?.Errors.Should().ContainSingle(e => e.ErrorMessage == "Invalid login attempt.");
             }
+
+            [Fact]
+            public async Task OnGetAsync_SetsReturnUrl_ToRoot_WhenNull()
+            {
+                // Arrange
+                _urlHelperMock.Setup(u => u.Content("~/")).Returns("/");
+                _loginModel.Url = _urlHelperMock.Object;
+
+                // Act
+                await _loginModel.OnGetAsync(null);
+
+                // Assert
+                Assert.Equal("/", _loginModel.ReturnUrl);
+            }
+
+            [Fact]
+            public async Task OnGetAsync_SetsReturnUrl_ToProvidedValue()
+            {
+                // Arrange
+                _loginModel.Url = _urlHelperMock.Object;
+
+                // Act
+                await _loginModel.OnGetAsync("/custom");
+
+                // Assert
+                Assert.Equal("/custom", _loginModel.ReturnUrl);
+            }
+
+            [Fact]
+            public async Task OnPostAsync_SetsReturnUrl_ToManagement_WhenNull()
+            {
+                // Arrange
+                var signInManagerMock = new Mock<ISignInManager>();
+                var loggerMock = new Mock<ILogger<LoginModel>>();
+
+
+                _loginModel.Input = new LoginModel.InputModel
+                {
+                    Email = "test@example.com",
+                    Password = "password",
+                    RememberMe = false
+                };
+
+                _urlHelperMock.Setup(u => u.Content("~/management")).Returns("/management");
+
+                _loginModel.Url = _urlHelperMock.Object;
+
+                _signInManagerMock.Setup(m => m.PasswordSignInAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                    .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
+
+                // Act
+                var result = await _loginModel.OnPostAsync(null);
+
+                // Assert
+                _urlHelperMock.Verify(u => u.Content("~/management"), Times.Once);
+            }
+
+
+            [Fact]
+            public async Task OnPostAsync_UsesProvidedReturnUrl()
+            {
+                // Arrange
+                _loginModel.Input = new LoginModel.InputModel
+                {
+                    Email = "test@example.com",
+                    Password = "password",
+                    RememberMe = false
+                };
+
+                _loginModel.Url = _urlHelperMock.Object;
+
+                _signInManagerMock.Setup(m => m.PasswordSignInAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                    .ReturnsAsync(SignInResult.Success);
+
+                var providedReturnUrl = "/custom";
+
+                // Act
+                var result = await _loginModel.OnPostAsync(providedReturnUrl);
+
+                // Assert
+                result.Should().BeOfType<LocalRedirectResult>();
+
+                ((LocalRedirectResult)result).Url.Should().Be(providedReturnUrl);
+            }
         }
     }
-
-
 }

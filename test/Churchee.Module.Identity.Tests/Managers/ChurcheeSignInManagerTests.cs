@@ -1,7 +1,7 @@
 ﻿using Churchee.Module.Identity.Abstractions;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Managers;
-using Churchee.Module.Identity.Tests.Extensions;
+using Churchee.Module.Identity.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +30,7 @@ namespace Churchee.Module.Identity.Tests.Managers
 
         public ChurcheeSignInManagerTests()
         {
-            _userManagerMock = ChurcheeUserManagerMockExtensions.CreateMockChurcheeUserManager();
+            _userManagerMock = ChurcheeManagerHelpers.CreateMockChurcheeUserManager();
             _contextAccessorMock = new Mock<IHttpContextAccessor>();
             _claimsFactoryMock = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
             _optionsAccessorMock = new Mock<IOptions<IdentityOptions>>();

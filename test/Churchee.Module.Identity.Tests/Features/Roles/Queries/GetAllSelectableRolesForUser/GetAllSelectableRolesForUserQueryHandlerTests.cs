@@ -6,7 +6,7 @@ using Churchee.Module.Events.Specifications;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Features.Roles.Queries;
 using Churchee.Module.Identity.Managers;
-using Churchee.Module.Identity.Tests.Extensions;
+using Churchee.Module.Identity.Tests.Helpers;
 using FluentAssertions;
 using Moq;
 using System.Linq.Expressions;
@@ -25,7 +25,7 @@ namespace Churchee.Module.Identity.Tests.Features.Roles.Queries
         {
             _dataStoreMock = new Mock<IDataStore>();
             _repositoryMock = new Mock<IRepository<ApplicationRole>>();
-            _userManagerMock = ChurcheeUserManagerMockExtensions.CreateMockChurcheeUserManager();
+            _userManagerMock = ChurcheeManagerHelpers.CreateMockChurcheeUserManager();
             _dataStoreMock.Setup(ds => ds.GetRepository<ApplicationRole>()).Returns(_repositoryMock.Object);
             _handler = new GetAllSelectableRolesForUserQueryHandler(_dataStoreMock.Object, _userManagerMock.Object);
         }

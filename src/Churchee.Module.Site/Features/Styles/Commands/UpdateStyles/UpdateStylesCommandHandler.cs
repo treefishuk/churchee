@@ -1,5 +1,4 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
@@ -15,15 +14,13 @@ namespace Churchee.Module.Site.Features.Styles.Commands
         private readonly IDataStore _storage;
         private readonly ICurrentUser _currentUser;
         private readonly ILogger _logger;
-        private readonly IJobService _jobService;
         private readonly ISassComplier _sassCompiler;
 
-        public UpdateStylesCommandHandler(IDataStore storage, ICurrentUser currentUser, ILogger<UpdateStylesCommandHandler> logger, IJobService jobService, ISassComplier sassCompiler)
+        public UpdateStylesCommandHandler(IDataStore storage, ICurrentUser currentUser, ILogger<UpdateStylesCommandHandler> logger, ISassComplier sassCompiler)
         {
             _storage = storage;
             _currentUser = currentUser;
             _logger = logger;
-            _jobService = jobService;
             _sassCompiler = sassCompiler;
         }
 

@@ -81,7 +81,7 @@ namespace Churchee.Module.Dashboard.Middleware
                     using var scope = _serviceProvider.CreateScope();
                     var dbContext = scope.ServiceProvider.GetRequiredService<DbContext>();
 
-                    bool pageExists = dbContext.Set<WebContent>().Any(p => p.ApplicationTenantId == tenantId && p.Url == url);
+                    bool pageExists = await dbContext.Set<WebContent>().AnyAsync(p => p.ApplicationTenantId == tenantId && p.Url == url);
 
                     if (!pageExists)
                     {

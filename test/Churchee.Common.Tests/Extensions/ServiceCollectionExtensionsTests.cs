@@ -30,6 +30,28 @@ namespace Churchee.Common.Tests.Extensions
             mockAction2.Verify(a => a.Execute(It.IsAny<IServiceCollection>(), It.IsAny<IServiceProvider>()), Times.Once);
         }
 
+
+        [Fact]
+        public void AddSiteServicesActions_ShouldRegisterAndExecuteAllConfigureServicesActions()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            var mockAction1 = new Mock<IConfigureSiteServicesAction>();
+            var mockAction2 = new Mock<IConfigureSiteServicesAction>();
+            mockAction1.Setup(a => a.Priority).Returns(1);
+            mockAction2.Setup(a => a.Priority).Returns(2);
+
+            services.AddSingleton(mockAction1.Object);
+            services.AddSingleton(mockAction2.Object);
+
+            // Act
+            services.AddSiteServicesActions();
+
+            // Assert
+            mockAction1.Verify(a => a.Execute(It.IsAny<IServiceCollection>(), It.IsAny<IServiceProvider>()), Times.Once);
+            mockAction2.Verify(a => a.Execute(It.IsAny<IServiceCollection>(), It.IsAny<IServiceProvider>()), Times.Once);
+        }
+
         [Fact]
         public void RegisterSeedActions_ShouldRegisterAllSeedDataTypes()
         {
