@@ -43,6 +43,32 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Infrastructure
                 Times.Never);
         }
 
+        [Fact]
+        public async Task SendEmailAsync_HttpClientReturnsError_LogsError()
+        {
+            // Arrange
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.NotFound));
+
+            httpClient.BaseAddress = new Uri("http://localhost/");
+
+            _httpClientFactoryMock.Setup(f => f.CreateClient("MailGun")).Returns(httpClient);
+
+            var service = new MailGunEmailService(_loggerMock.Object, SetUpValidOptions(), _httpClientFactoryMock.Object);
+
+            // Act
+            await service.SendEmailAsync("to@example.com", "To Name", "Subject", "<b>html</b>", "plain");
+
+            // Assert
+            _loggerMock.Verify(logger => logger.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.IsAny<It.IsAnyType>(),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
+        }
+
+
 
         private static IConfiguration SetUpInValidOptions()
         {
