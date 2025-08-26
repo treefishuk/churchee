@@ -69,6 +69,21 @@ namespace Churchee.Common.Tests.ValueTypes
             Assert.Equal(expectedPath, actualPath);
         }
 
+        [Fact]
+        public void SupportedFileTypes_Property_SetAndGet_WorksCorrectly()
+        {
+            // Arrange
+            var upload = new Upload();
+            var expectedTypes = new[] { ".jpg", ".png", ".pdf" };
+
+            // Act
+            upload.SupportedFileTypes = expectedTypes.ToString();
+            var actualTypes = upload.SupportedFileTypes;
+
+            // Assert
+            Assert.Equal(expectedTypes.ToString(), actualTypes);
+        }
+
     }
 
 }
