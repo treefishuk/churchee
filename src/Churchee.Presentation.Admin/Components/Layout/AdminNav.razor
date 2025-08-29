@@ -3,9 +3,18 @@
 @using Churchee.Common.Extensibility;
 @using Radzen.Blazor
 
+
+<li class="rz-navigation-item">
+    <a tabindex="-1" href="/management" class="rz-navigation-item-link rz-navigation-item-link-active" aria-current="page">
+        <i class="notranslate rzi rz-navigation-item-icon">dashboard</i>
+        <span class="rz-navigation-item-text">Dashboard</span>
+    </a>
+</li>
+
 @foreach (var item in menuItems.Where(w => w.Children.Any(a => a.RequiredRole == string.Empty || _currentUser.HasRole(a.RequiredRole))))
 {
     <RadzenPanelMenuItem Text="@item.Name" Icon="@item.Icon">
+
 
         @foreach (var child in item.Children)
         {
