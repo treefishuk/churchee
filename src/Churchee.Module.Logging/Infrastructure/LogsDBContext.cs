@@ -16,6 +16,8 @@ namespace Churchee.Module.Logging.Infrastructure
             modelBuilder.Entity<Log>(entity =>
             {
                 entity.ToTable("Logs");
+
+                entity.HasIndex(i => i.TimeStamp, "IX_Logs_TimeStamp_DESC").IsDescending(true);
             });
         }
     }
