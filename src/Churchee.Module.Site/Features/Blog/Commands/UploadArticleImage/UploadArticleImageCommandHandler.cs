@@ -47,11 +47,11 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             using var stream = new MemoryStream(bytes);
 
-            var imageStream = _imageProcessor.ResizeImage(stream, request.Width ?? 1920, 0, ".webp");
+            var imageStream = await _imageProcessor.ResizeImageAsync(stream, request.Width ?? 1920, 0, ".webp", cancellationToken);
 
             string finalFilePath = await _blobStore.SaveAsync(applicationTenantId, filePath, imageStream, true, default);
 
-            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalFilePath, bytes, true));
+            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalFilePath, bytes, true, CancellationToken.None));
 
             return ReturnHtml(request, finalFilePath);
         }

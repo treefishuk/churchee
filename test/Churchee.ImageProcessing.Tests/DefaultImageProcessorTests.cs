@@ -7,7 +7,7 @@ namespace Churchee.ImageProcessing.Tests
     public class DefaultImageProcessorTests
     {
         [Fact]
-        public void CreateCrop_ShouldReturnCroppedImageStream()
+        public async Task CreateCrop_ShouldReturnCroppedImageStream()
         {
             // Arrange
             var processor = new DefaultImageProcessor();
@@ -17,7 +17,7 @@ namespace Churchee.ImageProcessing.Tests
             stream.Position = 0;
 
             // Act
-            var result = processor.CreateCrop(stream, 50, ".png");
+            var result = await processor.CreateCropAsync(stream, 50, ".png", CancellationToken.None);
 
             // Assert
             result.Should().NotBeNull();
@@ -27,7 +27,7 @@ namespace Churchee.ImageProcessing.Tests
         }
 
         [Fact]
-        public void ResizeImage_ShouldReturnResizedImageStream()
+        public async Task ResizeImage_ShouldReturnResizedImageStream()
         {
             // Arrange
             var processor = new DefaultImageProcessor();
@@ -37,7 +37,7 @@ namespace Churchee.ImageProcessing.Tests
             stream.Position = 0;
 
             // Act
-            var result = processor.ResizeImage(stream, 50, 0, ".png");
+            var result = await processor.ResizeImageAsync(stream, 50, 0, ".png", CancellationToken.None);
 
             // Assert
             result.Should().NotBeNull();
@@ -47,7 +47,7 @@ namespace Churchee.ImageProcessing.Tests
         }
 
         [Fact]
-        public void Process_ShouldReturnOriginalStream_WhenWidthAndHeightAreZero()
+        public async Task Process_ShouldReturnOriginalStream_WhenWidthAndHeightAreZero()
         {
             // Arrange
             var processor = new DefaultImageProcessor();
@@ -57,7 +57,7 @@ namespace Churchee.ImageProcessing.Tests
             stream.Position = 0;
 
             // Act
-            var result = processor.ResizeImage(stream, 0, 0, ".png");
+            var result = await processor.ResizeImageAsync(stream, 0, 0, ".png", CancellationToken.None);
             result.Position = 0;
 
             // Assert

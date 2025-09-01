@@ -51,7 +51,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             byte[] bytes = ms.ConvertStreamToByteArray();
 
-            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalFilePath, bytes, true));
+            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalFilePath, bytes, true, CancellationToken.None));
 
             return new CommandResponse();
         }
