@@ -74,9 +74,9 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             foreach (var item in podcastShows)
             {
-                var audioUri = item.Enclosure.Url;
+                string audioUri = item.Enclosure.Url;
 
-                var alreadyExists = repo.AnyWithFiltersDisabled(w => w.AudioUri == audioUri && w.ApplicationTenantId == applicationTenantId);
+                bool alreadyExists = repo.AnyWithFiltersDisabled(w => w.AudioUri == audioUri && w.ApplicationTenantId == applicationTenantId);
 
                 if (alreadyExists)
                 {
@@ -125,13 +125,13 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             var imageStream = await httpClient.GetStreamAsync(sourceImageUrl, cancellationToken);
 
-            var resizedImageStream = _imageProcessor.ResizeImage(imageStream, 350, 0, ext);
+            var resizedImageStream = await _imageProcessor.ResizeImageAsync(imageStream, 350, 0, ext, cancellationToken);
 
             await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, cancellationToken);
 
             var originalImgStream = await _blobStore.GetAsync(applicationTenantId, $"/img/audio/{fileName}", cancellationToken);
 
-            var thumbnailImage = _imageProcessor.ResizeImage(originalImgStream, 50, 0, ext);
+            var thumbnailImage = await _imageProcessor.ResizeImageAsync(originalImgStream, 50, 0, ext, cancellationToken);
 
             await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, cancellationToken);
         }
@@ -139,7 +139,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
         private async Task AddNewPodcast(Guid applicationTenantId, string podcastsUrl, List<Podcast> podcasts, RssChannelItem item, CancellationToken cancellationToken)
         {
-            Guid podcastDetailPageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.PodcastDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
+            var podcastDetailPageTypeId = await _dataStore.GetRepository<PageType>().FirstOrDefaultAsync(new PageTypeFromSystemKeySpecification(PageTypes.PodcastDetailPageTypeId, applicationTenantId), s => s.Id, cancellationToken);
 
             if (podcastDetailPageTypeId == Guid.Empty)
             {
