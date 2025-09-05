@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Hangfire.Filters;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Antiforgery;

@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Settings.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Settings.Tests.Entities
 {

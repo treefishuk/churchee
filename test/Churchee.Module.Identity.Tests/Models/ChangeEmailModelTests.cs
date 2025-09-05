@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Identity.Models;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Identity.Tests.Models
@@ -15,7 +15,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = new ValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeFalse();
@@ -31,7 +31,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = new ValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeFalse();
@@ -47,7 +47,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = new ValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeTrue();

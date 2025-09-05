@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Specifications;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using System.Linq.Expressions;
 
 namespace Churchee.Module.Dashboard.Tests.Specifications

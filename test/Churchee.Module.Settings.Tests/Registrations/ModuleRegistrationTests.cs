@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Settings.Tests.Registrations
 {
@@ -11,7 +11,7 @@ namespace Churchee.Module.Settings.Tests.Registrations
             var moduleRegistration = new ModuleRegistration();
 
             // Act
-            var moduleName = moduleRegistration.Name;
+            string moduleName = moduleRegistration.Name;
 
             // Assert
             moduleName.Should().NotBeNull();

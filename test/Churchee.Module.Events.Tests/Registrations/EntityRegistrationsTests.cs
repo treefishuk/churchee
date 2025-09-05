@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Registration;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Events.Tests.Registrations

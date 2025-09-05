@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Identity.Features.HIBP.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;

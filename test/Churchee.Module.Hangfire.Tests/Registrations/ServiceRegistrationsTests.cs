@@ -1,5 +1,5 @@
 using Churchee.Module.Hangfire.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;

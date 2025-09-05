@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Hosting;
@@ -45,7 +45,7 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
             //act
             HangfireExtensions.CreateDatabaseIfNotExists(configurationMock.Object, GetHangfireConnectionString());
 
-            var exists = await DatabaseExists();
+            bool exists = await DatabaseExists();
 
             exists.Should().BeTrue();
 
@@ -99,11 +99,11 @@ namespace Churchee.Module.Hangfire.Tests.Extensions
             using DbConnection connection = new SqlConnection(_msSqlContainer.GetConnectionString());
             await connection.OpenAsync();
 
-            using DbCommand command = connection.CreateCommand();
+            using var command = connection.CreateCommand();
 
             command.CommandText = "SELECT database_id FROM sys.databases WHERE name = 'Hangfire'";
 
-            var result = await command.ExecuteScalarAsync();
+            object? result = await command.ExecuteScalarAsync();
 
             return result != null;
         }

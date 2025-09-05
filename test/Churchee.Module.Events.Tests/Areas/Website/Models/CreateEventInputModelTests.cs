@@ -1,10 +1,5 @@
 ﻿using Churchee.Module.Events.Areas.Website.Models;
-using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Areas.Website.Models
 {

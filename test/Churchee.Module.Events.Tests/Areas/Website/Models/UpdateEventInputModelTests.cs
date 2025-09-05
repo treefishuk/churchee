@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Events.Areas.Website.Models;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Areas.Website.Models
 {

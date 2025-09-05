@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Site.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Site.Tests.Entities
 {
@@ -15,7 +15,7 @@ namespace Churchee.Module.Site.Tests.Entities
             };
 
             // Act
-            var devName = pageTypeProperty.DevName;
+            string devName = pageTypeProperty.DevName;
 
             // Assert
             devName.Should().Be("sampleName");

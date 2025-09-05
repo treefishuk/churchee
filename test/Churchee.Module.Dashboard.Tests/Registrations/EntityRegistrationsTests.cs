@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Dashboard.Tests.Registrations

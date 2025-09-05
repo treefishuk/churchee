@@ -4,7 +4,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Entities;
 using Churchee.Module.Podcasts.Features.Queries;
 using Churchee.Module.Podcasts.Specifications;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using System.Linq.Expressions;
 

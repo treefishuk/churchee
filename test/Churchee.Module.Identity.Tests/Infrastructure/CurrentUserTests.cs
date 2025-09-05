@@ -2,7 +2,7 @@
 using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
 using Churchee.Module.Identity.Tests.Helpers;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;

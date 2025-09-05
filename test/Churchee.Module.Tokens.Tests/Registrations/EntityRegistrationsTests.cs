@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -18,7 +18,7 @@ namespace Churchee.Module.Tokens.Test.Registrations
             var tokenEntityType = modelBuilder.Model.FindEntityType(typeof(Token));
 
             // Assert Table Name
-            tokenEntityType?.GetTableName().Should().Be("Tokens");
+            tokenEntityType?.GetTableName()?.Should().Be("Tokens");
 
             // Assert Properties
             tokenEntityType?.FindProperty(nameof(Token.Key))?.GetMaxLength().Should().Be(100);

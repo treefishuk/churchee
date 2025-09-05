@@ -1,6 +1,6 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Settings.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Churchee.Module.Settings.Tests.Registrations

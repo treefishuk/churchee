@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.ValueTypes;
 using Churchee.Module.Identity.Models;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
