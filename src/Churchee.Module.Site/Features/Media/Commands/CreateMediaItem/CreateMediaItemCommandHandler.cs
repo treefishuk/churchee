@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Common.Validation;
@@ -15,13 +16,15 @@ namespace Churchee.Module.Site.Features.Media.Commands
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
         private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IImageProcessor _imageProcessor;
 
-        public CreateMediaItemCommandHandler(IBlobStore blobStore, IDataStore dataStore, ICurrentUser currentUser, IBackgroundJobClient backgroundJobClient)
+        public CreateMediaItemCommandHandler(IBlobStore blobStore, IDataStore dataStore, ICurrentUser currentUser, IBackgroundJobClient backgroundJobClient, IImageProcessor imageProcessor)
         {
             _blobStore = blobStore;
             _dataStore = dataStore;
             _currentUser = currentUser;
             _backgroundJobClient = backgroundJobClient;
+            _imageProcessor = imageProcessor;
         }
 
         public async Task<CommandResponse> Handle(CreateMediaItemCommand request, CancellationToken cancellationToken)
@@ -34,9 +37,11 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string filePath = $"/{folderPath.ToDevName()}{request.FileName.ToDevName()}{request.FileExtension}";
+            string filePath = $"/{folderPath.ToDevName()}{request.FileName.ToDevName()}.webp";
 
-            string finalFilePath = await _blobStore.SaveAsync(applicationTenantId, filePath, ms, true, cancellationToken);
+            using var webpStream = await _imageProcessor.ConvertToWebP(ms, cancellationToken);
+
+            string finalFilePath = await _blobStore.SaveAsync(applicationTenantId, filePath, webpStream, true, cancellationToken);
 
             var media = new MediaItem(applicationTenantId, request.Name, filePath, request.Description, request.AdditionalContent, request.FolderId, request.LinkUrl, request.CssClass);
 
