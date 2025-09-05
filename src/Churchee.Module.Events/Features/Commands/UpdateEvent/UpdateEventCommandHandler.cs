@@ -100,9 +100,9 @@ namespace Churchee.Module.Events.Features.Commands
 
                 string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, false, cancellationToken);
 
-                var bytes = ms.ConvertStreamToByteArray();
+                byte[] bytes = ms.ConvertStreamToByteArray();
 
-                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
+                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, bytes, true, CancellationToken.None));
 
                 return finalImagePath;
             }

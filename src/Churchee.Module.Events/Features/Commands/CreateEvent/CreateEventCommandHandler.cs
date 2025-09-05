@@ -106,7 +106,7 @@ namespace Churchee.Module.Events.Features.Commands
 
                 byte[] bytes = ms.ConvertStreamToByteArray();
 
-                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCrops(applicationTenantId, finalImagePath, bytes, true));
+                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, bytes, true, CancellationToken.None));
 
                 return finalImagePath;
             }

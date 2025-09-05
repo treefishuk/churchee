@@ -11,7 +11,7 @@ namespace Churchee.ImageProcessing
     public class DefaultImageProcessor : IImageProcessor
     {
 
-        public Stream CreateCrop(Stream stream, int width, string extension)
+        private static Stream CreateCrop(Stream stream, int width, string extension)
         {
             var image = Image.Load(stream);
 
@@ -22,7 +22,7 @@ namespace Churchee.ImageProcessing
             return Process(stream, width, height, extension);
         }
 
-        public Stream ResizeImage(Stream stream, int width, int height, string extension)
+        private static Stream ResizeImage(Stream stream, int width, int height, string extension)
         {
             return Process(stream, width, height, extension);
         }
@@ -118,5 +118,14 @@ namespace Churchee.ImageProcessing
             image.Mutate(x => x.Crop(new Rectangle(cropX, 0, width, originalHeight)));
         }
 
+        public async Task<Stream> ResizeImageAsync(Stream stream, int width, int height, string extension, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() => ResizeImage(stream, width, height, extension), cancellationToken);
+        }
+
+        public async Task<Stream> CreateCropAsync(Stream stream, int width, string extension, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() => CreateCrop(stream, width, extension), cancellationToken);
+        }
     }
 }
