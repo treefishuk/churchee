@@ -24,7 +24,16 @@ namespace Churchee.Common.Abstractions.Utilities
         /// <param name="width">With of the desired crop</param>
         /// <param name="extension">.png, .jpg, .webp etc.</param>
         /// <param name="cancellationToken">Pass through a cancelation token</param>
-        /// <returns></returns>
+        /// <returns>Cropped Image Stream</returns>
         Task<Stream> CreateCropAsync(Stream stream, int width, string extension, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Convert any image to webp format, resizing if necessary
+        /// </summary>
+        /// <param name="stream">Source Stream</param>
+        /// <param name="cancellationToken">Pass through a cancelation token</param>
+        /// <returns>WebP Image Stream</returns>
+        Task<Stream> ConvertToWebP(Stream stream, CancellationToken cancellationToken);
+
     }
 }
