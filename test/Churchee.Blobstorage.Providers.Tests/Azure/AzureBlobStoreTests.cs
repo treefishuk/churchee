@@ -2,7 +2,7 @@ using Azure.Storage.Blobs;
 using Churchee.Blobstorage.Providers.Azure;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Configuration;
 using Moq;
 

@@ -10,7 +10,7 @@ using Churchee.Module.Podcasts.Spotify.Exceptions;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
 using Churchee.Module.Podcasts.Spotify.Specifications;
 using Churchee.Module.Site.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Moq;
 using Moq.Protected;

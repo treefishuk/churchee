@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Podcasts.Spotify.Specifications;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Podcasts.Spotify.Tests.Specifications
 {

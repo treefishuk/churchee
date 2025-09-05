@@ -1,5 +1,5 @@
 using Churchee.Data.EntityFramework.Admin.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

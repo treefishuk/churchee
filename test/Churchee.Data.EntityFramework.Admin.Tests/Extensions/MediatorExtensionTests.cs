@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Entities;
 using Churchee.Data.EntityFramework.Admin.Extensions;
 using Churchee.Module.Identity.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

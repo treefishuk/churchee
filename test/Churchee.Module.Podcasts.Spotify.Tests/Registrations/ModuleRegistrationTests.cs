@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Podcasts.Spotify.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Podcasts.Spotify.Tests.Registrations
 {
@@ -12,7 +12,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Registrations
             var moduleRegistration = new ModuleRegistration();
 
             // Act
-            var moduleName = moduleRegistration.Name;
+            string moduleName = moduleRegistration.Name;
 
             // Assert
             moduleName.Should().NotBeNull();

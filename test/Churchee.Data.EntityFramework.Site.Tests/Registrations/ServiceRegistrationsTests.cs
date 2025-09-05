@@ -1,6 +1,6 @@
 ﻿using Churchee.Data.EntityFramework.Site.Registrations;
 using Churchee.Module.Tenancy.Infrastructure;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

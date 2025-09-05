@@ -1,5 +1,5 @@
 ﻿using Churchee.ImageProcessing.Validation;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.ImageProcessing.Tests.Validation
 {

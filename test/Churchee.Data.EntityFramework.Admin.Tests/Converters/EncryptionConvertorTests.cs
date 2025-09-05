@@ -1,5 +1,5 @@
 ﻿using Churchee.Data.EntityFramework.Admin.Converters;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
 {

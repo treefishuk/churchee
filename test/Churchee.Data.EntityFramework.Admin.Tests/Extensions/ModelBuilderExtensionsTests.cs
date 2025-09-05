@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Attributes;
 using Churchee.Data.EntityFramework.Admin.Extensions;
 using Churchee.Data.EntityFramework.Shared.Extensions;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Data.EntityFramework.Admin.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Utilities;
 using Churchee.ImageProcessing.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Churchee.ImageProcessing.Tests.Registrations
