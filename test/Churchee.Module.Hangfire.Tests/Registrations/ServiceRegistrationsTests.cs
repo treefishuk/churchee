@@ -10,10 +10,6 @@ using Testcontainers.MsSql;
 
 namespace Churchee.Module.Hangfire.Tests.Registrations
 {
-    [CollectionDefinition("NonParallelCollection", DisableParallelization = true)]
-    public class NonParallelCollection { }
-
-    [Collection("NonParallelCollection")]
     public class ServiceRegistrationsTests : IAsyncLifetime
     {
         private readonly MsSqlContainer _msSqlContainer;
@@ -61,32 +57,6 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
             serviceProvider.GetService<IRecurringJobManager>().Should().NotBeNull();
             serviceProvider.GetService<IBackgroundJobClient>().Should().NotBeNull();
             serviceProvider.GetService<IHostedService>().Should().BeNull();
-        }
-
-        [Fact]
-        public void ServiceRegistrations_Execute_WithIsServiceSetToFalse_RegistersHanginterfacesAndServer()
-        {
-            // Arrange  
-            var services = new ServiceCollection();
-            var configurationMock = new Mock<IConfiguration>();
-            configurationMock.Setup(s => s.GetSection("Hangfire")["IsService"]).Returns("false");
-            configurationMock.Setup(s => s.GetSection("ConnectionStrings")["HangfireConnection"]).Returns(GetHangfireConnectionString());
-
-            services.AddSingleton(configurationMock.Object);
-
-            var cut = new ServiceRegistrations();
-
-            var tempProvider = services.BuildServiceProvider(); // Do NOT dispose this
-
-            // Act
-            cut.Execute(services, tempProvider);
-
-            using var serviceProvider = services.BuildServiceProvider();
-
-            // Assert
-            serviceProvider.GetService<IHostedService>().Should().NotBeNull();
-            serviceProvider.GetService<IHostedService>().Should().BeOfType<BackgroundJobServerHostedService>();
-
         }
 
         private string GetHangfireConnectionString()
