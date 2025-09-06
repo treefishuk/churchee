@@ -47,8 +47,10 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
 
             var cut = new ServiceRegistrations();
 
+            var tempProvider = services.BuildServiceProvider(); // Do NOT dispose this
+
             // Act
-            cut.Execute(services, services.BuildServiceProvider());
+            cut.Execute(services, tempProvider);
 
             using var serviceProvider = services.BuildServiceProvider();
 
@@ -70,8 +72,10 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
 
             var cut = new ServiceRegistrations();
 
+            var tempProvider = services.BuildServiceProvider(); // Do NOT dispose this
+
             // Act
-            cut.Execute(services, services.BuildServiceProvider());
+            cut.Execute(services, tempProvider);
 
             using var serviceProvider = services.BuildServiceProvider();
 
