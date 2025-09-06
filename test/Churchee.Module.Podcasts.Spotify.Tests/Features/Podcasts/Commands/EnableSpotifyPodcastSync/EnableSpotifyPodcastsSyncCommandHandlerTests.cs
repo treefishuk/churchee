@@ -171,10 +171,15 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
             _pageTypeRepositoryMock.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.Empty);
 
             // Act
-            Func<Task> act = async () => await _handler.SyncPodcasts(command, tenantId, rssFeed, CancellationToken.None);
+            var act = async () => await _handler.SyncPodcasts(command, tenantId, rssFeed, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<PodcastSyncException>().WithMessage("podcastDetailPageTypeId is Empty");
+
+            var test = act;
+
+            await Assert.ThrowsAsync<PodcastSyncException>(act);
+
+            await act.Should().ThrowAsync<PodcastSyncException>("podcastDetailPageTypeId is Empty");
         }
 
         private void ConfigureTestXml()
@@ -183,8 +188,8 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns(async (HttpRequestMessage request, CancellationToken token) =>
                 {
-                    HttpResponseMessage response = new HttpResponseMessage();
-                    var xmlFilePath = "Samples/TestSpotifyData.xml";
+                    var response = new HttpResponseMessage();
+                    string xmlFilePath = "Samples/TestSpotifyData.xml";
 
                     response.Content = new StringContent(await File.ReadAllTextAsync(xmlFilePath, token));
 

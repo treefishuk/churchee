@@ -18,8 +18,8 @@ namespace Churchee.Module.Identity.Tests.Entities
 
             //assert
             cut.ApplicationTenantId.Should().Be(applicationTenantId);
-            cut.UserName.Should().Be(userName);
-            cut.Email.Should().Be(email);
+            cut.UserName?.Should().Be(userName);
+            cut.Email?.Should().Be(email);
 
         }
     }

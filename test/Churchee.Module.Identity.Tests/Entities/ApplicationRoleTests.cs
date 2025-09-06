@@ -17,7 +17,7 @@ namespace Churchee.Module.Identity.Tests.Entities
 
             //assert
             cut.Id.Should().Be(id);
-            cut.Name.Should().Be(name);
+            cut.Name?.Should().Be(name);
             cut.Selectable.Should().BeFalse();
         }
 
@@ -34,7 +34,7 @@ namespace Churchee.Module.Identity.Tests.Entities
 
             //assert
             cut.Id.Should().Be(id);
-            cut.Name.Should().Be(name);
+            cut.Name?.Should().Be(name);
             cut.Selectable.Should().BeTrue();
         }
 

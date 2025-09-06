@@ -1,17 +1,11 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Entities;
-using Churchee.Module.Videos.Features.Commands;
 using Churchee.Module.Videos.Helpers;
 using Moq;
-using Xunit;
-using System.Linq;
 
 namespace Churchee.Module.Videos.Features.Commands
 {
@@ -25,12 +19,12 @@ namespace Churchee.Module.Videos.Features.Commands
             var currentUserMock = new Mock<ICurrentUser>(MockBehavior.Strict);
             var settingStoreMock = new Mock<ISettingStore>(MockBehavior.Strict);
             var applicationTenantId = Guid.NewGuid();
-            var pageName = "videos";
+            string pageName = "videos";
             var command = new VideosEnabledCommand(pageName);
             var tenant = new ApplicationTenant(applicationTenantId, "TestTenant", 123);
 
             currentUserMock.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(applicationTenantId);
-            settingStoreMock.Setup(x => x.GetSettingValue(Settings.VideosNameId, applicationTenantId)).ReturnsAsync((string)null);
+            settingStoreMock.Setup(x => x.GetSettingValue(Settings.VideosNameId, applicationTenantId)).ReturnsAsync((string?)null);
             settingStoreMock.Setup(x => x.AddSetting(Settings.VideosNameId, applicationTenantId, It.IsAny<string>(), pageName)).Returns(Task.CompletedTask);
 
             var appTenantRepo = new Mock<IRepository<ApplicationTenant>>();

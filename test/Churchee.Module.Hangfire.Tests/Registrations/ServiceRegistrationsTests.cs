@@ -73,16 +73,17 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
             services.AddSingleton(configurationMock.Object);
 
             var serviceProvider = services.BuildServiceProvider();
+
             var cut = new ServiceRegistrations();
 
             // Act
             cut.Execute(services, serviceProvider);
 
-            serviceProvider = services.BuildServiceProvider();
+            var newServiceProvider = services.BuildServiceProvider();
 
             // Assert
-            serviceProvider.GetService<IHostedService>().Should().NotBeNull();
-            serviceProvider.GetService<IHostedService>().Should().BeOfType<BackgroundJobServerHostedService>();
+            newServiceProvider.GetService<IHostedService>().Should().NotBeNull();
+            newServiceProvider.GetService<IHostedService>().Should().BeOfType<BackgroundJobServerHostedService>();
 
         }
 

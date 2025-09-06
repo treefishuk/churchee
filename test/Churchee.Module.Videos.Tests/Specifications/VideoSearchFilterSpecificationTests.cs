@@ -1,9 +1,3 @@
-using System;
-using Churchee.Module.Videos.Specifications;
-using Xunit;
-using Churchee.Module.Videos.Entities;
-using System.Linq.Expressions;
-
 namespace Churchee.Module.Videos.Specifications
 {
     public class VideoSearchFilterSpecificationTests
@@ -25,7 +19,7 @@ namespace Churchee.Module.Videos.Specifications
         public void Constructor_WithSearchText_AddsWhereCriteria()
         {
             // Arrange
-            var searchText = "test";
+            string searchText = "test";
 
             // Act
             var spec = new VideoSearchFilterSpecification(searchText);

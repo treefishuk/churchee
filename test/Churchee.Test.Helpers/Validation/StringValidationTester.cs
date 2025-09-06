@@ -15,5 +15,18 @@ namespace Churchee.Test.Helpers.Validation
         {
             Assert.Equal(string.Empty, _instance);
         }
+
+        public void NotBeEmpty()
+        {
+            Assert.NotEqual(string.Empty, _instance);
+        }
+
+        public void ContainAll(params string[] strings)
+        {
+            foreach (string str in strings)
+            {
+                Assert.Contains(str, _instance);
+            }
+        }
     }
 }

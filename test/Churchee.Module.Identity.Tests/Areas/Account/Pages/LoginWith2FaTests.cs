@@ -149,8 +149,10 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
             var result = await _model.OnPostAsync(false, null);
 
             // Assert
+            var errors = _model.ModelState.TryGetValue(string.Empty, out var entry) ? entry?.Errors : null;
+            Assert.NotNull(errors);
+            Assert.Contains(errors, e => e.ErrorMessage == "Invalid authenticator code.");
             Assert.IsType<PageResult>(result);
-            Assert.Contains(_model.ModelState[string.Empty].Errors, e => e.ErrorMessage == "Invalid authenticator code.");
         }
     }
 }

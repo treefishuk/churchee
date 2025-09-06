@@ -17,7 +17,7 @@ namespace Churchee.Module.Events.Tests.Registrations
             var eventEntityType = modelBuilder.Model.FindEntityType(typeof(Event));
 
             // Assert Table Name
-            eventEntityType?.GetTableName().Should().Be("Events");
+            eventEntityType?.GetTableName()?.Should().Be("Events");
 
 
             // Assert Properties
@@ -29,7 +29,7 @@ namespace Churchee.Module.Events.Tests.Registrations
 
             eventEntityType?.FindProperty(nameof(Event.PostCode))?.GetMaxLength().Should().Be(20);
 
-            eventEntityType?.FindProperty(nameof(Event.Content))?.GetColumnType().Should().Be("nvarchar(max)");
+            eventEntityType?.FindProperty(nameof(Event.Content))?.GetColumnType()?.Should().Be("nvarchar(max)");
 
         }
 
@@ -43,7 +43,7 @@ namespace Churchee.Module.Events.Tests.Registrations
             var eventEntityType = modelBuilder.Model.FindEntityType(typeof(Event));
 
             // Assert Table Name
-            eventDateEntityType?.GetTableName().Should().Be("EventDates");
+            eventDateEntityType?.GetTableName()?.Should().Be("EventDates");
 
             // Assert Keys
 

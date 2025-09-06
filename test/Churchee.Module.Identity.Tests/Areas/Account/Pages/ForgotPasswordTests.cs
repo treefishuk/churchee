@@ -98,7 +98,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
             sut.Input = new ForgotPasswordModel.InputModel { Email = "user@example.com" };
 
             var user = new ApplicationUser(Guid.NewGuid(), "user", "user@example.com");
-            userManager.Setup(m => m.FindByEmailAsync(user.Email)).ReturnsAsync(user);
+            userManager.Setup(m => m.FindByEmailAsync(user.Email!)).ReturnsAsync(user);
             userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(false);
 
             var result = await sut.OnPostAsync();
@@ -115,7 +115,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
             sut.Input = new ForgotPasswordModel.InputModel { Email = "user@example.com" };
 
             var user = new ApplicationUser(Guid.NewGuid(), "user", "user@example.com");
-            userManager.Setup(m => m.FindByEmailAsync(user.Email)).ReturnsAsync(user);
+            userManager.Setup(m => m.FindByEmailAsync(user.Email!)).ReturnsAsync(user);
             userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(true);
             userManager.Setup(m => m.GeneratePasswordResetTokenAsync(user)).ReturnsAsync("reset-token");
 
@@ -143,7 +143,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
             sut.Input = new ForgotPasswordModel.InputModel { Email = "user@example.com" };
 
             var user = new ApplicationUser(Guid.NewGuid(), "user", "user@example.com");
-            userManager.Setup(m => m.FindByEmailAsync(user.Email)).ReturnsAsync(user);
+            userManager.Setup(m => m.FindByEmailAsync(user.Email!)).ReturnsAsync(user);
             userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(true);
             userManager.Setup(m => m.GeneratePasswordResetTokenAsync(user)).ReturnsAsync("reset-token");
 
