@@ -10,6 +10,10 @@ using Testcontainers.MsSql;
 
 namespace Churchee.Module.Hangfire.Tests.Registrations
 {
+    [CollectionDefinition("NonParallelCollection", DisableParallelization = true)]
+    public class NonParallelCollection { }
+
+    [Collection("NonParallelCollection")]
     public class ServiceRegistrationsTests : IAsyncLifetime
     {
         private readonly MsSqlContainer _msSqlContainer;
