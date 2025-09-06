@@ -18,5 +18,15 @@ namespace Churchee.Test.Helpers.Validation
 
             Assert.InRange(_instance, min, max);
         }
+
+        public void BeOnOrAfter(DateTime dateTime)
+        {
+            Assert.True(_instance >= dateTime);
+        }
+
+        public void BeOnOrBefore(DateTime dateTime)
+        {
+            Assert.True(_instance <= dateTime);
+        }
     }
 }

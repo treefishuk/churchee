@@ -5,6 +5,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Entities;
 using Churchee.Module.Videos.Helpers;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 
 namespace Churchee.Module.Videos.Features.Commands
@@ -54,8 +55,8 @@ namespace Churchee.Module.Videos.Features.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<CommandResponse>(result);
+            result.Should().NotBeNull();
+            result.Should().BeOfType<CommandResponse>();
         }
     }
 }

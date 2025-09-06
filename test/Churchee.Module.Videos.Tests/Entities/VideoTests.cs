@@ -1,3 +1,5 @@
+using Churchee.Test.Helpers.Validation;
+
 namespace Churchee.Module.Videos.Entities
 {
     public class VideoTests
@@ -35,16 +37,18 @@ namespace Churchee.Module.Videos.Entities
             var after = DateTime.Now;
 
             // Assert
-            Assert.Equal(videoUri, video.VideoUri);
-            Assert.Equal(publishedDate, video.PublishedDate);
-            Assert.Equal(thumbnailUrl, video.ThumbnailUrl);
-            Assert.Equal(sourceName, video.SourceName);
-            Assert.Equal(sourceId, video.SourceId);
-            Assert.True(video.SyncDate >= before && video.SyncDate <= after);
-            Assert.True(video.IsSystem);
-            Assert.Equal(pageTypeId, video.PageTypeId);
-            Assert.Equal($"/{videosPath.ToLowerInvariant()}/{title.ToURL()}", video.Url);
-            Assert.True(video.Published);
+            video.VideoUri.Should().Be(videoUri);
+            video.PublishedDate.Should().Be(publishedDate);
+            video.ThumbnailUrl.Should().Be(thumbnailUrl);
+            video.SourceName.Should().Be(sourceName);
+            video.SourceId.Should().Be(sourceId);
+            video.SyncDate.Should().BeOnOrAfter(before);
+            video.SyncDate.Should().BeOnOrBefore(after);
+            video.IsSystem.Should().BeTrue();
+            video.PageTypeId.Should().Be(pageTypeId);
+            video.Url.Should().Be($"/{videosPath.ToLowerInvariant()}/{title.ToURL()}");
+            video.Published.Should().BeTrue();
+
         }
     }
 }

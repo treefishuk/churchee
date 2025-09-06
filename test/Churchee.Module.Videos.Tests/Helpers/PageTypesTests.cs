@@ -1,6 +1,4 @@
-using System;
-using Xunit;
-using Churchee.Module.Videos.Helpers;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Videos.Helpers
 {
@@ -9,13 +7,13 @@ namespace Churchee.Module.Videos.Helpers
         [Fact]
         public void VideoListingPageTypeId_IsExpectedGuid()
         {
-            Assert.Equal(Guid.Parse("655a429f-c01a-4559-9c25-c2c450e7c14d"), PageTypes.VideoListingPageTypeId);
+            PageTypes.VideoListingPageTypeId.Should().Be(Guid.Parse("655a429f-c01a-4559-9c25-c2c450e7c14d"));
         }
 
         [Fact]
         public void VideoDetailPageTypeId_IsExpectedGuid()
         {
-            Assert.Equal(Guid.Parse("666e214e-bfe7-46ef-84ee-fdcda53c12c3"), PageTypes.VideoDetailPageTypeId);
+            PageTypes.VideoDetailPageTypeId.Should().Be(Guid.Parse("666e214e-bfe7-46ef-84ee-fdcda53c12c3"));
         }
     }
 }

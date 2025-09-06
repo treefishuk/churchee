@@ -175,10 +175,6 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
 
             // Assert
 
-            var test = act;
-
-            await Assert.ThrowsAsync<PodcastSyncException>(act);
-
             await act.Should().ThrowAsync<PodcastSyncException>("podcastDetailPageTypeId is Empty");
         }
 
