@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
+    <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>
