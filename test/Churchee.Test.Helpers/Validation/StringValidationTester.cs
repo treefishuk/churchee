@@ -28,5 +28,10 @@ namespace Churchee.Test.Helpers.Validation
                 Assert.Contains(str, _instance);
             }
         }
+
+        public void Contain(string str)
+        {
+            Assert.Contains(str, _instance);
+        }
     }
 }
