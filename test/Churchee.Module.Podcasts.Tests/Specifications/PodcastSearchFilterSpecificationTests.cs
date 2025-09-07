@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Podcasts.Entities;
 using Churchee.Module.Podcasts.Specifications;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Podcasts.Tests.Specifications
 {

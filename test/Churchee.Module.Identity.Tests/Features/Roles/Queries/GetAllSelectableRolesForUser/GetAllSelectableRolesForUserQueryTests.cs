@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Identity.Features.Roles.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Identity.Tests.Features.Roles.Queries.GetAllSelectableRolesForUser
 {

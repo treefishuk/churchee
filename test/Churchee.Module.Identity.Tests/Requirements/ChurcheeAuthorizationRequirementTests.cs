@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Identity.Requirements;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;

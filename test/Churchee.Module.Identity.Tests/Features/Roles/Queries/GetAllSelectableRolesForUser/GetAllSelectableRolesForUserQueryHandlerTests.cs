@@ -7,7 +7,7 @@ using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Features.Roles.Queries;
 using Churchee.Module.Identity.Managers;
 using Churchee.Module.Identity.Tests.Helpers;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using System.Linq.Expressions;
 

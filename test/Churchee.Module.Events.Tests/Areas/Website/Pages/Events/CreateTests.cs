@@ -5,7 +5,7 @@ using Churchee.Module.Events.Areas.Website.Pages.Events;
 using Churchee.Module.Events.Features.Commands;
 using Churchee.Module.Events.Tests.Areas.Shared.Pages;
 using Churchee.Module.UI.Components;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 

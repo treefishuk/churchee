@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

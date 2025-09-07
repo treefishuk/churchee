@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Tokens.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Xunit;
 
 namespace Churchee.Module.Tokens.Tests.Entities

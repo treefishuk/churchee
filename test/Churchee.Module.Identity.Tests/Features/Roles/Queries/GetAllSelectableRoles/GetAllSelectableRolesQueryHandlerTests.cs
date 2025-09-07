@@ -4,7 +4,7 @@ using Churchee.Common.ValueTypes;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Features.Roles.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using System.Linq.Expressions;
 

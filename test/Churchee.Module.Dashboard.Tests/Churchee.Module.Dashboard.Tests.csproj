@@ -16,7 +16,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="6.12.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
@@ -32,6 +31,7 @@
     <ProjectReference Include="..\..\src\Churchee.Data.EntityFramework.Admin\Churchee.Data.EntityFramework.Admin.csproj" />
     <ProjectReference Include="..\..\src\Churchee.Data.EntityFramework.Shared\Churchee.Data.EntityFramework.Shared.csproj" />
     <ProjectReference Include="..\..\src\Churchee.Module.Dashboard\Churchee.Module.Dashboard.csproj" />
+    <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

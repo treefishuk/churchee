@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Hangfire.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Hangfire.Tests.Registrations
 {

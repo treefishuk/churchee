@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Events.Registration;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 namespace Churchee.Module.Events.Tests.Registrations
 {
     public class ModuleRegistrationTests

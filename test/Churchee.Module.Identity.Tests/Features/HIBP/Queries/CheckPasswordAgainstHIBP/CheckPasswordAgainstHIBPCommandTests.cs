@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Identity.Features.HIBP.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgainstHIBP
 {

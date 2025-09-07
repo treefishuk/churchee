@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Podcasts.Entities;
 using Churchee.Module.Podcasts.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Podcasts.Tests.Registrations

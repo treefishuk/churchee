@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Podcasts.Features.Commands;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Podcasts.Tests.Features.Commands.PodcastsEnabled
 {
