@@ -17,7 +17,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
             var eventEntityType = modelBuilder.Model.FindEntityType(typeof(DataProtectionKey));
 
             // Assert Table Name
-            eventEntityType?.GetTableName().Should().Be("DataProtectionKey");
+            eventEntityType?.GetTableName()?.Should().Be("DataProtectionKey");
 
 
             // Assert Properties

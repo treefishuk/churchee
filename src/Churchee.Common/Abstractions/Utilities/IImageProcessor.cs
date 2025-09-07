@@ -34,6 +34,5 @@ namespace Churchee.Common.Abstractions.Utilities
         /// <param name="cancellationToken">Pass through a cancelation token</param>
         /// <returns>WebP Image Stream</returns>
         Task<Stream> ConvertToWebP(Stream stream, CancellationToken cancellationToken);
-
     }
 }

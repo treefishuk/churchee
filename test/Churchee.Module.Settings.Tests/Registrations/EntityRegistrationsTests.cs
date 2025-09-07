@@ -17,7 +17,7 @@ namespace Churchee.Module.Settings.Tests.Registrations
             var settingEntityType = modelBuilder.Model.FindEntityType(typeof(Setting));
 
             // Assert Table Name
-            settingEntityType?.GetTableName().Should().Be("Settings");
+            settingEntityType?.GetTableName()?.Should().Be("Settings");
 
             // Assert Properties
             settingEntityType?.FindProperty(nameof(Setting.Id))?.IsKey().Should().BeTrue();

@@ -36,7 +36,7 @@ namespace Churchee.ImageProcessing.Jobs
 
         private async Task CreateImageSizesAsync(Guid applicationTenantId, string originalImagePath, string suffix, int width, bool overrideExisting, CancellationToken cancellationToken)
         {
-            var (fileName, extension, folderPath) = GetFileInfo(originalImagePath);
+            var (fileName, folderPath) = GetFileInfo(originalImagePath);
 
             string imagePath = $"{folderPath}{fileName}_{suffix}";
 
@@ -52,7 +52,7 @@ namespace Churchee.ImageProcessing.Jobs
             await _blobStore.SaveAsync(applicationTenantId, $"{imagePath}{extension}", imageStream, overrideExisting, cancellationToken);
         }
 
-        private static (string fileName, string extension, string folderPath) GetFileInfo(string originalImagePath)
+        private static (string fileName, string folderPath) GetFileInfo(string originalImagePath)
         {
             string extension = Path.GetExtension(originalImagePath);
 
@@ -60,12 +60,12 @@ namespace Churchee.ImageProcessing.Jobs
 
             string folderPath = originalImagePath.Replace(extension, string.Empty).Replace(fileName, string.Empty);
 
-            return (fileName, extension, folderPath);
+            return (fileName, folderPath);
         }
 
         private async Task CreateImageCropsAsync(Guid applicationTenantId, string originalImagePath, string suffix, int width, bool overrideExisting, CancellationToken cancellationToken)
         {
-            var (fileName, extension, folderPath) = GetFileInfo(originalImagePath);
+            var (fileName, folderPath) = GetFileInfo(originalImagePath);
 
             string imagePath = $"{folderPath}{fileName}_{suffix}";
 
