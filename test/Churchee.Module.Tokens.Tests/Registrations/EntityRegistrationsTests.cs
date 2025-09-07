@@ -18,7 +18,7 @@ namespace Churchee.Module.Tokens.Test.Registrations
             var tokenEntityType = modelBuilder.Model.FindEntityType(typeof(Token));
 
             // Assert Table Name
-            tokenEntityType?.GetTableName().Should().Be("Tokens");
+            tokenEntityType?.GetTableName()?.Should().Be("Tokens");
 
             // Assert Properties
             tokenEntityType?.FindProperty(nameof(Token.Key))?.GetMaxLength().Should().Be(100);

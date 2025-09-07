@@ -6,7 +6,7 @@ namespace Churchee.Module.Identity.Tests.Entities
     public class ApplicationRoleTests
     {
         [Fact]
-        public void ApplicationRole_IdAndNameContructor_SetsProperties()
+        public void ApplicationRole_IdAndNameConstructor_SetsProperties()
         {
             //arrange
             var id = Guid.NewGuid();
@@ -17,12 +17,12 @@ namespace Churchee.Module.Identity.Tests.Entities
 
             //assert
             cut.Id.Should().Be(id);
-            cut.Name.Should().Be(name);
+            cut.Name?.Should().Be(name);
             cut.Selectable.Should().BeFalse();
         }
 
         [Fact]
-        public void ApplicationRole_IdNameAndSelectableContructor_SetsProperties()
+        public void ApplicationRole_IdNameAndSelectableConstructor_SetsProperties()
         {
             //arrange
             var id = Guid.NewGuid();
@@ -34,7 +34,7 @@ namespace Churchee.Module.Identity.Tests.Entities
 
             //assert
             cut.Id.Should().Be(id);
-            cut.Name.Should().Be(name);
+            cut.Name?.Should().Be(name);
             cut.Selectable.Should().BeTrue();
         }
 

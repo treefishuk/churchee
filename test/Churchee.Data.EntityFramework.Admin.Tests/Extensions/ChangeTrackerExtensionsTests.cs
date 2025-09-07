@@ -93,7 +93,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Extensions
             entities.ApplyTrimOnStringFields();
 
             // Assert
-            entity.TestProperty.Should().BeNull();
+            entity.TestProperty?.Should().BeNull();
         }
 
         public class TestDbContext : DbContext

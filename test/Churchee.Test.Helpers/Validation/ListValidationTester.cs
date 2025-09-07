@@ -43,7 +43,8 @@ namespace Churchee.Test.Helpers.Validation
 
         public void Contain(T v)
         {
-            Assert.Contains(_instance, x => x != null && x.Equals(v));
+            Assert.NotNull(_instance);
+            Assert.Contains(_instance, x => !object.Equals(x, default(T)) && x!.Equals(v));
         }
     }
 }

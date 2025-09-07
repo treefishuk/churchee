@@ -17,11 +17,11 @@ namespace Churchee.Module.Podcasts.Tests.Registrations
             var eventEntityType = modelBuilder.Model.FindEntityType(typeof(Podcast));
 
             // Assert Table Name
-            eventEntityType?.GetTableName().Should().Be("Podcasts");
+            eventEntityType?.GetTableName()?.Should().Be("Podcasts");
 
 
             // Assert Properties
-            eventEntityType?.FindProperty(nameof(Podcast.Content))?.GetColumnType().Should().Be("nvarchar(max)");
+            eventEntityType?.FindProperty(nameof(Podcast.Content))?.GetColumnType()?.Should().Be("nvarchar(max)");
         }
 
         private static ModelBuilder GetBuilder()
