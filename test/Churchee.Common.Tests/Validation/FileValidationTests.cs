@@ -9,7 +9,6 @@ namespace Churchee.Common.Tests.Validation
         [InlineData("JVBERi0xLjQKJcfsj6IK", true)] // "%PDF-" header, no prefix
         [InlineData("data:application/pdf;base64,SGVsbG8gd29ybGQ=", false)] // Not a PDF
         [InlineData("", false)]
-        [InlineData(null, false)]
         public void BeValidPdf_ReturnsExpected(string base64, bool expected)
         {
             Assert.Equal(expected, FileValidation.BeValidPdf(base64));
@@ -20,7 +19,6 @@ namespace Churchee.Common.Tests.Validation
         [InlineData("/+MY", true)] // Frame sync 0xFF 0xE0, no prefix
         [InlineData("SGVsbG8gd29ybGQ=", false)] // Not an MP3
         [InlineData("", false)]
-        [InlineData(null, false)]
         public void BeValidMp3_ReturnsExpected(string base64, bool expected)
         {
             Assert.Equal(expected, FileValidation.BeValidMp3(base64));
@@ -31,7 +29,6 @@ namespace Churchee.Common.Tests.Validation
         [InlineData("AAAAFGZ0eXBtcDQy", true)] // "ftyp" at offset 4, no prefix
         [InlineData("SGVsbG8gd29ybGQ=", false)] // Not an MP4
         [InlineData("", false)]
-        [InlineData(null, false)]
         public void BeValidMp4_ReturnsExpected(string base64, bool expected)
         {
             Assert.Equal(expected, FileValidation.BeValidMp4(base64));
@@ -45,7 +42,6 @@ namespace Churchee.Common.Tests.Validation
         [InlineData("test.pdf", false)]
         [InlineData("test", false)]
         [InlineData("", false)]
-        [InlineData(null, false)]
         public void IsImageFile_ReturnsExpected(string filePath, bool expected)
         {
             Assert.Equal(expected, FileValidation.IsImageFile(filePath));

@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Common.Tests.Extensions
 {

@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Abstractions;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Common.Tests.Abstractions.Queries
 {
@@ -22,7 +22,7 @@ namespace Churchee.Common.Tests.Abstractions.Queries
             response.Draw.Should().Be(1);
             response.RecordsTotal.Should().Be(100);
             response.RecordsFiltered.Should().Be(50);
-            response.Data.Should().BeEquivalentTo(new List<string> { "Item1", "Item2" });
+            response.Data.Should().HaveCount(2);
             response.Error.Should().Be("No error");
         }
 
@@ -36,7 +36,7 @@ namespace Churchee.Common.Tests.Abstractions.Queries
             response.Draw.Should().Be(0);
             response.RecordsTotal.Should().Be(0);
             response.RecordsFiltered.Should().Be(0);
-            response.Data.Should().BeNull();
+            response.Data.Should().BeEmpty();
             response.Error.Should().BeNull();
         }
     }

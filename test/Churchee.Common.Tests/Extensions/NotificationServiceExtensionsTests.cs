@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ResponseTypes;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Radzen;
 
 namespace Churchee.Common.Tests.Extensions

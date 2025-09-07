@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ResponseTypes;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Common.Tests.ResponseTypes
 {
