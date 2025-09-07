@@ -131,7 +131,7 @@ namespace Churchee.Common.Tests.Domain
             cut.ClearDomainEvents();
 
             //assert
-            cut.DomainEvents.Should().BeEmpty();
+            cut.DomainEvents.Should().BeNull();
         }
     }
 }
