@@ -55,7 +55,7 @@ namespace Churchee.Common.Tests.Domain
             var cut = new Mock<AggregateRoot>().Object;
 
             //assert
-            cut.DomainEvents.Should().BeEmpty();
+            cut.DomainEvents.Should().BeNull();
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace Churchee.Common.Tests.Domain
             cut.RemoveDomainEvent(notification);
 
             //assert
-            cut.DomainEvents.Should().BeEmpty();
+            cut.DomainEvents.Should().BeNull();
         }
 
         [Fact]

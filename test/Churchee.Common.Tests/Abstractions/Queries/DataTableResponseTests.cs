@@ -36,7 +36,7 @@ namespace Churchee.Common.Tests.Abstractions.Queries
             response.Draw.Should().Be(0);
             response.RecordsTotal.Should().Be(0);
             response.RecordsFiltered.Should().Be(0);
-            response.Data.Should().BeEmpty();
+            response.Data.Should().BeNull();
             response.Error.Should().BeNull();
         }
     }

@@ -31,6 +31,11 @@ namespace Churchee.Test.Helpers.Validation
             Assert.NotNull(_instance);
         }
 
+        public void BeNull()
+        {
+            Assert.Null(_instance);
+        }
+
         public void HaveCount(int count)
         {
             Assert.Equal(_instance.Count, count);
