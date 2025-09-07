@@ -1,5 +1,5 @@
 ﻿using Bogus;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 

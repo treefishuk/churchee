@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Helpers;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using System.Reflection;
 

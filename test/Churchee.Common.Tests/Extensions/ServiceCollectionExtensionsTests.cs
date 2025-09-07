@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Storage;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
