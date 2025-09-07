@@ -4,7 +4,7 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Entities;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Moq;
 
