@@ -3,7 +3,7 @@ using Churchee.Module.Identity.Areas.Account.Pages;
 
 namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
 {
-    using Churchee.Test.Helpers.Validation;
+    using global::Churchee.Test.Helpers.Validation;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
