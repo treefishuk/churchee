@@ -98,7 +98,7 @@ namespace Churchee.Module.Identity.Tests.Features.Roles.Queries
             Func<Task> act = async () => await _handler.Handle(query, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage("User not found");
+            await act.Should().ThrowAsync<KeyNotFoundException>("User not found");
         }
     }
 

@@ -18,14 +18,14 @@ namespace Churchee.Module.Identity.Tests.Registrations
             menuItems.Should().NotBeNull();
             menuItems.Should().HaveCount(1);
 
-            var mainMenuItem = menuItems.Should().ContainSingle().Subject;
+            var mainMenuItem = menuItems.First();
             mainMenuItem.Name.Should().Be("Configuration");
             mainMenuItem.Path.Should().Be("/management/configuration");
             mainMenuItem.Icon.Should().Be("settings");
             mainMenuItem.Order.Should().Be(1000);
             mainMenuItem.Children.Should().HaveCount(1);
 
-            var childMenuItem = mainMenuItem.Children.Should().ContainSingle().Subject;
+            var childMenuItem = mainMenuItem.Children.First();
             childMenuItem.Name.Should().Be("Contributors");
             childMenuItem.Path.Should().Be("/management/configuration/contributors");
             childMenuItem.Icon.Should().Be("supervisor_account");
