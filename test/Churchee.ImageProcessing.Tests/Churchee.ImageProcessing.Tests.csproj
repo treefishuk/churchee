@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
+    <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

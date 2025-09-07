@@ -23,7 +23,8 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             var result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(plainText);
 
             // Assert
-            result.Should().NotBeNullOrEmpty();
+            result.Should().NotBeNull();
+            result.Should().NotBeEmpty();
             result.Should().NotBe(plainText);
         }
 
@@ -38,7 +39,8 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             var result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(encryptedText);
 
             // Assert
-            result.Should().NotBeNullOrEmpty();
+            result.Should().NotBeNull();
+            result.Should().NotBeEmpty();
             result.Should().Be(plainText);
         }
 

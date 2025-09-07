@@ -18,14 +18,14 @@ namespace Churchee.Module.X.Tests.Registrations
             menuItems.Should().NotBeNull();
             menuItems.Should().HaveCount(1);
 
-            var mainMenuItem = menuItems.Should().ContainSingle().Subject;
+            var mainMenuItem = menuItems.First();
             mainMenuItem.Name.Should().Be("Integrations");
             mainMenuItem.Path.Should().Be("/management/integrations");
             mainMenuItem.Icon.Should().Be("integration_instructions");
             mainMenuItem.Order.Should().Be(100);
             mainMenuItem.Children.Should().HaveCount(1);
 
-            var childMenuItem = mainMenuItem.Children.Should().ContainSingle().Subject;
+            var childMenuItem = mainMenuItem.Children.First();
             childMenuItem.Name.Should().Be("X/Twitter Sync");
             childMenuItem.Path.Should().Be("/management/integrations/x");
             childMenuItem.Icon.Should().Be("message");

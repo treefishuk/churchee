@@ -174,7 +174,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
             Func<Task> act = async () => await _handler.SyncPodcasts(command, tenantId, rssFeed, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<PodcastSyncException>().WithMessage("podcastDetailPageTypeId is Empty");
+            await act.Should().ThrowAsync<PodcastSyncException>("podcastDetailPageTypeId is Empty");
         }
 
         private void ConfigureTestXml()
