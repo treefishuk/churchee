@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,7 +16,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="6.12.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="Testcontainers" Version="4.4.0" />
@@ -29,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Churchee.Blobstorage.Providers\Churchee.Blobstorage.Providers.csproj" />
+    <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

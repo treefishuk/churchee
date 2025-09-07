@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Tokens.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Xunit;
 namespace Churchee.Module.Tokens.Test.Registrations
 {

@@ -3,7 +3,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Styles.Queries;
 using Churchee.Module.Site.Specifications;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 
 namespace Churchee.Module.Site.Tests.Features.Styles.Queries.GetStyles

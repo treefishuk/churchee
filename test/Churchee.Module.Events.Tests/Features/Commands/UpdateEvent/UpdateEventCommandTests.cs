@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Events.Features.Commands;
 using Churchee.Module.Events.Models;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
 {

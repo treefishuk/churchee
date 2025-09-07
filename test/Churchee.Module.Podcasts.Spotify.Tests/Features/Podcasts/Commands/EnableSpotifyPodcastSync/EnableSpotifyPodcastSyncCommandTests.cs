@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.EnableSpotifyPodcastSync
 {

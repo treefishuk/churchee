@@ -3,7 +3,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Events.Features.Commands;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 
 namespace Churchee.Module.Events.Tests.Features.Commands.ActivateEvents

@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using System.Reflection;
 

@@ -4,7 +4,7 @@ using Churchee.Module.Podcasts.Features.Queries;
 using Churchee.Module.Podcasts.Tests.Areas.Shared.Pages;
 using Churchee.Module.Site.Features.CDN.Queries;
 using Churchee.Module.UI.Components;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using Index = Churchee.Module.Podcasts.Areas.Website.Pages.Podcasts.Index;
 

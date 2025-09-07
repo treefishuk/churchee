@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Features.Commands;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 
 namespace Churchee.Module.Events.Tests.Features.Commands.DeleteEvent

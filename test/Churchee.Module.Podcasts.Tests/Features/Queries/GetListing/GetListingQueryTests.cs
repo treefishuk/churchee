@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Podcasts.Features.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Podcasts.Tests.Features.Queries.GetListing
 {

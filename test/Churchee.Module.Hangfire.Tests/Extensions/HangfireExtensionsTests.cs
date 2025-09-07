@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Hosting;

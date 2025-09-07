@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Events.Features.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Features.Queries.GetListing
 {

@@ -5,7 +5,7 @@ using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Features.Commands;
 using Churchee.Module.Events.Models;
 using Churchee.Module.Events.Specifications;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Moq;
 

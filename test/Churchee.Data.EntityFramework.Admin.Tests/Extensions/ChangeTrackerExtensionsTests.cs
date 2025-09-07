@@ -1,5 +1,5 @@
 ﻿using Churchee.Data.EntityFramework.Admin.Extensions;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 

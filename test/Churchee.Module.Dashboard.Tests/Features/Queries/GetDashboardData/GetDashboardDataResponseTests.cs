@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Dashboard.Features.Queries;
 using Churchee.Module.Dashboard.Features.Queries.GetDashboardData;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Dashboard.Tests.Features.Queries
 {

@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.ValueTypes;
 using Churchee.Module.Identity.Models;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Identity.Tests.Models

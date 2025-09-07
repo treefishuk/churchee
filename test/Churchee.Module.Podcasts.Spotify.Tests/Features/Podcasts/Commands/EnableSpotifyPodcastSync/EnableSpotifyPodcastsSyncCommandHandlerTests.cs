@@ -10,7 +10,7 @@ using Churchee.Module.Podcasts.Spotify.Exceptions;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
 using Churchee.Module.Podcasts.Spotify.Specifications;
 using Churchee.Module.Site.Entities;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Hangfire;
 using Moq;
 using Moq.Protected;
@@ -174,7 +174,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
             Func<Task> act = async () => await _handler.SyncPodcasts(command, tenantId, rssFeed, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<PodcastSyncException>().WithMessage("podcastDetailPageTypeId is Empty");
+            await act.Should().ThrowAsync<PodcastSyncException>("podcastDetailPageTypeId is Empty");
         }
 
         private void ConfigureTestXml()

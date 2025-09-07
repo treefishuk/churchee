@@ -1,7 +1,7 @@
 ﻿using Bunit;
 using Churchee.Module.Events.Components;
 using Churchee.Module.Events.Models;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Components
 {

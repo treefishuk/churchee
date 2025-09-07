@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Registrations;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Dashboard.Tests.Registrations
@@ -17,7 +17,7 @@ namespace Churchee.Module.Dashboard.Tests.Registrations
             var eventEntityType = modelBuilder.Model.FindEntityType(typeof(PageView));
 
             // Assert Table Name
-            eventEntityType?.GetTableName().Should().Be("PageViews");
+            eventEntityType?.GetTableName()?.Should().Be("PageViews");
 
 
             // Assert Properties

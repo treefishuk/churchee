@@ -3,7 +3,7 @@ using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Storage;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Features.Contributors.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 
 namespace Churchee.Module.Identity.Tests.Features.Contributors.Queries.ListContributorsForTenant

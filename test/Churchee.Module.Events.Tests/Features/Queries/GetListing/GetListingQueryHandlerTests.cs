@@ -4,7 +4,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Features.Queries;
 using Churchee.Module.Events.Specifications;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using System.Linq.Expressions;
 

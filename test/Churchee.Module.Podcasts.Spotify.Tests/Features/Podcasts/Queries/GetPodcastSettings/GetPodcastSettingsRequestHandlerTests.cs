@@ -2,7 +2,7 @@
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 
 namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Queries.GetPodcastSettings

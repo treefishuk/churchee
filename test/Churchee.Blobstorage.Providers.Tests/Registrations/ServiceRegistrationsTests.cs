@@ -1,7 +1,7 @@
 ﻿using Churchee.Blobstorage.Providers.Azure;
 using Churchee.Blobstorage.Providers.Registrations;
 using Churchee.Common.Storage;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;

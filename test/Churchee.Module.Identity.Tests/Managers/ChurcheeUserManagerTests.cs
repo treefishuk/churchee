@@ -1,6 +1,6 @@
 ﻿using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Managers;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

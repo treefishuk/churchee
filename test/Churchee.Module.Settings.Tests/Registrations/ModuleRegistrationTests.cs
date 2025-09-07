@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Settings.Tests.Registrations
 {

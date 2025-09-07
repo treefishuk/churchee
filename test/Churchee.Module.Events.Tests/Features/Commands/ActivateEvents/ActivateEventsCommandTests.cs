@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Events.Features.Commands;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Features.Commands.ActivateEvents
 {
