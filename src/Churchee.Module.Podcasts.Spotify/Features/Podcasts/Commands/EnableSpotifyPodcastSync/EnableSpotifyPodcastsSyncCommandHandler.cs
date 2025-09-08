@@ -66,6 +66,8 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
             var podcastShows = await GetAndParseRssFeed(request);
 
             await AddOrUpdatePodcasts(applicationTenantId, podcastShows, podcastsUrl, cancellationToken);
+
+            await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
         private async Task AddOrUpdatePodcasts(Guid applicationTenantId, RssChannelItem[] podcastShows, string podcastsUrl, CancellationToken cancellationToken)
