@@ -12,6 +12,7 @@ using Churchee.Module.Podcasts.Spotify.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Test.Helpers.Validation;
 using Hangfire;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using System.Linq.Expressions;
@@ -30,6 +31,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
         private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
         private readonly Mock<IRepository<Podcast>> _podcastRepositoryMock;
         private readonly Mock<IRepository<PageType>> _pageTypeRepositoryMock;
+        private readonly Mock<ILogger<EnableSpotifyPodcastsSyncCommandHandler>> _logger;
 
         private readonly EnableSpotifyPodcastsSyncCommandHandler _handler;
 
@@ -44,6 +46,9 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             _podcastRepositoryMock = new Mock<IRepository<Podcast>>();
             _pageTypeRepositoryMock = new Mock<IRepository<PageType>>();
+            _logger = new Mock<ILogger<EnableSpotifyPodcastsSyncCommandHandler>>();
+
+
             _dataStoreMock.Setup(ds => ds.GetRepository<Podcast>()).Returns(_podcastRepositoryMock.Object);
             _dataStoreMock.Setup(ds => ds.GetRepository<PageType>()).Returns(_pageTypeRepositoryMock.Object);
 
@@ -56,7 +61,8 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
                 _blobStoreMock.Object,
                 _IImageProcessorMock.Object,
                 _jobServiceMock.Object,
-                httpClientFactory
+                httpClientFactory,
+                _logger.Object
             );
         }
 
@@ -183,8 +189,8 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns(async (HttpRequestMessage request, CancellationToken token) =>
                 {
-                    HttpResponseMessage response = new HttpResponseMessage();
-                    var xmlFilePath = "Samples/TestSpotifyData.xml";
+                    var response = new HttpResponseMessage();
+                    string xmlFilePath = "Samples/TestSpotifyData.xml";
 
                     response.Content = new StringContent(await File.ReadAllTextAsync(xmlFilePath, token));
 
