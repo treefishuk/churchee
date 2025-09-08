@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Data;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using MediatR;
 using Moq;
 
@@ -19,7 +19,7 @@ namespace Churchee.Common.Tests.Domain
 
             //assert
             cut.ApplicationTenantId.Should().Be(applicationTenantId);
-            cut.Id.Should().NotBeEmpty();
+            cut.Id.Should().NotBe(Guid.Empty);
             cut.CreatedDate.Should().NotBeNull();
             cut.ModifiedDate.Should().NotBeNull();
             cut.CreatedById.Should().Be(Guid.Empty);

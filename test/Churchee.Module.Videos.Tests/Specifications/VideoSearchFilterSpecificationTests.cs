@@ -1,4 +1,4 @@
-using Churchee.Module.Videos.Entities;
+﻿using Churchee.Module.Videos.Entities;
 using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Videos.Specifications

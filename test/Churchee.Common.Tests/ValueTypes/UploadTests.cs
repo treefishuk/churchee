@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ValueTypes;
-using FluentAssertions;
+using Churchee.Test.Helpers.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Common.Tests.ValueTypes

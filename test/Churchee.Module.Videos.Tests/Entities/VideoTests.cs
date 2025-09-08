@@ -48,7 +48,6 @@ namespace Churchee.Module.Videos.Entities
             video.PageTypeId.Should().Be(pageTypeId);
             video.Url.Should().Be($"/{videosPath.ToLowerInvariant()}/{title.ToURL()}");
             video.Published.Should().BeTrue();
-
         }
     }
 }

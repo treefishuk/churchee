@@ -6,7 +6,7 @@ namespace Churchee.Module.Identity.Tests.Entities
     public class ApplicationRoleTests
     {
         [Fact]
-        public void ApplicationRole_IdAndNameContructor_SetsProperties()
+        public void ApplicationRole_IdAndNameConstructor_SetsProperties()
         {
             //arrange
             var id = Guid.NewGuid();
@@ -22,7 +22,7 @@ namespace Churchee.Module.Identity.Tests.Entities
         }
 
         [Fact]
-        public void ApplicationRole_IdNameAndSelectableContructor_SetsProperties()
+        public void ApplicationRole_IdNameAndSelectableConstructor_SetsProperties()
         {
             //arrange
             var id = Guid.NewGuid();

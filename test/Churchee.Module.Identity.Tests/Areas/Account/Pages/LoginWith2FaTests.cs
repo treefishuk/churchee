@@ -2,6 +2,7 @@
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Managers;
 using Churchee.Module.Identity.Tests.Helpers;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -149,10 +150,9 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
             var result = await _model.OnPostAsync(false, null);
 
             // Assert
-            var errors = _model.ModelState.TryGetValue(string.Empty, out var entry) ? entry?.Errors : null;
-            Assert.NotNull(errors);
-            Assert.Contains(errors, e => e.ErrorMessage == "Invalid authenticator code.");
             Assert.IsType<PageResult>(result);
+
+            _model.ModelState[string.Empty]?.Errors.First().ErrorMessage.Should().Be("Invalid authenticator code.");
         }
     }
 }

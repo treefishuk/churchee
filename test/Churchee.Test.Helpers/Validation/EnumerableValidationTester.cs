@@ -16,6 +16,12 @@ namespace Churchee.Test.Helpers.Validation
             Assert.Empty(_instance);
         }
 
+        public void BeNull()
+        {
+            Assert.Null(_instance);
+        }
+
+
         public void ContainSingle(Predicate<T> predicate)
         {
             Assert.Single(_instance, predicate);

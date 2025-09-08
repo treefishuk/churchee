@@ -1,6 +1,7 @@
 ﻿using Bunit;
 using Churchee.Module.Identity.Components.Layout;
 using Churchee.Module.UI.Models;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,8 +49,8 @@ namespace Churchee.Module.Identity.Tests.Components.Layout
                 }));
 
             // Act / Assert (fallback content rendered)
-            cut.Markup.Contains("Oh dear...");
-            cut.Markup.Contains("something has gone wrong");
+            cut.Markup.Should().Contain("Oh dear...");
+            cut.Markup.Should().Contain("something has gone wrong");
         }
 
         [Fact]

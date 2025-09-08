@@ -17,7 +17,6 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Registrations
             // Assert
             menuItems.Should().NotBeNull();
             menuItems.Should().HaveCount(1);
-            menuItems.Should().ContainSingle();
 
             var mainMenuItem = menuItems.First();
             mainMenuItem.Name.Should().Be("Integrations");
@@ -26,8 +25,6 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Registrations
             mainMenuItem.Order.Should().Be(100);
             mainMenuItem.Children.Should().HaveCount(1);
 
-
-            mainMenuItem.Children.Should().ContainSingle();
             var childMenuItem = mainMenuItem.Children.First();
             childMenuItem.Name.Should().Be("Spotify Podcasts");
             childMenuItem.Path.Should().Be("/management/integrations/spotify");

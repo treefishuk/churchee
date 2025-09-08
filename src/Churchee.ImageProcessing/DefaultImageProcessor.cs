@@ -33,11 +33,11 @@ namespace Churchee.ImageProcessing
 
             var encoder = SetEncoder(normalizedExtension);
 
-            return Process(stream, width, height, extension, encoder);
+            return Process(stream, width, height, encoder);
         }
 
 
-        private static Stream Process(Stream stream, int width, int height, string extension, ImageEncoder imageEncoder)
+        private static Stream Process(Stream stream, int width, int height, ImageEncoder imageEncoder)
         {
             var image = Image.Load(stream);
 
@@ -136,7 +136,7 @@ namespace Churchee.ImageProcessing
 
         public async Task<Stream> ConvertToWebP(Stream stream, CancellationToken cancellationToken)
         {
-            var imageInfo = Image.Identify(stream);
+            var imageInfo = await Image.IdentifyAsync(stream, cancellationToken);
 
             int width = imageInfo.Width;
 
@@ -153,7 +153,7 @@ namespace Churchee.ImageProcessing
                 Quality = 100,
             };
 
-            return await Task.Run(() => Process(stream, width, 0, ".webp", fullQualityEncoder));
+            return await Task.Run(() => Process(stream, width, 0, fullQualityEncoder));
         }
     }
 }

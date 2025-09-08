@@ -31,6 +31,11 @@ namespace Churchee.Test.Helpers.Validation
             Assert.NotNull(_instance);
         }
 
+        public void BeNull()
+        {
+            Assert.Null(_instance);
+        }
+
         public void HaveCount(int count)
         {
             Assert.Equal(_instance.Count, count);
@@ -38,7 +43,8 @@ namespace Churchee.Test.Helpers.Validation
 
         public void Contain(T v)
         {
-            Assert.Contains(_instance, x => x != null && x.Equals(v));
+            Assert.NotNull(_instance);
+            Assert.Contains(_instance, x => !object.Equals(x, default(T)) && x!.Equals(v));
         }
     }
 }

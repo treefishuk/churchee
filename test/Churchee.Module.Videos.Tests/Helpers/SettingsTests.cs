@@ -1,4 +1,4 @@
-namespace Churchee.Module.Videos.Helpers
+﻿namespace Churchee.Module.Videos.Helpers
 {
     public class SettingsTests
     {
