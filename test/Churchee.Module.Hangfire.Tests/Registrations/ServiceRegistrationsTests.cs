@@ -45,14 +45,12 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
 
             services.AddSingleton(configurationMock.Object);
 
-            using var firstProvider = services.BuildServiceProvider();
             var cut = new ServiceRegistrations();
 
+            var tempProvider = services.BuildServiceProvider(); // Do NOT dispose this
+
             // Act
-            cut.Execute(services, firstProvider);
-
-
-            // Assert - only use the second provider for service resolution
+            cut.Execute(services, tempProvider);
 
             using var serviceProvider = services.BuildServiceProvider();
 
@@ -72,13 +70,14 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
 
             services.AddSingleton(configurationMock.Object);
 
-            var serviceProvider = services.BuildServiceProvider();
             var cut = new ServiceRegistrations();
 
-            // Act
-            cut.Execute(services, serviceProvider);
+            var tempProvider = services.BuildServiceProvider(); // Do NOT dispose this
 
-            serviceProvider = services.BuildServiceProvider();
+            // Act
+            cut.Execute(services, tempProvider);
+
+            using var serviceProvider = services.BuildServiceProvider();
 
             // Assert
             serviceProvider.GetService<IHostedService>().Should().NotBeNull();

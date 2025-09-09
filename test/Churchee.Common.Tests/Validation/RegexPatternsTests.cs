@@ -24,7 +24,7 @@ namespace Churchee.Common.Tests.Validation
             string input = _faker.Name.FullName();
 
             //act
-            var match = NameRegex().IsMatch(input);
+            bool match = NameRegex().IsMatch(input);
 
             //assert
             match.Should().BeTrue();
@@ -40,7 +40,7 @@ namespace Churchee.Common.Tests.Validation
             string input = _faker.Phone.PhoneNumber("01#########");
 
             //act
-            var match = PhoneRegex().IsMatch(input);
+            bool match = PhoneRegex().IsMatch(input);
 
             //assert
             match.Should().BeTrue();
@@ -53,7 +53,7 @@ namespace Churchee.Common.Tests.Validation
             string input = _faker.Phone.PhoneNumber("07#########");
 
             //act
-            var match = PhoneRegex().IsMatch(input);
+            bool match = PhoneRegex().IsMatch(input);
 
             //assert
             match.Should().BeTrue();
@@ -69,7 +69,7 @@ namespace Churchee.Common.Tests.Validation
             string input = "test";
 
             //act
-            var match = SingleLowercaseWordRegex().IsMatch(input);
+            bool match = SingleLowercaseWordRegex().IsMatch(input);
 
             //assert
             match.Should().BeTrue();
@@ -83,7 +83,7 @@ namespace Churchee.Common.Tests.Validation
             string input = "Test";
 
             //act
-            var match = SingleLowercaseWordRegex().IsMatch(input);
+            bool match = SingleLowercaseWordRegex().IsMatch(input);
 
             //assert
             match.Should().BeFalse();
@@ -99,7 +99,7 @@ namespace Churchee.Common.Tests.Validation
             string input = "I'm a basic string";
 
             //act
-            var match = BasicTextRegex().IsMatch(input);
+            bool match = BasicTextRegex().IsMatch(input);
 
             //assert
             match.Should().BeTrue();
@@ -112,7 +112,7 @@ namespace Churchee.Common.Tests.Validation
             string input = "I-am-invalid!";
 
             //act
-            var match = BasicTextRegex().IsMatch(input);
+            bool match = BasicTextRegex().IsMatch(input);
 
             //assert
             match.Should().BeFalse();

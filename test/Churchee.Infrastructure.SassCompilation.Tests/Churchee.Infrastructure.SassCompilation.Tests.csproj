@@ -18,6 +18,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\Churchee.Infrastructure.SassCompilation\Churchee.Infrastructure.SassCompilation.csproj" />
+    <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

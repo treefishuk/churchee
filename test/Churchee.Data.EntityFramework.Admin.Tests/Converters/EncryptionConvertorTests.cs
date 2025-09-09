@@ -17,10 +17,10 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
         public void ConvertToProvider_ShouldEncryptValue()
         {
             // Arrange
-            var plainText = "plain text";
+            string plainText = "plain text";
 
             // Act
-            var result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(plainText);
+            string result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(plainText);
 
             // Assert
             result.Should().NotBeNull();
@@ -32,11 +32,11 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
         public void ConvertFromProvider_ShouldDecryptValue()
         {
             // Arrange
-            var encryptedText = "ngcvfFH0W2iqKypGqln0HGTHMmSgqcksFLjQAVuKKEuUX3YN+/Q=";
-            var plainText = "plain text";
+            string encryptedText = "ngcvfFH0W2iqKypGqln0HGTHMmSgqcksFLjQAVuKKEuUX3YN+/Q=";
+            string plainText = "plain text";
 
             // Act
-            var result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(encryptedText);
+            string result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(encryptedText);
 
             // Assert
             result.Should().NotBeNull();
@@ -48,7 +48,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
         public void ConvertToProvider_ShouldReturnEmptyString_WhenInputIsNull()
         {
             // Act
-            var result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(null);
+            string result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(null);
 
             // Assert
             result.Should().Be(String.Empty);
@@ -58,7 +58,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
         public void ConvertFromProvider_ShouldReturnEmptyString_WhenInputIsNull()
         {
             // Act
-            var result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(null);
+            string result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(null);
 
             // Assert
             result.Should().Be(String.Empty);
@@ -68,7 +68,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
         public void ConvertToProvider_ShouldReturnEmptyString_WhenInputIsEmptyString()
         {
             // Act
-            var result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(string.Empty);
+            string result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(string.Empty);
 
             // Assert
             result.Should().Be(String.Empty);
@@ -78,7 +78,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
         public void ConvertFromProvider_ShouldReturnEmptyString_WhenInputIsEmptyString()
         {
             // Act
-            var result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(string.Empty);
+            string result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(string.Empty);
 
             // Assert
             result.Should().Be(String.Empty);

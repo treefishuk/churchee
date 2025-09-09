@@ -32,8 +32,8 @@ namespace Churchee.Module.Identity.Tests.Features.Roles.Queries.GetAllSelectable
             // Arrange
             var roles = new List<MultiSelectItem>
             {
-                    new MultiSelectItem(Guid.Parse("298dccb4-01f8-448b-826b-3e9696240409"), "Admin"),
-                    new MultiSelectItem(Guid.Parse("2c198722-01ea-480f-b69a-f96c4b81359f"), "User")
+                    new(Guid.Parse("298dccb4-01f8-448b-826b-3e9696240409"), "Admin"),
+                    new(Guid.Parse("2c198722-01ea-480f-b69a-f96c4b81359f"), "User")
             };
 
 

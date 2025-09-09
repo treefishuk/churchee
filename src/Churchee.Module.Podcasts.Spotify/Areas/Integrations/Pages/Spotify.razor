@@ -1,8 +1,10 @@
 ﻿@page "/management/integrations/spotify"
 @inherits BasePage
+@using Churchee.Common.Abstractions.Auth
 @using Churchee.Module.Podcasts.Features.Commands
 @using Churchee.Module.UI.Models
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Caching.Distributed
 @using Microsoft.Extensions.Logging
 @using Microsoft.AspNetCore.Components.Sections
 @using MediatR
@@ -74,6 +76,14 @@ else
 
     DateTime? lastRun = null;
 
+    [Inject]
+    private IDistributedCache Cache { get; set; } = default!;
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+
+
     protected override async Task OnInitializedAsync()
     {
         var result = await Mediator.Send(new GetPodcastSettingsRequest());
@@ -84,6 +94,7 @@ else
 
         spotifyConfigured = !string.IsNullOrEmpty(result.SpotifyUrl);
     }
+
 
     private async Task DisableSync()
     {
@@ -103,6 +114,25 @@ else
 
     private async Task SyncNow()
     {
+
+        Guid appTenantId = await CurrentUser.GetApplicationTenantId();
+
+        var cacheKey = $"SpotifySyncJobQueued_{appTenantId}";
+
+        var existing = await Cache.GetStringAsync(cacheKey);
+
+        if (!string.IsNullOrEmpty(existing))
+        {
+            NotificationService.Notify(NotificationSeverity.Warning, "A sync is already queued or running. Please wait 10 mins and try again");
+            return;
+        }
+
+        // Set the flag with a short expiration (e.g., 10 minutes)
+        await Cache.SetStringAsync(cacheKey, "1", new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        });
+
         var result = await Mediator.Send(new EnableSpotifyPodcastSyncCommand(InputModel.SpotifyRSSFeedUrl));
 
         if (result.IsSuccess)

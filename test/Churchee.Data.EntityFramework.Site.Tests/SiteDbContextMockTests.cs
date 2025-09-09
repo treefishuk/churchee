@@ -98,7 +98,7 @@ namespace Churchee.Data.EntityFramework.Site.Tests
             var tenantId = Guid.NewGuid();
             using var ctx = CreateContext(tenantId);
             ctx.Add(new PageView { Id = 1 });
-            var saved = ctx.SaveChanges();
+            int saved = ctx.SaveChanges();
             Assert.Equal(1, saved);
         }
 
@@ -108,7 +108,7 @@ namespace Churchee.Data.EntityFramework.Site.Tests
             var tenantId = Guid.NewGuid();
             using var ctx = CreateContext(tenantId);
             ctx.Add(new PageView { Id = 1 });
-            var saved = await ctx.SaveChangesAsync();
+            int saved = await ctx.SaveChangesAsync();
             Assert.Equal(1, saved);
         }
     }

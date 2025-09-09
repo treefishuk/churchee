@@ -17,7 +17,7 @@ namespace Churchee.Module.Podcasts.Tests.Areas.Website.Pages
         public void PodcastsIndex_HasCorrectName()
         {
             // Arrange
-            var cdnPath = "https://cdn.example.com/";
+            string cdnPath = "https://cdn.example.com/";
             MockMediator.Setup(m => m.Send(It.IsAny<GetCDNPathQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(cdnPath);
 

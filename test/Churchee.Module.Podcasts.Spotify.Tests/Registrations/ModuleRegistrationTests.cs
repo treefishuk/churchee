@@ -12,7 +12,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Registrations
             var moduleRegistration = new ModuleRegistration();
 
             // Act
-            var moduleName = moduleRegistration.Name;
+            string moduleName = moduleRegistration.Name;
 
             // Assert
             moduleName.Should().NotBeNull();

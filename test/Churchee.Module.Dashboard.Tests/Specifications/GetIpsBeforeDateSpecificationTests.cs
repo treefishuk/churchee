@@ -35,7 +35,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
             var compiledCriteria = criteria!.Filter.Compile();
-            PageView testPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 9, 30) };
+            var testPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 9, 30) };
             compiledCriteria(testPageView).Should().BeTrue();
         }
 

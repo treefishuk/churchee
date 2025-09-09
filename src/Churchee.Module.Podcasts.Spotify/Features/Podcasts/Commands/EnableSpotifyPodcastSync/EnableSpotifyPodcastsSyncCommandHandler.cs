@@ -13,6 +13,7 @@ using Churchee.Module.Podcasts.Spotify.Specifications;
 using Churchee.Module.Site.Entities;
 using Hangfire;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -30,8 +31,9 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
         private readonly IImageProcessor _imageProcessor;
         private readonly IJobService _jobService;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger _logger;
 
-        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, IJobService jobService, IHttpClientFactory httpClientFactory)
+        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, IJobService jobService, IHttpClientFactory httpClientFactory, ILogger<EnableSpotifyPodcastsSyncCommandHandler> logger)
         {
             _settingStore = settingStore;
             _currentUser = currentUser;
@@ -40,6 +42,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
             _imageProcessor = imageProcessor;
             _jobService = jobService;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         public async Task<CommandResponse> Handle(EnableSpotifyPodcastSyncCommand request, CancellationToken cancellationToken)
@@ -57,6 +60,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
             return new CommandResponse();
         }
 
+        [DisableConcurrentExecution(timeoutInSeconds: 600)]
         public async Task SyncPodcasts(EnableSpotifyPodcastSyncCommand request, Guid applicationTenantId, string podcastsUrl, CancellationToken cancellationToken)
         {
             var podcastShows = await GetAndParseRssFeed(request);
@@ -85,12 +89,18 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
                 if (!alreadyExists)
                 {
+
                     await AddNewPodcast(applicationTenantId, podcastsUrl, podcasts, item, cancellationToken);
                 }
             }
 
             if (podcasts.Count > 0)
             {
+                foreach (var podcast in podcasts)
+                {
+                    _logger.LogInformation("Adding new podcast with audio URL: {AudioUri}", podcast.AudioUri);
+                }
+
                 repo.AddRange(podcasts);
             }
         }

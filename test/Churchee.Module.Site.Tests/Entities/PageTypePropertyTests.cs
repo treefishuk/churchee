@@ -15,7 +15,7 @@ namespace Churchee.Module.Site.Tests.Entities
             };
 
             // Act
-            var devName = pageTypeProperty.DevName;
+            string devName = pageTypeProperty.DevName;
 
             // Assert
             devName.Should().Be("sampleName");
