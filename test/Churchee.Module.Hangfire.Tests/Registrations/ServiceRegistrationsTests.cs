@@ -5,15 +5,13 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Testcontainers.MsSql;
 
 namespace Churchee.Module.Hangfire.Tests.Registrations
 {
-    [CollectionDefinition("NonParallelCollection", DisableParallelization = true)]
-    public class NonParallelCollectionDefinition { }
 
-    [Collection("NonParallelCollection")]
     public class ServiceRegistrationsTests : IAsyncLifetime
     {
         private readonly MsSqlContainer _msSqlContainer;
@@ -43,6 +41,7 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
         {
             // Arrange
             var services = new ServiceCollection();
+            services.AddSingleton<NullLoggerFactory>();
             var configurationMock = new Mock<IConfiguration>();
             configurationMock.Setup(s => s.GetSection("Hangfire")["IsService"]).Returns("true");
             configurationMock.Setup(s => s.GetSection("ConnectionStrings")["HangfireConnection"]).Returns(GetHangfireConnectionString());
@@ -68,6 +67,7 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
         {
             // Arrange  
             var services = new ServiceCollection();
+            services.AddSingleton<NullLoggerFactory>();
             var configurationMock = new Mock<IConfiguration>();
             configurationMock.Setup(s => s.GetSection("Hangfire")["IsService"]).Returns("false");
             configurationMock.Setup(s => s.GetSection("ConnectionStrings")["HangfireConnection"]).Returns(GetHangfireConnectionString());
