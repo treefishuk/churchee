@@ -1,6 +1,7 @@
 ﻿@page "/management/media"
 @inherits BasePage
 @using Churchee.Module.Site.Features.CDN.Queries
+@using Churchee.Module.Site.Features.Favicons.Commands
 @using Churchee.Module.Site.Features.Media.Commands
 @using Churchee.Module.Site.Features.Media.Queries
 @using MediatR
@@ -151,6 +152,8 @@
 
     CreateMediaItemModel createModel = new CreateMediaItemModel();
 
+    CreateFaviconModel createFaviconModel = new CreateFaviconModel();
+
     EditMediaItemModel editModel = new EditMediaItemModel();
 
     protected override async Task OnInitializedAsync()
@@ -209,21 +212,63 @@
 
     private async Task AddMediaItem()
     {
-        createModel = new CreateMediaItemModel
+        if(ActiveFolderItem.Path == "Favicons/")
         {
-            File = new Common.ValueTypes.Upload { SupportedFileTypes =  ActiveFolderItem.SupportedFileTypes}
-        };
+            createFaviconModel = new CreateFaviconModel
+            {
+                File = new Common.ValueTypes.Upload { SupportedFileTypes =  ActiveFolderItem.SupportedFileTypes}
+            };
 
-       await DialogService.OpenAsync("Add Media Item", ds =>
-            @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnCreateModalFormChange" OnSave=@(async () => await ValidCreateSubmitForm()) />,
-            new DialogOptions() { Width = "700px"}
-        );    
+           await DialogService.OpenAsync("Add Favicon", ds =>
+                @<ModalForm InputModel="createFaviconModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidFaviconSubmitForm()) />,
+                new DialogOptions() { Width = "700px"}
+            );
+        }
+        else
+        {
+            createModel = new CreateMediaItemModel
+            {
+                File = new Common.ValueTypes.Upload { SupportedFileTypes =  ActiveFolderItem.SupportedFileTypes}
+            };
+
+           await DialogService.OpenAsync("Add Media Item", ds =>
+                @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnCreateModalFormChange" OnSave=@(async () => await ValidMediaItemCreateSubmitForm()) />,
+                new DialogOptions() { Width = "700px"}
+            );
+        }
+
+
 
     }
 
     IEnumerable<GetMediaFoldersQueryResponseItem> Directories = new List<GetMediaFoldersQueryResponseItem>();
 
-    private async Task ValidCreateSubmitForm()
+    private async Task ValidFaviconSubmitForm()
+    {
+        var command = new GenerateFaviconCommand(createFaviconModel.File.Value, activeFolderId.Value);
+
+        var result = await Mediator.Send(command);
+
+        if (result.IsSuccess)
+        {
+            DialogService.Close();
+
+            data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
+
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Added" });
+        }
+
+        if (!result.IsSuccess)
+        {
+            foreach (var error in result.Errors)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description, Duration = 5000 });
+            }
+        }
+    }
+
+
+    private async Task ValidMediaItemCreateSubmitForm()
     {
         var command = new CreateMediaItemCommand.Builder()
         .SetSupportedFileTypes(ActiveFolderItem.SupportedFileTypes)
