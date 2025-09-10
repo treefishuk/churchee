@@ -7,6 +7,17 @@ namespace Churchee.Common.Abstractions.Queries
     {
         protected GridQueryRequestBase(int skip, int take, string searchText, string orderBy)
         {
+
+            if (skip < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(skip), "Skip must be zero or positive.");
+            }
+
+            if (take < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(take), "Take must be zero or positive.");
+            }
+
             Skip = skip;
             Take = take;
             SearchText = searchText;
@@ -18,7 +29,7 @@ namespace Churchee.Common.Abstractions.Queries
 
             if (orderBy.Contains(' '))
             {
-                var split = orderBy.Split(" ");
+                string[] split = orderBy.Split(" ");
                 OrderBy = split[0];
                 OrderByDirection = split[1].ToLowerInvariant();
 

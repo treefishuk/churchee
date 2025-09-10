@@ -21,6 +21,10 @@ namespace Churchee.Test.Helpers.Validation
             Assert.Null(_instance);
         }
 
+        public void BeEquivalentTo(IEnumerable<T> list)
+        {
+            Assert.Equivalent(list, _instance);
+        }
 
         public void ContainSingle(Predicate<T> predicate)
         {

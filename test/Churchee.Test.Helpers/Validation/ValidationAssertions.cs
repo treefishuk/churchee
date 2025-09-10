@@ -7,6 +7,11 @@
             return new ValidationTester<T>(instance);
         }
 
+        public static ActionValidationTester Should(this Action instance)
+        {
+            return new ActionValidationTester(instance);
+        }
+
         public static BoolValidationTester Should(this bool instance)
         {
             return new BoolValidationTester(instance);
