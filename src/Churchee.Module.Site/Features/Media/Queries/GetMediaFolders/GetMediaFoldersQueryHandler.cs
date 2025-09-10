@@ -58,6 +58,11 @@ namespace Churchee.Module.Site.Features.Media.Queries
                 repo.Create(new MediaFolder(applicationTenantId, "Images", ".jpg, .jpeg, .png, .webp"));
             }
 
+            if (!repo.AnyWithFiltersDisabled(a => a.ApplicationTenantId == applicationTenantId && a.ParentId == null && a.Path == "Favicons/"))
+            {
+                repo.Create(new MediaFolder(applicationTenantId, "Favicons", ".png"));
+            }
+
             await _storage.SaveChangesAsync(cancellationToken);
 
         }
