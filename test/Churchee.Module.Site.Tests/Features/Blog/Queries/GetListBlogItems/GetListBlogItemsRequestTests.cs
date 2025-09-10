@@ -1,29 +1,26 @@
 using Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems;
-using Xunit;
 
-public class GetListBlogItemsRequestTests
+namespace Churchee.Module.Site.Tests.Features.Blog.Queries.GetListBlogItems
 {
-    [Fact]
-    public void Constructor_SetsPropertiesCorrectly()
+    public class GetListBlogItemsRequestTests
     {
-        // Arrange
-        int skip = 1;
-        int take = 10;
-        string searchText = "search";
-        string orderBy = "Title";
+        [Fact]
+        public void Constructor_SetsPropertiesCorrectly()
+        {
+            // Arrange
+            int skip = 1;
+            int take = 10;
+            string searchText = "search";
+            string orderBy = "Title";
 
-        // Act
-        var request = (GetListBlogItemsRequest)System.Activator.CreateInstance(
-            typeof(GetListBlogItemsRequest),
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
-            null,
-            new object[] { skip, take, searchText, orderBy },
-            null);
+            // Act
+            var request = new GetListBlogItemsRequest(skip, take, searchText, orderBy);
 
-        // Assert
-        Assert.Equal(skip, request.Skip);
-        Assert.Equal(take, request.Take);
-        Assert.Equal(searchText, request.SearchText);
-        Assert.Equal(orderBy, request.OrderBy);
+            // Assert
+            Assert.Equal(skip, request.Skip);
+            Assert.Equal(take, request.Take);
+            Assert.Equal(searchText, request.SearchText);
+            Assert.Equal(orderBy, request.OrderBy);
+        }
     }
 }

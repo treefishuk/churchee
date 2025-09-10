@@ -1,40 +1,53 @@
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
-using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Pages.Commands.CreatePage;
+using Churchee.Module.Site.Specifications;
 using Moq;
+using System.Linq.Expressions;
 
-public class CreatePageCommandHandlerTests
+namespace Churchee.Module.Site.Tests.Features.Pages.Commands.CreatePage
 {
-    [Fact]
-    public async Task Handle_CreatesPageAndSavesChanges()
+    public class CreatePageCommandHandlerTests
     {
-        // Arrange
-        var storageMock = new Mock<IDataStore>();
-        var currentUserMock = new Mock<ICurrentUser>();
-        var repoMock = new Mock<IRepository<Page>>();
-        var tenantId = Guid.NewGuid();
-        var parentId = Guid.NewGuid();
-        var parentUrl = "/parent";
-        var title = "Test Page";
-        var description = "desc";
-        var pageTypeId = Guid.NewGuid();
+        [Fact]
+        public async Task Handle_CreatesPageAndSavesChanges()
+        {
+            // Arrange
+            var storageMock = new Mock<IDataStore>();
+            var repoMock = new Mock<IRepository<Page>>();
+            var currentUserMock = new Mock<ICurrentUser>();
 
-        currentUserMock.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(tenantId);
-        storageMock.Setup(x => x.GetRepository<Page>()).Returns(repoMock.Object);
-        repoMock.Setup(x => x.GetQueryable()).Returns(new[] { new Page(tenantId, "parent", parentUrl, "", pageTypeId, null, true) { Id = parentId, Url = parentUrl } }.AsQueryable());
+            var applicationTenantId = Guid.NewGuid();
+            var parentId = Guid.NewGuid();
+            var pageTypeId = Guid.NewGuid();
 
-        var handler = new CreatePageCommandHandler(storageMock.Object, currentUserMock.Object);
-        var command = new CreatePageCommand(title, description, pageTypeId.ToString(), parentId.ToString());
+            currentUserMock.Setup(x => x.GetApplicationTenantId())
+                .ReturnsAsync(applicationTenantId);
 
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+            // Mock FirstOrDefaultAsync to return a parent slug
+            repoMock.Setup(x => x.FirstOrDefaultAsync(
+                    It.IsAny<PageFromParentIdSpecification>(),
+                    It.IsAny<Expression<Func<Page, string>>>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync("parent-slug");
 
-        // Assert
-        repoMock.Verify(x => x.Create(It.IsAny<Page>()), Times.Once);
-        storageMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        Assert.IsType<CommandResponse>(result);
+            storageMock.Setup(x => x.GetRepository<Page>())
+                .Returns(repoMock.Object);
+
+            var handler = new CreatePageCommandHandler(storageMock.Object, currentUserMock.Object);
+
+            var command = new CreatePageCommand("Test Title", "Test Description", pageTypeId.ToString(), parentId.ToString());
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            repoMock.Verify(x => x.Create(It.IsAny<Page>()), Times.Once);
+            storageMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            Assert.NotNull(result);
+            Assert.True(result.IsSuccess);
+        }
     }
 }

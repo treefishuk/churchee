@@ -3,9 +3,9 @@ using MediatR;
 
 namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
 {
-    public class CreatePageTypeContentComand : IRequest<CommandResponse>
+    public class CreatePageTypeContentCommand : IRequest<CommandResponse>
     {
-        public CreatePageTypeContentComand(Guid pageTypeId, string name, string type, bool required, int order)
+        public CreatePageTypeContentCommand(Guid pageTypeId, string name, string type, bool required, int order)
         {
             PageTypeId = pageTypeId;
             Name = name;

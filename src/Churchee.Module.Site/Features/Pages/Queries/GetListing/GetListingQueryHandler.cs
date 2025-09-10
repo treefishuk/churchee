@@ -1,12 +1,12 @@
-﻿using Churchee.Common.Storage;
+﻿using Churchee.Common.Abstractions;
+using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic.Core;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
-    public class GetListingQueryHandler : IRequestHandler<GetListingQuery, IEnumerable<GetListingQueryResponseItem>>
+    public class GetListingQueryHandler : IRequestHandler<GetListingQuery, DataTableResponse<GetListingQueryResponseItem>>
     {
 
         private readonly IDataStore _storage;
@@ -16,44 +16,27 @@ namespace Churchee.Module.Site.Features.Pages.Queries
             _storage = storage;
         }
 
-        public async Task<IEnumerable<GetListingQueryResponseItem>> Handle(GetListingQuery request, CancellationToken cancellationToken)
+        public async Task<DataTableResponse<GetListingQueryResponseItem>> Handle(GetListingQuery request, CancellationToken cancellationToken)
         {
             var repo = _storage.GetRepository<Page>();
 
-            var query = repo.GetQueryable();
-
-            if (!string.IsNullOrEmpty(request.SearchText))
-            {
-                query = query.Where(w => w.Title.Contains(request.SearchText));
-            }
-
-            if (request.ParentId != null)
-            {
-                query = query.Where(w => w.ParentId == request.ParentId);
-            }
-
-            if (request.ParentId == null)
-            {
-                query = query.Where(w => w.ParentId == null);
-            }
-
-            var items = await query
-                .OrderBy(o => o.Url.Length)
-                .Select(s => new GetListingQueryResponseItem
+            return await repo.GetDataTableResponseAsync(
+                specification: new PageListingSpecification(request.SearchText, request.ParentId),
+                orderBy: request.OrderBy,
+                orderByDir: request.OrderByDirection,
+                skip: request.Skip,
+                take: request.Take,
+                selector: s => new GetListingQueryResponseItem
                 {
                     Id = s.Id,
                     HasChildren = s.Children.Any(a => !a.IsSystem),
                     Title = s.Title,
                     Url = s.Url,
-                    Created = s.CreatedDate,
                     Modified = s.ModifiedDate,
                     ParentId = s.ParentId,
                     Published = s.Published
-                })
-                .ToListAsync(cancellationToken);
-
-            return items;
-
+                },
+                cancellationToken: cancellationToken);
         }
     }
 }

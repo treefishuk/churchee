@@ -1,17 +1,20 @@
 using Churchee.Module.Site.Features.PageTypes.Commands.CreatePageType;
 
-public class CreatePageTypeCommandTests
+namespace Churchee.Module.Site.Tests.Features.PageTypes.Commands.CreatePageType
 {
-    [Fact]
-    public void Constructor_SetsName()
+    public class CreatePageTypeCommandTests
     {
-        // Arrange
-        var name = "TestPageType";
+        [Fact]
+        public void Constructor_SetsName()
+        {
+            // Arrange
+            string name = "TestPageType";
 
-        // Act
-        var command = new CreatePageTypeCommand(name);
+            // Act
+            var command = new CreatePageTypeCommand(name);
 
-        // Assert
-        Assert.Equal(name, command.Name);
+            // Assert
+            Assert.Equal(name, command.Name);
+        }
     }
 }

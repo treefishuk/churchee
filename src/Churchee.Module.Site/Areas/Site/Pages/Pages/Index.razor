@@ -11,7 +11,6 @@
 @using Radzen.Blazor
 @using System.Net.Http.Json
 
-
 <PageName Name="Pages"></PageName>
 
 <SectionContent SectionName="top-bar">
@@ -20,99 +19,57 @@
     </div> 
 </SectionContent>
 
-<RadzenDataGrid @ref="grid" AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
-                Data="@listingData" TItem="GetListingQueryResponseItem" LoadChildData="@LoadChildData" RowRender="@RowRender"
-                RowCollapse="@(args => grid.ColumnsCollection.ToList().ForEach(c => c.ClearFilters()))">
-    <Columns>
-
-        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
-            <Template Context="data">
-                <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="/management/pages/edit/@(data.Id)">
-                    <span class="rz-button-box">
-                        <i class="rz-button-icon-left rzi">edit</i>
-                    </span>
-                </a>
-            </Template>
-        </RadzenDataGridColumn>
-
-
-        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Property="Title" Title="Title" />
-        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Property="Url" Title="Url" />
-        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Property="Created" Title="Created" FormatString="{0:dd/MM/yyyy}" Width="160px" />
-
-        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Title="Published" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center">
-            <Template Context="data">
-                @{
-                    if (data.Published)
-                    {
-                        <RadzenBadge BadgeStyle="BadgeStyle.Success" IsPill="@true" Text="True" />
-                    }
-                    else
-                    {
-                        <RadzenBadge BadgeStyle="BadgeStyle.Warning" IsPill="@true" Text="False" />
-                    }
-                }
-            </Template>
-        </RadzenDataGridColumn>
-
-        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
-            <Template Context="data">
-
-                @{
-                    if (data.Url != "/")
-                    {
-                        <RadzenButton Click=@(args => OnDelete(data.Id)) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
-                    }
-
-                }
-
-            </Template>
-        </RadzenDataGridColumn>
-
-    </Columns>
-</RadzenDataGrid>
+<Grid TItem="GetListingQueryResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="@OnDelete" LoadChildData="@LoadChildData"></Grid>
 
 @code {
 
     IEnumerable<GetListingQueryResponseItem> listingData;
 
-    RadzenDataGrid<GetListingQueryResponseItem> grid;
+    bool isLoading = false;
 
-    protected override async Task OnInitializedAsync()
+    int count = 0;
+
+    async Task LoadData(LoadDataArgs args)
     {
-        await base.OnInitializedAsync();
+        isLoading = true;
 
-        await LoadData();
+        var result = await Mediator.Send(new GetListingQuery(
+                skip: args?.Skip ?? 0,
+                take: args?.Top ?? 20,
+                searchText: args?.Filter ?? string.Empty,
+                orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Url asc" : args.OrderBy,
+                parentId: null
+        ), CancellationToken);
+
+        listingData = result.Data;
+
+        count = result.RecordsTotal;
+
+        isLoading = false;
     }
 
-    private async Task LoadData()
+    async Task OnDelete(GetListingQueryResponseItem item)
     {
-        var result = await Mediator.Send(new GetListingQuery(null, string.Empty), CancellationToken);
-
-        listingData = result;
-    }
-
-
-    private async Task OnDelete(Guid id)
-    {
-        var result = await Mediator.Send(new DeletePageCommand(id), CancellationToken);
+        var result = await Mediator.Send(new DeletePageCommand(item.Id), CancellationToken);
 
         if (result.IsSuccess)
         {
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Page Deleted" });
-
-            await LoadData();
         }   
-    }
-
-    static void RowRender(RowRenderEventArgs<GetListingQueryResponseItem> args)
-    {
-        args.Expandable = args.Data.HasChildren;
     }
 
     async Task LoadChildData(DataGridLoadChildDataEventArgs<GetListingQueryResponseItem> args)
     {
-        args.Data = await Mediator.Send(new GetListingQuery(args.Item.Id, string.Empty), CancellationToken);
+
+        var result = await Mediator.Send(new GetListingQuery(
+                skip: 0,
+                take: 1000,
+                searchText: string.Empty,
+                orderBy: "Url asc",
+                parentId: args.Item.Id
+        ), CancellationToken);
+
+        args.Data = result.Data;
     }
 }
 

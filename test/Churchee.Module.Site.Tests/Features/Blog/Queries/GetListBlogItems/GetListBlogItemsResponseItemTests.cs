@@ -1,24 +1,27 @@
 using Churchee.Module.Site.Features.Blog.Responses;
 
-public class GetListBlogItemsResponseItemTests
+namespace Churchee.Module.Site.Tests.Features.Blog.Queries.GetListBlogItems
 {
-    [Fact]
-    public void CanSetAndGetProperties()
+    public class GetListBlogItemsResponseItemTests
     {
-        // Arrange
-        var item = new GetListBlogItemsResponseItem
+        [Fact]
+        public void CanSetAndGetProperties()
         {
-            Id = Guid.NewGuid(),
-            Title = "Test Title",
-            Url = "/test-url",
-            Published = true,
-            Modified = DateTime.UtcNow
-        };
+            // Arrange
+            var item = new GetListBlogItemsResponseItem
+            {
+                Id = Guid.NewGuid(),
+                Title = "Test Title",
+                Url = "/test-url",
+                Published = true,
+                Modified = DateTime.UtcNow
+            };
 
-        // Assert
-        Assert.Equal("Test Title", item.Title);
-        Assert.Equal("/test-url", item.Url);
-        Assert.True(item.Published);
-        Assert.NotNull(item.Modified);
+            // Assert
+            Assert.Equal("Test Title", item.Title);
+            Assert.Equal("/test-url", item.Url);
+            Assert.True(item.Published);
+            Assert.NotNull(item.Modified);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿@using MediatR
+﻿@using Churchee.Common.Abstractions.Queries
+@using MediatR
 @using Microsoft.Extensions.Configuration
 @using Microsoft.JSInterop
 @using Radzen
@@ -8,7 +9,7 @@
 @typeparam TItem
 @inject IConfiguration Config
 
-<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized">
+<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" LoadChildData="@LoadChildData" RowRender="@RowRender">
     <Columns>
 
         @if (ShowDetail)
@@ -41,11 +42,18 @@
 
         @foreach (var prop in typeof(TItem).GetProperties().Where(x => x.CanWrite))
         {
+            if(prop.Name == "HasChildren")
+            {
+                continue;
+            }
+
             bool visible = Columns == null || (Columns.Any() && Columns.Select(s => s.Property).Contains(prop.Name));
 
             string dataType = prop.PropertyType.Name;
 
             var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
+
+            string title = prop.Name;
 
             if (dataTypeAttribute != null)
             {
@@ -57,16 +65,23 @@
                 dataType = DataTypes.Text;
             }
 
+            var displayAttribute = prop.GetCustomAttribute<DisplayAttribute>();
+
+            if (displayAttribute != null)
+            {
+                title = displayAttribute.Name ?? title.ToSentence();
+            }
+
             if (dataType == DataTypes.Text)
             {
                 string width = Columns?.FirstOrDefault(w => w.Property == prop.Name)?.Width ?? "";
 
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" Visible="visible" Width=@width />
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Visible="visible" Width=@width />
             }
 
             if (dataType == typeof(bool).Name)
             {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center" Visible="visible">
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center" Visible="visible">
                     <Template Context="data">
                         @{
                             var properyValue = prop.GetValue(data);
@@ -88,12 +103,14 @@
 
             if (dataType == DataTypes.Date || (dataTypeAttribute == null && dataType == typeof(DateTime).Name))
             {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy}" Width="160px" Visible="visible" />
+                string width = $"{EstimatePixelWidth(title, 160)}px";
+
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy}" Width="@width" Visible="visible" />
             }
 
             if (dataType == DataTypes.DateTime)
             {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@prop.Name.ToSentence()" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" Visible="visible" />
+                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" Visible="visible" />
             }
 
             if (dataType == DataTypes.ImageUrl)
@@ -200,6 +217,11 @@
     [Parameter]
     public EventCallback<TItem> OnDelete { get; set; }
 
+
+    [Parameter]
+    public EventCallback<DataGridLoadChildDataEventArgs<TItem>> LoadChildData { get; set; }
+
+
     private bool OnDeleteSet => OnDelete.HasDelegate;
 
     private List<ColumnInfo> Columns = new List<ColumnInfo>();
@@ -221,6 +243,27 @@
 
         // Save the updated column settings
         await JSRuntime.InvokeVoidAsync("localStorageHelper.save", key, Columns);
+    }
+
+
+    static void RowRender(RowRenderEventArgs<TItem> args)
+    {
+        if (args.Data is IHierarchicalDataTableResponse casted && casted != null)
+        {
+            args.Expandable = casted.HasChildren;
+        }
+    }
+
+    static int EstimatePixelWidth(string text, int fallback, int avgCharWidthPx = 12)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return fallback;
+        }
+
+        int calculated =  text.Length * avgCharWidthPx;
+
+        return Math.Max(calculated, fallback);
     }
 
     /// <summary>

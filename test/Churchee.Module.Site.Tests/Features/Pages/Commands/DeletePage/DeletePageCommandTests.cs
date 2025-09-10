@@ -1,17 +1,20 @@
 using Churchee.Module.Site.Features.Pages.Commands;
 
-public class DeletePageCommandTests
+namespace Churchee.Module.Site.Tests.Features.Pages.Commands.DeletePage
 {
-    [Fact]
-    public void Constructor_SetsPageId()
+    public class DeletePageCommandTests
     {
-        // Arrange
-        var pageId = Guid.NewGuid();
+        [Fact]
+        public void Constructor_SetsPageId()
+        {
+            // Arrange
+            var pageId = Guid.NewGuid();
 
-        // Act
-        var command = new DeletePageCommand(pageId);
+            // Act
+            var command = new DeletePageCommand(pageId);
 
-        // Assert
-        Assert.Equal(pageId, command.PageId);
+            // Assert
+            Assert.Equal(pageId, command.PageId);
+        }
     }
 }

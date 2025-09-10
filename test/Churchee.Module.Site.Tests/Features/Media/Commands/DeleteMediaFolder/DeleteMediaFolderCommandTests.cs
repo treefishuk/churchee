@@ -1,17 +1,20 @@
 using Churchee.Module.Site.Features.Media.Commands;
 
-public class DeleteMediaFolderCommandTests
+namespace Churchee.Module.Site.Tests.Features.Media.Commands.DeleteMediaFolder
 {
-    [Fact]
-    public void Constructor_SetsFolderId()
+    public class DeleteMediaFolderCommandTests
     {
-        // Arrange
-        var folderId = Guid.NewGuid();
+        [Fact]
+        public void Constructor_SetsFolderId()
+        {
+            // Arrange
+            var folderId = Guid.NewGuid();
 
-        // Act
-        var command = new DeleteMediaFolderCommand(folderId);
+            // Act
+            var command = new DeleteMediaFolderCommand(folderId);
 
-        // Assert
-        Assert.Equal(folderId, command.FolderId);
+            // Assert
+            Assert.Equal(folderId, command.FolderId);
+        }
     }
 }

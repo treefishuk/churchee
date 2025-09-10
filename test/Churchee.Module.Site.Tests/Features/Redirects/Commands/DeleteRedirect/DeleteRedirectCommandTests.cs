@@ -1,17 +1,20 @@
 using Churchee.Module.Site.Features.Redirects.Commands;
 
-public class DeleteRedirectCommandTests
+namespace Churchee.Module.Site.Tests.Features.Redirects.Commands
 {
-    [Fact]
-    public void Constructor_SetsRedirectId()
+    public class DeleteRedirectCommandTests
     {
-        // Arrange
-        int redirectId = 42;
+        [Fact]
+        public void Constructor_SetsRedirectId()
+        {
+            // Arrange
+            int redirectId = 42;
 
-        // Act
-        var command = new DeleteRedirectCommand(redirectId);
+            // Act
+            var command = new DeleteRedirectCommand(redirectId);
 
-        // Assert
-        Assert.Equal(redirectId, command.RedirectId);
+            // Assert
+            Assert.Equal(redirectId, command.RedirectId);
+        }
     }
 }

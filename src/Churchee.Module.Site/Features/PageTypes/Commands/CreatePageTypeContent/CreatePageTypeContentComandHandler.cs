@@ -6,21 +6,19 @@ using MediatR;
 
 namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
 {
-    public class CreatePageTypeContentComandHandler : IRequestHandler<CreatePageTypeContentComand, CommandResponse>
+    public class CreatePageTypeContentCommandHandler : IRequestHandler<CreatePageTypeContentCommand, CommandResponse>
     {
 
         private readonly IDataStore _storage;
 
-        public CreatePageTypeContentComandHandler(IDataStore storage)
+        public CreatePageTypeContentCommandHandler(IDataStore storage)
         {
             _storage = storage;
         }
 
-        public async Task<CommandResponse> Handle(CreatePageTypeContentComand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(CreatePageTypeContentCommand request, CancellationToken cancellationToken)
         {
-            var pageType = _storage.GetRepository<PageType>()
-                .ApplySpecification(new IncludePageTypeContentSpecification())
-                .First(f => f.Id == request.PageTypeId);
+            var pageType = await _storage.GetRepository<PageType>().FirstOrDefaultAsync(new GetPageTypeByIdAndIncludePageTypeContentSpecification(request.PageTypeId), cancellationToken);
 
             pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required, request.Order);
 

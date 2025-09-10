@@ -1,17 +1,20 @@
 using Churchee.Module.Site.Features.Blog.Commands;
 
-public class DeleteArticleCommandTests
+namespace Churchee.Module.Site.Tests.Features.Blog.Commands
 {
-    [Fact]
-    public void Constructor_SetsArticleId()
+    public class DeleteArticleCommandTests
     {
-        // Arrange
-        var articleId = Guid.NewGuid();
+        [Fact]
+        public void Constructor_SetsArticleId()
+        {
+            // Arrange
+            var articleId = Guid.NewGuid();
 
-        // Act
-        var command = new DeleteArticleCommand(articleId);
+            // Act
+            var command = new DeleteArticleCommand(articleId);
 
-        // Assert
-        Assert.Equal(articleId, command.ArticleId);
+            // Assert
+            Assert.Equal(articleId, command.ArticleId);
+        }
     }
 }

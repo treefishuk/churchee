@@ -1,19 +1,20 @@
-using System;
 using Churchee.Module.Site.Features.PageTypes.Commands;
-using Xunit;
 
-public class DeletePageTypeCommandTests
+namespace Churchee.Module.Site.Tests.Features.PageTypes.Commands.DeletePageType
 {
-    [Fact]
-    public void Constructor_SetsId()
+    public class DeletePageTypeCommandTests
     {
-        // Arrange
-        var id = Guid.NewGuid();
+        [Fact]
+        public void Constructor_SetsId()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
 
-        // Act
-        var command = new DeletePageTypeCommand(id);
+            // Act
+            var command = new DeletePageTypeCommand(id);
 
-        // Assert
-        Assert.Equal(id, command.Id);
+            // Assert
+            Assert.Equal(id, command.Id);
+        }
     }
 }

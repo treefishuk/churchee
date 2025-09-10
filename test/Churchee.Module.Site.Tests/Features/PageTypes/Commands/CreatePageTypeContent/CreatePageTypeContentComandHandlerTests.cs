@@ -6,27 +6,37 @@ using Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent;
 using Churchee.Module.Site.Specifications;
 using Moq;
 
-public class CreatePageTypeContentComandHandlerTests
+namespace Churchee.Module.Site.Tests.Features.PageTypes.Commands.CreatePageTypeContent
 {
-    [Fact]
-    public async Task Handle_AddsPageTypeContentAndSavesChanges()
+    public class CreatePageTypeContentCommandHandlerTests
     {
-        // Arrange
-        var storageMock = new Mock<IDataStore>();
-        var repoMock = new Mock<IRepository<PageType>>();
-        var pageTypeId = Guid.NewGuid();
-        var pageType = new PageType(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), true, "Test");
-        repoMock.Setup(x => x.ApplySpecification(It.IsAny<IncludePageTypeContentSpecification>())).Returns(new[] { pageType }.AsQueryable());
-        storageMock.Setup(x => x.GetRepository<PageType>()).Returns(repoMock.Object);
-        var handler = new CreatePageTypeContentComandHandler(storageMock.Object);
-        var command = new CreatePageTypeContentComand(pageTypeId, "Name", "string", true, 1);
-        pageType.Id = pageTypeId;
 
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        [Fact]
+        public async Task Handle_AddsPageTypeContentAndSavesChanges()
+        {
+            // Arrange
+            var storageMock = new Mock<IDataStore>();
+            var repoMock = new Mock<IRepository<PageType>>();
+            var pageTypeId = Guid.NewGuid();
+            var pageType = new PageType(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), true, "Test");
 
-        // Assert
-        Assert.IsType<CommandResponse>(result);
-        storageMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            repoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<GetPageTypeByIdAndIncludePageTypeContentSpecification>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(pageType);
+
+            storageMock.Setup(x => x.GetRepository<PageType>()).Returns(repoMock.Object);
+
+            var handler = new CreatePageTypeContentCommandHandler(storageMock.Object);
+            var command = new CreatePageTypeContentCommand(pageTypeId, "Name", "string", true, 1);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<CommandResponse>(result);
+            storageMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+            // Optionally, verify that the PageTypeContent was added to the PageType
+            Assert.Contains(pageType.PageTypeContent, c => c.Name == "Name" && c.Type == "string" && c.IsRequired && c.Order == 1);
+        }
     }
 }

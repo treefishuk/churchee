@@ -1,17 +1,20 @@
 using Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent;
 
-public class GetContentTypesForPageTypeQueryTests
+namespace Churchee.Module.Site.Tests.Features.PageTypes.Queries.GetContentTypesForPageType
 {
-    [Fact]
-    public void Constructor_SetsPageTypeId()
+    public class GetContentTypesForPageTypeQueryTests
     {
-        // Arrange
-        var pageTypeId = Guid.NewGuid();
+        [Fact]
+        public void Constructor_SetsPageTypeId()
+        {
+            // Arrange
+            var pageTypeId = Guid.NewGuid();
 
-        // Act
-        var query = new GetContentTypesForPageTypeQuery(pageTypeId);
+            // Act
+            var query = new GetContentTypesForPageTypeQuery(pageTypeId);
 
-        // Assert
-        Assert.Equal(pageTypeId, query.PageTypeId);
+            // Assert
+            Assert.Equal(pageTypeId, query.PageTypeId);
+        }
     }
 }
