@@ -97,7 +97,7 @@ namespace Churchee.Module.Site.Features.Favicons.Commands
                 using var imageStream = await _imageProcessor.ResizeImageAsync(originalImageStream, size, 0, ".png", cancellationToken);
                 imageStream.Position = 0;
                 using var ms = new MemoryStream();
-                imageStream.CopyTo(ms);
+                await imageStream.CopyToAsync(ms, cancellationToken);
                 imageDataList.Add(ms.ToArray());
                 originalImageStream.Position = 0;
             }

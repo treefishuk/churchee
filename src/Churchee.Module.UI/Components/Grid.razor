@@ -248,7 +248,7 @@
 
     static void RowRender(RowRenderEventArgs<TItem> args)
     {
-        if (args.Data is IHierarchicalDataTableResponse casted && casted != null)
+        if (args.Data is IHierarchicalDataTableResponse casted)
         {
             args.Expandable = casted.HasChildren;
         }

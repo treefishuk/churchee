@@ -20,8 +20,6 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
         {
             var repo = _storage.GetRepository<Article>();
 
-            int count = repo.Count();
-
             return await repo.GetDataTableResponseAsync(new AllArticlesSpecification(), request.OrderBy, request.OrderByDirection, request.Skip, request.Take, s => new GetListBlogItemsResponseItem
             {
                 Id = s.Id,
