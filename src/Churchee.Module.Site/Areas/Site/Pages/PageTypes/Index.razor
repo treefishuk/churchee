@@ -17,13 +17,15 @@
     </div> 
 </SectionContent>
 
-<Grid TItem="GetPageTypesListingResponse" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="OnDelete"></Grid>
+<Grid TItem="GetPageTypesListingResponse" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="OnDelete"></Grid>
 
 @code {
 
     IEnumerable<GetPageTypesListingResponse> listingData;
 
     bool isLoading = false;
+
+    int count = 0;
 
     async Task LoadData(LoadDataArgs args)
     {
@@ -36,6 +38,8 @@
             orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Name asc" : args.OrderBy), CancellationToken);
 
         listingData = result.Data;
+
+        count = result.RecordsTotal;
 
         isLoading = false;
     }

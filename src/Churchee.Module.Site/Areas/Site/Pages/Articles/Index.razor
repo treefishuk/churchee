@@ -18,13 +18,15 @@
     </div>
 </SectionContent>
 
-<Grid TItem="GetListBlogItemsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="OnDelete"></Grid>
+<Grid TItem="GetListBlogItemsResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="OnDelete"></Grid>
 
 @code {
 
     IEnumerable<GetListBlogItemsResponseItem> listingData;
 
     bool isLoading = false;
+
+    int count = 0;
 
     async Task LoadData(LoadDataArgs args)
     {
@@ -38,12 +40,14 @@
 
         listingData = result.Data;
 
+        count = result.RecordsTotal;
+
         isLoading = false;
     }
 
     async Task OnDelete(GetListBlogItemsResponseItem item)
     {
-        var result = await Mediator.Send(new DeleteArticleCommand(item.Id));
+        var result = await Mediator.Send(new DeleteArticleCommand(item.Id), CancellationToken);
 
         if (!result.IsSuccess)
         {
