@@ -21,11 +21,6 @@ namespace Churchee.Test.Helpers.Validation
             Assert.Single(_instance, predicate);
         }
 
-        public void ContainSingle()
-        {
-            Assert.Single(_instance);
-        }
-
         public void NotBeNull()
         {
             Assert.NotNull(_instance);
