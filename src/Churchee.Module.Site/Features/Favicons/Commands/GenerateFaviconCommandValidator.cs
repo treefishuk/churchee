@@ -27,11 +27,11 @@ namespace Churchee.Module.Site.Features.Favicons.Commands
                 .WithMessage("Image must be more then 575px");
         }
 
-        private bool BeSquare(string base64Image)
+        private static bool BeSquare(string base64Image)
         {
             try
             {
-                string base64 = base64Image.Contains(",") ? base64Image.Split(',')[1] : base64Image;
+                string base64 = base64Image.Contains(',') ? base64Image.Split(',')[1] : base64Image;
                 byte[] imageBytes = Convert.FromBase64String(base64);
                 using var ms = new System.IO.MemoryStream(imageBytes);
                 using var image = Image.Load<Rgba32>(ms);
@@ -43,11 +43,11 @@ namespace Churchee.Module.Site.Features.Favicons.Commands
             }
         }
 
-        private bool BeMoreThen575(string base64Image)
+        private static bool BeMoreThen575(string base64Image)
         {
             try
             {
-                string base64 = base64Image.Contains(",") ? base64Image.Split(',')[1] : base64Image;
+                string base64 = base64Image.Contains(',') ? base64Image.Split(',')[1] : base64Image;
                 byte[] imageBytes = Convert.FromBase64String(base64);
                 using var ms = new System.IO.MemoryStream(imageBytes);
                 using var image = Image.Load<Rgba32>(ms);

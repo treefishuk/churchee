@@ -46,5 +46,15 @@ namespace Churchee.Module.Videos.Specifications
             filtered.Should().HaveCount(1);
             filtered.First().Title.Should().Be("Test Video");
         }
+
+        [Fact]
+        public void Constructor_WithEmptyString_DoesNotAddWhereClause()
+        {
+            // Arrange & Act
+            var spec = new VideoSearchFilterSpecification(string.Empty);
+
+            // Assert
+            spec.WhereExpressions.Should().BeEmpty();
+        }
     }
 }

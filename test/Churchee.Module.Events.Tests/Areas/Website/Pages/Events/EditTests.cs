@@ -5,8 +5,8 @@ using Churchee.Module.Events.Areas.Website.Pages.Events;
 using Churchee.Module.Events.Features.Commands;
 using Churchee.Module.Events.Features.Queries;
 using Churchee.Module.Events.Models;
-using Churchee.Module.Events.Tests.Areas.Shared.Pages;
 using Churchee.Module.UI.Components;
+using Churchee.Test.Helpers.Blazor;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,7 +16,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
     public class EditTests : BasePageTests
     {
         [Fact]
-        public void EditEvent_HasCorrectname()
+        public void EditEvent_HasCorrectName()
         {
             //arrange
             SetupGetDetailByIdResponse();

@@ -3,8 +3,8 @@ using Bunit.TestDoubles;
 using Churchee.Common.ResponseTypes;
 using Churchee.Module.Events.Areas.Website.Pages.Events;
 using Churchee.Module.Events.Features.Commands;
-using Churchee.Module.Events.Tests.Areas.Shared.Pages;
 using Churchee.Module.UI.Components;
+using Churchee.Test.Helpers.Blazor;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -14,7 +14,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
     public class CreateTests : BasePageTests
     {
         [Fact]
-        public void CreateEvent_HasCorrectname()
+        public void CreateEvent_HasCorrectName()
         {
             //arrange
             MockMediator.Setup(s => s.Send(It.IsAny<ActivateEventsCommand>(), default)).ReturnsAsync(new CommandResponse());

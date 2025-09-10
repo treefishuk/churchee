@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Churchee.Module.Site\Churchee.Module.Site.csproj" />
+    <ProjectReference Include="..\Churchee.Test.Helpers.Blazor\Churchee.Test.Helpers.Blazor.csproj" />
     <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" />
   </ItemGroup>
 
