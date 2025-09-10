@@ -127,6 +127,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Data.EntityFramewo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Module.Videos.Tests", "test\Churchee.Module.Videos.Tests\Churchee.Module.Videos.Tests.csproj", "{15A05B84-25DA-4258-8782-C471F8600906}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Test.Helpers.Blazor", "test\Churchee.Test.Helpers.Blazor\Churchee.Test.Helpers.Blazor.csproj", "{E210558F-4B7A-A7FE-B1F3-BE40E3B5BBB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -325,6 +327,10 @@ Global
 		{15A05B84-25DA-4258-8782-C471F8600906}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15A05B84-25DA-4258-8782-C471F8600906}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15A05B84-25DA-4258-8782-C471F8600906}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E210558F-4B7A-A7FE-B1F3-BE40E3B5BBB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E210558F-4B7A-A7FE-B1F3-BE40E3B5BBB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E210558F-4B7A-A7FE-B1F3-BE40E3B5BBB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E210558F-4B7A-A7FE-B1F3-BE40E3B5BBB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -382,6 +388,7 @@ Global
 		{773F4F1B-BA41-2439-CB66-1642F3292580} = {4B48BE94-D6FB-438A-BFCB-C098EDD771F3}
 		{6F75A9A9-6271-4E17-A6E4-AA8906D60FB7} = {4B48BE94-D6FB-438A-BFCB-C098EDD771F3}
 		{15A05B84-25DA-4258-8782-C471F8600906} = {187811C7-20D5-435D-83B8-042B3227E714}
+		{E210558F-4B7A-A7FE-B1F3-BE40E3B5BBB1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456111D9-BD96-4D2E-94D6-42EF29980C0B}

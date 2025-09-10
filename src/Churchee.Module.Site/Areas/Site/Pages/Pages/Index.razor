@@ -55,7 +55,12 @@
         if (result.IsSuccess)
         {
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Page Deleted" });
-        }   
+        }
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Could not remove Page" });
+        }
     }
 
     async Task LoadChildData(DataGridLoadChildDataEventArgs<GetListingQueryResponseItem> args)

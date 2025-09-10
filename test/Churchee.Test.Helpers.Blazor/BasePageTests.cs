@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Radzen;
 
-namespace Churchee.Module.Events.Tests.Areas.Shared.Pages
+namespace Churchee.Test.Helpers.Blazor
 {
     public abstract class BasePageTests : TestContext
     {
@@ -77,4 +77,5 @@ namespace Churchee.Module.Events.Tests.Areas.Shared.Pages
         }
 
     }
+
 }
