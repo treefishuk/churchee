@@ -2,8 +2,8 @@
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 {
@@ -25,7 +25,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 
             var repo = _storage.GetRepository<Page>();
 
-            string path = await GetUrlPath(request.ParentId);
+            string path = await GetUrlPath(request.ParentId, cancellationToken);
 
             string slug = request.Title.ToURL();
 
@@ -40,7 +40,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
             return new CommandResponse();
         }
 
-        private async Task<string> GetUrlPath(Guid? parentId)
+        private async Task<string> GetUrlPath(Guid? parentId, CancellationToken cancellationToken)
         {
             if (parentId == null)
             {
@@ -49,7 +49,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 
             var repo = _storage.GetRepository<Page>();
 
-            string parentSlug = await repo.GetQueryable().Where(w => w.Id == parentId.Value).Select(s => s.Url).FirstOrDefaultAsync();
+            string parentSlug = await repo.FirstOrDefaultAsync(new PageFromParentIdSpecification(parentId.Value), s => s.Url, cancellationToken);
 
             return parentSlug;
         }

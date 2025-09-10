@@ -1,18 +1,15 @@
-﻿using MediatR;
+﻿using Churchee.Common.Abstractions.Queries;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
-    public class GetListingQuery : IRequest<IEnumerable<GetListingQueryResponseItem>>
+    public class GetListingQuery : GridQueryRequestBase<GetListingQueryResponseItem>
     {
-        public GetListingQuery(Guid? parentId, string searchText)
+        internal GetListingQuery(int skip, int take, string searchText, string orderBy, Guid? parentId)
+            : base(skip, take, searchText, orderBy)
         {
             ParentId = parentId;
-            SearchText = searchText;
         }
 
         public Guid? ParentId { get; set; }
-
-        public string SearchText { get; set; }
-
     }
 }

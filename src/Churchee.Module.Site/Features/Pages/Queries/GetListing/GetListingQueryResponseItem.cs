@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Churchee.Common.Abstractions.Queries;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
-    public class GetListingQueryResponseItem
+    public class GetListingQueryResponseItem : IHierarchicalDataTableResponse
     {
         public Guid Id { get; set; }
 
@@ -14,15 +11,15 @@ namespace Churchee.Module.Site.Features.Pages.Queries
 
         public string Url { get; set; }
 
-        public DateTime? Created { get; set; }
-
-        public DateTime? Modified { get; set; }
-
         public bool HasChildren { get; set; }
 
         public Guid? ParentId { get; set; }
 
         public bool Published { get; set; }
+
+        [Display(Name = "Created/Modified")]
+        [DataType(DataTypes.Date)]
+        public DateTime? Modified { get; set; }
 
     }
 }
