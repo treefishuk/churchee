@@ -19,12 +19,13 @@ namespace Churchee.Module.Events.Features.Commands
         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IImageProcessor _imageProcessor;
 
-        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient)
+        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient, IImageProcessor imageProcessor)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
             _blobStore = blobStore;
             _backgroundJobClient = backgroundJobClient;
+            _imageProcessor = imageProcessor;
         }
 
         public async Task<CommandResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
