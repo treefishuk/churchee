@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
@@ -19,13 +20,15 @@ namespace Churchee.Module.Events.Features.Commands
         private readonly ICurrentUser _currentUser;
         private readonly IBlobStore _blobStore;
         private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IImageProcessor _imageProcessor;
 
-        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient)
+        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient, IImageProcessor imageProcessor)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
             _blobStore = blobStore;
             _backgroundJobClient = backgroundJobClient;
+            _imageProcessor = imageProcessor;
         }
 
         public async Task<CommandResponse> Handle(CreateEventCommand request, CancellationToken cancellationToken)
@@ -96,15 +99,15 @@ namespace Churchee.Module.Events.Features.Commands
 
                 string fileName = Path.GetFileNameWithoutExtension(request.ImageFileName);
 
-                byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
+                byte[] bytes = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
 
-                using var ms = new MemoryStream(data);
+                using var ms = new MemoryStream(bytes);
 
-                imagePath = $"/img/events/{fileName.ToDevName()}{extension}";
+                using var webpStream = await _imageProcessor.ConvertToWebP(ms, cancellationToken);
 
-                string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, ms, false, cancellationToken);
+                imagePath = $"/img/events/{fileName.ToDevName()}.webp";
 
-                byte[] bytes = ms.ConvertStreamToByteArray();
+                string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webpStream, false, cancellationToken);
 
                 _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, bytes, true, CancellationToken.None));
 

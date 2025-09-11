@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Features.Commands;
@@ -20,6 +21,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
         private readonly Mock<IBlobStore> _mockBlobStore = new();
         private readonly Mock<ICurrentUser> _mockCurrentUser = new();
         private readonly Mock<IBackgroundJobClient> _mockBackgroundJobClient = new();
+        private readonly Mock<IImageProcessor> _mockImageProcessor = new();
 
         [Fact]
         public async Task CreateEventCommandHandler_Handle_ReturnsCommandResponse()
@@ -65,7 +67,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .Build();
 
             //act
-            var cut = new CreateEventCommandHandler(GetDataStore(), mockCurrentUser.Object, mockBlobStore.Object, mockBackgroundJobClient.Object);
+            var cut = new CreateEventCommandHandler(GetDataStore(), mockCurrentUser.Object, mockBlobStore.Object, mockBackgroundJobClient.Object, _mockImageProcessor.Object);
 
             var result = await cut.Handle(command, default);
 
@@ -89,7 +91,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
 
             _mockCurrentUser.Setup(s => s.GetApplicationTenantId()).ReturnsAsync(Guid.NewGuid());
 
-            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object);
+            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object, _mockImageProcessor.Object);
 
             string title = "/my-event";
             string description = "Lomger more descriptive text";
@@ -145,7 +147,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
 
             _mockCurrentUser.Setup(s => s.GetApplicationTenantId()).ReturnsAsync(Guid.NewGuid());
 
-            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object);
+            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object, _mockImageProcessor.Object);
 
             string title = "/my-event-1";
             string description = "Lomger more descriptive text";
