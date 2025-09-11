@@ -16,7 +16,7 @@ namespace Churchee.Data.EntityFramework.Admin.Registrations
 
             serviceCollection.RegisterAllTypes<IEntityRegistration>(ServiceLifetime.Singleton);
 
-            logger.LogInformation("Registered Imlementations of IEntityRegistration");
+            logger.LogInformation("Registered Implementations of IEntityRegistration");
         }
     }
 }
