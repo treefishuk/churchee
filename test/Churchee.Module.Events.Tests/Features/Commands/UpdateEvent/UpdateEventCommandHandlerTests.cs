@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Features.Commands;
@@ -13,6 +14,8 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
 {
     public class UpdateEventCommandHandlerTests
     {
+        private readonly Mock<IImageProcessor> _mockImageProcessor = new();
+
         [Fact]
         public async Task UpdateEventCommandHandler_Handler_DataSetAndCommandResponseReturned()
         {
@@ -23,7 +26,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             var command = GetCommand();
 
             //act
-            var cut = new UpdateEventCommandHandler(GetDataStore(testEvent), mockCurrentUser.Object, GetBlobStore(), mockBackgroundJobClient.Object);
+            var cut = new UpdateEventCommandHandler(GetDataStore(testEvent), mockCurrentUser.Object, GetBlobStore(), mockBackgroundJobClient.Object, _mockImageProcessor.Object);
 
             var result = await cut.Handle(command, default);
 
