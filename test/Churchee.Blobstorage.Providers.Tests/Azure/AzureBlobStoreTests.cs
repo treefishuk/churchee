@@ -57,7 +57,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             await blobClient.UploadAsync(new MemoryStream(new byte[] { 1, 2, 3 }), cancellationToken: cancellationToken);
 
             // Act
-            var result = await blobStore.GetAsync(applicationTenantId, fullPath, cancellationToken);
+            var result = await blobStore.GetReadStreamAsync(applicationTenantId, fullPath, cancellationToken);
 
             // Assert
             result.Should().NotBeNull();

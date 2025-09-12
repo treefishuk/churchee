@@ -64,6 +64,16 @@
         }
     }
 
+    if (dataType == DataTypes.ChunkedImageUpload)
+    {
+        var upload = prop.GetValue(InputModel) as ChunkedUploadType;
+
+        if(upload != null)
+        {
+            <ChunkedUpload Name="@prop.Name" Path="@upload.Path"></ChunkedUpload>
+        }
+    }
+
     if (dataType == DataTypes.MediaUpload)
     {
         var upload = prop.GetValue(InputModel) as Upload;

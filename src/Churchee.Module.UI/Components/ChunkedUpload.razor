@@ -1,0 +1,60 @@
+﻿@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.Storage
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization
+
+<InputFile OnChange="HandleFileUpload"  />
+
+@if (uploadProgress > 0 && uploadProgress < 100)
+{
+    <div>Uploading: @uploadProgress.ToString("F0", CultureInfo.InvariantCulture)%</div>
+}
+
+<div>@status</div>
+
+@code {
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    [Inject]
+    private IBlobStore Store { get; set; } = default!;
+
+    [Parameter]
+    public string Path { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+
+    [Parameter]
+    public int MaxUploadSize { get; set; } = 5;
+
+    private double uploadProgress = 0;
+
+    private string status = string.Empty;
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            var savePath = System.IO.Path.Combine(Path, file.Name);
+            await SaveFileInChunks(file, savePath);
+            status = $"Saved {file.Name}";
+        }
+    }
+
+    private async Task SaveFileInChunks(IBrowserFile file, string savePath)
+    {
+        var applicationTenantId = await CurrentUser.GetApplicationTenantId(); 
+
+        // Create a progress reporter that updates the uploadProgress variable
+        var progress = new Progress<double>(value =>
+        {
+            uploadProgress = value; // value is 0.0 to 1.0, convert to percent
+            InvokeAsync(StateHasChanged); // Ensure UI updates
+        });
+
+        await Store.WriteChunksAsync(applicationTenantId, savePath, file, progress);
+
+    }
+}

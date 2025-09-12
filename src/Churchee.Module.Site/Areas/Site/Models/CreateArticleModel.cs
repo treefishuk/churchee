@@ -1,4 +1,5 @@
-﻿using Churchee.Module.UI.Models;
+﻿using Churchee.Common.ValueTypes;
+using Churchee.Module.UI.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Areas.Site.Models
@@ -11,6 +12,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Title = string.Empty;
             Description = string.Empty;
             Content = "<p></p>";
+            Image = new ChunkedUploadType() { SupportedFileTypes = ".jpg,.jpeg,.png,.gif", FileName = string.Empty, Path = "articles/" };
         }
 
         [Required]
@@ -28,6 +30,8 @@ namespace Churchee.Module.Site.Areas.Site.Models
         [DataType(DataType.Date)]
         public DateTime? PublishOnDate { get; set; }
 
+        [DataType(DataTypes.ChunkedImageUpload)]
+        public ChunkedUploadType Image { get; set; }
 
         [Required]
         [DataType(DataTypes.HtmlTall)]
