@@ -95,7 +95,7 @@
         <RadzenCheckBoxList @bind-Value=@(multiSelect.SelectedValues) Data="@multiSelect.Items" TValue="Guid" TextProperty="Text" ValueProperty="Value" class="mb-5" Orientation=Orientation.Vertical></RadzenCheckBoxList>
     }
 
-    if (dataType != DataTypes.Hidden && dataType != DataTypes.TextWithSlug && dataType != DataTypes.Upload && dataType != DataTypes.ImageUpload && dataType != DataTypes.MediaUpload && dataType != DataTypes.CheckboxList)
+    if (dataType != DataTypes.Hidden && dataType != DataTypes.TextWithSlug && dataType != DataTypes.Upload && dataType != DataTypes.ImageUpload && dataType != DataTypes.MediaUpload && dataType != DataTypes.CheckboxList && dataType != DataTypes.ChunkedImageUpload)
     {
         var formFieldStyles = string.Empty;
 

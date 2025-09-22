@@ -2,15 +2,24 @@
 @using Churchee.Common.Storage
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Globalization
+@using Microsoft.JSInterop
+@using Radzen
+@using Radzen.Blazor
 
-<InputFile OnChange="HandleFileUpload"  />
+
+<RadzenUpload Change="HandleFileUpload" Auto="false" Multiple="false" />
 
 @if (uploadProgress > 0 && uploadProgress < 100)
 {
-    <div>Uploading: @uploadProgress.ToString("F0", CultureInfo.InvariantCulture)%</div>
+    <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Primary" Value="uploadProgress" ShowValue="false" />
+}
+@if (uploadProgress == 100)
+{
+    <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Success" Value="100" ShowValue="false" />
 }
 
-<div>@status</div>
+
+<small>@status</small>
 
 @code {
 
@@ -33,14 +42,27 @@
 
     private string status = string.Empty;
 
-    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    private async Task HandleFileUpload(UploadChangeEventArgs e)
     {
-        foreach (var file in e.GetMultipleFiles())
+        var file = e.Files.FirstOrDefault() as IBrowserFile;
+
+        if(file == null)
         {
-            var savePath = System.IO.Path.Combine(Path, file.Name);
-            await SaveFileInChunks(file, savePath);
-            status = $"Saved {file.Name}";
+            uploadProgress = 0;
+
+            status = string.Empty;
+
+            StateHasChanged();
+
+            return;
         }
+
+        var savePath = System.IO.Path.Combine(Path, file.Name);
+
+        await SaveFileInChunks(file, savePath);
+
+        status = $"Uploaded {file.Name}";
+        
     }
 
     private async Task SaveFileInChunks(IBrowserFile file, string savePath)
