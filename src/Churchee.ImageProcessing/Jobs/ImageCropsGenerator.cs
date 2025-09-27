@@ -15,7 +15,7 @@ namespace Churchee.ImageProcessing.Jobs
             _imageProcessor = imageProcessor;
         }
 
-        public async Task CreateCropsAsync(Guid applicationTenantId, string originalImagePath, byte[] streamBytes, bool overrideExisting, CancellationToken cancellationToken)
+        public async Task CreateCropsAsync(Guid applicationTenantId, string originalImagePath, bool overrideExisting, CancellationToken cancellationToken)
         {
             await CreateImageSizesAsync(applicationTenantId, originalImagePath, "t", 200, overrideExisting, cancellationToken);
             await CreateImageSizesAsync(applicationTenantId, originalImagePath, "s", 576, overrideExisting, cancellationToken);
@@ -45,7 +45,7 @@ namespace Churchee.ImageProcessing.Jobs
 
         private async Task CreateImageSizeAsync(Guid applicationTenantId, string originalImagePath, int width, bool overrideExisting, string imagePath, string extension, CancellationToken cancellationToken)
         {
-            await using var stream = await _blobStore.GetAsync(applicationTenantId, originalImagePath, cancellationToken);
+            await using var stream = await _blobStore.GetReadStreamAsync(applicationTenantId, originalImagePath, cancellationToken);
 
             using var imageStream = await _imageProcessor.ResizeImageAsync(stream, width, 0, extension, cancellationToken);
 
@@ -74,7 +74,7 @@ namespace Churchee.ImageProcessing.Jobs
 
         private async Task CreateImageCropAsync(Guid applicationTenantId, string originalImagePath, int width, bool overrideExisting, string imagePath, string extension, CancellationToken cancellationToken)
         {
-            await using var stream = await _blobStore.GetAsync(applicationTenantId, originalImagePath, cancellationToken);
+            await using var stream = await _blobStore.GetReadStreamAsync(applicationTenantId, originalImagePath, cancellationToken);
 
             using var imageStream = await _imageProcessor.CreateCropAsync(stream, width, extension, cancellationToken);
 

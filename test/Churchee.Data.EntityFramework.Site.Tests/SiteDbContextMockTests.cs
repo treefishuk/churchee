@@ -1,6 +1,6 @@
+using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
-using Churchee.Module.Tenancy.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

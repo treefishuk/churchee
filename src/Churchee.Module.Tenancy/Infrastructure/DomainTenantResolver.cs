@@ -1,8 +1,10 @@
-﻿using Churchee.Module.Tenancy.Entities;
+﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Module.Tenancy.Entities;
 using Churchee.Sites.db;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Tenancy.Infrastructure
 {
@@ -11,12 +13,14 @@ namespace Churchee.Module.Tenancy.Infrastructure
         private readonly TenantContext _storage;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMemoryCache _memoryCache;
+        private readonly IConfiguration _configuration;
 
-        public DomainTenantResolver(TenantContext storage, IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
+        public DomainTenantResolver(TenantContext storage, IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IConfiguration configuration)
         {
             _storage = storage;
             _httpContextAccessor = httpContextAccessor;
             _memoryCache = memoryCache;
+            _configuration = configuration;
         }
 
         public Guid GetTenantId()
@@ -28,7 +32,7 @@ namespace Churchee.Module.Tenancy.Infrastructure
 
             string domain = _httpContextAccessor.HttpContext.Request.Host.Host;
 
-            var hasCachedEntry = _memoryCache.TryGetValue($"{domain}_tenantId", out Guid returnValue);
+            bool hasCachedEntry = _memoryCache.TryGetValue($"{domain}_tenantId", out Guid returnValue);
 
             if (hasCachedEntry && returnValue != Guid.Empty)
             {
@@ -89,5 +93,13 @@ namespace Churchee.Module.Tenancy.Infrastructure
 
             return tenantDevName;
         }
+
+        public string GetCDNPrefix()
+        {
+            string urlPrefix = _configuration.GetRequiredSection("Images")["Prefix"] ?? string.Empty;
+
+            return urlPrefix.Replace("*", GetTenantDevName());
+        }
+
     }
 }

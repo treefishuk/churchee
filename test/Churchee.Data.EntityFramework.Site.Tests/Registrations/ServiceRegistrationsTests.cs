@@ -1,5 +1,5 @@
-﻿using Churchee.Data.EntityFramework.Site.Registrations;
-using Churchee.Module.Tenancy.Infrastructure;
+﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Data.EntityFramework.Site.Registrations;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

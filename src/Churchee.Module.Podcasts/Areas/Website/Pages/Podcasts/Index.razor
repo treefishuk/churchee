@@ -22,7 +22,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        imagePrefix = await Mediator.Send(new GetCDNPathQuery());
+        imagePrefix = TenantResolver.GetCDNPrefix();
+
+        await base.OnInitializedAsync();
     }
 
     IEnumerable<GetListingQueryResponseItem> listingData = default!;

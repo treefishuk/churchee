@@ -4,7 +4,6 @@ using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Blog.Commands.UploadArticleImage;
-using Churchee.Module.Tenancy.Infrastructure;
 using Hangfire;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -51,7 +50,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             string finalFilePath = await _blobStore.SaveAsync(applicationTenantId, filePath, imageStream, true, default);
 
-            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalFilePath, bytes, true, CancellationToken.None));
+            _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalFilePath, true, CancellationToken.None));
 
             return ReturnHtml(request, finalFilePath);
         }

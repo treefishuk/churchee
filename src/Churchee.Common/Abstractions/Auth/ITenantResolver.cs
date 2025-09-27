@@ -1,4 +1,6 @@
-﻿namespace Churchee.Module.Tenancy.Infrastructure
+﻿using System;
+
+namespace Churchee.Common.Abstractions.Auth
 {
     public interface ITenantResolver
     {
@@ -6,5 +8,6 @@
 
         string GetTenantDevName();
 
+        string GetCDNPrefix();
     }
 }

@@ -24,7 +24,6 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             // Arrange
             var applicationTenantId = Guid.NewGuid();
             string originalImagePath = "path/to/image.jpg";
-            byte[] streamBytes = new byte[] { 1, 2, 3 };
             bool overrideExisting = true;
 
             _imageProcessorMock.Setup(p => p.ResizeImageAsync(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -35,7 +34,7 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             var token = CancellationToken.None;
 
             // Act
-            await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, originalImagePath, streamBytes, overrideExisting, token);
+            await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, originalImagePath, overrideExisting, token);
 
             // Assert
             _imageProcessorMock.Verify(p => p.ResizeImageAsync(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>(), token), Times.Exactly(7));
@@ -51,7 +50,6 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             string fileName = "image";
             string folderPath = "path/to/";
             string extension = ".jpg";
-            byte[] streamBytes = new byte[] { 1, 2, 3 };
             int width = 200;
             bool overrideExisting = true;
 
@@ -61,7 +59,7 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             var token = CancellationToken.None;
 
             // Act
-            await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, $"{folderPath}{fileName}{extension}", streamBytes, overrideExisting, token);
+            await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, $"{folderPath}{fileName}{extension}", overrideExisting, token);
 
             // Assert
             _imageProcessorMock.Verify(p => p.ResizeImageAsync(It.IsAny<Stream>(), width, 0, ".webp", token), Times.AtLeastOnce);
@@ -76,7 +74,6 @@ namespace Churchee.ImageProcessing.Tests.Jobs
             string fileName = "image";
             string folderPath = "path/to/";
             string extension = ".jpg";
-            byte[] streamBytes = new byte[] { 1, 2, 3 };
             int width = 200;
             bool overrideExisting = true;
 
@@ -84,7 +81,7 @@ namespace Churchee.ImageProcessing.Tests.Jobs
                 .ReturnsAsync(new MemoryStream());
 
             // Act
-            await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, $"{folderPath}{fileName}{extension}", streamBytes, overrideExisting, CancellationToken.None);
+            await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, $"{folderPath}{fileName}{extension}", overrideExisting, CancellationToken.None);
 
             // Assert
             _imageProcessorMock.Verify(p => p.CreateCropAsync(It.IsAny<Stream>(), width, ".webp", It.IsAny<CancellationToken>()), Times.AtLeastOnce);

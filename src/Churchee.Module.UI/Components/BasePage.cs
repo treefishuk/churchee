@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Churchee.Common.Abstractions.Auth;
+using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Radzen;
@@ -19,6 +20,9 @@ namespace Churchee.Module.UI.Components
 
         [Inject]
         protected NotificationService NotificationService { get; set; } = default!;
+
+        [Inject]
+        protected ITenantResolver TenantResolver { get; set; } = default!;
 
         [Inject]
         protected IMediator Mediator { get; set; } = default!;
