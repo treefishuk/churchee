@@ -98,11 +98,13 @@ namespace Churchee.Module.UI.Components
 
         private async Task<string> UploadTempFileInChunksAsync(IBrowserFile file, CancellationToken cancellationToken = default)
         {
-            string tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string randomFileName = Path.GetRandomFileName();
 
-            string tempFilePathWithRealExt = tempFilePath.Replace(".tmp", Path.GetExtension(file.Name));
+            string fileNameWithExtension = Path.ChangeExtension(randomFileName, Path.GetExtension(file.Name));
 
-            await using (var tempFileStream = System.IO.File.Create(tempFilePathWithRealExt))
+            string tempFilePath = Path.Combine(Path.GetTempPath(), fileNameWithExtension);
+
+            await using (var tempFileStream = File.Create(tempFilePath))
             {
                 // Read the browser file in chunks and write to temp file
                 byte[] buffer = new byte[81920]; // 80KB buffer
@@ -123,7 +125,7 @@ namespace Churchee.Module.UI.Components
                 } while (bytesRead > 0);
             }
 
-            return tempFilePathWithRealExt;
+            return tempFilePath;
         }
 
         protected virtual void Dispose(bool disposing)
