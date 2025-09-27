@@ -160,7 +160,7 @@
     {
         await base.OnInitializedAsync();
 
-        imagePrefix = await Mediator.Send(new GetCDNPathQuery());
+        imagePrefix = TenantResolver.GetCDNPrefix();
 
         Directories = await Mediator.Send(new GetMediaFoldersQuery(null));
     }

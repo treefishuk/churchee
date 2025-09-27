@@ -12,7 +12,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Title = string.Empty;
             Description = string.Empty;
             Content = "<p></p>";
-            Image = new ChunkedUploadType() { SupportedFileTypes = ".jpg,.jpeg,.png,.gif", FileName = string.Empty, Path = "articles/" };
+            Image = new ChunkedImageUploadType() { SupportedFileTypes = ".jpg,.jpeg,.png,.gif", TempFilePath = string.Empty, Path = "articles/" };
         }
 
         [Required]
@@ -31,7 +31,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         public DateTime? PublishOnDate { get; set; }
 
         [DataType(DataTypes.ChunkedImageUpload)]
-        public ChunkedUploadType Image { get; set; }
+        public ChunkedImageUploadType Image { get; set; }
 
         [Required]
         [DataType(DataTypes.HtmlTall)]

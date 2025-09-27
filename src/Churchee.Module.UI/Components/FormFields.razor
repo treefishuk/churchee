@@ -66,11 +66,11 @@
 
     if (dataType == DataTypes.ChunkedImageUpload)
     {
-        var upload = prop.GetValue(InputModel) as ChunkedUploadType;
+        var upload = prop.GetValue(InputModel) as ChunkedImageUploadType;
 
         if(upload != null)
         {
-            <ChunkedUpload Name="@prop.Name" Path="@upload.Path"></ChunkedUpload>
+            <ChunkedImageUpload @bind-Model=upload></ChunkedImageUpload>
         }
     }
 

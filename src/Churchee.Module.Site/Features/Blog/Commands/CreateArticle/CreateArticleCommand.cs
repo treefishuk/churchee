@@ -11,6 +11,14 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
         public string Content { get; set; }
 
+        public string TempImagePath { get; set; }
+
+        public string ImagePath { get; set; }
+
+        public string ImageFileName { get; set; }
+
+        public string ImageAltTag { get; set; }
+
         public DateTime? PublishOnDate { get; set; }
 
         public Guid ParentPageId { get; set; }

@@ -15,7 +15,7 @@ namespace Churchee.ImageProcessing.Jobs
             _imageProcessor = imageProcessor;
         }
 
-        public async Task CreateCropsAsync(Guid applicationTenantId, string originalImagePath, byte[] streamBytes, bool overrideExisting, CancellationToken cancellationToken)
+        public async Task CreateCropsAsync(Guid applicationTenantId, string originalImagePath, bool overrideExisting, CancellationToken cancellationToken)
         {
             await CreateImageSizesAsync(applicationTenantId, originalImagePath, "t", 200, overrideExisting, cancellationToken);
             await CreateImageSizesAsync(applicationTenantId, originalImagePath, "s", 576, overrideExisting, cancellationToken);

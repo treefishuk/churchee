@@ -37,19 +37,32 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
 
-        await Mediator.Send(new SeedDefaultArticlesListingIfNeededCommand());
-
-        var parentsDropdownData = await GetParentOptions();
-
-        InputModel = new CreateArticleModel()
+        try
         {
-            Parent = new DropdownInput
+            await base.OnInitializedAsync();
+
+            await Mediator.Send(new SeedDefaultArticlesListingIfNeededCommand());
+
+            var parentsDropdownData = await GetParentOptions();
+
+            InputModel = new CreateArticleModel()
             {
-                Data = parentsDropdownData ?? new List<DropdownInput>()
-            }
-        };
+                Parent = new DropdownInput
+                {
+                    Data = parentsDropdownData ?? new List<DropdownInput>()
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine(ex);
+            
+            throw;
+        }
+
+
 
 
     }
@@ -62,7 +75,11 @@
             Description = InputModel.Description,
             PublishOnDate = InputModel.PublishOnDate,
             Content = InputModel.Content,
-            ParentPageId = Guid.Parse(InputModel.Parent?.Value)
+            ParentPageId = Guid.Parse(InputModel.Parent?.Value),
+            TempImagePath = InputModel.Image.TempFilePath,
+            ImageAltTag = InputModel.Image.Description,
+            ImageFileName = InputModel.Image.File.Name,
+            ImagePath = InputModel.Image.Path
         };
 
         var result = await Mediator.Send(command, default);
@@ -70,6 +87,11 @@
         if (result.IsSuccess)
         {
             NavigationManager.NavigateTo("/management/articles");
+        }
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to Add Article");
         }
 
     }

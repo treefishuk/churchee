@@ -4,23 +4,30 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Common.ValueTypes
 {
-    public class ChunkedUploadType : IValidatableObject
+    public class ChunkedImageUploadType : IValidatableObject
     {
-        public IBrowserFile Value { get; set; }
+        public ChunkedImageUploadType()
+        {
+            TempFilePath = string.Empty;
+            Path = string.Empty;
+        }
 
-        public string FileName { get; set; }
+        public IBrowserFile File { get; set; }
+
+        public string TempFilePath { get; set; }
 
         public string Path { get; set; }
 
-        public long? Size { get; set; }
-
         public string SupportedFileTypes { get; set; }
+
+        [Required]
+        public string Description { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
 
-            if (validationContext.Items.ContainsKey(typeof(RequiredAttribute)) && Value == null)
+            if (validationContext.Items.ContainsKey(typeof(RequiredAttribute)) && File == null)
             {
                 results.Add(new ValidationResult("Required"));
             }
