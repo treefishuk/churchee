@@ -47,7 +47,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             var blobStore = new AzureBlobStore(_mockConfiguration.Object);
 
             var applicationTenantId = Guid.NewGuid();
-            var fullPath = "test/blob.txt";
+            string fullPath = "test/blob.txt";
             var cancellationToken = CancellationToken.None;
 
             var blobServiceClient = new BlobServiceClient(_mockConfiguration.Object.GetConnectionString("Storage"));
@@ -71,12 +71,12 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             var blobStore = new AzureBlobStore(_mockConfiguration.Object);
 
             var applicationTenantId = Guid.NewGuid();
-            var fullPath = "test/blob.txt";
+            string fullPath = "test/blob.txt";
             var stream = new MemoryStream(new byte[] { 1, 2, 3 });
             var cancellationToken = CancellationToken.None;
 
             // Act
-            var result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, false, cancellationToken);
+            string result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, false, cancellationToken);
 
             // Assert
             result.Should().Be(fullPath);
@@ -95,7 +95,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             var blobStore = new AzureBlobStore(_mockConfiguration.Object);
 
             var applicationTenantId = Guid.NewGuid();
-            var fullPath = "test/blob.txt";
+            string fullPath = "test/blob.txt";
             var stream = new MemoryStream(new byte[] { 1, 2, 3 });
             var cancellationToken = CancellationToken.None;
             var blobServiceClient = new BlobServiceClient(_mockConfiguration.Object.GetConnectionString("Storage"));
@@ -105,7 +105,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             await blobClient.UploadAsync(new MemoryStream(new byte[] { 1, 2, 3 }), cancellationToken: cancellationToken);
 
             // Act
-            var result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, true, cancellationToken);
+            string result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, true, cancellationToken);
 
             // Assert
             result.Should().Be(fullPath);
@@ -120,7 +120,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             var blobStore = new AzureBlobStore(_mockConfiguration.Object);
 
             var applicationTenantId = Guid.NewGuid();
-            var fullPath = "test/blob.txt";
+            string fullPath = "test/blob.txt";
             var stream = new MemoryStream(new byte[] { 1, 2, 3 });
             var cancellationToken = CancellationToken.None;
             var blobServiceClient = new BlobServiceClient(_mockConfiguration.Object.GetConnectionString("Storage"));
@@ -130,7 +130,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             await blobClient.UploadAsync(new MemoryStream(new byte[] { 1, 2, 3 }), cancellationToken: cancellationToken);
 
             // Act
-            var result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, false, cancellationToken);
+            string result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, false, cancellationToken);
 
             // Assert
             result.Should().Be("test/blob(1).txt");
@@ -145,12 +145,12 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             var blobStore = new AzureBlobStore(_mockConfiguration.Object);
 
             var applicationTenantId = Guid.NewGuid();
-            var fullPath = "test/blob.txt";
+            string fullPath = "test/blob.txt";
             var stream = new MemoryStream(new byte[] { 1, 2, 3 });
             var cancellationToken = CancellationToken.None;
 
             // Act
-            var result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, false, cancellationToken);
+            string result = await blobStore.SaveAsync(applicationTenantId, fullPath, stream, false, cancellationToken);
 
             // Assert
             result.Should().Be(fullPath);

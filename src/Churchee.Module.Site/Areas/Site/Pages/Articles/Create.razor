@@ -38,33 +38,19 @@
     protected override async Task OnInitializedAsync()
     {
 
-        try
+        await base.OnInitializedAsync();
+
+        await Mediator.Send(new SeedDefaultArticlesListingIfNeededCommand());
+
+        var parentsDropdownData = await GetParentOptions();
+
+        InputModel = new CreateArticleModel()
         {
-            await base.OnInitializedAsync();
-
-            await Mediator.Send(new SeedDefaultArticlesListingIfNeededCommand());
-
-            var parentsDropdownData = await GetParentOptions();
-
-            InputModel = new CreateArticleModel()
+            Parent = new DropdownInput
             {
-                Parent = new DropdownInput
-                {
-                    Data = parentsDropdownData ?? new List<DropdownInput>()
-                }
-            };
-        }
-        catch (Exception ex)
-        {
-
-            Console.WriteLine(ex);
-            
-            throw;
-        }
-
-
-
-
+                Data = parentsDropdownData ?? new List<DropdownInput>()
+            }
+        };
     }
 
     private async Task ValidSubmitForm()

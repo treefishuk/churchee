@@ -68,6 +68,11 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
         private async Task ProcessImage(CreateArticleCommand request, Guid applicationTenantId, Article newArticle, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(request.TempImagePath) || string.IsNullOrEmpty(request.ImageFileName))
+            {
+                return;
+            }
+
             await using var tempFileStream = File.OpenRead(request.TempImagePath);
 
             using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);

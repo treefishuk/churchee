@@ -18,6 +18,7 @@ namespace Churchee.Test.Helpers.Blazor
         protected Mock<IMediator> MockMediator;
         protected Mock<IConfiguration> MockConfiguration;
         protected CurrentPage CurrentPage;
+        protected ITenantResolver TenantResolver;
 
         protected BasePageTests()
         {
@@ -41,6 +42,9 @@ namespace Churchee.Test.Helpers.Blazor
 
             CurrentPage = new CurrentPage();
             Services.AddSingleton(CurrentPage);
+
+            TenantResolver = new Mock<ITenantResolver>().Object;
+            Services.AddSingleton(TenantResolver);
 
         }
 
