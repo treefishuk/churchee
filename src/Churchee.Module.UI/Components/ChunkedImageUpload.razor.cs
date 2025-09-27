@@ -108,13 +108,13 @@ namespace Churchee.Module.UI.Components
             {
                 // Read the browser file in chunks and write to temp file
                 byte[] buffer = new byte[81920]; // 80KB buffer
-                await using var inputStream = file.OpenReadStream(MaxUploadSize * 1024 * 1024);
+                await using var inputStream = file.OpenReadStream(MaxUploadSize * 1024 * 1024, cancellationToken);
                 int bytesRead;
                 double totalRead = 0;
                 long totalLength = file.Size;
                 do
                 {
-                    bytesRead = await inputStream.ReadAsync(buffer, 0, buffer.Length);
+                    bytesRead = await inputStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
                     if (bytesRead > 0)
                     {
                         await tempFileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
