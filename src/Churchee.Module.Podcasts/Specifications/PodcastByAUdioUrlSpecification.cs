@@ -5,9 +5,9 @@ namespace Churchee.Module.Podcasts.Specifications
 {
     public class PodcastByAudioUrlSpecification : Specification<Podcast>
     {
-        public PodcastByAudioUrlSpecification(string url)
+        public PodcastByAudioUrlSpecification(string url, Guid applicationTenantId)
         {
-            Query.Where(w => w.AudioUri == url);
+            Query.IgnoreQueryFilters().Where(w => w.AudioUri == url && w.ApplicationTenantId == applicationTenantId);
         }
     }
 }
