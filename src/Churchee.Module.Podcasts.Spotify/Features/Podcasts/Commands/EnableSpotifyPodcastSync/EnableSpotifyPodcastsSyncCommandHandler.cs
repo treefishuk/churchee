@@ -107,7 +107,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
         private async Task UpdateExistingPodcast(Guid applicationTenantId, string audioUri, IRepository<Podcast> repository, RssChannelItem item, CancellationToken cancellationToken)
         {
-            var existing = await repository.FirstOrDefaultAsync(new PodcastByAudioUrlSpecification(audioUri), cancellationToken);
+            var existing = await repository.FirstOrDefaultAsync(new PodcastByAudioUrlSpecification(audioUri, applicationTenantId), cancellationToken);
 
             if (existing == null)
             {
