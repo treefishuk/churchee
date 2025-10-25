@@ -4,6 +4,6 @@ namespace Churchee.Module.UI.Registrations
 {
     public class ScriptRegistrations : IScriptRegistrations
     {
-        public List<string> Scripts => ["/_content/Churchee.Module.UI/scripts/localStorageHelper.js"];
+        public List<string> Scripts => ["/_content/Churchee.Module.UI/scripts/churchee-ui-interop.js"];
     }
 }

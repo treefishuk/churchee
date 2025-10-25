@@ -1,5 +1,5 @@
-﻿using Churchee.Module.Dashboard.Middleware;
-using Churchee.Module.Tenancy.Infrastructure;
+﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Module.Dashboard.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

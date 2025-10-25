@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Churchee.Common.Storage;
-using Churchee.Module.Tenancy.Infrastructure;
+﻿using Churchee.Common.Abstractions.Auth;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 

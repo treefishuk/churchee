@@ -204,9 +204,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsTo
 
             facebookEvent.SetImageUrl($"/img/events/{friendlyFileName}");
 
-            byte[] bytes = stream.ConvertStreamToByteArray();
-
-            _jobShedularService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, bytes, true, CancellationToken.None));
+            _jobShedularService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, true, CancellationToken.None));
         }
     }
 }

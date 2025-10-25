@@ -64,6 +64,16 @@
         }
     }
 
+    if (dataType == DataTypes.ChunkedImageUpload)
+    {
+        var upload = prop.GetValue(InputModel) as ChunkedImageUploadType;
+
+        if(upload != null)
+        {
+            <ChunkedImageUpload @bind-Model=upload></ChunkedImageUpload>
+        }
+    }
+
     if (dataType == DataTypes.MediaUpload)
     {
         var upload = prop.GetValue(InputModel) as Upload;
@@ -85,7 +95,7 @@
         <RadzenCheckBoxList @bind-Value=@(multiSelect.SelectedValues) Data="@multiSelect.Items" TValue="Guid" TextProperty="Text" ValueProperty="Value" class="mb-5" Orientation=Orientation.Vertical></RadzenCheckBoxList>
     }
 
-    if (dataType != DataTypes.Hidden && dataType != DataTypes.TextWithSlug && dataType != DataTypes.Upload && dataType != DataTypes.ImageUpload && dataType != DataTypes.MediaUpload && dataType != DataTypes.CheckboxList)
+    if (dataType != DataTypes.Hidden && dataType != DataTypes.TextWithSlug && dataType != DataTypes.Upload && dataType != DataTypes.ImageUpload && dataType != DataTypes.MediaUpload && dataType != DataTypes.CheckboxList && dataType != DataTypes.ChunkedImageUpload)
     {
         var formFieldStyles = string.Empty;
 

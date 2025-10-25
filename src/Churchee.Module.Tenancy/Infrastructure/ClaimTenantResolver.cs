@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Churchee.Common.Abstractions.Auth;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Tenancy.Infrastructure
 {
     public class ClaimTenantResolver : ITenantResolver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
 
-        public ClaimTenantResolver(IHttpContextAccessor httpContextAccessor)
+        public ClaimTenantResolver(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
         }
 
         public Guid GetTenantId()
@@ -45,5 +49,11 @@ namespace Churchee.Module.Tenancy.Infrastructure
             return claim.Value.ToLowerInvariant();
         }
 
+        public string GetCDNPrefix()
+        {
+            string urlPrefix = _configuration.GetRequiredSection("Images")["Prefix"] ?? string.Empty;
+
+            return urlPrefix.Replace("*", GetTenantDevName());
+        }
     }
 }

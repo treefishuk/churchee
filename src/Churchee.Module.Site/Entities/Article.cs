@@ -18,6 +18,11 @@ namespace Churchee.Module.Site.Entities
 
         public string Content { get; private set; }
 
+
+        public string ImageUrl { get; private set; }
+
+        public string ImageAltTag { get; private set; }
+
         public void UpdateInfo(string title, string description, Guid? parentId)
         {
             Title = title;
@@ -30,6 +35,12 @@ namespace Churchee.Module.Site.Entities
         public void SetContent(string content)
         {
             Content = content;
+        }
+
+        public void SetImage(string url, string altTag)
+        {
+            ImageUrl = url;
+            ImageAltTag = altTag;
         }
 
         public void SetPublishDate(DateTime? publishOn)

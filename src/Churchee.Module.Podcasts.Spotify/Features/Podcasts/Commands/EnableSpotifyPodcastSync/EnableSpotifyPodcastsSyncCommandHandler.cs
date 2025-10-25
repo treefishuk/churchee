@@ -107,7 +107,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
         private async Task UpdateExistingPodcast(Guid applicationTenantId, string audioUri, IRepository<Podcast> repository, RssChannelItem item, CancellationToken cancellationToken)
         {
-            var existing = await repository.FirstOrDefaultAsync(new PodcastByAudioUrlSpecification(audioUri), cancellationToken);
+            var existing = await repository.FirstOrDefaultAsync(new PodcastByAudioUrlSpecification(audioUri, applicationTenantId), cancellationToken);
 
             if (existing == null)
             {
@@ -139,7 +139,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, cancellationToken);
 
-            var originalImgStream = await _blobStore.GetAsync(applicationTenantId, $"/img/audio/{fileName}", cancellationToken);
+            var originalImgStream = await _blobStore.GetReadStreamAsync(applicationTenantId, $"/img/audio/{fileName}", cancellationToken);
 
             var thumbnailImage = await _imageProcessor.ResizeImageAsync(originalImgStream, 50, 0, ext, cancellationToken);
 

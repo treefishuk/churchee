@@ -1,5 +1,7 @@
 using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
@@ -21,10 +23,15 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.CreateArticle
             var articleRepoMock = new Mock<IRepository<Article>>();
             var pageTypeRepoMock = new Mock<IRepository<PageType>>();
 
+            var imageProcessorMock = new Mock<IImageProcessor>();
+            var jobServiceMock = new Mock<IJobService>();
+            var blobStoreMock = new Mock<IBlobStore>();
+
+
             var tenantId = Guid.NewGuid();
             var parentPageId = Guid.NewGuid();
             var detailPageTypeId = Guid.NewGuid();
-            var parentUrl = "/parent";
+            string parentUrl = "/parent";
 
             currentUserMock.Setup(x => x.GetApplicationTenantId())
                 .ReturnsAsync(tenantId);
@@ -48,7 +55,7 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.CreateArticle
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parentUrl);
 
-            var handler = new CreateArticleCommandHandler(dataStoreMock.Object, currentUserMock.Object);
+            var handler = new CreateArticleCommandHandler(dataStoreMock.Object, currentUserMock.Object, jobServiceMock.Object, imageProcessorMock.Object, blobStoreMock.Object);
             var command = new CreateArticleCommand
             {
                 Title = "Test Article",

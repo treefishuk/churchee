@@ -1,0 +1,47 @@
+﻿@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.Abstractions.Queue
+@using Churchee.Common.Abstractions.Utilities
+@using Churchee.Common.Storage
+@using Churchee.Common.ValueTypes
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Configuration
+@using Microsoft.JSInterop
+@using Radzen
+@using Radzen.Blazor
+@using System.ComponentModel.DataAnnotations
+
+
+<RadzenUpload Change="HandleFileUpload" Auto="false" Multiple="false"  />
+
+@if (uploadProgress > 0 && uploadProgress < 100)
+{
+    <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Primary" Value="uploadProgress" ShowValue="false" />
+}
+@if (uploadProgress >= 100)
+{
+    <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Success" Value="100" ShowValue="false" />
+}
+
+
+<small>@status</small>
+
+<RadzenFormField Text="Description" AllowFloatingLabel="false">
+
+    <ChildContent>
+
+    <div style="display: flex; align-items: center;">
+            <RadzenTextBox Style="width: 100%" @oninput="OnDescriptionInput" Value="@Model.Description" />
+            <RadzenProgressBarCircular Visible="generating" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Style="margin-right: 1rem">
+                <Template>AI</Template> 
+            </RadzenProgressBarCircular>
+    </div>
+
+    </ChildContent>
+    <Helper>
+        <ValidationMessage For="() => Model.Description" />
+    </Helper>
+
+</RadzenFormField>
+

@@ -1,5 +1,6 @@
 ﻿@page "/management/articles/create"
 @inherits BasePage
+@using Churchee.Common.ValueTypes
 @using Churchee.Module.Site.Areas.Site.Models
 @using Churchee.Module.Site.Features.Blog.Commands
 @using Churchee.Module.Site.Features.PageTypes.Queries
@@ -36,6 +37,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         await base.OnInitializedAsync();
 
         await Mediator.Send(new SeedDefaultArticlesListingIfNeededCommand());
@@ -49,8 +51,6 @@
                 Data = parentsDropdownData ?? new List<DropdownInput>()
             }
         };
-
-
     }
 
     private async Task ValidSubmitForm()
@@ -61,7 +61,11 @@
             Description = InputModel.Description,
             PublishOnDate = InputModel.PublishOnDate,
             Content = InputModel.Content,
-            ParentPageId = Guid.Parse(InputModel.Parent?.Value)
+            ParentPageId = Guid.Parse(InputModel.Parent?.Value),
+            TempImagePath = InputModel.Image.TempFilePath,
+            ImageAltTag = InputModel.Image.Description,
+            ImageFileName = InputModel.Image.File.Name,
+            ImagePath = InputModel.Image.Path
         };
 
         var result = await Mediator.Send(command, default);
@@ -69,6 +73,11 @@
         if (result.IsSuccess)
         {
             NavigationManager.NavigateTo("/management/articles");
+        }
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to Add Article");
         }
 
     }

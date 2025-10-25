@@ -1,9 +1,9 @@
-﻿using Churchee.Common.Abstractions.Entities;
+﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Data.EntityFramework.Admin.Extensions;
 using Churchee.Data.EntityFramework.Shared.Extensions;
 using Churchee.Module.Identity.Entities;
-using Churchee.Module.Tenancy.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
