@@ -2,6 +2,7 @@
 using Bunit.TestDoubles;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
+using Churchee.Common.ValueTypes;
 using Churchee.Module.Site.Features.Blog.Commands;
 using Churchee.Module.Site.Features.Pages.Queries;
 using Churchee.Module.UI.Components;
@@ -84,6 +85,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             instance.InputModel.Description = "Desc";
             instance.InputModel.Content = "Content";
             instance.InputModel.Parent = new DropdownInput { Value = Guid.NewGuid().ToString() };
+            instance.InputModel.Image = new ChunkedImageUploadType { };
+
 
             // Setup Mediator to return success
             MockMediator.Setup(m => m.Send(It.IsAny<CreateArticleCommand>(), default))

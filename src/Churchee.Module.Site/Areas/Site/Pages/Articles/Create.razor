@@ -62,10 +62,10 @@
             PublishOnDate = InputModel.PublishOnDate,
             Content = InputModel.Content,
             ParentPageId = Guid.Parse(InputModel.Parent?.Value),
-            TempImagePath = InputModel.Image.TempFilePath,
-            ImageAltTag = InputModel.Image.Description,
-            ImageFileName = InputModel.Image.File.Name,
-            ImagePath = InputModel.Image.Path
+            TempImagePath = InputModel.Image?.TempFilePath,
+            ImageAltTag = InputModel.Image?.Description,
+            ImageFileName = InputModel.Image?.File?.Name,
+            ImagePath = InputModel.Image?.Path
         };
 
         var result = await Mediator.Send(command, default);
