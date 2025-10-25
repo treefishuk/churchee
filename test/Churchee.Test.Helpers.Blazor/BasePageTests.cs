@@ -15,6 +15,7 @@ namespace Churchee.Test.Helpers.Blazor
     {
         protected Mock<ICurrentUser> MockCurrentUser;
         protected CustomNotificationService NotificationService;
+        protected DialogService DialogService;
         protected Mock<IMediator> MockMediator;
         protected Mock<IConfiguration> MockConfiguration;
         protected CurrentPage CurrentPage;
@@ -28,8 +29,8 @@ namespace Churchee.Test.Helpers.Blazor
             MockCurrentUser = new Mock<ICurrentUser>();
             Services.AddSingleton(MockCurrentUser.Object);
 
-            var dialogService = new DialogService(new FakeNavigationManager(this), JSInterop.JSRuntime);
-            Services.AddSingleton(dialogService);
+            DialogService = new DialogService(new FakeNavigationManager(this), JSInterop.JSRuntime);
+            Services.AddSingleton(DialogService);
 
             NotificationService = new CustomNotificationService();
             Services.AddSingleton<NotificationService>(NotificationService);

@@ -5,8 +5,8 @@
 <div class="sticky-formButtons">
 
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
-            <RadzenButton Disabled="FormInvalid" Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
-            <RadzenButton Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+            <RadzenButton id="submitFormBtn" Disabled="FormInvalid" Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
+            <RadzenButton id="cancelFromBtn" Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
             @ChildContent
         </RadzenStack>
 

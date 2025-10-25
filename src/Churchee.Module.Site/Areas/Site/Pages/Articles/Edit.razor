@@ -20,15 +20,15 @@
 
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) OnImageSubmit="OnImageSubmit" >
 
-    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@(() => OpenContentEditor())">Distraction Free Mode</RadzenButton>
+    <RadzenButton id="distractionFreeModeBtn" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@(() => OpenContentEditor())">Distraction Free Mode</RadzenButton>
 
     @if (IsPublished)
     {
-        <RadzenButton ButtonStyle="ButtonStyle.Warning" ButtonType="ButtonType.Button" Click="@(() => UnPublish())">Unpublish</RadzenButton>
+        <RadzenButton id="unPublishBtn" ButtonStyle="ButtonStyle.Warning" ButtonType="ButtonType.Button" Click="@(() => UnPublish())">Unpublish</RadzenButton>
     }
     else
     {
-        <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Button" Click="@(() => Publish())">Publish</RadzenButton>
+        <RadzenButton id="publishBtn" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Button" Click="@(() => Publish())">Publish</RadzenButton>
     }
 
 </Form>
@@ -112,7 +112,7 @@
             return;
         }
 
-        NotificationService.Notify(NotificationSeverity.Success, "Article published");
+        NotificationService.Notify(NotificationSeverity.Success, "Article Published");
 
         IsPublished = true;
         InputModel.PublishOnDate = DateTime.UtcNow;
@@ -124,7 +124,7 @@
 
         if (!result.IsSuccess)
         {
-            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not removed from publication");
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove publication");
 
             return;
         }
