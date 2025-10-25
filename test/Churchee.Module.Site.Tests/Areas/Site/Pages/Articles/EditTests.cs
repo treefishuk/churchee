@@ -17,12 +17,10 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
 {
     public class EditTests : BasePageTests
     {
-        private Mock<IAiToolUtilities> _mockAiToolUtilities;
-
         public EditTests()
         {
-            _mockAiToolUtilities = new Mock<IAiToolUtilities>();
-            Services.AddSingleton(_mockAiToolUtilities.Object);
+            var mockAiToolUtilities = new Mock<IAiToolUtilities>();
+            Services.AddSingleton(mockAiToolUtilities.Object);
         }
 
         [Fact]

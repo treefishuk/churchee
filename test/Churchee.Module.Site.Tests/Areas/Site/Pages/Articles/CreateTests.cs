@@ -1,5 +1,6 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Module.Site.Features.Blog.Commands;
 using Churchee.Module.Site.Features.Pages.Queries;
@@ -15,6 +16,11 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
 {
     public class CreateTests : BasePageTests
     {
+        public CreateTests()
+        {
+            var mockAiToolUtilities = new Mock<IAiToolUtilities>();
+            Services.AddSingleton(mockAiToolUtilities.Object);
+        }
 
         [Fact]
         public void Article_Create_HasCorrectName()
