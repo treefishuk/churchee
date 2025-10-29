@@ -10,8 +10,6 @@
 
 <PageName Name="Edit Template"></PageName>
 
-<PageTitle>@InputModel.Content.Split('/').GetLast().Replace(".cshtml", "")</PageTitle>
-
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
 @code {

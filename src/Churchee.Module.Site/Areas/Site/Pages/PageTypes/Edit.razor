@@ -23,8 +23,8 @@
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
 
             <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@AddContentType">Add New</RadzenButton>
-            <RadzenButton Text="Save" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
-            <RadzenButton Text="Cancel" Click="@(() => NavigationManager.NavigateTo("/management/pagetypes"))" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+            <RadzenButton id="submitFormBtn" Text="Save" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
+            <RadzenButton id="cancelFormBtn" Text="Cancel" Click="@(() => NavigationManager.NavigateTo("/management/pagetypes"))" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
         </RadzenStack>
 
     </div>

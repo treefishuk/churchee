@@ -13,9 +13,6 @@
     [SupplyParameterFromForm]
     public CreatePageTypeModel InputModel { get; set; } = new();
 
-    [Parameter]
-    public Guid Id { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
