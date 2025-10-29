@@ -259,6 +259,5 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             NotificationService.Notifications.First().Summary.Should().Be("Article removed from publication");
             NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
         }
-
     }
 }

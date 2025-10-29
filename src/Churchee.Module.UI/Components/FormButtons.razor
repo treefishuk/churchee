@@ -6,7 +6,7 @@
 
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
             <RadzenButton id="submitFormBtn" Disabled="FormInvalid" Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
-            <RadzenButton id="cancelFromBtn" Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+            <RadzenButton id="cancelFormBtn" Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
             @ChildContent
         </RadzenStack>
 
@@ -27,10 +27,18 @@
 
     public void CancelForm()
     {
-        var currentUrl = new Uri(_navigationManager.Uri);
-        var parentUrl = new Uri(currentUrl, "..").ToString().TrimEnd('/');
+        var uri = new Uri(_navigationManager.Uri);
+        
+        var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-        _navigationManager.NavigateTo(parentUrl);
+        // Get the first two segments
+        var firstTwoSegments = segments.Take(2).ToArray();
+        var basePath = "/" + string.Join('/', firstTwoSegments);
+
+        // Rebuild the base URL
+        var baseUrl = $"{uri.Scheme}://{uri.Authority}{basePath}";
+
+        _navigationManager.NavigateTo(baseUrl);
     }
 
 }
