@@ -16,7 +16,5 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         [DataType(DataTypes.CssEditor)]
         public string Styles { get; set; }
-
-
     }
 }

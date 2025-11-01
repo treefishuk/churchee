@@ -17,6 +17,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         [Required]
         [DataType(DataTypes.Hidden)]
+        [NotEmptyGuid]
         public Guid Id { get; set; }
 
         [Required]
