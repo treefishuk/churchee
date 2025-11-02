@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Churchee.Module.Site.Entities
+﻿namespace Churchee.Module.Site.Entities
 {
     public class PageTypeTypeMapping
     {
@@ -13,6 +9,5 @@ namespace Churchee.Module.Site.Entities
         public Guid ChildPageTypeId { get; set; }
 
         public PageType ChildPageType { get; set; }
-
     }
 }

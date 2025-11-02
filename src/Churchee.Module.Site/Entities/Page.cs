@@ -7,7 +7,7 @@ namespace Churchee.Module.Site.Entities
     {
         protected Page()
         {
-            PageContent = new List<PageContent>();
+            PageContent = [];
         }
 
         public Page(Guid applicationTenantId, string title, string url, string metadescription, Guid pageTypeId, Guid? parentId, bool triggerEvents) : base(applicationTenantId, title, url, metadescription)
@@ -16,7 +16,7 @@ namespace Churchee.Module.Site.Entities
 
             Version = 0;
 
-            PageContent = new List<PageContent>();
+            PageContent = [];
 
             ParentId = parentId;
 
@@ -90,7 +90,7 @@ namespace Churchee.Module.Site.Entities
             Published = false;
         }
 
-        private static JsonSerializerOptions jsonSerializerOptions = new()
+        private static readonly JsonSerializerOptions jsonSerializerOptions = new()
         {
             WriteIndented = true,
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,

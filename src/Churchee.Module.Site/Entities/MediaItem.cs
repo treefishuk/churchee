@@ -11,7 +11,6 @@ namespace Churchee.Module.Site.Entities
 
         public MediaItem(Guid applicationTenantId, string title, string url, string description, Guid? mediaFolderId = null) : base(applicationTenantId)
         {
-
             Title = title;
             Description = description;
             MediaUrl = url;
