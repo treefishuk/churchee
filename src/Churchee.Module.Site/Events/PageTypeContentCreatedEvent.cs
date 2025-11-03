@@ -11,11 +11,11 @@ namespace Churchee.Module.Site.Events
             PageTypeId = pageTypeId;
         }
 
-        public Guid ApplicationTenantId { get; set; }
+        public Guid ApplicationTenantId { get; private set; }
 
-        public Guid PageTypeId { get; set; }
+        public Guid PageTypeId { get; private set; }
 
-        public Guid PageTypeContentId { get; set; }
+        public Guid PageTypeContentId { get; private set; }
 
     }
 }
