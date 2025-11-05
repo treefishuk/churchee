@@ -4,7 +4,7 @@ namespace Churchee.Module.Site.Tests.Entities
 {
     public class ViewTemplateTests
     {
-        private static Guid TenantId => Guid.NewGuid();
+        private static Guid TenantId => Guid.Parse("41c3d2f6-6189-401e-8037-66a67416f94d");
 
         [Fact]
         public void Constructor_SetsProperties()
