@@ -99,6 +99,18 @@ namespace Churchee.Common.Validation
 
         public static bool IsImageFile(string filePath)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return false;
+            }
+
+            // Ensure filePath is not just an extension (e.g., ".jpg")
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return false;
+            }
+
             string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
             return ImageFormats.Contains(extension);
         }

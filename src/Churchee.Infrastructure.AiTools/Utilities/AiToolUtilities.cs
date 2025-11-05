@@ -22,7 +22,7 @@ namespace Churchee.Infrastructure.AiTools.Utilities
             var client = new ImageAnalysisClient(new Uri(_settings.Endpoint), new AzureKeyCredential(_settings.ApiKey));
 
             // Get a caption for the image.
-            ImageAnalysisResult result = await client.AnalyzeAsync(BinaryData.FromStream(imageStream), VisualFeatures.Caption, new ImageAnalysisOptions { GenderNeutralCaption = false }, cancellationToken);
+            ImageAnalysisResult result = await client.AnalyzeAsync(await BinaryData.FromStreamAsync(imageStream, cancellationToken), VisualFeatures.Caption, new ImageAnalysisOptions { GenderNeutralCaption = false }, cancellationToken);
 
             // Return the generated caption if available
             return result.Caption.Text ?? "No caption generated";

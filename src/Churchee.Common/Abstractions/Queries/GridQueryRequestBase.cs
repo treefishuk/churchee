@@ -7,7 +7,6 @@ namespace Churchee.Common.Abstractions.Queries
     {
         protected GridQueryRequestBase(int skip, int take, string searchText, string orderBy)
         {
-
             if (skip < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(skip), "Skip must be zero or positive.");

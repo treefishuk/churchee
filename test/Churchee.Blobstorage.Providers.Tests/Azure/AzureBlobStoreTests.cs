@@ -3,8 +3,10 @@ using Churchee.Blobstorage.Providers.Azure;
 using Churchee.Test.Helpers.Validation;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using System.Security.Cryptography;
 
 namespace Churchee.Blobstorage.Providers.Tests.Azure
 {
@@ -159,6 +161,51 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(applicationTenantId.ToString());
             var exists = await blobContainerClient.ExistsAsync(cancellationToken);
             exists.Value.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task WriteChunksAsync_ShouldUploadBlobInChunks_AndReportProgress()
+        {
+            // Arrange
+            var blobStore = new AzureBlobStore(_mockConfiguration.Object);
+
+            var applicationTenantId = Guid.NewGuid();
+            string fullPath = "test/chunkedblob.txt";
+            var cancellationToken = CancellationToken.None;
+
+            // Create a test file with size > 1MB to ensure chunking
+            byte[] fileBytes = new byte[2 * 1024 * 1024 + 500]; // ~2MB
+            RandomNumberGenerator.Fill(fileBytes);
+
+            // Mock IBrowserFile
+            var browserFileMock = new Mock<IBrowserFile>();
+            browserFileMock.Setup(f => f.OpenReadStream(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                .Returns(new MemoryStream(fileBytes));
+            browserFileMock.Setup(f => f.Size).Returns(fileBytes.Length);
+
+            // Track progress
+            var progressUpdates = new List<double>();
+            var progressMock = new Mock<IProgress<double>>();
+            progressMock.Setup(p => p.Report(It.IsAny<double>()))
+                .Callback<double>(v => progressUpdates.Add(v));
+
+            // Act
+            await blobStore.WriteChunksAsync(applicationTenantId, fullPath, browserFileMock.Object, progressMock.Object, cancellationToken);
+
+            // Assert
+            var blobServiceClient = new BlobServiceClient(_mockConfiguration.Object.GetConnectionString("Storage"));
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(applicationTenantId.ToString());
+            var blobClient = blobContainerClient.GetBlobClient(fullPath);
+            var exists = await blobClient.ExistsAsync(cancellationToken);
+            exists.Value.Should().BeTrue();
+
+            // Download and verify content
+            var downloaded = await blobClient.DownloadContentAsync(cancellationToken);
+            downloaded.Value.Content.ToArray().Should().BeEquivalentTo(fileBytes);
+
+            // Progress should be reported multiple times and end at 100
+            Assert.NotNull(progressUpdates);
+            Assert.True(Math.Abs(progressUpdates.Last() - 100.0) < 0.01);
         }
     }
 }

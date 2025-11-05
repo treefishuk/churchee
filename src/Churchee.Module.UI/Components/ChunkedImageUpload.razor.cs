@@ -52,8 +52,6 @@ namespace Churchee.Module.UI.Components
 
             Model.File = file;
 
-            var applicationTenantId = await CurrentUser.GetApplicationTenantId();
-
             Model.TempFilePath = await UploadTempFileInChunksAsync(file, CancellationToken.None);
 
             status = $"Uploaded {file.Name}";
@@ -63,7 +61,7 @@ namespace Churchee.Module.UI.Components
             StateHasChanged();
 
             // Cancel any previous alt text generation
-            _descriptionCts?.Cancel();
+            _descriptionCts?.CancelAsync();
             _descriptionCts = new CancellationTokenSource();
 
             try
