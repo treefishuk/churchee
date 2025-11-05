@@ -1,5 +1,7 @@
-﻿using Churchee.Common.Storage;
+﻿using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Storage;
 using Churchee.Module.Site.Registration;
+using Churchee.Module.Tenancy.Entities;
 using Churchee.Test.Helpers.Validation;
 using Moq;
 
@@ -12,6 +14,13 @@ namespace Churchee.Module.Site.Tests.Registrations
         {
             // Arrange
             var mockDataStore = new Mock<IDataStore>();
+
+            var mockRepository = new Mock<IRepository<ApplicationTenant>>();
+
+            mockRepository.Setup(s => s.Any()).Returns(true);
+
+            mockDataStore.Setup(s => s.GetRepository<ApplicationTenant>())
+                .Returns(mockRepository.Object);
 
             var menuRegistration = new MenuRegistration(mockDataStore.Object);
 
@@ -27,7 +36,7 @@ namespace Churchee.Module.Site.Tests.Registrations
             mainMenuItem.Name.Should().Be("Website");
             mainMenuItem.Path.Should().Be("/management/pages");
             mainMenuItem.Icon.Should().Be("devices");
-            mainMenuItem.Order.Should().Be(100);
+            mainMenuItem.Order.Should().Be(1);
             mainMenuItem.Children.Count.Should().Be(10);
 
             var pagesMenuItem = mainMenuItem.Children[0];

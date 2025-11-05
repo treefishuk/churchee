@@ -3,6 +3,7 @@ using Churchee.Module.Site.Jobs;
 using Churchee.Module.Site.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using System.Linq.Expressions;
 
 namespace Churchee.Module.Site.Tests.Registrations
 {
@@ -27,26 +28,32 @@ namespace Churchee.Module.Site.Tests.Registrations
             // Arrange
             var services = new ServiceCollection();
             var jobServiceMock = new Mock<IJobService>();
-            var serviceProviderMock = new Mock<IServiceProvider>();
 
             // Setup serviceProvider to return jobServiceMock when requested
-            serviceProviderMock
-                .Setup(sp => sp.GetService(typeof(IJobService)))
-                .Returns(jobServiceMock.Object);
-
-            serviceProviderMock
-                .Setup(sp => sp.GetRequiredService(typeof(IJobService)))
-                .Returns(jobServiceMock.Object);
+            services.AddScoped(sp => jobServiceMock.Object);
 
             var registrations = new JobRegistrations();
 
-            // Act
-            registrations.Execute(services, serviceProviderMock.Object);
+            var serviceProvider = services.BuildServiceProvider();
 
-            // Assert: PublishArticlesJob should be registered as Scoped
+            // Act
+            registrations.Execute(services, serviceProvider);
+
+            // Assert
+
+            // Check that PublishArticlesJob is registered
             var descriptor = Assert.Single(services, d => d.ServiceType == typeof(PublishArticlesJob));
 
+            // Check that PublishArticlesJob is registered as Scoped
             Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);
+
+            // ScheduleJob should be called
+            jobServiceMock.Verify(js =>
+                js.ScheduleJob(
+                    "PublishArticles",
+                    It.IsAny<Expression<Func<PublishArticlesJob, Task>>>(),
+                    Hangfire.Cron.Daily),
+                Times.Once);
         }
     }
 }
