@@ -7,7 +7,6 @@ namespace Churchee.Module.Site.Entities
     {
         private PageType()
         {
-
         }
 
         public PageType(Guid id, Guid systemKey, Guid applicationTenantId, bool allowInRoot, string name, bool triggerPageTypeCreatedEvent = true) : base(id, applicationTenantId)
@@ -16,17 +15,16 @@ namespace Churchee.Module.Site.Entities
             AllowInRoot = allowInRoot;
             Name = name;
             DevName = name.Replace(" ", "");
-            ParentTypes = new List<PageTypeTypeMapping>();
-            ChildrenTypes = new List<PageTypeTypeMapping>();
-            PageTypeProperties = new List<PageTypeProperty>();
-            PageTypeContent = new List<PageTypeContent>();
-            Pages = new List<WebContent>();
+            ParentTypes = [];
+            ChildrenTypes = [];
+            PageTypeProperties = [];
+            PageTypeContent = [];
+            Pages = [];
 
             if (triggerPageTypeCreatedEvent)
             {
                 AddDomainEvent(new PageTypeCreatedEvent(applicationTenantId, name));
             }
-
         }
 
         public Guid? SystemKey { get; private set; }

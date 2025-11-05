@@ -22,7 +22,7 @@ namespace Churchee.Module.Site.Registration
 
                 if (!_store.GetRepository<ApplicationTenant>().Any())
                 {
-                    return Enumerable.Empty<MenuItem>();
+                    return [];
                 }
 
                 var list = new List<MenuItem>

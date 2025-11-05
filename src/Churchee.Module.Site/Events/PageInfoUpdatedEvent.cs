@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 
 namespace Churchee.Module.Site.Events
 {
@@ -14,7 +9,7 @@ namespace Churchee.Module.Site.Events
             PageId = pageId;
         }
 
-        public Guid PageId { get; set; }
+        public Guid PageId { get; private set; }
 
     }
 }

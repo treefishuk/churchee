@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Churchee.Module.Site.Helpers;
+﻿using Churchee.Module.Site.Helpers;
 using Churchee.Module.UI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Areas.Site.Models
 {
@@ -22,6 +22,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         }
 
         [DataType(DataTypes.Hidden)]
+        [NotEmptyGuid]
         public Guid Id { get; set; }
 
         public string Name { get; set; }

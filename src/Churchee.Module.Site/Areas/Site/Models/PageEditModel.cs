@@ -6,7 +6,6 @@ namespace Churchee.Module.Site.Areas.Site.Models
 {
     public class PageEditModel
     {
-
         public PageEditModel()
         {
             Title = string.Empty;

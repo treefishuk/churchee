@@ -36,7 +36,5 @@ namespace Churchee.Module.Site.Areas.Site.Models
         [Required]
         [DataType(DataTypes.HtmlTall)]
         public string Content { get; set; }
-
-
     }
 }

@@ -7,13 +7,12 @@
         public const string SimpleText = "SimpleText";
         public const string MultilineText = "MultilineText";
 
-
         public static List<string> All()
         {
-            return new List<string>
-            {
+            return
+            [
                 RichTextEditor, Number, SimpleText, MultilineText
-            };
+            ];
         }
     }
 }

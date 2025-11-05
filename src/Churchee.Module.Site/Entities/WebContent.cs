@@ -31,6 +31,7 @@ namespace Churchee.Module.Site.Entities
             Children = [];
             SourceName = "Admin";
         }
+
         public string Title { get; protected set; }
 
         public virtual string Description { get; protected set; }

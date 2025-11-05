@@ -10,9 +10,9 @@ namespace Churchee.Module.Site.Events
             ApplicationTenantId = applicationTenantId;
         }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
-        public Guid ApplicationTenantId { get; set; }
+        public Guid ApplicationTenantId { get; private set; }
 
     }
 }
