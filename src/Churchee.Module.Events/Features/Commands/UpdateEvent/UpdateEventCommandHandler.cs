@@ -91,8 +91,6 @@ namespace Churchee.Module.Events.Features.Commands
 
             if (!string.IsNullOrEmpty(request.ImageFileName))
             {
-                string extension = Path.GetExtension(request.ImageFileName);
-
                 string fileName = Path.GetFileNameWithoutExtension(request.ImageFileName);
 
                 byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);

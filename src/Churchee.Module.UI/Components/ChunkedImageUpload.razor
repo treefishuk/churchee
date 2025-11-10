@@ -12,36 +12,46 @@
 @using Radzen.Blazor
 @using System.ComponentModel.DataAnnotations
 
+<RadzenFormField Text="Image" AllowFloatingLabel="false">
+  <ChildContent>
+       
+    <RadzenStack> 
 
-<RadzenUpload Change="HandleFileUpload" Auto="false" Multiple="false"  />
+            @if (uploadProgress > 0 && uploadProgress < 100)
+            {
+                <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Primary" Value="uploadProgress" ShowValue="false" />
+            }
+            @if (uploadProgress >= 100)
+            {
+                <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Success" Value="100" ShowValue="false" />
+            }
 
-@if (uploadProgress > 0 && uploadProgress < 100)
-{
-    <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Primary" Value="uploadProgress" ShowValue="false" />
-}
-@if (uploadProgress >= 100)
-{
-    <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Success" Value="100" ShowValue="false" />
-}
+            <div class="rz-p-4">
 
+                <RadzenUpload Change="HandleFileUpload" Auto="false" Multiple="false" />
 
-<small>@status</small>
+                <small>@status</small>
 
-<RadzenFormField Text="Description" AllowFloatingLabel="false">
+                <RadzenFormField Text="Description" AllowFloatingLabel="false" Style="width:100%">
 
-    <ChildContent>
+                    <ChildContent>
 
-    <div style="display: flex; align-items: center;">
-            <RadzenTextBox Style="width: 100%" @oninput="OnDescriptionInput" Value="@Model.Description" />
-            <RadzenProgressBarCircular Visible="generating" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Style="margin-right: 1rem">
-                <Template>AI</Template> 
-            </RadzenProgressBarCircular>
-    </div>
+                    <div style="display: flex; align-items: center;">
+                            <RadzenTextBox Style="width: 100%" @oninput="OnDescriptionInput" Value="@Model.Description" />
+                            <RadzenProgressBarCircular Visible="generating" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Style="margin-right: 1rem">
+                                <Template>AI</Template> 
+                            </RadzenProgressBarCircular>
+                    </div>
 
-    </ChildContent>
-    <Helper>
-        <ValidationMessage For="() => Model.Description" />
-    </Helper>
+                    </ChildContent>
+                    <Helper>
+                        <ValidationMessage For="() => Model.Description" />
+                    </Helper>
+
+                </RadzenFormField>
+            </div>
+
+    </RadzenStack>
+  </ChildContent>
 
 </RadzenFormField>
-

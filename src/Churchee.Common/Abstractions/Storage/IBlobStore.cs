@@ -17,6 +17,5 @@ namespace Churchee.Common.Storage
         Task<Stream> GetReadStreamAsync(Guid applicationTenantId, string fullPath, CancellationToken cancellationToken = default);
 
         Task WriteChunksAsync(Guid applicationTenantId, string fullPath, IBrowserFile file, IProgress<double> progress, CancellationToken cancellationToken = default);
-
     }
 }

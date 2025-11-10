@@ -46,6 +46,43 @@ namespace Churchee.Common.Tests.Validation
         {
             Assert.Equal(expected, FileValidation.IsImageFile(filePath));
         }
+
+        [Theory]
+        [InlineData("test.JPG", true)]
+        [InlineData("test.JPEG", true)]
+        [InlineData("test.PNG", true)]
+        [InlineData("test.WEBP", true)]
+        [InlineData("test.tiff", false)]
+        [InlineData("test.bmp", false)]
+        [InlineData("test.pdf", false)]
+        [InlineData("test.jpg ", false)]
+        [InlineData(" .jpg", false)]
+        [InlineData("test.jpeg2000", false)]
+        public void IsImageFile_CaseInsensitiveAndEdgeCases(string filePath, bool expected)
+        {
+            Assert.Equal(expected, FileValidation.IsImageFile(filePath));
+        }
+
+        [Theory]
+        [InlineData(null, false)]
+        public void BeValidPdf_ReturnsFalse_ForNull(string? base64, bool expected)
+        {
+            Assert.Equal(expected, FileValidation.BeValidPdf(base64));
+        }
+
+        [Theory]
+        [InlineData(null, false)]
+        public void BeValidMp3_ReturnsFalse_ForNull(string? base64, bool expected)
+        {
+            Assert.Equal(expected, FileValidation.BeValidMp3(base64));
+        }
+
+        [Theory]
+        [InlineData(null, false)]
+        public void BeValidMp4_ReturnsFalse_ForNull(string? base64, bool expected)
+        {
+            Assert.Equal(expected, FileValidation.BeValidMp4(base64));
+        }
     }
 
 }
