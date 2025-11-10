@@ -337,18 +337,26 @@
         }, null, 300, Timeout.Infinite);
     }
 
-    public async Task OnFieldChange(PropertyInfo info, int index, string? value)
+    public void OnFieldChange(PropertyInfo info, int index, string? value)
     {
-        if (info.GetValue(InputModel) is List<string> list && index >= 0 && index < list.Count)
+        _debounceTimer?.Dispose();
+
+        _debounceTimer = new Timer(async _ =>
         {
-            list[index] = value ?? string.Empty; // Ensure non-null assignment
+            await InvokeAsync(async () =>
+            {
+                if (info.GetValue(InputModel) is List<string> list && index >= 0 && index < list.Count)
+                {
+                    list[index] = value ?? string.Empty; // Ensure non-null assignment
 
-            // Get the FieldIdentifier for validation
-            FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
-            EditContext.NotifyFieldChanged(fieldIdentifier);
+                    // Get the FieldIdentifier for validation
+                    FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
+                    EditContext.NotifyFieldChanged(fieldIdentifier);
 
-            await OnValueChanged.InvokeAsync(null);
-        }
+                    await OnValueChanged.InvokeAsync(null);
+                }
+            });
+        }, null, 300, Timeout.Infinite);
     }
 
     public async Task OnTextWithSlugFieldChange(PropertyInfo info, object value)
