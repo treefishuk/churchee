@@ -117,7 +117,7 @@
                             }
                             if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                             {
-                            <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" @oninput="(e) => OnFieldChange(prop, e.Value?.ToString())" />
+                                <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" @oninput="(e) => OnFieldChange(prop, e.Value?.ToString())" />
                             }
                             if (prop.PropertyType == typeof(List<string>))
                             {
@@ -317,18 +317,24 @@
     [Parameter]
     public EventCallback<ImageUploadModel> OnImageSubmit { get; set; }
 
-    public async Task OnFieldChange(PropertyInfo info, object? value)
+    private Timer? _debounceTimer;
+
+    public void OnFieldChange(PropertyInfo info, object? value)
     {
+        _debounceTimer?.Dispose();
 
-        info.SetValue(InputModel, value);
-
-        // Get the FieldIdentifier with the EditContext from the field name
-        FieldIdentifier fieldIdentifier = EditContext.Field(info.Name);
-
-        // Validate the field when notifying change
-        EditContext.NotifyFieldChanged(fieldIdentifier);
-
-        await OnValueChanged.InvokeAsync(null);
+        _debounceTimer = new Timer(async _ =>
+        {
+            await InvokeAsync(async () =>
+            {
+                info.SetValue(InputModel, value);
+                // Get the FieldIdentifier with the EditContext from the field name
+                FieldIdentifier fieldIdentifier = EditContext.Field(info.Name);
+                // Validate the field when notifying change
+                EditContext.NotifyFieldChanged(fieldIdentifier);
+                await OnValueChanged.InvokeAsync(null);
+            });
+        }, null, 300, Timeout.Infinite);
     }
 
     public async Task OnFieldChange(PropertyInfo info, int index, string? value)
