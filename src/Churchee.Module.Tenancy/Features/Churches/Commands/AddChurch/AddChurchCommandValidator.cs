@@ -7,7 +7,7 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands.AddChurch
     {
         public AddChurchCommandValidator(ICurrentUser currentUser)
         {
-            RuleFor(x => x.Name).Custom((command, context) =>
+            this.RuleFor(x => x.Name).Custom((command, context) =>
             {
 
                 if (!currentUser.HasRole("SysAdmin"))
