@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
-    <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
     <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
   </ItemGroup>
 
@@ -22,6 +21,7 @@
     <PackageReference Include="Azure.Identity" Version="1.17.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0-preview2.25289.6" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.0" />
   </ItemGroup>
 
 </Project>

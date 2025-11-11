@@ -1,5 +1,4 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using FluentValidation;
 
 namespace Churchee.Module.Tenancy.Features.Churches.Commands.AddChurch
 {
