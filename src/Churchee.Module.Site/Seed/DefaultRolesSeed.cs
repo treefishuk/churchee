@@ -1,6 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Storage;
-using Churchee.Module.Identity.Entities;
 
 namespace Churchee.Module.Site.Seed
 {
