@@ -1,74 +1,27 @@
-﻿@page "/management/events"
+﻿@page "/events"
 @inherits BasePage
-@using Churchee.Module.Events.Features.Commands
 @using Churchee.Module.Events.Features.Queries
-@using Churchee.Module.Site.Features.CDN.Queries
-@using Churchee.Module.UI.Components
-@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.Extensions.Configuration
-@using Microsoft.Extensions.Logging
-@using Microsoft.AspNetCore.Components.Sections
 @using MediatR
-@using Radzen.Blazor
 @using Radzen
+@using Microsoft.AspNetCore.Components.Sections
 
-<PageName></PageName>
+<PageName Name="Events"></PageName>
 
-<SectionContent SectionName="top-bar">
-    <div class="rz-breadcrumb-item">
-        <a class="rz-button rz-button-sm rz-success" href="/management/events/create">Create</a>
-    </div>
-</SectionContent>
-
-
-<Grid TItem="GetListingQueryResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" ImagePrefix="@(imagePrefix)" OnDelete="OnDelete"></Grid>
+@if (events != null)
+{
+    <RadzenDataList Data="@events" TItem="GetListingQueryResponseItem">
+        <Template Context="item">
+            <div>@item.Title</div>
+        </Template>
+    </RadzenDataList>
+}
 
 @code {
-
-    string imagePrefix = "";
+    IEnumerable<GetListingQueryResponseItem>? events;
 
     protected override async Task OnInitializedAsync()
     {
-        imagePrefix = TenantResolver.GetCDNPrefix();
-
-        await base.OnInitializedAsync();
+        var result = await Mediator.Send(new GetListingQuery());
+        events = result;
     }
-
-    IEnumerable<GetListingQueryResponseItem> listingData;
-
-    bool isLoading = false;
-
-    int count = 0;
-
-    async Task OnDelete(GetListingQueryResponseItem item)
-    {
-        var result = await Mediator.Send(new DeleteEventCommand(item.Id));
-
-        if (!result.IsSuccess)
-        {
-            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove Event");
-
-            return;
-        }
-
-        NotificationService.Notify(NotificationSeverity.Success, "Event Deleted");
-    }
-
-    async Task LoadData(LoadDataArgs args)
-    {
-        isLoading = true;
-
-        var result = await Mediator.Send(new GetListingQuery(
-                    skip: args.Skip ?? 0,
-                    take: args.Top ?? 20,
-                    searchText: args.Filter ?? string.Empty,
-                    orderBy: string.IsNullOrEmpty(args.OrderBy) ? "CreatedDate desc" : args.OrderBy), default);
-
-        listingData = result.Data;
-
-        count = result.RecordsTotal;
-
-        isLoading = false;
-    }
-
 }
