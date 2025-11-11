@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
     <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
   </ItemGroup>
 
   <ItemGroup>
