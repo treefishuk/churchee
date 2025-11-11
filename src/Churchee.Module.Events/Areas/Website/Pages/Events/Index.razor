@@ -4,24 +4,31 @@
 @using MediatR
 @using Radzen
 @using Microsoft.AspNetCore.Components.Sections
+@nullable enable
 
 <PageName Name="Events"></PageName>
 
-@if (events != null)
+@if (events != null && events.Any())
 {
-    <RadzenDataList Data="@events" TItem="GetListingQueryResponseItem">
-        <Template Context="item">
-            <div>@item.Title</div>
-        </Template>
-    </RadzenDataList>
+    <div>
+        @foreach(var itm in events)
+        {
+            <div>@itm.Title</div>
+        }
+    </div>
+}
+else
+{
+    <div>No events found.</div>
 }
 
 @code {
-    IEnumerable<GetListingQueryResponseItem>? events;
+    List<GetListingQueryResponseItem>? events;
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await Mediator.Send(new GetListingQuery());
-        events = result;
+        // Provide default paging parameters (skip, take) and empty sort/filter
+        var result = await Mediator.Send(new GetListingQuery(0, int.MaxValue, string.Empty, string.Empty));
+        events = result?.ToList();
     }
 }
