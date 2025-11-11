@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -51,6 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
     <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
     <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
     <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
   </ItemGroup>
