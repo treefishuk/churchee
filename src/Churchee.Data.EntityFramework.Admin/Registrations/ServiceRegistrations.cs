@@ -14,8 +14,11 @@ namespace Churchee.Data.EntityFramework.Admin.Registrations
         public int Priority => 5000;
         public void Execute(IServiceCollection serviceCollection, IServiceProvider serviceProvider)
         {
+            var config = serviceProvider.GetRequiredService<IConfiguration>();
 
-            string connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
+            var cert = X509CertificateLoader.LoadPkcs12FromFile("dp.pfx", config["Security:DPK"]);
+
+            string connectionString = config.GetConnectionString("DefaultConnection");
 
             serviceCollection.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString), ServiceLifetime.Transient);
@@ -26,8 +29,7 @@ namespace Churchee.Data.EntityFramework.Admin.Registrations
 
             serviceCollection.AddDataProtection()
                 .PersistKeysToDbContext<ApplicationDbContext>()
-                .ProtectKeysWithCertificate(
-                    new X509Certificate2("dp.pfx", serviceProvider.GetService<IConfiguration>()["Security:DPK"]));
+                .ProtectKeysWithCertificate(cert);
         }
     }
 }

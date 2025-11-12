@@ -23,7 +23,7 @@ namespace Churchee.Module.Podcasts.Tests.Areas.Website.Pages
             SetInitialUrl<Index>();
 
             // Act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             // Assert
             var pageName = cut.FindComponent<PageName>();

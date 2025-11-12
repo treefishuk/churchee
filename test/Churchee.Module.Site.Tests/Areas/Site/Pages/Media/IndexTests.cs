@@ -24,7 +24,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Media
             SetInitialUrl<Index>();
 
             //act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();

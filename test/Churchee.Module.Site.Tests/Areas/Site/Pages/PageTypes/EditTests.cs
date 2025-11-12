@@ -22,7 +22,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.PageTypes
             SetInitialUrl<Edit>();
 
             //act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -37,7 +37,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.PageTypes
             SetInitialUrl<Edit>();
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Assert
             cut.Find("form").Should().NotBeNull();
@@ -47,7 +47,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.PageTypes
         public void PageType_Edit_ValidSubmitForm_ShowsSuccessMessage()
         {
             // Arrange
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Setup Mediator to return success
             MockMediator.Setup(m => m.Send(It.IsAny<UpdatePageTypeContentCommand>(), default))
@@ -67,14 +67,14 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.PageTypes
         public void PageType_Edit_Cancel_Navigates()
         {
             // Arrange
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Act
             var button = cut.Find("#cancelFormBtn");
             button.Click();
 
             // Assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/pagetypes");
         }
     }

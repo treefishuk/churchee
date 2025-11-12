@@ -34,7 +34,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             SetInitialUrl<Edit>();
 
             //act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -53,7 +53,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             SetInitialUrl<Edit>();
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Assert
             cut.Find("form").Should().NotBeNull();
@@ -71,7 +71,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             var button = cut.Find("#distractionFreeModeBtn");
             button.Click();
@@ -92,7 +92,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(data);
 
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             var instance = cut.Instance;
 
@@ -108,7 +108,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             button.Click();
 
             // Assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/articles");
         }
 
@@ -126,7 +126,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Asset
             cut.Find("#unPublishBtn").Should().NotBeNull();
@@ -144,7 +144,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Asset
             cut.Find("#publishBtn").Should().NotBeNull();
@@ -166,7 +166,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<PublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             cut.Find("#publishBtn").Click();
 
@@ -195,7 +195,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<PublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             cut.Find("#publishBtn").Click();
 
@@ -222,7 +222,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<UnPublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             cut.Find("#unPublishBtn").Click();
 
@@ -248,7 +248,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<UnPublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             cut.Find("#unPublishBtn").Click();
 

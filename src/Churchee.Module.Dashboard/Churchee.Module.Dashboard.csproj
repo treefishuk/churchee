@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
+	  <TargetFramework>net10.0</TargetFramework>
+	  <ImplicitUsings>enable</ImplicitUsings>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 	</PropertyGroup>
 
@@ -15,7 +15,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <PackageReference Include="DeviceDetector.NET" Version="6.4.2" />
+	  <PackageReference Include="DeviceDetector.NET" Version="6.4.7" />
 	</ItemGroup>
 
 	<ItemGroup>

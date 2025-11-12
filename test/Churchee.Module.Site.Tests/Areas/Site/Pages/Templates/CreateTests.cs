@@ -28,7 +28,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
             var data = new List<DropdownInput>();
 
             //act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -43,7 +43,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
             var data = new List<DropdownInput>();
 
             // Act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             // Assert
             cut.Find("form").Should().NotBeNull();
@@ -53,7 +53,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
         public void Template_Create_ValidSubmitForm_Navigates_On_Success()
         {
             // Arrange
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
             var instance = cut.Instance;
             SetInitialUrl<Create>();
 
@@ -69,7 +69,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
             button.Click();
 
             // Assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/templates");
         }
 
@@ -78,14 +78,14 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
         {
             // Arrange
             SetInitialUrl<Create>();
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             // Act
             var button = cut.Find("#cancelFormBtn");
             button.Click();
 
             // Assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/templates");
         }
     }

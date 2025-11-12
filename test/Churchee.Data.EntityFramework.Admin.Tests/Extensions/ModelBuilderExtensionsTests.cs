@@ -25,8 +25,8 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Extensions
             var testEntityEntityType = modelBuilder.Model.FindEntityType(typeof(TestEntity));
             var anotherEntityType = modelBuilder.Model.FindEntityType(typeof(AnotherTestEntity));
 
-            testEntityEntityType?.GetQueryFilter().Should().NotBeNull();
-            anotherEntityType?.GetQueryFilter().Should().BeNull();
+            testEntityEntityType?.GetDeclaredQueryFilters().Should().NotBeNull();
+            anotherEntityType?.GetDeclaredQueryFilters().Should().BeNull();
         }
 
         [Fact]

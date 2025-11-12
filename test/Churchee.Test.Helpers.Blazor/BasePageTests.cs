@@ -11,7 +11,7 @@ using Radzen;
 
 namespace Churchee.Test.Helpers.Blazor
 {
-    public abstract class BasePageTests : TestContext
+    public abstract class BasePageTests : BunitContext
     {
         protected Mock<ICurrentUser> MockCurrentUser;
         protected CustomNotificationService NotificationService;
@@ -29,7 +29,7 @@ namespace Churchee.Test.Helpers.Blazor
             MockCurrentUser = new Mock<ICurrentUser>();
             Services.AddSingleton(MockCurrentUser.Object);
 
-            DialogService = new DialogService(new FakeNavigationManager(this), JSInterop.JSRuntime);
+            DialogService = new DialogService(new BunitNavigationManager(this), JSInterop.JSRuntime);
             Services.AddSingleton(DialogService);
 
             NotificationService = new CustomNotificationService();
@@ -54,7 +54,7 @@ namespace Churchee.Test.Helpers.Blazor
             var pageAttribute = typeof(TComponent).GetCustomAttributes(typeof(RouteAttribute), true).FirstOrDefault() as RouteAttribute;
             if (pageAttribute != null)
             {
-                var navMan = Services.GetRequiredService<FakeNavigationManager>();
+                var navMan = Services.GetRequiredService<BunitNavigationManager>();
 
                 navMan.NavigateTo(pageAttribute.Template, false);
             }

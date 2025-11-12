@@ -23,7 +23,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             SetInitialUrl<Create>();
 
             //act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -39,7 +39,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             MockMediator.Setup(s => s.Send(It.IsAny<CreateEventCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CommandResponse());
 
             //act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             cut.Instance.InputModel.Start = DateTime.Now;
             cut.Instance.InputModel.Title = "Test";
@@ -48,7 +48,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             cut.Find(".sticky-formButtons .rz-success").Click();
 
             //assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
 
             navMan.Uri.Should().Be("http://localhost/management/events");
         }
@@ -64,7 +64,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             MockMediator.Setup(s => s.Send(It.IsAny<CreateEventCommand>(), default)).ReturnsAsync(responseFailure);
 
             //act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             cut.Instance.InputModel.Start = DateTime.Now;
             cut.Instance.InputModel.Title = "Test";
@@ -73,7 +73,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             cut.Find(".sticky-formButtons .rz-success").Click();
 
             //assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().NotBe("http://localhost/management/events");
         }
 
@@ -87,7 +87,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             MockMediator.Setup(s => s.Send(It.IsAny<ActivateEventsCommand>(), default)).ReturnsAsync(responseFailure);
 
             //act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             cut.Instance.InputModel.Start = DateTime.Now;
             cut.Instance.InputModel.Title = "Test";
@@ -96,7 +96,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             cut.Find(".sticky-formButtons .rz-success").Click();
 
             //assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().NotBe("http://localhost/management/events");
         }
     }

@@ -20,7 +20,9 @@ namespace Churchee.Data.EntityFramework.Shared.Extensions
 
                 var builder = modelBuilder.Entity(clrType);
 
-                var currentQueryFilter = builder.Metadata.GetQueryFilter();
+                var declaredFilters = builder.Metadata.GetDeclaredQueryFilters();
+
+                LambdaExpression? currentQueryFilter = declaredFilters.FirstOrDefault()?.Expression;
 
                 if (currentQueryFilter != null)
                 {

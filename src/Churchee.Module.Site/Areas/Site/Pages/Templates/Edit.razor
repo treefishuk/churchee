@@ -13,7 +13,6 @@
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
 @code {
-    [SupplyParameterFromForm]
     public EditTemplateInputModel InputModel { get; set; } = new();
 
     [Parameter]
