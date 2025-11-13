@@ -9,10 +9,10 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Churchee.Module.Tokens.Tests" />
-  </ItemGroup>  
-  
+  </ItemGroup>
+
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Data.EntityFramework.Admin.Registrations
 {
-    internal class DataProtectionKeyConfiguration : IEntityRegistration
+    public class DataProtectionKeyConfiguration : IEntityRegistration
     {
         public void RegisterEntities(ModelBuilder modelBuilder)
         {

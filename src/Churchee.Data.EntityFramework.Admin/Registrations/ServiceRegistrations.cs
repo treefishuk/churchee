@@ -16,7 +16,9 @@ namespace Churchee.Data.EntityFramework.Admin.Registrations
         {
             var config = serviceProvider.GetRequiredService<IConfiguration>();
 
-            var cert = X509CertificateLoader.LoadPkcs12FromFile("dp.pfx", config["Security:DPK"]);
+            string dpKey = config["Security:DPK"];
+
+            var cert = X509CertificateLoader.LoadPkcs12FromFile("dp.pfx", dpKey);
 
             string connectionString = config.GetConnectionString("DefaultConnection");
 

@@ -22,7 +22,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
                 .WithPortBinding(10000, true)
                 .WithPortBinding(10001, true)
                 .WithPortBinding(10002, true)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(10000))
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(10000))
                 .Build();
 
             _mockConfiguration = new Mock<IConfiguration>();

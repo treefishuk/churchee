@@ -64,10 +64,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static void RegisterAllTypes<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
+
+            var assemblies = AssemblyResolution.GetAssemblies();
+
             services.Scan(
                 x =>
                 {
-                    x.FromAssemblies(AssemblyResolution.GetAssemblies())
+                    x.FromAssemblies(assemblies)
                         .AddClasses(classes => classes.AssignableTo(typeof(T)))
                             .AsImplementedInterfaces()
                             .WithLifetime(lifetime);

@@ -13,9 +13,7 @@
     [Parameter]
     public Guid Id { get; set; }
 
-    // Remove the property initializer to avoid BL0008.
-    [SupplyParameterFromForm]
-    public EditChurchInputModel InputModel { get; set; }
+    public EditChurchInputModel InputModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -27,11 +25,6 @@
         var result = await Mediator.Send(new GetInfoForEditQuery(Id), default);
 
         InputModel = new EditChurchInputModel(result.CharityNumber, result.Domains);
-    }
-
-    public Edit(EditChurchInputModel inputModel)
-    {
-        InputModel = inputModel;
     }
 
     private async Task ValidSubmitForm()

@@ -7,7 +7,11 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Churchee.Blobstorage.Providers.Tests" />
   </ItemGroup>
-  
+	
+  <ItemGroup>
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+	
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
   </ItemGroup>
@@ -18,5 +22,4 @@
   </ItemGroup>
 
 </Project>
-
 

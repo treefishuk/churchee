@@ -10,7 +10,7 @@ using Radzen.Blazor;
 
 namespace Churchee.Module.Identity.Tests.Components.Layout
 {
-    public class ProfileLayoutTests : TestContext
+    public class ProfileLayoutTests : BunitContext
     {
         public ProfileLayoutTests()
         {

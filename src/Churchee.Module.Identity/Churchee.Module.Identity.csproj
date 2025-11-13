@@ -5,9 +5,9 @@
 	  <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
-   <ItemGroup>
-     <Content Remove="compilerconfig.json" />
-   </ItemGroup>
+	<ItemGroup>
+		<Content Remove="compilerconfig.json" />
+	</ItemGroup>
 
   <ItemGroup>
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.0" />
