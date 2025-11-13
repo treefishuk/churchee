@@ -1,6 +1,7 @@
 ﻿@page "/management/events"
 @inherits BasePage
 @using Churchee.Module.Events.Features.Commands
+@using Churchee.Module.Events.Features.Commands.DuplicateEvent
 @using Churchee.Module.Events.Features.Queries
 @using Churchee.Module.Site.Features.CDN.Queries
 @using Churchee.Module.UI.Components
@@ -21,9 +22,19 @@
 </SectionContent>
 
 
-<Grid TItem="GetListingQueryResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" ImagePrefix="@(imagePrefix)" OnDelete="OnDelete"></Grid>
+<Grid @ref="eventsGrid" TItem="GetListingQueryResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" ImagePrefix="@(imagePrefix)" OnDelete="OnDelete">
+
+    <GridButton TItem="GetListingQueryResponseItem" Title="" Width="80px">
+        <Template Context="item">
+            <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@( () => DuplicateItem(item) )" Icon="content_copy"></RadzenButton>
+        </Template>
+    </GridButton>
+
+</Grid>
 
 @code {
+
+    Grid<GetListingQueryResponseItem> eventsGrid;
 
     string imagePrefix = "";
 
@@ -71,4 +82,13 @@
         isLoading = false;
     }
 
+    private async Task DuplicateItem(GetListingQueryResponseItem item)
+    {
+        var response = await Mediator.Send(new DuplicateEventCommand(item.Id));
+
+        if (response.IsSuccess)
+        {
+            await eventsGrid.ReloadAsync();
+        }
+    }
 }

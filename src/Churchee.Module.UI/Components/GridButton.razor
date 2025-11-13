@@ -1,0 +1,16 @@
+@typeparam TItem
+
+@code {
+    [CascadingParameter] public Action<string, RenderFragment<TItem>, string>? RegisterButton { get; set; }
+
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Width { get; set; } = "100px";
+
+    // Named child content so callers write <Template Context="item">...</Template>
+    [Parameter] public RenderFragment<TItem> Template { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        RegisterButton?.Invoke(Title, Template, Width);
+    }
+}

@@ -30,7 +30,11 @@ namespace Churchee.Data.EntityFramework.Site
 
             foreach (var reg in entityRegistrations)
             {
-                _logger.LogInformation("Site Entity Registration: {Entity}", reg.GetType().FullName);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Site Entity Registration: {Entity}", reg.GetType().FullName);
+                }
 
                 reg.RegisterEntities(modelBuilder);
             }
@@ -43,22 +47,16 @@ namespace Churchee.Data.EntityFramework.Site
 
         public override int SaveChanges()
         {
-            if (ChangeTracker.Entries().Any(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
-            {
-                throw new InvalidOperationException("This context is read-only except for PageView entities.");
-            }
-
-            return base.SaveChanges();
+            return ChangeTracker.Entries().Any(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView")
+                ? throw new InvalidOperationException("This context is read-only except for PageView entities.")
+                : base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            if (ChangeTracker.Entries().Any(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView"))
-            {
-                throw new InvalidOperationException("This context is read-only except for PageView entities.");
-            }
-
-            return base.SaveChangesAsync(cancellationToken);
+            return ChangeTracker.Entries().Any(e => e.State == EntityState.Added && e.Entity.GetType().Name != "PageView")
+                ? throw new InvalidOperationException("This context is read-only except for PageView entities.")
+                : base.SaveChangesAsync(cancellationToken);
         }
 
     }

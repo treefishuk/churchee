@@ -92,7 +92,11 @@ namespace Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to queue job for syncing tweets. Exception: {Exception}", ex.Message);
+
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex, "Failed to queue job for syncing tweets. Exception: {Exception}", ex.Message);
+                }
 
                 response.AddError("Failed to queue job for syncing tweets", "");
 
