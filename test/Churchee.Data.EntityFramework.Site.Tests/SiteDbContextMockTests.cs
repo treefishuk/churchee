@@ -52,7 +52,7 @@ namespace Churchee.Data.EntityFramework.Site.Tests
             var ctx = new SiteDbContext(options, tenantResolver.Object, serviceProvider, logger.Object);
 
             // Force model build now so global filters apply to all needed entities
-            ctx.Model;
+            _ = ctx.Model;
 
             return ctx;
         }
