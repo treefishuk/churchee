@@ -9,160 +9,176 @@
 @typeparam TItem
 @inject IConfiguration Config
 
-<RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" LoadChildData="@LoadChildData" RowRender="@RowRender">
-    <Columns>
+<CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">
+    <RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" LoadChildData="@LoadChildData" RowRender="@RowRender">
+        <Columns>
 
-        @if (ShowDetail)
-        {
-
-            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
-                <Template Context="data">
-                    <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/details/@(((dynamic)data).Id)">
-                        <span class="rz-button-box">
-                            <i class="rz-button-icon-left rzi">@(DetailIcon ?? "info")</i>
-                        </span>
-                    </a>
-                </Template>
-            </RadzenDataGridColumn>
-        }
-
-        @if (ShowEdit)
-        {
-
-            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
-                <Template Context="data">
-                    <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/edit/@(((dynamic)data).Id)">
-                        <span class="rz-button-box">
-                            <i class="rz-button-icon-left rzi">edit</i>
-                        </span>
-                    </a>
-                </Template>
-            </RadzenDataGridColumn>
-        }
-
-        @foreach (var prop in typeof(TItem).GetProperties().Where(x => x.CanWrite))
-        {
-            if(prop.Name == "HasChildren")
+            @if (ShowDetail)
             {
-                continue;
-            }
 
-            bool visible = Columns == null || (Columns.Any() && Columns.Select(s => s.Property).Contains(prop.Name));
-
-            string dataType = prop.PropertyType.Name;
-
-            var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
-
-            string title = prop.Name;
-
-            if (dataTypeAttribute != null)
-            {
-                dataType = dataTypeAttribute.CustomDataType ?? string.Empty;
-            }
-
-            if (dataTypeAttribute == null && dataType == typeof(string).Name)
-            {
-                dataType = DataTypes.Text;
-            }
-
-            var displayAttribute = prop.GetCustomAttribute<DisplayAttribute>();
-
-            if (displayAttribute != null)
-            {
-                title = displayAttribute.Name ?? title.ToSentence();
-            }
-
-            if (dataType == DataTypes.Text)
-            {
-                string width = Columns?.FirstOrDefault(w => w.Property == prop.Name)?.Width ?? "";
-
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Visible="visible" Width=@width />
-            }
-
-            if (dataType == typeof(bool).Name)
-            {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center" Visible="visible">
+                <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
                     <Template Context="data">
-                        @{
-                            var properyValue = prop.GetValue(data);
-
-                            string propertyStringValue = properyValue?.ToString() ?? string.Empty;
-
-                            if (propertyStringValue.ToUpperInvariant() == "TRUE")
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Success" IsPill="@true" Text="True" />
-                            }
-                            else
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Warning" IsPill="@true" Text="False" />
-                            }
-                        }
+                        <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/details/@(((dynamic)data).Id)">
+                            <span class="rz-button-box">
+                                <i class="rz-button-icon-left rzi">@(DetailIcon ?? "info")</i>
+                            </span>
+                        </a>
                     </Template>
                 </RadzenDataGridColumn>
             }
 
-            if (dataType == DataTypes.Date || (dataTypeAttribute == null && dataType == typeof(DateTime).Name))
+            @if (ShowEdit)
             {
-                string width = $"{EstimatePixelWidth(title, 160)}px";
 
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy}" Width="@width" Visible="visible" />
+                <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
+                    <Template Context="data">
+                        <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="@(prefix)/edit/@(((dynamic)data).Id)">
+                            <span class="rz-button-box">
+                                <i class="rz-button-icon-left rzi">edit</i>
+                            </span>
+                        </a>
+                    </Template>
+                </RadzenDataGridColumn>
             }
 
-            if (dataType == DataTypes.DateTime)
+            @foreach (var prop in typeof(TItem).GetProperties().Where(x => x.CanWrite))
             {
-                <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" Visible="visible" />
+                if (prop.Name == "HasChildren")
+                {
+                    continue;
+                }
+
+                bool visible = Columns == null || (Columns.Any() && Columns.Select(s => s.Property).Contains(prop.Name));
+
+                string dataType = prop.PropertyType.Name;
+
+                var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
+
+                string title = prop.Name;
+
+                if (dataTypeAttribute != null)
+                {
+                    dataType = dataTypeAttribute.CustomDataType ?? string.Empty;
+                }
+
+                if (dataTypeAttribute == null && dataType == typeof(string).Name)
+                {
+                    dataType = DataTypes.Text;
+                }
+
+                var displayAttribute = prop.GetCustomAttribute<DisplayAttribute>();
+
+                if (displayAttribute != null)
+                {
+                    title = displayAttribute.Name ?? title.ToSentence();
+                }
+
+                if (dataType == DataTypes.Text)
+                {
+                    string width = Columns?.FirstOrDefault(w => w.Property == prop.Name)?.Width ?? "";
+
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Visible="visible" Width=@width />
+                }
+
+                if (dataType == typeof(bool).Name)
+                {
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center" Visible="visible">
+                        <Template Context="data">
+                            @{
+                                var properyValue = prop.GetValue(data);
+
+                                string propertyStringValue = properyValue?.ToString() ?? string.Empty;
+
+                                if (propertyStringValue.ToUpperInvariant() == "TRUE")
+                                {
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Success" IsPill="@true" Text="True" />
+                                }
+                                else
+                                {
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Warning" IsPill="@true" Text="False" />
+                                }
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                }
+
+                if (dataType == DataTypes.Date || (dataTypeAttribute == null && dataType == typeof(DateTime).Name))
+                {
+                    string width = $"{EstimatePixelWidth(title, 160)}px";
+
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy}" Width="@width" Visible="visible" />
+                }
+
+                if (dataType == DataTypes.DateTime)
+                {
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" Visible="visible" />
+                }
+
+                if (dataType == DataTypes.ImageUrl)
+                {
+                    <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
+                        <Template Context="data">
+
+                            @{
+
+                                string imageUrl = string.Empty;
+
+                                var imgObj = prop.GetValue(data);
+
+                                if (imgObj != null)
+                                {
+                                    imageUrl = imgObj.ToString() ?? string.Empty;
+                                }
+
+                                if (!string.IsNullOrEmpty(imageUrl) && imageUrl.StartsWith("https"))
+                                {
+                                    <img src="@(imageUrl)" crossorigin="anonymous" />
+                                }
+
+                                if (!string.IsNullOrEmpty(imageUrl) && !imageUrl.StartsWith("https"))
+                                {
+                                    <img src="@($"{ImagePrefix}{imageUrl}")" crossorigin="anonymous" />
+
+                                }
+                            }
+
+
+                        </Template>
+                    </RadzenDataGridColumn>
+                }
+
+
             }
 
-            if (dataType == DataTypes.ImageUrl)
+
+            @* Render a column for every registered action/button template *@
+            @foreach (var btn in ActionColumns)
+            {
+                <RadzenDataGridColumn TItem="TItem" Title="@btn.Title" Sortable="false" Filterable="false" Width="@btn.Width" TextAlign="TextAlign.Center" Pickable="false">
+                    <Template Context="data">
+                        @btn.Template((TItem)data)
+                    </Template>
+                </RadzenDataGridColumn>
+            }
+
+            @if (OnDeleteSet)
             {
                 <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
                     <Template Context="data">
-
-                        @{
-
-                            string imageUrl = string.Empty;
-
-                            var imgObj = prop.GetValue(data);
-
-                            if (imgObj != null)
-                            {
-                                imageUrl = imgObj.ToString() ?? string.Empty;
-                            }
-
-                            if (!string.IsNullOrEmpty(imageUrl) && imageUrl.StartsWith("https"))
-                            {
-                                <img src="@(imageUrl)" crossorigin="anonymous" />
-                            }
-
-                            if (!string.IsNullOrEmpty(imageUrl) && !imageUrl.StartsWith("https"))
-                            {
-                                <img src="@($"{ImagePrefix}{imageUrl}")" crossorigin="anonymous" />
-
-                            }
-                        }
-
-
+                        <RadzenButton Icon="delete" class="delete-row" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteActions(data)"></RadzenButton>
                     </Template>
                 </RadzenDataGridColumn>
             }
 
 
-        }
+        </Columns>
+    </RadzenDataGrid>
 
-
-
-        @if (OnDeleteSet)
-        {
-            <RadzenDataGridColumn TItem="TItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
-                <Template Context="data">
-                    <RadzenButton Icon="delete" class="delete-row" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteActions(data)"></RadzenButton>
-                </Template>
-            </RadzenDataGridColumn>
-        }
-
-
-    </Columns>
-</RadzenDataGrid>
+    @* Render child content (hidden) so child components get lifecycle and can register their templates *@
+    <div style="display:none">
+        @ChildContent
+    </div>
+</CascadingValue>
 
 @code {
 
@@ -185,6 +201,9 @@
         Columns = await LoadColumnSettingsAsync();
 
     }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
 
     RadzenDataGrid<TItem> radzenGrid = default!;
 
@@ -217,14 +236,32 @@
     [Parameter]
     public EventCallback<TItem> OnDelete { get; set; }
 
-
     [Parameter]
     public EventCallback<DataGridLoadChildDataEventArgs<TItem>> LoadChildData { get; set; }
 
+    public async Task ReloadAsync()
+    {
+        if (radzenGrid != null)
+        {
+            await radzenGrid.Reload();
+        }
+    }
 
     private bool OnDeleteSet => OnDelete.HasDelegate;
 
     private List<ColumnInfo> Columns = new List<ColumnInfo>();
+
+    // Holds action/button columns registered by children
+    private List<ButtonColumn> ActionColumns = new List<ButtonColumn>();
+
+    /// <summary>
+    /// Called by child action/button components (via CascadingValue) to register a column.
+    /// </summary>
+    public void RegisterButtonColumn(string title, RenderFragment<TItem> template, string width = "100px")
+    {
+        ActionColumns.Add(new ButtonColumn { Title = title, Template = template, Width = width });
+        StateHasChanged();
+    }
 
     async Task ColumnResized(DataGridColumnResizedEventArgs<TItem> args)
     {
@@ -261,7 +298,7 @@
             return fallback;
         }
 
-        int calculated =  text.Length * avgCharWidthPx;
+        int calculated = text.Length * avgCharWidthPx;
 
         return Math.Max(calculated, fallback);
     }
@@ -299,5 +336,11 @@
         public string Property { get; set; } = string.Empty;
     }
 
+    private sealed class ButtonColumn
+    {
+        public string Title { get; set; } = string.Empty;
+        public RenderFragment<TItem> Template { get; set; } = default!;
+        public string Width { get; set; } = "100px";
+    }
 
 }

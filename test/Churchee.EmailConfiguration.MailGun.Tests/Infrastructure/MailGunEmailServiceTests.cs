@@ -22,9 +22,10 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Infrastructure
         public async Task SendEmailAsync_SuccessfulRequest_DoesNotLogError()
         {
             // Arrange
-            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK));
-
-            httpClient.BaseAddress = new Uri("http://localhost/");
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
 
             _httpClientFactoryMock.Setup(f => f.CreateClient("MailGun")).Returns(httpClient);
 
@@ -47,9 +48,10 @@ namespace Churchee.EmailConfiguration.MailGun.Tests.Infrastructure
         public async Task SendEmailAsync_HttpClientReturnsError_LogsError()
         {
             // Arrange
-            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.NotFound));
-
-            httpClient.BaseAddress = new Uri("http://localhost/");
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.NotFound))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
 
             _httpClientFactoryMock.Setup(f => f.CreateClient("MailGun")).Returns(httpClient);
 

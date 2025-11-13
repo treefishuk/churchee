@@ -96,9 +96,9 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnableSpot
 
             if (podcasts.Count > 0)
             {
-                foreach (var podcast in podcasts)
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    if (_logger.IsEnabled(LogLevel.Information))
+                    foreach (var podcast in podcasts)
                     {
                         _logger.LogInformation("Adding new podcast with audio URL: {AudioUri}", podcast.AudioUri);
                     }
