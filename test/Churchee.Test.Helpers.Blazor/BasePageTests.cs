@@ -15,7 +15,7 @@ namespace Churchee.Test.Helpers.Blazor
     {
         protected Mock<ICurrentUser> MockCurrentUser;
         protected CustomNotificationService NotificationService;
-        protected DialogService DialogService;
+        protected TestDialogService DialogService;
         protected Mock<IMediator> MockMediator;
         protected Mock<IConfiguration> MockConfiguration;
         protected CurrentPage CurrentPage;
@@ -29,8 +29,8 @@ namespace Churchee.Test.Helpers.Blazor
             MockCurrentUser = new Mock<ICurrentUser>();
             Services.AddSingleton(MockCurrentUser.Object);
 
-            DialogService = new DialogService(new BunitNavigationManager(this), JSInterop.JSRuntime);
-            Services.AddSingleton(DialogService);
+            DialogService = new TestDialogService(new BunitNavigationManager(this), JSInterop.JSRuntime);
+            Services.AddSingleton<DialogService>(DialogService);
 
             NotificationService = new CustomNotificationService();
             Services.AddSingleton<NotificationService>(NotificationService);
@@ -51,8 +51,7 @@ namespace Churchee.Test.Helpers.Blazor
 
         protected void SetInitialUrl<TComponent>() where TComponent : IComponent
         {
-            var pageAttribute = typeof(TComponent).GetCustomAttributes(typeof(RouteAttribute), true).FirstOrDefault() as RouteAttribute;
-            if (pageAttribute != null)
+            if (typeof(TComponent).GetCustomAttributes(typeof(RouteAttribute), true).FirstOrDefault() is RouteAttribute pageAttribute)
             {
                 var navMan = Services.GetRequiredService<BunitNavigationManager>();
 
@@ -62,7 +61,7 @@ namespace Churchee.Test.Helpers.Blazor
 
         public class CustomNotificationService : NotificationService
         {
-            public List<NotificationMessage> Notifications { get; } = new List<NotificationMessage>();
+            public List<NotificationMessage> Notifications { get; } = [];
 
             public CustomNotificationService()
             {
