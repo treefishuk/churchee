@@ -59,7 +59,7 @@ namespace Churchee.Module.UI.Components
             StateHasChanged();
 
             // Cancel any previous alt text generation
-            (_descriptionCts?.CancelAsync());
+            _ = (_descriptionCts?.CancelAsync());
             _descriptionCts = new CancellationTokenSource();
 
             try
