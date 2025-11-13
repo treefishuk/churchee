@@ -8,7 +8,7 @@ namespace Churchee.Module.Site.Tests.Specifications
         [Fact]
         public void Includes_Content_And_Properties_And_Filters_By_PageId()
         {
-            _ = Guid.NewGuid();
+            Guid.NewGuid();
             var page = new Page(Guid.NewGuid(), "T", "/t", "d", Guid.NewGuid(), null, false);
             page.AddContent(Guid.NewGuid(), page.Id, "v1", 0);
 
@@ -18,7 +18,7 @@ namespace Churchee.Module.Site.Tests.Specifications
 
             var results = spec.Evaluate(list).ToList();
 
-            _ = Assert.Single(results);
+            Assert.Single(results);
             Assert.Equal(page.Id, results[0].Id);
         }
     }

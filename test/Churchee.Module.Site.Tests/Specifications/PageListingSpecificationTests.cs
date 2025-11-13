@@ -19,7 +19,7 @@ namespace Churchee.Module.Site.Tests.Specifications
 
             var results = spec.Evaluate(list).ToList();
 
-            _ = Assert.Single(results);
+            Assert.Single(results);
             Assert.Equal("Apple", results[0].Title);
         }
     }

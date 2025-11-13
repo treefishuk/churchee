@@ -43,7 +43,7 @@ namespace Churchee.Module.Logging.Tests.Features.Queries
             };
 
             // Act & Assert
-            Assert.ThrowsAny<Exception>(() => _ = response.Properties);
+            Assert.ThrowsAny<Exception>(() => response.Properties);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace Churchee.Module.Logging.Tests.Features.Queries
             };
 
             // Act & Assert
-            Assert.ThrowsAny<Exception>(() => _ = response.Properties);
+            Assert.ThrowsAny<Exception>(() => response.Properties);
         }
 
         [Fact]

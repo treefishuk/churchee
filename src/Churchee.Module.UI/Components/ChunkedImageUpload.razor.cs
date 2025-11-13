@@ -59,7 +59,7 @@ namespace Churchee.Module.UI.Components
             StateHasChanged();
 
             // Cancel any previous alt text generation
-            _ = (_descriptionCts?.CancelAsync());
+            (_descriptionCts?.CancelAsync());
             _descriptionCts = new CancellationTokenSource();
 
             try
@@ -89,7 +89,7 @@ namespace Churchee.Module.UI.Components
             _descriptionCts?.Cancel();
             generating = false;
             StateHasChanged();
-            _ = ModelChanged.InvokeAsync(Model);
+            ModelChanged.InvokeAsync(Model);
         }
 
         private async Task<string> UploadTempFileInChunksAsync(IBrowserFile file, CancellationToken cancellationToken = default)

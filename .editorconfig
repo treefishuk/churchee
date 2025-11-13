@@ -241,6 +241,9 @@ csharp_prefer_system_threading_lock = true:suggestion
 # CS8604: Possible null reference argument.
 dotnet_diagnostic.CS8604.severity = warning
 
+# IDE0058: Expression value is never used
+dotnet_diagnostic.IDE0058.severity = none
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion

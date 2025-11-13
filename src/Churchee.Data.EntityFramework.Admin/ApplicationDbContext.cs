@@ -54,7 +54,7 @@ namespace Churchee.Data.EntityFramework.Admin
                     if (!_isInitialized)
                     {
                         // Migrate database
-                        _ = Database.EnsureCreated();
+                        Database.EnsureCreated();
 
                         _isInitialized = true;
                     }
@@ -93,7 +93,7 @@ namespace Churchee.Data.EntityFramework.Admin
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            _ = ChangeTracker.Entries().ApplyTrimOnStringFields();
+            ChangeTracker.Entries().ApplyTrimOnStringFields();
 
             int changeCount = await base.SaveChangesAsync(cancellationToken);
 

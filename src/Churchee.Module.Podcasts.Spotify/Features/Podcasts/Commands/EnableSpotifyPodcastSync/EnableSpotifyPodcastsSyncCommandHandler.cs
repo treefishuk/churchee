@@ -67,7 +67,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnableSpot
 
             await AddOrUpdatePodcasts(applicationTenantId, podcastShows, podcastsUrl, cancellationToken);
 
-            _ = await _dataStore.SaveChangesAsync(cancellationToken);
+            await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
         private async Task AddOrUpdatePodcasts(Guid applicationTenantId, RssChannelItem[] podcastShows, string podcastsUrl, CancellationToken cancellationToken)
@@ -140,13 +140,13 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnableSpot
 
             var resizedImageStream = await _imageProcessor.ResizeImageAsync(imageStream, 350, 0, ext, cancellationToken);
 
-            _ = await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, cancellationToken);
+            await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, cancellationToken);
 
             var originalImgStream = await _blobStore.GetReadStreamAsync(applicationTenantId, $"/img/audio/{fileName}", cancellationToken);
 
             var thumbnailImage = await _imageProcessor.ResizeImageAsync(originalImgStream, 50, 0, ext, cancellationToken);
 
-            _ = await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, cancellationToken);
+            await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, cancellationToken);
         }
 
 

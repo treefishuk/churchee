@@ -43,7 +43,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync
 
             tokenRepo.Create(new Token(applicationTenantId, SettingKeys.XBearerToken, request.BearerToken));
 
-            _ = await _dataStore.SaveChangesAsync(cancellationToken);
+            await _dataStore.SaveChangesAsync(cancellationToken);
 
             string accountName = request.AccountName;
 
@@ -67,7 +67,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync
             {
                 _dataStore.GetRepository<ViewTemplate>().Create(new ViewTemplate(applicationTenantId, newTemplatePath, ViewTemplateData.TweetListing));
 
-                _ = await _dataStore.SaveChangesAsync(cancellationToken);
+                await _dataStore.SaveChangesAsync(cancellationToken);
             }
 
             try
@@ -158,7 +158,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync
 
             mediaFolderRepo.Create(tweetsFolder);
 
-            _ = await _dataStore.SaveChangesAsync(cancellationToken);
+            await _dataStore.SaveChangesAsync(cancellationToken);
 
             return response;
         }
@@ -236,7 +236,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync
                 mediaItemsRepo.Create(newTweet);
             }
 
-            _ = await _dataStore.SaveChangesAsync(cancellationToken);
+            await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
     }

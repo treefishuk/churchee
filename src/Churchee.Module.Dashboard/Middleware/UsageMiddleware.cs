@@ -26,7 +26,7 @@ namespace Churchee.Module.Dashboard.Middleware
             if (tenantResolver.GetTenantId() != Guid.Empty)
             {
                 // Fire-and-forget background task, do not await or capture context
-                _ = Task.Run(() => LogRequest(context, tenantResolver));
+                Task.Run(() => LogRequest(context, tenantResolver));
 
                 await _next(context);
             }

@@ -68,10 +68,10 @@ namespace Churchee.Common.Extensions
 
             var assemblies = AssemblyResolution.GetAssemblies();
 
-            _ = services.Scan(
+            services.Scan(
                 x =>
                 {
-                    _ = x.FromAssemblies(assemblies)
+                    x.FromAssemblies(assemblies)
                         .AddClasses(classes => classes.AssignableTo<T>())
                             .AsImplementedInterfaces()
                             .WithLifetime(lifetime);

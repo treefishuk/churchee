@@ -50,7 +50,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
             tokenRepo.Create(new Token(applicationTenantId, SettingKeys.ApiKeyToken, request.ApiKey));
 
-            _ = await _dataStore.SaveChangesAsync(cancellationToken);
+            await _dataStore.SaveChangesAsync(cancellationToken);
 
             var response = await StoreChannelId(request, applicationTenantId, cancellationToken);
 
@@ -161,7 +161,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
                     await AddNewVideo(applicationTenantId, videosPath, item, cancellationToken);
                 }
 
-                _ = await _dataStore.SaveChangesAsync(cancellationToken);
+                await _dataStore.SaveChangesAsync(cancellationToken);
 
             }
         }
