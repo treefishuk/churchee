@@ -5,7 +5,6 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <NoWarn>0414</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,13 +19,6 @@
     <ProjectReference Include="..\Churchee.Module.Site\Churchee.Module.Site.csproj" />
     <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
     <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
-    <PackageReference Include="Azure.Identity" Version="1.17.0" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
 </Project>
