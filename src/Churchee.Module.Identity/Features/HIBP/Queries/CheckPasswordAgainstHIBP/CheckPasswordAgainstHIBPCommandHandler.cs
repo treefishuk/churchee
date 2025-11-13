@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Churchee.Module.Identity.Features.HIBP.Queries
+namespace Churchee.Module.Identity.Features.HIBP.Queries.CheckPasswordAgainstHIBP
 {
     public class CheckPasswordAgainstHIBPCommandHandler : IRequestHandler<CheckPasswordAgainstHIBPCommand, CommandResponse>
     {
@@ -38,7 +38,7 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
 
                 string hash = ComputeSha1Hash(request.Password);
                 string hashPrefix = hash[..5];
-                var hashSuffix = hash.Substring(5).ToUpper();
+                string hashSuffix = hash[5..].ToUpper();
 
                 var response = await _httpClientFactory.CreateClient().GetAsync($"https://api.pwnedpasswords.com/range/{hashPrefix}", cancellationToken);
 
@@ -49,16 +49,16 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
                     return commandResponse;
                 }
 
-                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                string content = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                var lines = content.Split("\r\n");
+                string[] lines = content.Split("\r\n");
 
-                foreach (var line in lines.Where(w => !string.IsNullOrEmpty(w)))
+                foreach (string line in lines.Where(w => !string.IsNullOrEmpty(w)))
                 {
-                    var parts = line.Split(':');
+                    string[] parts = line.Split(':');
 
-                    var suffix = parts[0];
-                    var count = int.Parse(parts[1]);
+                    string suffix = parts[0];
+                    int count = int.Parse(parts[1]);
 
                     if (hashSuffix == suffix)
                     {
@@ -81,8 +81,8 @@ namespace Churchee.Module.Identity.Features.HIBP.Queries
 
         private static string ComputeSha1Hash(string input)
         {
-            var hashBytes = System.Security.Cryptography.SHA1.HashData(Encoding.UTF8.GetBytes(input));
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            byte[] hashBytes = System.Security.Cryptography.SHA1.HashData(Encoding.UTF8.GetBytes(input));
+            return Convert.ToHexStringLower(hashBytes);
         }
     }
 }

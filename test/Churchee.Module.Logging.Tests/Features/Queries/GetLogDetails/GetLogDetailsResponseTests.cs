@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
 using Churchee.Module.Logging.Features.Queries;
-using Xunit;
 
-namespace Churchee.Module.Logging.Tests.Features.Queries
+namespace Churchee.Module.Logging.Tests.Features.Queries.GetLogDetails
 {
     public class GetLogDetailsResponseTests
     {
@@ -12,7 +8,7 @@ namespace Churchee.Module.Logging.Tests.Features.Queries
         public void Properties_ParsesValidXmlString()
         {
             // Arrange
-            var xml = @"<properties>
+            string xml = @"<properties>
                             <property key=""UserId"">42</property>
                             <property key=""Action"">Login</property>
                         </properties>";
@@ -63,7 +59,7 @@ namespace Churchee.Module.Logging.Tests.Features.Queries
         public void Properties_ParsesSingleProperty()
         {
             // Arrange
-            var xml = @"<properties>
+            string xml = @"<properties>
                             <property key=""TestKey"">TestValue</property>
                         </properties>";
             var response = new GetLogDetailsResponse

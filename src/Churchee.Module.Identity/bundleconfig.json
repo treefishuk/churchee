@@ -1,0 +1,8 @@
+[
+  {
+    "outputFileName": "wwwroot/scripts/churchee-identity.min.js",
+    "inputFiles": [
+      "wwwroot/scripts/churchee-identity.js"
+    ]
+  }
+]

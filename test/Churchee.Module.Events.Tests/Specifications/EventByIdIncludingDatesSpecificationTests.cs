@@ -1,8 +1,6 @@
-﻿using Churchee.Common.Abstractions.Storage;
-using Churchee.Module.Events.Entities;
+﻿using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
 using Churchee.Test.Helpers.Validation;
-using Moq;
 
 namespace Churchee.Module.Events.Tests.Specifications
 {
@@ -30,8 +28,6 @@ namespace Churchee.Module.Events.Tests.Specifications
                 .Build();
 
             var events = new List<Event> { testEvent, testEvent2 };
-
-            var mockEventRepository = new Mock<IRepository<Event>>();
 
             var specification = new EventByIdIncludingDatesSpecification(testEvent.Id);
 

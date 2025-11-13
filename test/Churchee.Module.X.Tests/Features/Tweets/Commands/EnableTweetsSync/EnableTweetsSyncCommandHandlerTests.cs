@@ -7,7 +7,7 @@
     using Churchee.Module.Site.Entities;
     using Churchee.Module.Tokens.Entities;
     using Churchee.Module.X.Features.Tweets.Commands;
-    using Churchee.Module.X.Features.Tweets.Commands.SyncTweets;
+    using Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Moq.Protected;

@@ -70,7 +70,10 @@ namespace Churchee.Data.EntityFramework.Admin
 
             foreach (var reg in entityRegistrations)
             {
-                _logger.LogInformation("Entity Registration: {Entity}", reg.GetType().FullName);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Entity Registration: {Entity}", reg.GetType().FullName);
+                }
 
                 reg.RegisterEntities(builder);
             }

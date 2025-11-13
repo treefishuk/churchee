@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 //https://github.com/dotnet/aspnetcore/tree/main/src/Identity/UI/src/Areas/Identity/Pages/V5
-#nullable disable
-
 using Churchee.Module.Identity.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -76,7 +74,10 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogWarning("User {Email} logged in.", Input.Email);
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        _logger.LogWarning("User {Email} logged in.", Input.Email);
+                    }
 
                     return LocalRedirect(returnUrl);
                 }
@@ -86,7 +87,10 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User {Email} locked out.", Input.Email);
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        _logger.LogWarning("User {Email} locked out.", Input.Email);
+                    }
 
                     return RedirectToPage("./Lockout");
                 }

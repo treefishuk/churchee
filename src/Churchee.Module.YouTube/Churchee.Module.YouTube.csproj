@@ -7,6 +7,10 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Churchee.Module.YouTube.Tests" />
+	</ItemGroup>
+	
+	<ItemGroup>
 	  <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
 	  <ProjectReference Include="..\Churchee.Module.Tokens\Churchee.Module.Tokens.csproj" />
 	  <ProjectReference Include="..\Churchee.Module.Videos\Churchee.Module.Videos.csproj" />

@@ -2,10 +2,11 @@
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Helpers;
 using Churchee.Common.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Churchee.Common.Extensions
 {
     public static class ServiceCollectionExtensions
     {
@@ -71,7 +72,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 x =>
                 {
                     x.FromAssemblies(assemblies)
-                        .AddClasses(classes => classes.AssignableTo(typeof(T)))
+                        .AddClasses(classes => classes.AssignableTo<T>())
                             .AsImplementedInterfaces()
                             .WithLifetime(lifetime);
                 });

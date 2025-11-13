@@ -9,7 +9,6 @@ using Churchee.Module.Tokens.Specifications;
 using Churchee.Module.Videos.Entities;
 using Churchee.Module.Videos.Helpers;
 using Churchee.Module.YouTube.Exceptions;
-using Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync;
 using Churchee.Module.YouTube.Helpers;
 using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands;
 using Hangfire;
@@ -18,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
 
-namespace Churchee.Module.YouTube.Features.YouTube.Commands
+namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 {
     public class EnableYouTubeSyncCommandHandler : IRequestHandler<EnableYouTubeSyncCommand, CommandResponse>
     {
@@ -80,7 +79,10 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
 
             if (!getChannelId.IsSuccessStatusCode)
             {
-                _logger.LogError("Failed to get channel ID from YouTube API: {StatusCode}", getChannelId.StatusCode);
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError("Failed to get channel ID from YouTube API: {StatusCode}", getChannelId.StatusCode);
+                }
 
                 response.AddError("Failed to get channel ID from YouTube API", "");
 

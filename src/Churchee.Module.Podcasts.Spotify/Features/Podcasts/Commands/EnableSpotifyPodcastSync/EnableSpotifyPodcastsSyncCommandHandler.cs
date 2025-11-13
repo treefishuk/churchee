@@ -18,7 +18,7 @@ using System.Globalization;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
+namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnableSpotifyPodcastSync
 {
     public class EnableSpotifyPodcastsSyncCommandHandler : IRequestHandler<EnableSpotifyPodcastSyncCommand, CommandResponse>
     {
@@ -98,7 +98,10 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
             {
                 foreach (var podcast in podcasts)
                 {
-                    _logger.LogInformation("Adding new podcast with audio URL: {AudioUri}", podcast.AudioUri);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Adding new podcast with audio URL: {AudioUri}", podcast.AudioUri);
+                    }
                 }
 
                 repo.AddRange(podcasts);

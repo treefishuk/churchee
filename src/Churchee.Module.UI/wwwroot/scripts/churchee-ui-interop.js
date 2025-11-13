@@ -1,4 +1,4 @@
-﻿window.localStorageHelper = {
+﻿globalThis.localStorageHelper = {
     save: function (key, data) {
         localStorage.setItem(key, JSON.stringify(data));
     },
@@ -7,7 +7,7 @@
     }
 };
 
-window.getImagePreview = (file) => {
+globalThis.getImagePreview = (file) => {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result);

@@ -8,6 +8,7 @@ using Churchee.Module.Podcasts.Entities;
 using Churchee.Module.Podcasts.Specifications;
 using Churchee.Module.Podcasts.Spotify.Exceptions;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
+using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnableSpotifyPodcastSync;
 using Churchee.Module.Podcasts.Spotify.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Test.Helpers.Validation;

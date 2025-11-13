@@ -19,11 +19,14 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
         {
             try
             {
-                return await next();
+                return await next(cancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception caught in pipeline: {Message}", ex.Message);
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex, "Exception caught in pipeline: {Message}", ex.Message);
+                }
 
                 var response = new CommandResponse();
 

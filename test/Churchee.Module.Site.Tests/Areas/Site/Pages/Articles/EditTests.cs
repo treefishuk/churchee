@@ -77,7 +77,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             button.Click();
 
             // Assert
-            cut.Markup.Contains("Update Content"); // Dialog title
+            DialogService.LastTitle.Should().Be("Update Content");
         }
 
         [Fact]

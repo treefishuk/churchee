@@ -51,7 +51,7 @@ namespace Churchee.Module.Videos.Tests.Features.Queries.GetListing
 
 
             // Act
-            Action act = () => { var _ = new GetListingQuery(skip, take, searchText, orderBy); };
+            var act = () => { var _ = new GetListingQuery(skip, take, searchText, orderBy); };
 
             // Assert
             act.Should().Throw<ArgumentOutOfRangeException>("Skip must be zero or positive. (Parameter 'skip')");

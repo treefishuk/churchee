@@ -1,4 +1,5 @@
 ﻿using Churchee.Module.Identity.Features.HIBP.Queries;
+using Churchee.Module.Identity.Features.HIBP.Queries.CheckPasswordAgainstHIBP;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Logging;
 using Moq;

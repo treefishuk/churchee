@@ -37,9 +37,7 @@ namespace Churchee.Module.UI.Components
 
         private async Task HandleFileUpload(UploadChangeEventArgs e)
         {
-            var file = e.Files.FirstOrDefault() as IBrowserFile;
-
-            if (file == null)
+            if (e.Files.FirstOrDefault() is not IBrowserFile file)
             {
                 uploadProgress = 0;
 
@@ -61,7 +59,7 @@ namespace Churchee.Module.UI.Components
             StateHasChanged();
 
             // Cancel any previous alt text generation
-            _descriptionCts?.CancelAsync();
+            _ = (_descriptionCts?.CancelAsync());
             _descriptionCts = new CancellationTokenSource();
 
             try
@@ -112,10 +110,10 @@ namespace Churchee.Module.UI.Components
                 long totalLength = file.Size;
                 do
                 {
-                    bytesRead = await inputStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                    bytesRead = await inputStream.ReadAsync(buffer, cancellationToken);
                     if (bytesRead > 0)
                     {
-                        await tempFileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+                        await tempFileStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                         totalRead += bytesRead;
                         uploadProgress = totalLength > 0 ? totalRead / totalLength * 100 : 0;
                         await InvokeAsync(StateHasChanged);
