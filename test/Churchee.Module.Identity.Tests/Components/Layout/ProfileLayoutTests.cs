@@ -26,9 +26,11 @@ namespace Churchee.Module.Identity.Tests.Components.Layout
         public void Renders_Body_Content()
         {
             // Arrange & Act
-            var cut = Render<ProfileLayout>(ps => {
-                ps.AddMarkupContent(0, "<p id='body-content'>Hello Body</p>");
-            });
+            var cut = Render<ProfileLayout>(ps =>
+                ps.Add(p => p.Body, builder =>
+                {
+                    builder.AddMarkupContent(0, "<p id='body-content'>Hello Body</p>");
+                }));
 
             // Assert
             cut.Markup.Contains("Hello Body");
@@ -39,11 +41,13 @@ namespace Churchee.Module.Identity.Tests.Components.Layout
         public void ErrorBoundary_Shows_Fallback_On_Exception()
         {
             // Arrange
-            var cut = Render<ProfileLayout>(ps => {
-
-                ps.OpenComponent<ThrowingComponent>(0);
-                ps.CloseComponent();
-            });
+            // Arrange
+            var cut = Render<ProfileLayout>(ps =>
+                ps.Add(p => p.Body, builder =>
+                {
+                    builder.OpenComponent<ThrowingComponent>(0);
+                    builder.CloseComponent();
+                }));
 
             // Act / Assert (fallback content rendered)
             cut.Markup.Should().Contain("Oh dear...");
@@ -54,9 +58,8 @@ namespace Churchee.Module.Identity.Tests.Components.Layout
         public void SidebarToggle_Toggles_Sidebar_Expanded_State()
         {
             // Arrange
-            var cut = Render<ProfileLayout>(ps => {
-                ps.AddMarkupContent(0, "<div>Content</div>");
-            });
+            var cut = Render<ProfileLayout>(ps =>
+                ps.Add(p => p.Body, b => b.AddMarkupContent(0, "<div>Content</div>")));
 
             var sidebar = cut.FindComponent<RadzenSidebar>();
             Assert.True(sidebar.Instance.Expanded);

@@ -44,6 +44,7 @@
     <ProjectReference Include="..\Churchee.Module.Site\Churchee.Module.Site.csproj" />
     <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
     <ProjectReference Include="..\Churchee.Module.Tokens\Churchee.Module.Tokens.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Videos\Churchee.Module.Videos.csproj" />
   </ItemGroup>
 
 </Project>

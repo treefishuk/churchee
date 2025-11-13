@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.Specification" Version="9.3.1" />
-    <PackageReference Include="BlazorMonaco" Version="3.4.0" />
+    <PackageReference Include="BlazorMonaco" Version="3.2.0" />
     <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="FluentValidation" Version="12.1.0" />
 	<PackageReference Include="Hangfire.Core" Version="1.8.22" />

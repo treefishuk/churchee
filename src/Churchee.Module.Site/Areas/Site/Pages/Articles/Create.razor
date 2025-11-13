@@ -142,11 +142,6 @@
 
     }
 
-    public Create(CreateArticleModel inputModel)
-    {
-        InputModel = inputModel;
-    }
-
     private async Task OnImageSubmit(ImageUploadModel model)
     {
         NotificationService.Notify(NotificationSeverity.Success, "Image Added");
