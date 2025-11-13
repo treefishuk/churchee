@@ -18,7 +18,7 @@ using System.Globalization;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
+namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnableSpotifyPodcastSync
 {
     public class EnableSpotifyPodcastsSyncCommandHandler : IRequestHandler<EnableSpotifyPodcastSyncCommand, CommandResponse>
     {
@@ -67,7 +67,7 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             await AddOrUpdatePodcasts(applicationTenantId, podcastShows, podcastsUrl, cancellationToken);
 
-            await _dataStore.SaveChangesAsync(cancellationToken);
+            _ = await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
         private async Task AddOrUpdatePodcasts(Guid applicationTenantId, RssChannelItem[] podcastShows, string podcastsUrl, CancellationToken cancellationToken)
@@ -98,7 +98,10 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
             {
                 foreach (var podcast in podcasts)
                 {
-                    _logger.LogInformation("Adding new podcast with audio URL: {AudioUri}", podcast.AudioUri);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Adding new podcast with audio URL: {AudioUri}", podcast.AudioUri);
+                    }
                 }
 
                 repo.AddRange(podcasts);
@@ -137,13 +140,13 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 
             var resizedImageStream = await _imageProcessor.ResizeImageAsync(imageStream, 350, 0, ext, cancellationToken);
 
-            await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, cancellationToken);
+            _ = await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{fileName}", resizedImageStream, true, cancellationToken);
 
             var originalImgStream = await _blobStore.GetReadStreamAsync(applicationTenantId, $"/img/audio/{fileName}", cancellationToken);
 
             var thumbnailImage = await _imageProcessor.ResizeImageAsync(originalImgStream, 50, 0, ext, cancellationToken);
 
-            await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, cancellationToken);
+            _ = await _blobStore.SaveAsync(applicationTenantId, $"/img/audio/{thumbFileName}", thumbnailImage, true, cancellationToken);
         }
 
 

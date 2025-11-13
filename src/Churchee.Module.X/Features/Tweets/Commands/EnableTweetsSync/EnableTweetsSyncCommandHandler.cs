@@ -8,14 +8,13 @@ using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
 using Churchee.Module.x.Helpers;
 using Churchee.Module.X.Exceptions;
-using Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
+namespace Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync
 {
     public class EnableTweetsSyncCommandHandler : IRequestHandler<EnableTweetsSyncCommand, CommandResponse>
     {
@@ -44,13 +43,13 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             tokenRepo.Create(new Token(applicationTenantId, SettingKeys.XBearerToken, request.BearerToken));
 
-            await _dataStore.SaveChangesAsync(cancellationToken);
+            _ = await _dataStore.SaveChangesAsync(cancellationToken);
 
             string accountName = request.AccountName;
 
             if (accountName.StartsWith('@'))
             {
-                accountName = accountName.Substring(1);
+                accountName = accountName[1..];
             }
 
             await _settingStore.AddOrUpdateSetting(Guid.Parse(SettingKeys.XUserAccount), applicationTenantId, "X/Twitter UserName", accountName);
@@ -68,7 +67,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
             {
                 _dataStore.GetRepository<ViewTemplate>().Create(new ViewTemplate(applicationTenantId, newTemplatePath, ViewTemplateData.TweetListing));
 
-                await _dataStore.SaveChangesAsync(cancellationToken);
+                _ = await _dataStore.SaveChangesAsync(cancellationToken);
             }
 
             try
@@ -77,7 +76,11 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to schedule job for syncing tweets. Exception: {Exception}", ex.Message);
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex, "Failed to schedule job for syncing tweets. Exception: {Exception}", ex.Message);
+                }
+
                 response.AddError("Failed to schedule job for syncing tweets", "");
 
                 return response;
@@ -113,7 +116,10 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             if (!getUserIdResponse.IsSuccessStatusCode)
             {
-                _logger.LogError("Failed to get user ID from Twitter API. Status code: {StatusCode}", getUserIdResponse.StatusCode);
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError("Failed to get user ID from Twitter API. Status code: {StatusCode}", getUserIdResponse.StatusCode);
+                }
 
                 response.AddError("Failed to get user ID from Twitter API", "");
 
@@ -152,7 +158,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
 
             mediaFolderRepo.Create(tweetsFolder);
 
-            await _dataStore.SaveChangesAsync(cancellationToken);
+            _ = await _dataStore.SaveChangesAsync(cancellationToken);
 
             return response;
         }
@@ -230,7 +236,7 @@ namespace Churchee.Module.X.Features.Tweets.Commands.SyncTweets
                 mediaItemsRepo.Create(newTweet);
             }
 
-            await _dataStore.SaveChangesAsync(cancellationToken);
+            _ = await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
     }

@@ -13,7 +13,10 @@ namespace Churchee.Presentation.Admin.Registrations
 
         public async Task SendEmailAsync(string toEmail, string toName, string subject, string htmlMessage, string plainTextMessage)
         {
-            await Task.Run(() => _logger.LogInformation("Email sent with HTML message: {HtmlMessage}", htmlMessage));
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                await Task.Run(() => _logger.LogInformation("Email sent with HTML message: {HtmlMessage}", htmlMessage));
+            }
         }
     }
 }

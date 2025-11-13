@@ -1,6 +1,7 @@
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Extensions;
 using Churchee.Common.Helpers;
 using Churchee.Data.EntityFramework.Admin;
 using Churchee.EmailConfiguration.MailGun.Infrastructure;

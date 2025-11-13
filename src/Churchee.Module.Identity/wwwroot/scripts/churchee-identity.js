@@ -1,4 +1,4 @@
-window.enableQrCode = (element, uri) => {
+globalThis.enableQrCode = (element, uri) => {
 
     console.log("enable QR Code", element);
     console.log("enable QR Code", uri);
@@ -15,6 +15,5 @@ window.enableQrCode = (element, uri) => {
         console.log("error", e);
 
     }
-
 
 };

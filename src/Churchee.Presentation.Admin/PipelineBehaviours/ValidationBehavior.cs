@@ -25,20 +25,17 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
 
                 foreach (var failure in failures)
                 {
-                    string propertyName = failure.PropertyName.Substring(failure.PropertyName.IndexOf('.') + 1);
+                    string propertyName = failure.PropertyName[(failure.PropertyName.IndexOf('.') + 1)..];
 
                     response.AddError(failure.ErrorMessage, propertyName);
                 }
 
-                if (response is TResponse castResponse)
-                {
-                    return Task.FromResult(castResponse);
-                }
-
-                throw new InvalidOperationException("TResponse must be of type CommandResponse.");
+                return response is TResponse castResponse
+                    ? Task.FromResult(castResponse)
+                    : throw new InvalidOperationException("TResponse must be of type CommandResponse.");
             }
 
-            return next();
+            return next(cancellationToken);
         }
 
     }

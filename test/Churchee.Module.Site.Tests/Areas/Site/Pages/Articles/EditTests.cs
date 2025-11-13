@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
         public EditTests()
         {
             var mockAiToolUtilities = new Mock<IAiToolUtilities>();
-            Services.AddSingleton(mockAiToolUtilities.Object);
+            _ = Services.AddSingleton(mockAiToolUtilities.Object);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             //arrange
             var data = new GetArticleByIdResponse();
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             SetInitialUrl<Edit>();
 
@@ -48,7 +48,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             // Arrange
             var data = new GetArticleByIdResponse();
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             SetInitialUrl<Edit>();
 
@@ -68,7 +68,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
                 IsPublished = true
             };
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // Act
             var cut = Render<Edit>();
@@ -77,7 +77,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             button.Click();
 
             // Assert
-            cut.Markup.Contains("Update Content"); // Dialog title
+            cut.Markup.Contains("Update Content").Should().BeTrue();
         }
 
         [Fact]
@@ -86,10 +86,10 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             // Arrange
             var data = new GetArticleByIdResponse();
 
-            MockMediator.Setup(m => m.Send(It.IsAny<UpdateArticleCommand>(), default))
+            _ = MockMediator.Setup(m => m.Send(It.IsAny<UpdateArticleCommand>(), default))
                 .ReturnsAsync(new CommandResponse());
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>()))
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(data);
 
             var cut = Render<Edit>();
@@ -123,7 +123,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
                 IsPublished = true
             };
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // Act
             var cut = Render<Edit>();
@@ -141,7 +141,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
                 IsPublished = false
             };
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // Act
             var cut = Render<Edit>();
@@ -159,11 +159,11 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
                 IsPublished = false
             };
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             var response = new CommandResponse();
 
-            MockMediator.Setup(s => s.Send(It.IsAny<PublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<PublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
             var cut = Render<Edit>();
@@ -187,12 +187,12 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
                 IsPublished = false
             };
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             var response = new CommandResponse();
             response.AddError("Publish Failed", "");
 
-            MockMediator.Setup(s => s.Send(It.IsAny<PublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<PublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
             var cut = Render<Edit>();
@@ -214,12 +214,12 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
                 IsPublished = true
             };
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             var response = new CommandResponse();
             response.AddError("Publish Failed", "");
 
-            MockMediator.Setup(s => s.Send(It.IsAny<UnPublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<UnPublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
             var cut = Render<Edit>();
@@ -241,11 +241,11 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
                 IsPublished = true
             };
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             var response = new CommandResponse();
 
-            MockMediator.Setup(s => s.Send(It.IsAny<UnPublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<UnPublishArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             // Act
             var cut = Render<Edit>();

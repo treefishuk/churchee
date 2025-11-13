@@ -54,7 +54,7 @@ namespace Churchee.Data.EntityFramework.Admin
                     if (!_isInitialized)
                     {
                         // Migrate database
-                        Database.EnsureCreated();
+                        _ = Database.EnsureCreated();
 
                         _isInitialized = true;
                     }
@@ -70,7 +70,10 @@ namespace Churchee.Data.EntityFramework.Admin
 
             foreach (var reg in entityRegistrations)
             {
-                _logger.LogInformation("Entity Registration: {Entity}", reg.GetType().FullName);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Entity Registration: {Entity}", reg.GetType().FullName);
+                }
 
                 reg.RegisterEntities(builder);
             }
@@ -90,7 +93,7 @@ namespace Churchee.Data.EntityFramework.Admin
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            ChangeTracker.Entries().ApplyTrimOnStringFields();
+            _ = ChangeTracker.Entries().ApplyTrimOnStringFields();
 
             int changeCount = await base.SaveChangesAsync(cancellationToken);
 

@@ -15,5 +15,17 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Areas\Integrations\InputModelTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Churchee.Module.YouTube.Tests.csproj" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Features\YouTube\Commands\DisableYouTubeSync\DisableYouTubeSyncCommandTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Features\YouTube\Commands\EnableYouTubeSync\EnableYouTubeSyncCommandTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Features\YouTube\Commands\EnableYouTubeSync\ModelTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Features\YouTube\GetYouTubeSettingsResponseTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Features\YouTube\Queries\GetYouTubeSettings\GetYouTubeSettingsRequestHandlerTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Features\YouTube\Queries\GetYouTubeSettings\GetYouTubeSettingsRequestTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Helpers\SettingKeysTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\ModuleRegistrationTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\Registrations\MenuRegistrationTests.cs" />
+    <None Include="test\Churchee.Module.YouTube.Tests\YouTubeSyncExceptionTests.cs" />
   </ItemGroup>
 </Project>

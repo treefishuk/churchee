@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
         public CreateTests()
         {
             var mockAiToolUtilities = new Mock<IAiToolUtilities>();
-            Services.AddSingleton(mockAiToolUtilities.Object);
+            _ = Services.AddSingleton(mockAiToolUtilities.Object);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             //arrange
             var data = new List<DropdownInput>();
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetParentArticlePagesDropdownDataQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetParentArticlePagesDropdownDataQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             SetInitialUrl<Create>();
 
@@ -48,7 +48,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             // Arrange
             var data = new List<DropdownInput>();
 
-            MockMediator.Setup(s => s.Send(It.IsAny<GetParentArticlePagesDropdownDataQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+            _ = MockMediator.Setup(s => s.Send(It.IsAny<GetParentArticlePagesDropdownDataQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             SetInitialUrl<Create>();
 
@@ -70,7 +70,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             button.Click();
 
             // Assert
-            cut.Markup.Contains("Update Content"); // Dialog title
+            cut.Markup.Contains("Update Content").Should().BeTrue();
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
 
 
             // Setup Mediator to return success
-            MockMediator.Setup(m => m.Send(It.IsAny<CreateArticleCommand>(), default))
+            _ = MockMediator.Setup(m => m.Send(It.IsAny<CreateArticleCommand>(), default))
                 .ReturnsAsync(new CommandResponse());
 
             // Act

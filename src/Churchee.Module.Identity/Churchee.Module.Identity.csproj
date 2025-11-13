@@ -6,6 +6,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<Content Remove="bundleconfig.json" />
 		<Content Remove="compilerconfig.json" />
 	</ItemGroup>
 
@@ -24,6 +25,7 @@
     <Folder Include="wwwroot\css\" />
   </ItemGroup>	
   <ItemGroup>
+    <None Include="bundleconfig.json" />
     <None Include="compilerconfig.json" />
   </ItemGroup>
 </Project>
