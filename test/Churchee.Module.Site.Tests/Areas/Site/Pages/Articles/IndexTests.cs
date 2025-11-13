@@ -27,7 +27,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             SetInitialUrl<Index>();
 
             //act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -44,7 +44,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<DeleteArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CommandResponse());
 
             // Act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             cut.FindAll(".delete-row")[0].Click();
 
@@ -66,7 +66,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             MockMediator.Setup(s => s.Send(It.IsAny<DeleteArticleCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(commandResponse);
 
             // Act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             cut.FindAll(".delete-row")[0].Click();
 

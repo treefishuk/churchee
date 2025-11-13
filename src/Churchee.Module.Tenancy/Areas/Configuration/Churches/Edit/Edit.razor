@@ -10,11 +10,9 @@
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
 @code {
-
     [Parameter]
     public Guid Id { get; set; }
 
-    [SupplyParameterFromForm]
     public EditChurchInputModel InputModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()

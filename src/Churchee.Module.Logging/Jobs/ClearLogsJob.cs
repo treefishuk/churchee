@@ -23,7 +23,7 @@ namespace Churchee.Module.Logging.Jobs
             var cutOffDate = DateTime.UtcNow.AddDays(-30);
 
             await _dbContext.Set<Log>()
-                        .Where(log => log.TimeStamp > cutOffDate)
+                        .Where(log => log.TimeStamp < cutOffDate)
                         .ExecuteDeleteAsync(cancellationToken);
         }
     }

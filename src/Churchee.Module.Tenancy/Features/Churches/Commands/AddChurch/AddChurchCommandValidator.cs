@@ -9,7 +9,6 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands.AddChurch
         {
             RuleFor(x => x.Name).Custom((command, context) =>
             {
-
                 if (!currentUser.HasRole("SysAdmin"))
                 {
                     context.AddFailure("Sorry, you do not have the permission required for that action");

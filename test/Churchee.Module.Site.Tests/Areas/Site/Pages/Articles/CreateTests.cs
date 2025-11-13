@@ -34,7 +34,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             SetInitialUrl<Create>();
 
             //act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -53,7 +53,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             SetInitialUrl<Create>();
 
             // Act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             // Assert
             cut.Find("form").Should().NotBeNull();
@@ -63,7 +63,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
         public void Article_Create_DistractionFreeMode_Button_Opens_ContentEditor()
         {
             // Arrange
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             // Act
             var button = cut.Find("#distractionFreeModeBtn");
@@ -77,7 +77,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
         public void Article_Create_ValidSubmitForm_Navigates_On_Success()
         {
             // Arrange
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
             var instance = cut.Instance;
 
             // Setup InputModel
@@ -97,7 +97,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             button.Click();
 
             // Assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/articles");
         }
     }

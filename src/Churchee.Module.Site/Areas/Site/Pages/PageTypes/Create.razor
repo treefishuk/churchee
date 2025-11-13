@@ -10,7 +10,6 @@
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
 @code {
-    [SupplyParameterFromForm]
     public CreatePageTypeModel InputModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()

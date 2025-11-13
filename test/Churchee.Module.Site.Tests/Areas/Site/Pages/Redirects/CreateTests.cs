@@ -25,7 +25,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Redirects
             SetInitialUrl<Create>();
 
             //act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -40,7 +40,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Redirects
             SetInitialUrl<Create>();
 
             // Act
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             // Assert
             cut.Find("form").Should().NotBeNull();
@@ -51,14 +51,14 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Redirects
         {
             // Arrange
             SetInitialUrl<Create>();
-            var cut = RenderComponent<Create>();
+            var cut = Render<Create>();
 
             // Act
             var button = cut.Find("#cancelFormBtn");
             button.Click();
 
             // Assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/redirects");
         }
     }

@@ -34,7 +34,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
                 .ReturnsAsync(data);
 
             //act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -53,7 +53,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
                 .ReturnsAsync(data);
 
             // Act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Assert
             cut.Find("form").Should().NotBeNull();
@@ -69,7 +69,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
             .Send(It.IsAny<GetTemplateByIdQuery>(), default))
                 .ReturnsAsync(data);
 
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
             var instance = cut.Instance;
             instance.InputModel.Id = Guid.NewGuid();
             instance.InputModel.Content = "Content";
@@ -102,14 +102,14 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
 
             SetInitialUrl<Edit>();
 
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             // Act
             var button = cut.Find("#cancelFormBtn");
             button.Click();
 
             // Assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/templates");
         }
     }

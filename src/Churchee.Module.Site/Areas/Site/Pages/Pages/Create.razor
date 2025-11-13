@@ -14,7 +14,6 @@
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
 @code {
-    [SupplyParameterFromForm]
     public CreatePageModel InputModel { get; set; } = new();
 
     [Parameter]

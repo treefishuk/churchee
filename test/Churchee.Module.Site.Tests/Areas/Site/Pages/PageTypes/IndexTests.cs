@@ -23,7 +23,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.PageTypes
             MockMediator.Setup(s => s.Send(It.IsAny<GetPageTypesListingQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             // assert
             var pageName = cut.FindComponent<PageName>();

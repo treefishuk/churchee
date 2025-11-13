@@ -12,7 +12,6 @@
 <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 
 @code {
-    [SupplyParameterFromForm]
     public CreateTemplatesInputModel InputModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()

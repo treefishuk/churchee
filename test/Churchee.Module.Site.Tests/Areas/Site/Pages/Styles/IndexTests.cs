@@ -22,7 +22,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Styles
             MockMediator.Setup(s => s.Send(It.IsAny<GetStylesQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
             // act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             // assert
             var pageName = cut.FindComponent<PageName>();

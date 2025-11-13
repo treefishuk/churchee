@@ -117,7 +117,7 @@
                             }
                             if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                             {
-                                <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" @oninput="(e) => OnFieldChange(prop, e.Value?.ToString())" />
+                            <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) @onblur=@((value) => OnFieldChange(prop, prop.GetValue(InputModel))) />
                             }
                             if (prop.PropertyType == typeof(List<string>))
                             {
@@ -134,7 +134,7 @@
 
                                             string style = i < list.Count - 1 ? "border-bottom: 1px solid #e0e9f2; border-radius:0" : string.Empty;
 
-                                            <RadzenTextBox Name="@name" Value="@list[i]" @oninput="(e) => OnFieldChange(prop, localIndex, e.Value?.ToString())" Style="@style" />
+                                            <RadzenTextBox Name="@name" Value="@list[i]" Change=@((value) => OnFieldChange(prop, localIndex, value)) Style="@style" @onblur="((value) => OnFieldChange(prop, localIndex, prop.GetValue(InputModel)?.ToString() ?? string.Empty))" />
                                       }
 
                                     </RadzenStack>
@@ -317,46 +317,32 @@
     [Parameter]
     public EventCallback<ImageUploadModel> OnImageSubmit { get; set; }
 
-    private Timer? _debounceTimer;
-
-    public void OnFieldChange(PropertyInfo info, object? value)
+    public async Task OnFieldChange(PropertyInfo info, object? value)
     {
-        _debounceTimer?.Dispose();
 
-        _debounceTimer = new Timer(async _ =>
-        {
-            await InvokeAsync(async () =>
-            {
-                info.SetValue(InputModel, value);
-                // Get the FieldIdentifier with the EditContext from the field name
-                FieldIdentifier fieldIdentifier = EditContext.Field(info.Name);
-                // Validate the field when notifying change
-                EditContext.NotifyFieldChanged(fieldIdentifier);
-                await OnValueChanged.InvokeAsync(null);
-            });
-        }, null, 300, Timeout.Infinite);
+        info.SetValue(InputModel, value);
+
+        // Get the FieldIdentifier with the EditContext from the field name
+        FieldIdentifier fieldIdentifier = EditContext.Field(info.Name);
+
+        // Validate the field when notifying change
+        EditContext.NotifyFieldChanged(fieldIdentifier);
+
+        await OnValueChanged.InvokeAsync(null);
     }
 
-    public void OnFieldChange(PropertyInfo info, int index, string? value)
+    public async Task OnFieldChange(PropertyInfo info, int index, string? value)
     {
-        _debounceTimer?.Dispose();
-
-        _debounceTimer = new Timer(async _ =>
+        if (info.GetValue(InputModel) is List<string> list && index >= 0 && index < list.Count)
         {
-            await InvokeAsync(async () =>
-            {
-                if (info.GetValue(InputModel) is List<string> list && index >= 0 && index < list.Count)
-                {
-                    list[index] = value ?? string.Empty; // Ensure non-null assignment
+            list[index] = value ?? string.Empty; // Ensure non-null assignment
 
-                    // Get the FieldIdentifier for validation
-                    FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
-                    EditContext.NotifyFieldChanged(fieldIdentifier);
+            // Get the FieldIdentifier for validation
+            FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
+            EditContext.NotifyFieldChanged(fieldIdentifier);
 
-                    await OnValueChanged.InvokeAsync(null);
-                }
-            });
-        }, null, 300, Timeout.Infinite);
+            await OnValueChanged.InvokeAsync(null);
+        }
     }
 
     public async Task OnTextWithSlugFieldChange(PropertyInfo info, object value)

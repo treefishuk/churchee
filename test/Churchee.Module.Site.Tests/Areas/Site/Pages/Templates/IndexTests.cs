@@ -24,7 +24,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Templates
             SetInitialUrl<Index>();
 
             //act
-            var cut = RenderComponent<Index>();
+            var cut = Render<Index>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();

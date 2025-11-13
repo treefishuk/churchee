@@ -24,7 +24,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             SetInitialUrl<Edit>();
 
             //act
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             //assert
             var pageName = cut.FindComponent<PageName>();
@@ -38,13 +38,13 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             //arrange
             SetupGetDetailByIdResponse();
 
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             //act
             cut.Find(".sticky-formButtons .rz-danger").Click();
 
             //assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/events");
 
         }
@@ -55,7 +55,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             //arrange
             SetupGetDetailByIdResponse();
 
-            var cut = RenderComponent<Edit>();
+            var cut = Render<Edit>();
 
             //act
             cut.Instance.InputModel.Title = string.Empty;
@@ -63,7 +63,7 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             cut.Find(".sticky-formButtons .rz-success").Click();
 
             //assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().NotBe("http://localhost/management/events");
 
         }
@@ -75,13 +75,13 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             SetupGetDetailByIdResponse();
             SetupUpdateEventCommandResponse();
 
-            var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, Guid.NewGuid()));
+            var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, Guid.NewGuid()));
 
             //act
             cut.Find(".sticky-formButtons .rz-success").Click();
 
             //assert
-            var navMan = Services.GetRequiredService<FakeNavigationManager>();
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/events");
 
         }

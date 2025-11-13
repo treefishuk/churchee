@@ -5,7 +5,7 @@ using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Components
 {
-    public class EventDatesManagerTests : TestContext
+    public class EventDatesManagerTests : BunitContext
     {
         [Fact]
         public void EventDatesManager_AddDate_AddsDate()
@@ -13,7 +13,7 @@ namespace Churchee.Module.Events.Tests.Components
             //arrange
             JSInterop.Mode = JSRuntimeMode.Loose;
 
-            var cut = RenderComponent<EventDatesManager>(parameters => parameters
+            var cut = Render<EventDatesManager>(parameters => parameters
               .Add(p => p.Dates, [])
             );
 
@@ -35,7 +35,7 @@ namespace Churchee.Module.Events.Tests.Components
 
             var date = new EventDateModel(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddHours(1));
 
-            var cut = RenderComponent<EventDatesManager>(parameters => parameters
+            var cut = Render<EventDatesManager>(parameters => parameters
               .Add(p => p.Dates, [date])
             );
 
