@@ -1,4 +1,6 @@
 ﻿using Xunit;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Churchee.Test.Helpers.Validation
 {
@@ -43,7 +45,18 @@ namespace Churchee.Test.Helpers.Validation
 
         public void BeEquivalentTo(T equivalent)
         {
-            Assert.Equivalent(equivalent, _instance);
+            // Use JSON serialization with cycle handling to avoid Assert.Equivalent hanging on
+            // objects with cycles or lazy/enumerable members that may block during deep graph comparison.
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            string expected = JsonSerializer.Serialize(equivalent, options);
+            string actual = JsonSerializer.Serialize(_instance, options);
+
+            Assert.Equal(expected, actual);
         }
 
 

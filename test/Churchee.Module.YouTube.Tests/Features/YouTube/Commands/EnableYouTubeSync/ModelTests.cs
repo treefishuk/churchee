@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 using Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync;
 
@@ -14,6 +15,24 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
 
             var response = new GetChannelIdApiResponse();
             Assert.NotNull(response.Items);
+        }
+
+        [Fact]
+        public void ChannelId_ReturnsEmpty_WhenNoItems()
+        {
+            var response = new GetChannelIdApiResponse();
+            response.Items.Clear();
+
+            Assert.Equal(string.Empty, response.ChannelId);
+        }
+
+        [Fact]
+        public void ChannelId_ReturnsFirstItemId_WhenItemsPresent()
+        {
+            var response = new GetChannelIdApiResponse();
+            response.Items = new List<Item> { new Item { Id = "FIRST" }, new Item { Id = "SECOND" } };
+
+            Assert.Equal("FIRST", response.ChannelId);
         }
 
         [Fact]
