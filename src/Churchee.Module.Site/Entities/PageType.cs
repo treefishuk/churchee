@@ -48,7 +48,10 @@ namespace Churchee.Module.Site.Entities
 
         public void AddPageTypeContent(Guid id, string name, string type, bool required, int order)
         {
-            var newPageTypeContent = new PageTypeContent(id, ApplicationTenantId, type, required, name, order);
+            var newPageTypeContent = new PageTypeContent(id, ApplicationTenantId, type, required, name, order)
+            {
+                PageType = this
+            };
 
             PageTypeContent.Add(newPageTypeContent);
 

@@ -22,7 +22,7 @@ namespace Churchee.Module.Site.Entities
 
         public string DevName { get; private set; }
 
-        public PageType PageType { get; private set; }
+        public PageType PageType { get; internal set; }
 
         public string Type { get; private set; }
 
