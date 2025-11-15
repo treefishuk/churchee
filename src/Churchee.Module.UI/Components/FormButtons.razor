@@ -33,12 +33,11 @@
 
         // Get the first two segments
         var firstTwoSegments = segments.Take(2).ToArray();
-        var basePath = "/" + string.Join('/', firstTwoSegments);
+        var basePath = Path.AltDirectorySeparatorChar + string.Join('/', firstTwoSegments);
 
         // Rebuild the base URL
         var baseUrl = $"{uri.Scheme}://{uri.Authority}{basePath}";
 
         _navigationManager.NavigateTo(baseUrl);
     }
-
 }

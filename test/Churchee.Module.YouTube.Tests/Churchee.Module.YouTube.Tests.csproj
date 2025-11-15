@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Churchee.Module.UI\Churchee.Module.UI.csproj" />
     <ProjectReference Include="..\..\src\Churchee.Module.YouTube\Churchee.Module.YouTube.csproj" />
     <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" Condition="Exists('..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj')" />
   </ItemGroup>
