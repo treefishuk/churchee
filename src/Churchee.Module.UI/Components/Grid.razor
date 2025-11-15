@@ -156,7 +156,7 @@
             {
                 <RadzenDataGridColumn TItem="TItem" Title="@btn.Title" Sortable="false" Filterable="false" Width="@btn.Width" TextAlign="TextAlign.Center" Pickable="false">
                     <Template Context="data">
-                        @btn.Template((TItem)data)
+                        @btn.Template(data)
                     </Template>
                 </RadzenDataGridColumn>
             }
@@ -252,7 +252,7 @@
     private List<ColumnInfo> Columns = new List<ColumnInfo>();
 
     // Holds action/button columns registered by children
-    private List<ButtonColumn> ActionColumns = new List<ButtonColumn>();
+    private readonly List<ButtonColumn> ActionColumns = new List<ButtonColumn>();
 
     /// <summary>
     /// Called by child action/button components (via CascadingValue) to register a column.
