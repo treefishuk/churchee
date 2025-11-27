@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Queue;
+using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
@@ -38,7 +39,7 @@ namespace Churchee.Module.X.Jobs
 
             string userId = await _settingStore.GetSettingValue(Guid.Parse(SettingKeys.XUserId), applicationTenantId);
 
-            string getTweetsUrl = $"https://api.twitter.com/2/users/{userId}/tweets?tweet.fields=created_at&max_results=10";
+            string getTweetsUrl = await GetTweetsUrl(userId, applicationTenantId, cancellationToken);
 
             var response = await httpClient.GetAsync(getTweetsUrl, cancellationToken);
 
@@ -67,38 +68,80 @@ namespace Churchee.Module.X.Jobs
             }
 
             var mediaItemsRepo = _dataStore.GetRepository<MediaItem>();
+
             var mediaFolderRepo = _dataStore.GetRepository<MediaFolder>();
 
             var tweetsMediaFolder = await mediaFolderRepo.FirstOrDefaultAsync(new MediaFolderByNameSpecification("Tweets", applicationTenantId), cancellationToken);
 
             foreach (var tweet in deserializedResponse.Tweets)
             {
-                if (mediaItemsRepo.AnyWithFiltersDisabled(x => x.Title == $"Tweet: {tweet.Id}"))
-                {
-                    continue;
-                }
-
-                string tweetContent = tweet.Text;
-
-                string linkPattern = @"(https?://[^\s]+)"; // Match HTTP/HTTPS URLs
-                string linkReplacement = "<a href=\"$1\">$1</a>";
-
-                tweetContent = Regex.Replace(tweetContent, linkPattern, linkReplacement, RegexOptions.None, TimeSpan.FromMilliseconds(500));
-
-                string handlePattern = @"(?<!\S)@(\w+)"; // Ensure @username is not part of an email address
-                string handleReplacement = "<a href=\"https://x.com/$1\">@$1</a>";
-
-                tweetContent = Regex.Replace(tweetContent, handlePattern, handleReplacement, RegexOptions.None, TimeSpan.FromMilliseconds(500));
-
-                var newTweet = new MediaItem(applicationTenantId, $"Tweet: {tweet.Id}", "/_content/Churchee.Module.X/img/tweet.png", "", tweetContent, tweetsMediaFolder.Id)
-                {
-                    CreatedDate = tweet.CreatedAt
-                };
-
-                mediaItemsRepo.Create(newTweet);
+                StoreTweet(applicationTenantId, mediaItemsRepo, tweetsMediaFolder, tweet);
             }
 
             await _dataStore.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task<string> GetTweetsUrl(string userId, Guid applicationTenantId, CancellationToken cancellationToken)
+        {
+            var mediaItemsRepo = _dataStore.GetRepository<MediaItem>();
+
+            string lastTitle = await mediaItemsRepo.FirstOrDefaultAsync(new LatestTweetMediaItemSpecification(applicationTenantId), m => m.Title, cancellationToken);
+
+            string sinceId = string.Empty;
+
+            if (!string.IsNullOrEmpty(lastTitle))
+            {
+                // Title is in format "Tweet: {id}" - extract id
+                string[] parts = lastTitle.Split(new[] { ':' }, 2);
+                if (parts.Length == 2)
+                {
+                    sinceId = parts[1].Trim();
+                }
+            }
+
+            return $"https://api.twitter.com/2/users/{userId}/tweets?tweet.fields=created_at&max_results=10" + (string.IsNullOrEmpty(sinceId) ? string.Empty : $"&since_id={sinceId}");
+        }
+
+        private static void StoreTweet(Guid applicationTenantId, IRepository<MediaItem> mediaItemsRepo, MediaFolder tweetsMediaFolder, Tweet tweet)
+        {
+            if (mediaItemsRepo.AnyWithFiltersDisabled(x => x.Title == $"Tweet: {tweet.Id}"))
+            {
+                return;
+            }
+
+            string tweetContent = tweet.Text;
+
+            tweetContent = ReplaceLinkTextWithLinks(tweetContent);
+
+            tweetContent = ReplaceUserHandlesWithLinks(tweetContent);
+
+            var newTweet = new MediaItem(applicationTenantId, $"Tweet: {tweet.Id}", "/_content/Churchee.Module.X/img/tweet.png", "", tweetContent, tweetsMediaFolder.Id)
+            {
+                CreatedDate = tweet.CreatedAt
+            };
+
+            mediaItemsRepo.Create(newTweet);
+        }
+
+        private static string ReplaceUserHandlesWithLinks(string tweetContent)
+        {
+            string handlePattern = @"(?<!\S)@(\w+)"; // Ensure @username is not part of an email address
+
+            string handleReplacement = "<a href=\"https://x.com/$1\">@$1</a>";
+
+            tweetContent = Regex.Replace(tweetContent, handlePattern, handleReplacement, RegexOptions.None, TimeSpan.FromMilliseconds(500));
+
+            return tweetContent;
+        }
+
+        private static string ReplaceLinkTextWithLinks(string tweetContent)
+        {
+            string linkPattern = @"(https?://[^\s]+)"; // Match HTTP/HTTPS URLs
+            string linkReplacement = "<a href=\"$1\">$1</a>";
+
+            tweetContent = Regex.Replace(tweetContent, linkPattern, linkReplacement, RegexOptions.None, TimeSpan.FromMilliseconds(500));
+
+            return tweetContent;
         }
     }
 }

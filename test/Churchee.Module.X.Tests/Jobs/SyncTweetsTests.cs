@@ -88,7 +88,6 @@ namespace Churchee.Module.X.Tests.Jobs
             await sut.ExecuteAsync(_tenantId, CancellationToken.None);
 
             // Assert
-            _dataStore.Verify(x => x.GetRepository<MediaItem>(), Times.Never);
             _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
