@@ -193,5 +193,48 @@ namespace Churchee.Module.X.Tests.Jobs
             _mediaItemsRepo.Verify(m => m.Create(It.Is<MediaItem>(mi => mi.Title.Contains("Tweet: t1"))), Times.Once);
             _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Fact]
+        public async Task ExecuteAsync_Includes_SinceId_When_LastTweetExists()
+        {
+            // Arrange - latest tweet title exists in the repo so we expect since_id to be appended
+            string lastTitle = "Tweet: t42";
+
+            HttpRequestMessage capturedRequest = null;
+
+            var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
+            handlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .Callback<HttpRequestMessage, CancellationToken>((req, ct) => capturedRequest = req)
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonSerializer.Serialize(new GetTweetsApiResponse()))
+                })
+                .Verifiable();
+
+            var httpClient = new HttpClient(handlerMock.Object);
+
+            // Ensure GetTweetsUrl will pick up lastTitle
+            _mediaItemsRepo.Setup(m => m.FirstOrDefaultAsync(It.IsAny<LatestTweetMediaItemSpecification>(), It.IsAny<Expression<Func<MediaItem, string>>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(lastTitle);
+
+            var tweetsFolder = new MediaFolder(_tenantId, "Tweets", "");
+            _mediaFolderRepo.Setup(m => m.FirstOrDefaultAsync(It.IsAny<MediaFolderByNameSpecification>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(tweetsFolder);
+
+            var sut = CreateSut(httpClient);
+
+            // Act
+            await sut.ExecuteAsync(_tenantId, CancellationToken.None);
+
+            // Assert - we captured the outgoing request and it should include the since_id query param
+            Assert.NotNull(capturedRequest);
+            Assert.Contains("since_id=t42", capturedRequest!.RequestUri!.ToString());
+        }
     }
 }
