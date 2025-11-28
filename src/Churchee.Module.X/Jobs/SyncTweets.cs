@@ -92,7 +92,7 @@ namespace Churchee.Module.X.Jobs
             if (!string.IsNullOrEmpty(lastTitle))
             {
                 // Title is in format "Tweet: {id}" - extract id
-                string[] parts = lastTitle.Split(new[] { ':' }, 2);
+                string[] parts = lastTitle.Split([':'], 2);
                 if (parts.Length == 2)
                 {
                     sinceId = parts[1].Trim();
