@@ -1,32 +1,31 @@
-﻿namespace Churchee.Module.X.Tests.Features.Tweets.Commands.EnableTweetsSync
-{
-    using Churchee.Common.Abstractions.Auth;
-    using Churchee.Common.Abstractions.Queue;
-    using Churchee.Common.Abstractions.Storage;
-    using Churchee.Common.Storage;
-    using Churchee.Module.Site.Entities;
-    using Churchee.Module.Tokens.Entities;
-    using Churchee.Module.X.Features.Tweets.Commands;
-    using Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using Moq.Protected;
-    using System;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Xunit;
+﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
+using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Storage;
+using Churchee.Module.Site.Entities;
+using Churchee.Module.Tokens.Entities;
+using Churchee.Module.X.Features.Tweets.Commands;
+using Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync;
+using Churchee.Module.X.Jobs;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Moq.Protected;
+using System.Linq.Expressions;
+using System.Net;
 
+namespace Churchee.Module.X.Tests.Features.Tweets.Commands.EnableTweetsSync
+{
     public class EnableTweetsSyncCommandHandlerTests
     {
         private readonly Mock<IJobService> _jobService = new();
         private readonly Mock<IHttpClientFactory> _httpClientFactory = new();
         private readonly Mock<IDataStore> _dataStore = new();
         private readonly Mock<ICurrentUser> _currentUser = new();
+        private readonly Mock<ISettingStore> _setting_store = new();
         private readonly Mock<ISettingStore> _settingStore = new();
         private readonly Mock<ILogger<EnableTweetsSyncCommandHandler>> _logger = new();
         private readonly Mock<IRepository<Token>> _tokenRepo = new();
+        private readonly Mock<IRepository<ViewTemplate>> _view_template_repo = new();
         private readonly Mock<IRepository<ViewTemplate>> _viewTemplateRepo = new();
         private readonly Mock<IRepository<MediaFolder>> _mediaFolderRepo = new();
 
@@ -55,8 +54,8 @@
             // Assert
             _tokenRepo.Verify(x => x.Create(It.IsAny<Token>()), Times.Once);
             _settingStore.Verify(x => x.AddOrUpdateSetting(It.IsAny<Guid>(), _tenantId, "X/Twitter UserName", "account"), Times.Once);
-            _jobService.Verify(x => x.ScheduleJob(It.IsAny<string>(), It.IsAny<System.Linq.Expressions.Expression<Func<Task>>>(), It.IsAny<Func<string>>()), Times.Once);
-            _jobService.Verify(x => x.QueueJob(It.IsAny<System.Linq.Expressions.Expression<Func<Task>>>()), Times.Once);
+            _jobService.Verify(x => x.ScheduleJob<SyncTweets>(It.IsAny<string>(), It.IsAny<Expression<Func<SyncTweets, Task>>>(), It.IsAny<Func<string>>()), Times.Once);
+            _jobService.Verify(x => x.QueueJob<SyncTweets>(It.IsAny<Expression<Func<SyncTweets, Task>>>()), Times.Once);
             Assert.True(result.IsSuccess);
         }
 
@@ -83,7 +82,7 @@
             var command = new EnableTweetsSyncCommand("account", "token");
 
             _viewTemplateRepo.Setup(x => x.AnyWithFiltersDisabled(It.IsAny<System.Linq.Expressions.Expression<Func<ViewTemplate, bool>>>())).Returns(false);
-            _jobService.Setup(x => x.ScheduleJob(It.IsAny<string>(), It.IsAny<System.Linq.Expressions.Expression<Func<Task>>>(), It.IsAny<Func<string>>()))
+            _jobService.Setup(x => x.ScheduleJob<SyncTweets>(It.IsAny<string>(), It.IsAny<Expression<Func<SyncTweets, Task>>>(), It.IsAny<Func<string>>()))
                 .Throws(new Exception("Schedule error"));
 
             // Act
@@ -162,7 +161,7 @@
             var command = new EnableTweetsSyncCommand("testuser", "token");
 
             _viewTemplateRepo.Setup(x => x.AnyWithFiltersDisabled(It.IsAny<System.Linq.Expressions.Expression<Func<ViewTemplate, bool>>>())).Returns(false);
-            _jobService.Setup(x => x.QueueJob(It.IsAny<System.Linq.Expressions.Expression<Func<Task>>>())).Throws(new Exception("Queue error"));
+            _jobService.Setup(x => x.QueueJob<SyncTweets>(It.IsAny<Expression<Func<SyncTweets, Task>>>())).Throws(new Exception("Queue error"));
 
             // Act
             var result = await handler.Handle(command, CancellationToken.None);
