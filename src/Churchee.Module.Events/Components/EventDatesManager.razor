@@ -4,41 +4,38 @@
 @using Radzen
 @using Radzen.Blazor
 
-@foreach(var item in Dates.OrderBy(o => o.Start))
-{
-    <RadzenStack Orientation="Orientation.Horizontal">
 
-        <div>
-            @if(item.Start != null)
-            {
-                <div>@item.Start.Value.ToString("dd/MM/yyyy HH:mm")</div>
-            }
-        </div>
-        <div>
+<RadzenStack Orientation="Orientation.Horizontal">
 
-            @if (item.End != null)
-            {
-                <div>@item.End.Value.ToString("dd/MM/yyyy HH:mm")</div>
-            }
-        </div>
+    <RadzenFormField Text="Start" AllowFloatingLabel="false">
 
-        <RadzenButton Icon="delete" class="btn-remove" ButtonStyle="ButtonStyle.Danger" Click="() => RemoveEntry(item)"></RadzenButton>
+        <RadzenDatePicker Max=@End?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=Start />
+
+    </RadzenFormField>
+
+    <RadzenFormField Text="End" AllowFloatingLabel="false">
+
+        <RadzenDatePicker Min=@Start?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=End />
+
+    </RadzenFormField>
 
 
-    </RadzenStack>
-}
-
-
-    <RadzenStack Orientation="Orientation.Horizontal">
-
-    <RadzenDatePicker Max=@End?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=Start />
-    <RadzenDatePicker Min=@Start?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=End />
-
-    <RadzenButton ButtonStyle="ButtonStyle.Success" class="btn-add" Icon="add" Click="AddEntry"></RadzenButton>
+    <RadzenButton ButtonStyle="ButtonStyle.Success" class="btn-add rz-mt-2" Icon="add" Click="AddEntry"></RadzenButton>
 
 </RadzenStack>
 
 
+<RadzenDataGrid @ref="radzenGrid" Data="@Dates" IsLoading="false" AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="false" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="EventDateModel">
+    <Columns>
+        <RadzenDataGridColumn TItem="EventDateModel" Property="Start" Title="Start" Visible="true" FormatString="{0:dd/MM/yyyy}" SortOrder="SortOrder.Ascending" />
+        <RadzenDataGridColumn TItem="EventDateModel" Property="End" Title="End" Visible="true" FormatString="{0:dd/MM/yyyy}" />
+        <RadzenDataGridColumn TItem="EventDateModel" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
+            <Template Context="data">
+                <RadzenButton Icon="delete" class="delete-row" ButtonStyle="ButtonStyle.Danger" Click="() => RemoveEntry(data)"></RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
 
 @code {
 
@@ -48,10 +45,12 @@
     public DateTime? Start { get; set; }
     public DateTime? End { get; set; }
 
+    RadzenDataGrid<EventDateModel> radzenGrid = default!;
+
     [Inject]
     protected NotificationService NotificationService { get; set; } = default!;
 
-    public void AddEntry()
+    private async Task AddEntry()
     {
         if (Start == null)
         {
@@ -71,14 +70,14 @@
         Start = null;
         End = null;
 
-        StateHasChanged();
+        await radzenGrid.Reload();
     }
 
-    public void RemoveEntry(EventDateModel item)
+    private async Task RemoveEntry(EventDateModel item)
     {
         Dates.Remove(item);
 
-        StateHasChanged();
+        await radzenGrid.Reload();
     }
 
 }

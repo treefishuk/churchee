@@ -10,7 +10,7 @@
 @inject IConfiguration Config
 
 <CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">
-    <RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="true" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" LoadChildData="@LoadChildData" RowRender="@RowRender">
+    <RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" LoadChildData="@LoadChildData" RowRender="@RowRender">
         <Columns>
 
             @if (ShowDetail)
@@ -204,6 +204,9 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public bool AllowColumnPicking { get; set; } = true;
 
     RadzenDataGrid<TItem> radzenGrid = default!;
 
