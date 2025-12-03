@@ -42,8 +42,17 @@
 
 <RadzenDataGrid @ref="radzenGrid" Data="@Dates" IsLoading="false" AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="false" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="EventDateModel">
     <Columns>
-        <RadzenDataGridColumn TItem="EventDateModel" Property="Start" Title="Start" Visible="true" FormatString="{0:dd/MM/yyyy}" SortOrder="SortOrder.Ascending" />
-        <RadzenDataGridColumn TItem="EventDateModel" Property="End" Title="End" Visible="true" FormatString="{0:dd/MM/yyyy}" />
+
+        <RadzenDataGridColumn TItem="EventDateModel" Property="Start" Title="Start" SortOrder="SortOrder.Ascending">
+            <Template Context="data">
+                @FormatWithOrdinal(data.Start)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="EventDateModel" Property="End" Title="End">
+            <Template Context="data">
+                @FormatWithOrdinal(data.End)
+            </Template>
+        </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="EventDateModel" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
             <Template Context="data">
                 <RadzenButton Icon="delete" class="delete-row" ButtonStyle="ButtonStyle.Danger" Click="() => RemoveEntry(data)"></RadzenButton>
@@ -92,6 +101,37 @@
 
     }
 
+
+    private static string FormatWithOrdinal(DateTime? dt)
+    {
+        if (!dt.HasValue)
+        {
+            return string.Empty;
+        }
+
+        var d = dt.Value;
+        var day = d.Day;
+        var rem100 = day % 100;
+        string suffix;
+
+        if (rem100 >= 11 && rem100 <= 13)
+        {
+            suffix = "th";
+        }
+        else
+        {
+            suffix = (day % 10) switch
+            {
+                1 => "st",
+                2 => "nd",
+                3 => "rd",
+                _ => "th"
+            };
+        }
+
+        return $"{d:dddd} {day}{suffix} {d:MMMM} @ {d:HH:mm}";
+    }
+
     private async Task AddDates()
     {
         // single entry
@@ -119,11 +159,40 @@
                 break;
 
             case "Month":
-                while (startValue <= finalValue)
+
+                // Determine weekday and ordinal (e.g., "first Sunday") relative to the start date
+                var originalDayOfWeek = startValue.DayOfWeek;
+                var ordinal = ((startValue.Day - 1) / 7) + 1; // 1 = first, 2 = second, etc.
+                var timeOfDay = startValue.TimeOfDay;
+
+                var current = startValue;
+
+                while (current <= finalValue)
                 {
-                    var occEnd = duration.HasValue ? startValue + duration.Value : (DateTime?)null;
-                    Dates.Add(new EventDateModel(startValue, occEnd));
-                    startValue = startValue.AddMonths(1);
+                    var occEnd = duration.HasValue ? current + duration.Value : (DateTime?)null;
+                    Dates.Add(new EventDateModel(current, occEnd));
+
+                    // compute candidate for same ordinal weekday in next months, skipping months where it doesn't exist
+                    var nextMonth = current.AddMonths(1);
+                    DateTime? candidate = null;
+
+                    while (nextMonth <= finalValue && candidate == null)
+                    {
+                        candidate = GetNthWeekdayOfMonth(nextMonth.Year, nextMonth.Month, originalDayOfWeek, ordinal, timeOfDay);
+                        if (candidate == null)
+                        {
+                            // skip this month and try the following month
+                            nextMonth = nextMonth.AddMonths(1);
+                        }
+                    }
+
+                    if (!candidate.HasValue)
+                    {
+                        // no further occurrence before finalValue
+                        break;
+                    }
+
+                    current = candidate.Value;
                 }
 
                 break;
@@ -164,5 +233,34 @@
 
         await radzenGrid.Reload();
     }
+
+    private static DateTime? GetNthWeekdayOfMonth(int year, int month, DayOfWeek dow, int n, TimeSpan timeOfDay)
+    {
+        if (n <= 0)
+        {
+            return null;
+        }
+
+        var firstOfMonth = new DateTime(year, month, 1);
+        var diff = ((int)dow - (int)firstOfMonth.DayOfWeek + 7) % 7;
+        var day = 1 + diff + (n - 1) * 7;
+
+        if (day > DateTime.DaysInMonth(year, month))
+        {
+            return null;
+        }
+
+        return new DateTime(year, month, day).Add(timeOfDay);
+    }
+
+    private static DateTime GetLastWeekdayOfMonth(int year, int month, DayOfWeek dow, TimeSpan timeOfDay)
+    {
+        var days = DateTime.DaysInMonth(year, month);
+        var last = new DateTime(year, month, days);
+        var diff = ((int)last.DayOfWeek - (int)dow + 7) % 7;
+        var day = days - diff;
+        return new DateTime(year, month, day).Add(timeOfDay);
+    }
+
 
 }
