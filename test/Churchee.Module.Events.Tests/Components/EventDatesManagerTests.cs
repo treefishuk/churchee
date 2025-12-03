@@ -1,11 +1,12 @@
 ﻿using Bunit;
 using Churchee.Module.Events.Components;
 using Churchee.Module.Events.Models;
+using Churchee.Test.Helpers.Blazor;
 using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Events.Tests.Components
 {
-    public class EventDatesManagerTests : BunitContext
+    public class EventDatesManagerTests : BasePageTests
     {
         [Fact]
         public void EventDatesManager_AddDate_AddsDate()
@@ -43,7 +44,7 @@ namespace Churchee.Module.Events.Tests.Components
             cut.Instance.Start = DateTime.Now;
             cut.Instance.End = DateTime.Now;
 
-            cut.Find(".btn-remove").Click();
+            cut.Find(".delete-row").Click();
 
             //assert
             cut.Instance.Dates.Count.Should().Be(0);
