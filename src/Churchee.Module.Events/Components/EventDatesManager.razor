@@ -19,6 +19,21 @@
 
     </RadzenFormField>
 
+    <RadzenToggleButton Style="margin-top: 10px;" TValue="bool" @bind-Value="Recouring" Text="@(Recouring ? "Add Single" : "Add Multiple")"></RadzenToggleButton>
+
+    @if(Recouring){
+
+    <RadzenFormField Text="Repeat" AllowFloatingLabel="false">
+            <RadzenDropDown @bind-value=SelectedRecourance Data="TimeSegments" Placeholder="Every" TextProperty="Title" ValueProperty="Value"></RadzenDropDown>
+     </RadzenFormField>
+
+    <RadzenFormField Text="Until" AllowFloatingLabel="false">
+
+        <RadzenDatePicker Min=@End?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=Final />
+        
+    </RadzenFormField>
+
+    }
 
     <RadzenButton ButtonStyle="ButtonStyle.Success" class="btn-add rz-mt-2" Icon="add" Click="AddEntry"></RadzenButton>
 
@@ -44,8 +59,15 @@
 
     public DateTime? Start { get; set; }
     public DateTime? End { get; set; }
+    public DateTime? Final { get; set; }
+
+    private List<DropdownInput> TimeSegments = new();
+
+    public string SelectedRecourance { get; set; }
 
     RadzenDataGrid<EventDateModel> radzenGrid = default!;
+
+    public bool Recouring { get; set; }
 
     [Inject]
     protected NotificationService NotificationService { get; set; } = default!;
@@ -65,12 +87,75 @@
             return;
         }
 
-        Dates.Add(new EventDateModel(Start, End));
+        await AddDates();
+        await ResetFormAndReloadGrid();
 
-        Start = null;
-        End = null;
+    }
+
+    private async Task AddDates()
+    {
+        // single entry
+        if (!Recouring)
+        {
+            Dates.Add(new EventDateModel(Start, End));
+            return;
+        }
+
+        // recurring entries
+        var startValue = Start!.Value;
+        var finalValue = Final!.Value;
+        var duration = End.HasValue ? End.Value - Start.Value : (TimeSpan?)null;
+
+        switch (SelectedRecourance)
+        {
+            case "Week":
+                while (startValue <= finalValue)
+                {
+                    var occEnd = duration.HasValue ? startValue + duration.Value : (DateTime?)null;
+                    Dates.Add(new EventDateModel(startValue, occEnd));
+                    startValue = startValue.AddDays(7);
+                }
+
+                break;
+
+            case "Month":
+                while (startValue <= finalValue)
+                {
+                    var occEnd = duration.HasValue ? startValue + duration.Value : (DateTime?)null;
+                    Dates.Add(new EventDateModel(startValue, occEnd));
+                    startValue = startValue.AddMonths(1);
+                }
+
+                break;
+
+            default:
+                NotificationService.Notify(NotificationSeverity.Warning, "Recurrence", $"Unknown recurrence '{SelectedRecourance}'.");
+                break;
+        }
 
         await radzenGrid.Reload();
+    }
+
+
+    private async Task ResetFormAndReloadGrid()
+    {
+        Start = null;
+        End = null;
+        Final = null;
+        SelectedRecourance = string.Empty;
+
+        await radzenGrid.Reload();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        TimeSegments = new List<DropdownInput>
+        {
+            new DropdownInput { Title = "Week", Value = "Week" },
+            new DropdownInput { Title = "Month", Value = "Month" }
+        };
     }
 
     private async Task RemoveEntry(EventDateModel item)
