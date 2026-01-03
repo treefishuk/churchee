@@ -9,7 +9,7 @@
 
 <RadzenFormField Text=@PropertyInfo.Name.ToSentence()>
     <ChildContent>
-        <RadzenTextBox Name="@Name" Value="@Value" @oninput="(e) => OnFieldChange(PropertyInfo, e.Value?.ToString())" />
+        <RadzenTextBox Name="@(PropertyInfo.Name)" Value="@Value" Change=@((value) => OnFieldChange(PropertyInfo, value)) @onblur=@((value) => OnFieldChange(PropertyInfo, PropertyInfo.GetValue(InputModel))) />
     </ChildContent>
     <Helper>
         <small class="rz-color-base-600">slug: @Slug</small>
@@ -56,7 +56,6 @@
 
     public async Task OnFieldChange(PropertyInfo info, object? value)
     {
-
         info.SetValue(InputModel, value);
 
         // Get the FieldIdentifier with the EditContext from the field name

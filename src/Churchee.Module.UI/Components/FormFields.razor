@@ -346,13 +346,6 @@
         }
     }
 
-    public async Task OnTextWithSlugFieldChange(PropertyInfo info, object value)
-    {
-        info.SetValue(InputModel, value);
-
-        await OnValueChanged.InvokeAsync(null);
-    }
-
     public async Task OnDropdownFieldChange(PropertyInfo info, object value)
     {
         var dropdown = info.GetValue(InputModel) as DropdownInput ?? new DropdownInput();
