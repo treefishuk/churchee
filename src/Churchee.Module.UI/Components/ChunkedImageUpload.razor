@@ -37,7 +37,7 @@
                     <ChildContent>
 
                     <div style="display: flex; align-items: center;">
-                            <RadzenTextBox Style="width: 100%" @oninput="OnDescriptionInput" Value="@Model.Description" />
+                            <RadzenTextBox Style="width: 100%" @bind-Value="@Model.Description" Change="OnDescriptionChange"/>
                             <RadzenProgressBarCircular Visible="generating" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Style="margin-right: 1rem">
                                 <Template>AI</Template> 
                             </RadzenProgressBarCircular>

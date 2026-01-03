@@ -83,13 +83,11 @@ namespace Churchee.Module.UI.Components
             }
         }
 
-        private void OnDescriptionInput(ChangeEventArgs e)
+        private void OnDescriptionChange()
         {
-            Model.Description = e.Value?.ToString() ?? string.Empty;
             _descriptionCts?.Cancel();
             generating = false;
             StateHasChanged();
-            ModelChanged.InvokeAsync(Model);
         }
 
         private async Task<string> UploadTempFileInChunksAsync(IBrowserFile file, CancellationToken cancellationToken = default)
