@@ -163,25 +163,9 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
             return [.. data.Select(x => new GetDashboardDataResponseItem
             {
-                Name = GetHost(x.Key),
+                Name = x.Key,
                 Count = Math.Round((double)x.Count / total * 100, 2)
             })];
         }
-
-        private static string GetHost(string referrer)
-        {
-            try
-            {
-                return new Uri(referrer).Host;
-            }
-            catch (UriFormatException)
-            {
-                // Handle the invalid URL situation here
-                // For example, return a default value or a specific string
-                return "Invalid URL";
-            }
-        }
-
-
     }
 }
