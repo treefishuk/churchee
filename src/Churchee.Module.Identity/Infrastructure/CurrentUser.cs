@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,8 +17,24 @@ namespace Churchee.Module.Identity.Infrastructure
             _userManager = userManager;
         }
 
-
         public async Task<Guid> GetApplicationTenantId()
+        {
+            var claims = await GetClaims();
+
+            var claim = claims.FirstOrDefault(w => w.Type == "ActiveTenantId");
+
+            return claim != null ? Guid.Parse(claim.Value) : Guid.Empty;
+        }
+
+        public async Task<string> GetApplicationTenantName()
+        {
+            var claims = await GetClaims();
+
+            var claim = claims.FirstOrDefault(w => w.Type == "ActiveTenantName");
+
+            return claim?.Value;
+        }
+        private async Task<IList<Claim>> GetClaims()
         {
             string id = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -25,14 +42,7 @@ namespace Churchee.Module.Identity.Infrastructure
 
             var claims = await _userManager.GetClaimsAsync(user);
 
-            var claim = claims.FirstOrDefault(w => w.Type == "ActiveTenantId");
-
-            if (claim != null)
-            {
-                return Guid.Parse(claim.Value);
-            }
-
-            return Guid.Empty;
+            return claims;
         }
 
         public bool HasFeature(string featureName)

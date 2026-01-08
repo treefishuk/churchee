@@ -117,7 +117,7 @@
                             }
                             if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                             {
-                            <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) @onblur=@((value) => OnFieldChange(prop, prop.GetValue(InputModel))) />
+                                <RadzenTextBox Name="@(prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(prop, value)) />
                             }
                             if (prop.PropertyType == typeof(List<string>))
                             {
@@ -134,7 +134,7 @@
 
                                             string style = i < list.Count - 1 ? "border-bottom: 1px solid #e0e9f2; border-radius:0" : string.Empty;
 
-                                            <RadzenTextBox Name="@name" Value="@list[i]" Change=@((value) => OnFieldChange(prop, localIndex, value)) Style="@style" @onblur="((value) => OnFieldChange(prop, localIndex, prop.GetValue(InputModel)?.ToString() ?? string.Empty))" />
+                                            <RadzenTextBox Name="@name" Value="@list[i]" Change=@((value) => OnFieldChange(prop, localIndex, value)) Style="@style" />
                                       }
 
                                     </RadzenStack>

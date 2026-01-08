@@ -7,6 +7,8 @@ namespace Churchee.Common.Abstractions.Auth
     {
         Task<Guid> GetApplicationTenantId();
 
+        Task<string> GetApplicationTenantName();
+
         bool HasFeature(string featureName);
 
         bool HasRole(string roleName);
