@@ -59,6 +59,8 @@
 
         var activeTenant = await CurrentUser.GetApplicationTenantId();
 
+        var activeTenantName = await CurrentUser.GetApplicationTenantName();
+
         var newUser = new ApplicationUser(activeTenant, InputModel.Email, InputModel.Email);
 
         var createUserResult = await UserManager.CreateAsync(newUser);
@@ -77,7 +79,7 @@
         var rolesNames = InputModel.Roles.Items.Where(w => InputModel.Roles.SelectedValues.Contains(w.Value)).Select(s => s.Text).ToList();
 
         await UserManager.AddClaimAsync(newUser, new Claim("ActiveTenantId", activeTenant.ToString()));
-
+        await UserManager.AddClaimAsync(newUser, new Claim("ActiveTenantName", activeTenantName));
         await UserManager.AddToRolesAsync(newUser, rolesNames);
 
         var addPasswordResult = await UserManager.AddPasswordAsync(newUser, InputModel.Password);
