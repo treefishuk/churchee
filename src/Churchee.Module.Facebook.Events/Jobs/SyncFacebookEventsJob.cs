@@ -157,8 +157,6 @@ namespace Churchee.Module.Facebook.Events.Jobs
         {
             string fileName = Path.GetFileName(facebookEvent.ImageUrl.Split('?')[0]);
 
-            string fileExt = Path.GetExtension(fileName);
-
             var response = await _clientFactory.CreateClient().GetAsync($"{facebookEvent.ImageUrl}", cancellationToken);
 
             response.EnsureSuccessStatusCode();

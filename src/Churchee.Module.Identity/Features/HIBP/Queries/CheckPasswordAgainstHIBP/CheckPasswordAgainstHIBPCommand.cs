@@ -3,9 +3,9 @@ using MediatR;
 
 namespace Churchee.Module.Identity.Features.HIBP.Queries
 {
-    public class CheckPasswordAgainstHIBPCommand : IRequest<CommandResponse>
+    public class CheckPasswordAgainstHibpCommand : IRequest<CommandResponse>
     {
-        public CheckPasswordAgainstHIBPCommand(string password)
+        public CheckPasswordAgainstHibpCommand(string password)
         {
             Password = password;
         }
