@@ -79,7 +79,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
                 return RedirectToPage("./ResetPasswordConfirmation");
             }
 
-            var hibpResult = await _mediator.Send(new CheckPasswordAgainstHIBPCommand(Input.Password));
+            var hibpResult = await _mediator.Send(new CheckPasswordAgainstHibpCommand(Input.Password));
 
             if (!hibpResult.IsSuccess)
             {

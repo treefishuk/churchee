@@ -29,12 +29,7 @@ namespace Churchee.Data.EntityFramework.Admin
         /// Gets/sets whether the db context as been initialized. This
         /// is only performed once in the application lifecycle.
         /// </summary>
-        private static volatile bool _isInitialized = false;
-
-        /// <summary>
-        /// The object mutex used for initializing the context.
-        /// </summary>
-        private static readonly object _mutex = new();
+        private static int _isInitialized = 0;
 
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
@@ -47,18 +42,11 @@ namespace Churchee.Data.EntityFramework.Admin
             _tenantResolver = tenantResolver;
             _configuration = configuration;
 
-            if (!_isInitialized)
+            // Atomically set _isInitialized to 1 and run initialization only for the first caller.
+            if (Interlocked.Exchange(ref _isInitialized, 1) == 0)
             {
-                lock (_mutex)
-                {
-                    if (!_isInitialized)
-                    {
-                        // Migrate database
-                        Database.EnsureCreated();
-
-                        _isInitialized = true;
-                    }
-                }
+                // Migrate database (requires instance members, so must run here)
+                Database.EnsureCreated();
             }
         }
 

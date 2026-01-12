@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace Churchee.Module.Identity.Features.HIBP.Queries.CheckPasswordAgainstHIBP
 {
-    public class CheckPasswordAgainstHIBPCommandHandler : IRequestHandler<CheckPasswordAgainstHIBPCommand, CommandResponse>
+    public class CheckPasswordAgainstHibpCommandHandler : IRequestHandler<CheckPasswordAgainstHibpCommand, CommandResponse>
     {
         private readonly ILogger _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public CheckPasswordAgainstHIBPCommandHandler(IHttpClientFactory httpClientFactory, ILogger<CheckPasswordAgainstHIBPCommandHandler> logger)
+        public CheckPasswordAgainstHibpCommandHandler(IHttpClientFactory httpClientFactory, ILogger<CheckPasswordAgainstHibpCommandHandler> logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
 
         }
 
-        public async Task<CommandResponse> Handle(CheckPasswordAgainstHIBPCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(CheckPasswordAgainstHibpCommand request, CancellationToken cancellationToken)
         {
 
             var commandResponse = new CommandResponse();

@@ -3,7 +3,7 @@ using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgainstHIBP
 {
-    public class CheckPasswordAgainstHIBPCommandTests
+    public class CheckPasswordAgainstHibpCommandTests
     {
         [Fact]
         public void Constructor_ShouldInitializePasswordProperty()
@@ -12,7 +12,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
             var password = "TestPassword";
 
             // Act
-            var command = new CheckPasswordAgainstHIBPCommand(password);
+            var command = new CheckPasswordAgainstHibpCommand(password);
 
             // Assert
             command.Password.Should().Be(password);
@@ -23,7 +23,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         {
 
             // Act
-            var command = new CheckPasswordAgainstHIBPCommand(null);
+            var command = new CheckPasswordAgainstHibpCommand(null);
 
             // Assert
             command.Password.Should().BeNull();
@@ -33,7 +33,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         public void Constructor_ShouldInitializeEmptyPasswordProperty_WhenPasswordIsEmpty()
         {
             // Act
-            var command = new CheckPasswordAgainstHIBPCommand(string.Empty);
+            var command = new CheckPasswordAgainstHibpCommand(string.Empty);
 
             // Assert
             command.Password.Should().Be(string.Empty);

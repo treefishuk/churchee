@@ -7,23 +7,23 @@ using System.Net;
 
 namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgainstHIBP
 {
-    public class CheckPasswordAgainstHIBPCommandHandlerTests
+    public class CheckPasswordAgainstHibpCommandHandlerTests
     {
         private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
-        private readonly CheckPasswordAgainstHIBPCommandHandler _handler;
+        private readonly CheckPasswordAgainstHibpCommandHandler _handler;
 
-        public CheckPasswordAgainstHIBPCommandHandlerTests()
+        public CheckPasswordAgainstHibpCommandHandlerTests()
         {
             _httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            var logger = new Mock<ILogger<CheckPasswordAgainstHIBPCommandHandler>>();
-            _handler = new CheckPasswordAgainstHIBPCommandHandler(_httpClientFactoryMock.Object, logger.Object);
+            var logger = new Mock<ILogger<CheckPasswordAgainstHibpCommandHandler>>();
+            _handler = new CheckPasswordAgainstHibpCommandHandler(_httpClientFactoryMock.Object, logger.Object);
         }
 
         [Fact]
         public async Task Handle_ShouldReturnError_WhenPasswordIsEmpty()
         {
             // Arrange
-            var command = new CheckPasswordAgainstHIBPCommand(string.Empty);
+            var command = new CheckPasswordAgainstHibpCommand(string.Empty);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -36,7 +36,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         public async Task Handle_ShouldReturnError_WhenApiCallFails()
         {
             // Arrange
-            var command = new CheckPasswordAgainstHIBPCommand("password");
+            var command = new CheckPasswordAgainstHibpCommand("password");
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.InternalServerError));
             _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
@@ -51,7 +51,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         public async Task Handle_ShouldReturnError_WhenPasswordIsFoundInHIBP()
         {
             // Arrange
-            var command = new CheckPasswordAgainstHIBPCommand("password");
+            var command = new CheckPasswordAgainstHibpCommand("password");
             var responseContent = "1E4C9B93F3F0682250B6CF8331B7EE68FD8:1000\r\n";
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, responseContent));
             _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
@@ -67,7 +67,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         public async Task Handle_ShouldReturnSuccess_WhenPasswordIsNotFoundInHIBP()
         {
             // Arrange
-            var command = new CheckPasswordAgainstHIBPCommand("password");
+            var command = new CheckPasswordAgainstHibpCommand("password");
             var responseContent = "1F4C9B93F3F0681150B6CF8331B7EE68FD8:0\r\n";
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, responseContent));
             _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);

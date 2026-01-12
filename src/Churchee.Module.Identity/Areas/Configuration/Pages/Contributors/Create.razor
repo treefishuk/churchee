@@ -48,7 +48,7 @@
             return;
         }
 
-        var hibpResult = await Mediator.Send(new CheckPasswordAgainstHIBPCommand(InputModel.Password));
+        var hibpResult = await Mediator.Send(new CheckPasswordAgainstHibpCommand(InputModel.Password));
 
         if (!hibpResult.IsSuccess)
         {

@@ -137,7 +137,8 @@
         // single entry
         if (!Recouring)
         {
-            Dates.Add(new EventDateModel(Start, End));
+            AddSingleDate();
+            await radzenGrid.Reload();
             return;
         }
 
@@ -149,52 +150,11 @@
         switch (SelectedRecourance)
         {
             case "Week":
-                while (startValue <= finalValue)
-                {
-                    var occEnd = duration.HasValue ? startValue + duration.Value : (DateTime?)null;
-                    Dates.Add(new EventDateModel(startValue, occEnd));
-                    startValue = startValue.AddDays(7);
-                }
-
+                AddWeeklyOccurrences(startValue, finalValue, duration);
                 break;
 
             case "Month":
-
-                // Determine weekday and ordinal (e.g., "first Sunday") relative to the start date
-                var originalDayOfWeek = startValue.DayOfWeek;
-                var ordinal = ((startValue.Day - 1) / 7) + 1; // 1 = first, 2 = second, etc.
-                var timeOfDay = startValue.TimeOfDay;
-
-                var current = startValue;
-
-                while (current <= finalValue)
-                {
-                    var occEnd = duration.HasValue ? current + duration.Value : (DateTime?)null;
-                    Dates.Add(new EventDateModel(current, occEnd));
-
-                    // compute candidate for same ordinal weekday in next months, skipping months where it doesn't exist
-                    var nextMonth = current.AddMonths(1);
-                    DateTime? candidate = null;
-
-                    while (nextMonth <= finalValue && candidate == null)
-                    {
-                        candidate = GetNthWeekdayOfMonth(nextMonth.Year, nextMonth.Month, originalDayOfWeek, ordinal, timeOfDay);
-                        if (candidate == null)
-                        {
-                            // skip this month and try the following month
-                            nextMonth = nextMonth.AddMonths(1);
-                        }
-                    }
-
-                    if (!candidate.HasValue)
-                    {
-                        // no further occurrence before finalValue
-                        break;
-                    }
-
-                    current = candidate.Value;
-                }
-
+                AddMonthlyOccurrences(startValue, finalValue, duration);
                 break;
 
             default:
@@ -205,6 +165,59 @@
         await radzenGrid.Reload();
     }
 
+    private void AddSingleDate()
+    {
+        Dates.Add(new EventDateModel(Start, End));
+    }
+
+    private void AddWeeklyOccurrences(DateTime startValue, DateTime finalValue, TimeSpan? duration)
+    {
+        var current = startValue;
+        while (current <= finalValue)
+        {
+            var occEnd = duration.HasValue ? current + duration.Value : (DateTime?)null;
+            Dates.Add(new EventDateModel(current, occEnd));
+            current = current.AddDays(7);
+        }
+    }
+
+    private void AddMonthlyOccurrences(DateTime startValue, DateTime finalValue, TimeSpan? duration)
+    {
+        // Determine weekday and ordinal (e.g., "first Sunday") relative to the start date
+        var originalDayOfWeek = startValue.DayOfWeek;
+        var ordinal = ((startValue.Day - 1) / 7) + 1; // 1 = first, 2 = second, etc.
+        var timeOfDay = startValue.TimeOfDay;
+
+        var current = startValue;
+
+        while (current <= finalValue)
+        {
+            var occEnd = duration.HasValue ? current + duration.Value : (DateTime?)null;
+            Dates.Add(new EventDateModel(current, occEnd));
+
+            // compute candidate for same ordinal weekday in next months, skipping months where it doesn't exist
+            var nextMonth = current.AddMonths(1);
+            DateTime? candidate = null;
+
+            while (nextMonth <= finalValue && candidate == null)
+            {
+                candidate = GetNthWeekdayOfMonth(nextMonth.Year, nextMonth.Month, originalDayOfWeek, ordinal, timeOfDay);
+                if (candidate == null)
+                {
+                    // skip this month and try the following month
+                    nextMonth = nextMonth.AddMonths(1);
+                }
+            }
+
+            if (!candidate.HasValue)
+            {
+                // no further occurrence before finalValue
+                break;
+            }
+
+            current = candidate.Value;
+        }
+    }
 
     private async Task ResetFormAndReloadGrid()
     {
@@ -241,7 +254,7 @@
             return null;
         }
 
-        var firstOfMonth = new DateTime(year, month, 1);
+        var firstOfMonth = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Unspecified);
         var diff = ((int)dow - (int)firstOfMonth.DayOfWeek + 7) % 7;
         var day = 1 + diff + (n - 1) * 7;
 
@@ -250,17 +263,6 @@
             return null;
         }
 
-        return new DateTime(year, month, day).Add(timeOfDay);
+        return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Unspecified).Add(timeOfDay);
     }
-
-    private static DateTime GetLastWeekdayOfMonth(int year, int month, DayOfWeek dow, TimeSpan timeOfDay)
-    {
-        var days = DateTime.DaysInMonth(year, month);
-        var last = new DateTime(year, month, days);
-        var diff = ((int)last.DayOfWeek - (int)dow + 7) % 7;
-        var day = days - diff;
-        return new DateTime(year, month, day).Add(timeOfDay);
-    }
-
-
 }
