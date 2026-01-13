@@ -36,11 +36,18 @@ namespace Churchee.Module.Facebook.Events.Features.Queries
                 throw new MissingConfigurationSettingException(nameof(facebookAppId));
             }
 
+            string facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("Api");
+
+            if (string.IsNullOrEmpty(facebookAppId))
+            {
+                throw new MissingConfigurationSettingException("Facebook:Api");
+            }
+
             string stateId = Guid.NewGuid().ToString();
 
             await _settingStore.AddOrUpdateSetting(settingStateId, applicationTenantId, "FacebookStateId", stateId);
 
-            return $"https://www.facebook.com/v18.0/dialog/oauth?client_id={facebookAppId}&redirect_uri={request.Domain}/management/integrations/facebook-events/auth?state={stateId}";
+            return $"{facebookApiUrl}dialog/oauth?client_id={facebookAppId}&redirect_uri={request.Domain}/management/integrations/facebook-events/auth?state={stateId}";
         }
     }
 }
