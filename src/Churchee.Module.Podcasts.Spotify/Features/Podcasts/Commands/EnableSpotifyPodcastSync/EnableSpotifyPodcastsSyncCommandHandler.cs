@@ -33,12 +33,12 @@ namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnableSpot
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
-        public EnableSpotifyPodcastsSyncCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, IJobService jobService, IHttpClientFactory httpClientFactory, ILogger<EnableSpotifyPodcastsSyncCommandHandler> logger)
+        public EnableSpotifyPodcastsSyncCommandHandler(ICurrentUser currentUser, IStores stores, IImageProcessor imageProcessor, IJobService jobService, IHttpClientFactory httpClientFactory, ILogger<EnableSpotifyPodcastsSyncCommandHandler> logger)
         {
-            _settingStore = settingStore;
+            _settingStore = stores.SettingStore;
             _currentUser = currentUser;
-            _dataStore = dataStore;
-            _blobStore = blobStore;
+            _dataStore = stores.DataStore;
+            _blobStore = stores.BlobStore;
             _imageProcessor = imageProcessor;
             _jobService = jobService;
             _httpClientFactory = httpClientFactory;

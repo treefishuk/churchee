@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 namespace Churchee.Module.Identity.Areas.Account.Pages
 {
     [AllowAnonymous]
-    public class LoginWith2faModel : PageModel
+    public class LoginWith2FaModel : PageModel
     {
         private readonly ChurcheeSignInManager _signInManager;
         private readonly ChurcheeUserManager _userManager;
-        private readonly ILogger<LoginWith2faModel> _logger;
+        private readonly ILogger<LoginWith2FaModel> _logger;
 
-        public LoginWith2faModel(
+        public LoginWith2FaModel(
             ChurcheeSignInManager signInManager,
             ChurcheeUserManager userManager,
-            ILogger<LoginWith2faModel> logger)
+            ILogger<LoginWith2FaModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -94,7 +94,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
                 return Page();
             }
 
-            returnUrl = returnUrl ?? Url.Content("~/management");
+            returnUrl ??= Url.Content("~/management");
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
 
@@ -103,7 +103,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
                 throw new InvalidOperationException("Unable to load two-factor authentication user.");
             }
 
-            var authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+            string authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
 
             var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, Input.RememberMachine);
 

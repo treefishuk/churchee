@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Module.Identity.Abstractions;
+using Churchee.Module.Identity.Options;
 using Churchee.Module.Identity.Requirements;
 using Churchee.Module.Identity.Seed;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,7 @@ namespace Churchee.Module.Identity.Registrations
                     .Build());
 
             serviceCollection.Configure<IdentityOptions>(configuration.GetSection("IdentityOptions"));
+            serviceCollection.Configure<OtpOptions>(configuration.GetSection("Otp"));
         }
     }
 }

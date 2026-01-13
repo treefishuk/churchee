@@ -244,6 +244,9 @@ dotnet_diagnostic.CS8604.severity = warning
 # IDE0058: Expression value is never used
 dotnet_diagnostic.IDE0058.severity = none
 
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = none
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion

@@ -155,8 +155,6 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
         private async Task ConvertImageToLocalImage(Event facebookEvent, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            string fileName = Path.GetFileName(facebookEvent.ImageUrl.Split('?')[0]);
-
             var response = await _clientFactory.CreateClient().GetAsync($"{facebookEvent.ImageUrl}", cancellationToken);
 
             response.EnsureSuccessStatusCode();

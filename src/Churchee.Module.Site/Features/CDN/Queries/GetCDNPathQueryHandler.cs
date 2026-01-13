@@ -4,18 +4,18 @@ using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Site.Features.CDN.Queries
 {
-    public class GetCDNPathQueryHandler : IRequestHandler<GetCDNPathQuery, string>
+    public class GetCdnPathQueryHandler : IRequestHandler<GetCdnPathQuery, string>
     {
         private readonly IConfiguration _configuration;
         private readonly ITenantResolver _tenantResolver;
 
-        public GetCDNPathQueryHandler(IConfiguration configuration, ITenantResolver tenantResolver)
+        public GetCdnPathQueryHandler(IConfiguration configuration, ITenantResolver tenantResolver)
         {
             _configuration = configuration;
             _tenantResolver = tenantResolver;
         }
 
-        public async Task<string> Handle(GetCDNPathQuery request, CancellationToken cancellationToken)
+        public async Task<string> Handle(GetCdnPathQuery request, CancellationToken cancellationToken)
         {
             string urlPrefix = _configuration.GetSection("Images")["Prefix"];
 

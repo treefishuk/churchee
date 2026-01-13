@@ -2,7 +2,7 @@
 
 namespace Churchee.Module.Site.Features.CDN.Queries
 {
-    public class GetCDNPathQuery : IRequest<string>
+    public class GetCdnPathQuery : IRequest<string>
     {
 
     }

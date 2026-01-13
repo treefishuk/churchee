@@ -23,7 +23,7 @@ using Radzen;
 
 namespace Churchee.Presentation.Admin
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -95,7 +95,7 @@ namespace Churchee.Presentation.Admin
                     break;
             }
 
-
+            builder.Services.AddScoped<IStores, Stores>();
             builder.Services.RegisterAllTypes<IMenuRegistration>(ServiceLifetime.Scoped);
             builder.Services.RegisterAllTypes<IScriptRegistrations>(ServiceLifetime.Scoped);
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
