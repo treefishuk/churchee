@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
+using Churchee.Module.Tenancy.Specifications;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Tenancy.Features.Churches.Queries
 {
@@ -16,7 +16,9 @@ namespace Churchee.Module.Tenancy.Features.Churches.Queries
 
         public async Task<string> Handle(GetApplicationNameByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _dataStore.GetRepository<ApplicationTenant>().GetQueryable().Where(w => w.Id == request.ApplicationTenantId).Select(s => s.DevName).FirstOrDefaultAsync(cancellationToken) ?? string.Empty;
+            var specification = new ApplicationTenantByIdSpecification(request.ApplicationTenantId);
+            var repo = _dataStore.GetRepository<ApplicationTenant>();
+            return await repo.FirstOrDefaultAsync(specification, selector => selector.DevName, cancellationToken);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Churchee.Module.Identity.Options
+﻿namespace Churchee.Module.Identity.Configuration
 {
     public class OtpOptions
     {

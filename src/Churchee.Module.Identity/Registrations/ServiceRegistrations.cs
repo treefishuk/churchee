@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Module.Identity.Abstractions;
-using Churchee.Module.Identity.Options;
+using Churchee.Module.Identity.Configuration;
 using Churchee.Module.Identity.Requirements;
 using Churchee.Module.Identity.Seed;
 using Microsoft.AspNetCore.Authorization;

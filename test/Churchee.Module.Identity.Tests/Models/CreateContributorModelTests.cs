@@ -16,8 +16,8 @@ namespace Churchee.Module.Identity.Tests.Models
         {
             var items = new List<MultiSelectItem>
             {
-                new MultiSelectItem(Guid.NewGuid(), "Role1"),
-                new MultiSelectItem(Guid.NewGuid(), "Role2")
+                new(Guid.NewGuid(), "Role1"),
+                new(Guid.NewGuid(), "Role2")
             };
             _roles = new MultiSelect(items);
         }
@@ -31,7 +31,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = GetValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeFalse();
@@ -47,7 +47,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = GetValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeFalse();
@@ -68,7 +68,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = GetValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeFalse();
@@ -84,7 +84,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = GetValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeFalse();
@@ -106,7 +106,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationResults = new List<ValidationResult>();
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeTrue();
