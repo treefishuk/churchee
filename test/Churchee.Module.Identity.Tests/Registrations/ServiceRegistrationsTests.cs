@@ -22,13 +22,16 @@ namespace Churchee.Module.Identity.Tests.Registrations
             // Arrange
             var services = new ServiceCollection();
 
-            var mockConfiguration = new Mock<IConfiguration>();
-            var mockConfigurationSection = new Mock<IConfigurationSection>();
+            var inMemorySettings = new Dictionary<string, string?> {
+                {"IdentityOptions:PasswordOptions:RequiredLength", "200"},
+                {"Otp:AuthenticatorUriFormat", "anyvalue"},
+            };
 
-            mockConfigurationSection.Setup(a => a.Value).Returns("true");
-            mockConfiguration.Setup(a => a.GetSection("IdentityOptions")).Returns(mockConfigurationSection.Object);
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
 
-            services.AddSingleton(mockConfiguration.Object);
+            services.AddSingleton(configuration);
 
             var serviceRegistrations = new ServiceRegistrations();
 

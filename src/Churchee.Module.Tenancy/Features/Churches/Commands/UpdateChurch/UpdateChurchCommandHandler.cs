@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
+using Churchee.Module.Tenancy.Specifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,22 +24,18 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands.UpdateChurch
 
             entity.SetCharityNumber(request.CharityNumber);
 
-            UpdateHosts(request.Id, request.Domains);
+            await UpdateHosts(request.Id, request.Domains, cancellationToken);
 
             await _store.SaveChangesAsync(cancellationToken);
 
             return new CommandResponse();
         }
 
-        private void UpdateHosts(Guid applicationTenantId, List<string> domains)
+        private async Task UpdateHosts(Guid applicationTenantId, List<string> domains, CancellationToken cancellationToken)
         {
             var repo = _store.GetRepository<ApplicationHost>();
 
-            var existingHosts = repo
-                .GetQueryable()
-                .IgnoreQueryFilters()
-                .Where(x => x.ApplicationTenantId == applicationTenantId)
-                .ToList();
+            var existingHosts = await repo.GetListAsync(new ApplicationHostsByApplicationIdSpecification(applicationTenantId), cancellationToken);
 
             // Remove entries from existingHosts whose domain appears in domains
             var domainsSet = domains.Where(d => !string.IsNullOrEmpty(d)).ToHashSet(StringComparer.OrdinalIgnoreCase);

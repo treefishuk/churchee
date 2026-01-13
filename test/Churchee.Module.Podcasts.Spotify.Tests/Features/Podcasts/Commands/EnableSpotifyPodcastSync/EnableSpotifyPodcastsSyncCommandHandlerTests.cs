@@ -23,6 +23,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
 
     public class EnableSpotifyPodcastsSyncCommandHandlerTests
     {
+        private readonly Mock<IStores> _storesMock;
         private readonly Mock<ISettingStore> _settingStoreMock;
         private readonly Mock<IDataStore> _dataStoreMock;
         private readonly Mock<ICurrentUser> _currentUserMock;
@@ -38,6 +39,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
 
         public EnableSpotifyPodcastsSyncCommandHandlerTests()
         {
+            _storesMock = new Mock<IStores>();
             _settingStoreMock = new Mock<ISettingStore>();
             _dataStoreMock = new Mock<IDataStore>();
             _currentUserMock = new Mock<ICurrentUser>();
@@ -55,11 +57,13 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Commands.Enab
 
             var httpClientFactory = new TestHttpClientFactory(_mockHttpMessageHandler);
 
+            _storesMock.Setup(s => s.SettingStore).Returns(_settingStoreMock.Object);
+            _storesMock.Setup(s => s.DataStore).Returns(_dataStoreMock.Object);
+            _storesMock.Setup(s => s.BlobStore).Returns(_blobStoreMock.Object);
+
             _handler = new EnableSpotifyPodcastsSyncCommandHandler(
-                _settingStoreMock.Object,
                 _currentUserMock.Object,
-                _dataStoreMock.Object,
-                _blobStoreMock.Object,
+                _storesMock.Object,
                 _IImageProcessorMock.Object,
                 _jobServiceMock.Object,
                 httpClientFactory,

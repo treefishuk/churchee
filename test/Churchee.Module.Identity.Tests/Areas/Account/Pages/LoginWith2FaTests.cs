@@ -17,21 +17,21 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
 
         private readonly Mock<ChurcheeSignInManager> _signInManagerMock;
         private readonly Mock<ChurcheeUserManager> _userManagerMock;
-        private readonly Mock<ILogger<LoginWith2faModel>> _loggerMock;
+        private readonly Mock<ILogger<LoginWith2FaModel>> _loggerMock;
         private readonly Mock<IUrlHelper> _urlHelperMock;
         private readonly Mock<HttpContext> _httpContextMock;
 
-        private readonly LoginWith2faModel _model;
+        private readonly LoginWith2FaModel _model;
 
         public LoginWith2faModelTests()
         {
             _signInManagerMock = new Mock<ChurcheeSignInManager>();
             _userManagerMock = ChurcheeManagerHelpers.CreateMockChurcheeUserManager();
             _signInManagerMock = ChurcheeManagerHelpers.CreateMockChurcheeSignInManager(_userManagerMock.Object);
-            _loggerMock = new Mock<ILogger<LoginWith2faModel>>();
+            _loggerMock = new Mock<ILogger<LoginWith2FaModel>>();
             _urlHelperMock = new Mock<IUrlHelper>();
             _httpContextMock = new Mock<HttpContext>();
-            _model = new LoginWith2faModel(_signInManagerMock.Object, _userManagerMock.Object, _loggerMock.Object)
+            _model = new LoginWith2FaModel(_signInManagerMock.Object, _userManagerMock.Object, _loggerMock.Object)
             {
                 Url = _urlHelperMock.Object,
                 PageContext = new PageContext
@@ -86,7 +86,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
         public async Task OnPostAsync_UserNotFound_Throws()
         {
             // Arrange
-            _model.Input = new LoginWith2faModel.InputModel { TwoFactorCode = "123456", RememberMachine = false };
+            _model.Input = new LoginWith2FaModel.InputModel { TwoFactorCode = "123456", RememberMachine = false };
             _signInManagerMock.Setup(m => m.GetTwoFactorAuthenticationUserAsync())
                 .ReturnsAsync((ApplicationUser?)null);
 
@@ -99,7 +99,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
         {
             // Arrange
             var fakeUser = new ApplicationUser(Guid.NewGuid(), string.Empty, string.Empty);
-            _model.Input = new LoginWith2faModel.InputModel { TwoFactorCode = "123456", RememberMachine = false };
+            _model.Input = new LoginWith2FaModel.InputModel { TwoFactorCode = "123456", RememberMachine = false };
             _signInManagerMock.Setup(m => m.GetTwoFactorAuthenticationUserAsync())
                 .ReturnsAsync(fakeUser);
             _signInManagerMock.Setup(m => m.TwoFactorAuthenticatorSignInAsync(It.IsAny<string>(), false, false))
@@ -119,7 +119,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
         {
             // Arrange
             var fakeUser = new ApplicationUser(Guid.NewGuid(), string.Empty, string.Empty);
-            _model.Input = new LoginWith2faModel.InputModel { TwoFactorCode = "123456", RememberMachine = false };
+            _model.Input = new LoginWith2FaModel.InputModel { TwoFactorCode = "123456", RememberMachine = false };
             _signInManagerMock.Setup(m => m.GetTwoFactorAuthenticationUserAsync())
                 .ReturnsAsync(fakeUser);
             _signInManagerMock.Setup(m => m.TwoFactorAuthenticatorSignInAsync(It.IsAny<string>(), false, false))
@@ -139,7 +139,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
         {
             // Arrange
             var fakeUser = new ApplicationUser(Guid.NewGuid(), string.Empty, string.Empty);
-            _model.Input = new LoginWith2faModel.InputModel { TwoFactorCode = "badcode", RememberMachine = false };
+            _model.Input = new LoginWith2FaModel.InputModel { TwoFactorCode = "badcode", RememberMachine = false };
             _signInManagerMock.Setup(m => m.GetTwoFactorAuthenticationUserAsync())
                 .ReturnsAsync(fakeUser);
             _signInManagerMock.Setup(m => m.TwoFactorAuthenticatorSignInAsync(It.IsAny<string>(), false, false))

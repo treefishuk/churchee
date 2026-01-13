@@ -26,14 +26,15 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var domain = "https://example.com";
-            var pageId = "page123";
-            var facebookAppId = "fb-app-id";
+            string domain = "https://example.com";
+            string pageId = "page123";
+            string facebookAppId = "fb-app-id";
             _currentUserMock.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(tenantId);
 
             var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
             {
-                { "facebookAppId", facebookAppId }
+                { "facebookAppId", facebookAppId },
+                { "Facebook:Api", "https://www.facebook.com/v18.0/" },
             };
 
             var configuration = new ConfigurationBuilder()
@@ -45,7 +46,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             var query = new GetAuthUrlQuery(domain, pageId);
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            string result = await handler.Handle(query, CancellationToken.None);
 
             // Assert
             _settingStoreMock.Verify(x =>

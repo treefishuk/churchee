@@ -15,17 +15,17 @@ else
      <RadzenRow Gap="2rem" RowGap="2rem" class="rz-m-0 rz-m-md-12">
 
         <RadzenColumn Size="12" SizeMD="4">
-                    <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+                    <EditForm Model="@InputModel" OnValidSubmit="OnValidSubmit">
                         <DataAnnotationsValidator />
 
                         <RadzenStack>
 
                             <RadzenFormField Text="New Email">
                                 <ChildContent>
-                                    <RadzenTextBox @bind-Value="_model.NewEmail" id="floatingCurrentEmail" />
+                                    <RadzenTextBox @bind-Value="InputModel.NewEmail" id="floatingCurrentEmail" />
                                 </ChildContent>
                                 <Helper>
-                                    <ValidationMessage For="@(() => _model.NewEmail)" />
+                                    <ValidationMessage For="@(() => InputModel.NewEmail)" />
                                 </Helper>
                             </RadzenFormField>
 
@@ -60,7 +60,7 @@ else
 
     private ApplicationUser _user;
 
-    private ChangeEmailModel _model = new();
+    public ChangeEmailModel InputModel { get; set; } = new();
 
     private bool _isLoading = false;
 
@@ -77,16 +77,16 @@ else
 
         try
         {
-            var isEmailRegistered = await _userManager.FindByEmailAsync(_model.NewEmail);
+            var isEmailRegistered = await _userManager.FindByEmailAsync(InputModel.NewEmail);
 
             if (isEmailRegistered != null)
             {
                 _notificationService.Notify(NotificationSeverity.Error, "This Email cannot be used");
 
             }
-            else if (_model.NewEmail != _user.Email)
+            else if (InputModel.NewEmail != _user.Email)
             {
-                await SendEmailChangeConfirmationAsync(_user, _model.NewEmail);
+                await SendEmailChangeConfirmationAsync(_user, InputModel.NewEmail);
 
                 _notificationService.Notify(NotificationSeverity.Info, "Check Your Inbox To Confirm Email Change");
             }

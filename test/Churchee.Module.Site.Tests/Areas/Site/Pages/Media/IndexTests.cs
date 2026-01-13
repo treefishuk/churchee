@@ -19,7 +19,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Media
             var data = new List<GetMediaFoldersQueryResponseItem>();
 
             MockMediator.Setup(s => s.Send(It.IsAny<GetMediaFoldersQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
-            MockMediator.Setup(s => s.Send(It.IsAny<GetCDNPathQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(string.Empty);
+            MockMediator.Setup(s => s.Send(It.IsAny<GetCdnPathQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(string.Empty);
 
             SetInitialUrl<Index>();
 

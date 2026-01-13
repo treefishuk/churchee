@@ -1,6 +1,7 @@
 ﻿@page "/management/profile/mfa"
 @inherits BasePage
 @using System.Globalization
+@using Churchee.Module.Identity.Configuration
 @using Microsoft.AspNetCore.Identity.UI
 @using Microsoft.Extensions.Logging
 
@@ -37,8 +38,8 @@
                     <div class="col-md-6">
 
 
-                        <EditForm Model="model" OnValidSubmit="SubmitCode">
-                            <RadzenTextBox class="w-100" @bind-Value=@model.Code />
+                        <EditForm Model="InputModel" OnValidSubmit="SubmitCode">
+                            <RadzenTextBox class="w-100" @bind-Value=@InputModel.Code />
                             <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
                         </EditForm>
 
@@ -118,6 +119,9 @@
     private IHttpContextAccessor _context { get; set; }
 
     [Inject]
+    private OtpOptions _otpOptions { get; set; }
+
+    [Inject]
     private IJSRuntime _js { get; set; }
 
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
@@ -130,7 +134,7 @@
 
     public string[] RecoveryCodes { get; set; }
 
-    private EnableMultiFactorModel model = new();
+    public EnableMultiFactorModel InputModel { get; set; } = new();
 
     private ApplicationUser _user;
 
@@ -194,7 +198,7 @@
 
     private string GenerateQrCodeUri(string email, string unformattedKey) => string.Format(
             CultureInfo.InvariantCulture,
-            AuthenticatorUriFormat,
+            _otpOptions.AuthenticatorUriFormat,
             UrlEncoder.Encode("Churchee"),
             UrlEncoder.Encode(email),
             unformattedKey);
@@ -219,7 +223,7 @@
     private async Task SubmitCode()
     {
         // Strip spaces and hyphens
-        var verificationCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
+        var verificationCode = InputModel.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
         var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
             _user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);

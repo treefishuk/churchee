@@ -7,16 +7,7 @@ namespace Churchee.Module.Site.Features.Pages.Validation
 
         internal static bool DoesNotContainScriptTags(List<KeyValuePair<Guid, string>> content)
         {
-            foreach (var item in content)
-            {
-
-                if (ContainsScriptTags(item.Value))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !content.Any(item => ContainsScriptTags(item.Value));
         }
 
         internal static bool DoesNotContainEmbedTags(List<KeyValuePair<Guid, string>> content)
@@ -31,7 +22,7 @@ namespace Churchee.Module.Site.Features.Pages.Validation
 
         internal static bool ContainsNonYouTubeEmbeds(string content)
         {
-            var embedPattern = @"<(iframe|object|embed)[^>]*>";
+            string embedPattern = @"<(iframe|object|embed)[^>]*>";
 
             var matches = Regex.Matches(content, embedPattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
 
