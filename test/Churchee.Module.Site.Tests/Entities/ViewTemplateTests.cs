@@ -10,8 +10,8 @@ namespace Churchee.Module.Site.Tests.Entities
         public void Constructor_SetsProperties()
         {
             // Arrange
-            var location = "/Views/Home/Index.cshtml";
-            var content = "<h1>Hello</h1>";
+            string location = "/Views/Home/Index.cshtml";
+            string content = "<h1>Hello</h1>";
 
             // Act
             var template = new ViewTemplate(TenantId, location, content);
@@ -21,7 +21,6 @@ namespace Churchee.Module.Site.Tests.Entities
             Assert.Equal(location, template.Location);
             Assert.Equal(content, template.Content);
             Assert.Null(template.TenantLocation);
-            Assert.Equal(default(DateTime), template.LastRequested);
         }
 
         [Fact]
@@ -29,7 +28,7 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var template = new ViewTemplate(TenantId, "/Views/Home/Index.cshtml", "old content");
-            var newContent = "<h2>New Content</h2>";
+            string newContent = "<h2>New Content</h2>";
 
             // Act
             template.SetContent(newContent);

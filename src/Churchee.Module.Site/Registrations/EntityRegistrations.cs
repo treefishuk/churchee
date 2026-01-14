@@ -19,6 +19,9 @@ namespace Churchee.Module.Site.Registration
 
                 etb.Property(t => t.Order).HasDefaultValue(10);
 
+                /// Legacy Property - Not Used but kept for backwards compatibility
+                etb.Property<bool>("HasChildren");
+
                 etb.HasMany(m => m.RedirectUrls)
                 .WithOne(o => o.WebContent)
                 .HasForeignKey(f => f.WebContentId)
@@ -122,6 +125,8 @@ namespace Churchee.Module.Site.Registration
                 etb.Property(t => t.Content).HasColumnType(nvarcharMax);
 
                 etb.Property(t => t.TenantLocation).HasComputedColumnSql("'/' + convert(nvarchar(36), ApplicationTenantId) + [Location]");
+
+                etb.Property<DateTime>("LastRequested");
 
                 etb.HasIndex(i => i.TenantLocation);
 

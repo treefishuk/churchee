@@ -60,8 +60,6 @@ namespace Churchee.Module.Site.Entities
 
         public virtual Page Parent { get; set; }
 
-        public bool HasChildren { get; private init; }
-
         public ICollection<WebContent> Children { get; set; }
 
         public string PublishedData { get; protected set; }

@@ -4,7 +4,10 @@ namespace Churchee.Module.Tenancy.Entities
 {
     public class ApplicationFeature : Entity
     {
-        private ApplicationFeature()
+        /// <summary>
+        /// Required For EF
+        /// </summary>
+        protected ApplicationFeature()
         {
             Name = string.Empty;
         }
