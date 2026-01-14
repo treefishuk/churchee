@@ -136,6 +136,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Module.YouTube.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Module.UI.Tests", "test\Churchee.Module.UI.Tests\Churchee.Module.UI.Tests.csproj", "{AC608125-3BB3-1B97-9265-CFB555437BFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Churchee.Infrastructure.AiTools.Tests", "test\Churchee.Infrastructure.AiTools.Tests\Churchee.Infrastructure.AiTools.Tests.csproj", "{5DEE28B8-9581-4D1F-BD9A-30E7D55A9E92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -350,6 +352,10 @@ Global
 		{AC608125-3BB3-1B97-9265-CFB555437BFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC608125-3BB3-1B97-9265-CFB555437BFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC608125-3BB3-1B97-9265-CFB555437BFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DEE28B8-9581-4D1F-BD9A-30E7D55A9E92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DEE28B8-9581-4D1F-BD9A-30E7D55A9E92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DEE28B8-9581-4D1F-BD9A-30E7D55A9E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DEE28B8-9581-4D1F-BD9A-30E7D55A9E92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -411,6 +417,7 @@ Global
 		{FEB5B9B8-F2C9-F9C1-D12C-80087F7774BE} = {4486B06F-87D4-4920-90BC-5F15BA7376F4}
 		{EEA5C4D2-032F-5B6C-6AD0-0DAFF1800A8D} = {187811C7-20D5-435D-83B8-042B3227E714}
 		{AC608125-3BB3-1B97-9265-CFB555437BFB} = {187811C7-20D5-435D-83B8-042B3227E714}
+		{5DEE28B8-9581-4D1F-BD9A-30E7D55A9E92} = {4B48BE94-D6FB-438A-BFCB-C098EDD771F3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456111D9-BD96-4D2E-94D6-42EF29980C0B}

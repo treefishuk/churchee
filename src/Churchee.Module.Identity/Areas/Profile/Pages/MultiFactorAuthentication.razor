@@ -124,8 +124,6 @@
     [Inject]
     private IJSRuntime _js { get; set; }
 
-    private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
-
     public bool HasAuthenticator { get; set; }
 
     public int RecoveryCodesLeft { get; set; }
