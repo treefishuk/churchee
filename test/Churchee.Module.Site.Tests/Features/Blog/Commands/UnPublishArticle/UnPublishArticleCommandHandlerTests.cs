@@ -17,10 +17,11 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UnPublishArticle
             // Arrange
             var mockDataStore = new Mock<IDataStore>();
             var mockArticleRepository = new Mock<IRepository<Article>>();
-            var mockArticle = new Mock<Article>();
+            var mockArticle = new Article(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), string.Empty, string.Empty, string.Empty);
+            mockArticle.Publish();
             mockDataStore.Setup(ds => ds.GetRepository<Article>()).Returns(mockArticleRepository.Object);
             mockArticleRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<ISpecification<Article>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(mockArticle.Object);
+                .ReturnsAsync(mockArticle);
             var handler = new UnPublishArticleCommandHandler(mockDataStore.Object);
             var command = new UnPublishArticleCommand(Guid.NewGuid());
 
@@ -29,7 +30,7 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UnPublishArticle
 
             // Assert
             result.Should().BeOfType<CommandResponse>();
-            mockArticle.Verify(a => a.UnPublish(), Times.Once);
+            mockArticle.Published.Should().BeFalse();
             mockDataStore.Verify(ds => ds.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }
