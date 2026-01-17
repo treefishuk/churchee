@@ -63,7 +63,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Models
             validationResults.Any(a => a.ErrorMessage == "The NameForContent field is required.").Should().BeTrue();
         }
 
-        private static IList<ValidationResult> ValidateModel(object model)
+        private static List<ValidationResult> ValidateModel(object model)
         {
             var ctx = new ValidationContext(model, serviceProvider: null, items: null);
             var results = new List<ValidationResult>();
