@@ -12,12 +12,6 @@ namespace Churchee.Module.Hangfire.Tests.Services
     public class JobServiceTests
     {
         [Fact]
-        public Task DummyTaskMethod()
-        {
-            return Task.CompletedTask;
-        }
-
-        [Fact]
         public void QueueJob_ShouldCallCreateOnBackgroundJobClient_WithCorrectJob()
         {
             // Arrange
@@ -30,7 +24,7 @@ namespace Churchee.Module.Hangfire.Tests.Services
                 .Returns("job-id");
 
             var sut = new JobService(Mock.Of<IRecurringJobManager>(), bgClientMock.Object);
-            Expression<Func<Task>> expression = () => DummyTaskMethod();
+            Expression<Func<Task>> expression = () => DummyJobHelper.DummyTaskMethod();
 
             // Act
             sut.QueueJob(expression);
@@ -39,8 +33,8 @@ namespace Churchee.Module.Hangfire.Tests.Services
             bgClientMock.Verify(b => b.Create(It.IsAny<Job>(), It.IsAny<IState>()), Times.Once);
             capturedJob.Should().NotBeNull();
             capturedJob!.Method.Should().NotBeNull();
-            capturedJob.Method.Name.Should().Be(nameof(DummyTaskMethod));
-            capturedJob.Type.Should().Be(typeof(JobServiceTests));
+            capturedJob.Method.Name.Should().Be(nameof(DummyJobHelper.DummyTaskMethod));
+            capturedJob.Type.Should().Be(typeof(DummyJobHelper));
         }
 
         [Fact]
@@ -102,7 +96,7 @@ namespace Churchee.Module.Hangfire.Tests.Services
 
             var sut = new JobService(recurringMock.Object, Mock.Of<IBackgroundJobClient>());
             string jobId = "job-id";
-            Expression<Func<Task>> expression = () => DummyTaskMethod();
+            Expression<Func<Task>> expression = () => DummyJobHelper.DummyTaskMethod();
             static string cronExpression()
             {
                 return "0 0 * * *";
