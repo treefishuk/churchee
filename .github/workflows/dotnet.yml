@@ -23,26 +23,32 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Churchee.sln
 
-    - name: Download and extract Bootstrap efore main build
-      run: dotnet msbuild src/Churchee.Infrastructure.SassCompilation/Churchee.Infrastructure.SassCompilation.csproj -t:DownloadAndExtractBootstrap
-    - name: Build
-      run: dotnet build Churchee.sln --no-restore
+    - name: Install SonarScanner
+      run: dotnet tool install --global dotnet-sonarscanner
 
     - name: Install dotnet-coverage
       run: dotnet tool install --global dotnet-coverage
 
-    - name: Test with coverage
-      run: dotnet-coverage collect "dotnet test Churchee.sln --no-build" -f cobertura -o coverage.xml
+    - name: SonarCloud begin
+      run: |
+        dotnet sonarscanner begin \
+          /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
+          /o:"${{ secrets.SONAR_ORGANIZATION }}" \
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+          /d:sonar.cs.cobertura.reportsPaths="coverage.xml"
 
-    - name: Analyze with SonarCloud
-      uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
-      env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-      with:
-        args:
-          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
-          -Dsonar.cs.cobertura.reportsPaths=coverage.xml
-        projectBaseDir: .
+    - name: Download and extract Bootstrap efore main build
+      run: dotnet msbuild src/Churchee.Infrastructure.SassCompilation/Churchee.Infrastructure.SassCompilation.csproj -t:DownloadAndExtractBootstrap
+
+    - name: Build
+      run: dotnet build Churchee.sln --no-restore
+
+    - name: Test with coverage
+      run: |
+        dotnet-coverage collect \
+          "dotnet test Churchee.sln --no-build" \
+          -f cobertura \
+          -o coverage.xml
+
+    - name: SonarCloud end
+      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
