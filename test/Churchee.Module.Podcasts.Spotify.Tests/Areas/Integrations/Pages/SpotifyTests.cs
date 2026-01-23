@@ -1,6 +1,7 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Churchee.Common.ResponseTypes;
+using Churchee.Module.Podcasts.Features.Commands;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries;
 using Churchee.Module.UI.Components;
@@ -59,9 +60,8 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             // Act
             var cut = Render<SpotifyRazor>();
 
-
             // Assert
-            cut.Find("form").Should().NotBeNull();
+            cut.MarkupMatches(@"<form>...</form>");
         }
 
         [Fact]
@@ -117,6 +117,11 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
 
             // Setup InputModel
             instance.InputModel.SpotifyRSSFeedUrl = "https://localhost/feed.xml ";
+            instance.InputModel.NameForContent = "Listen";
+
+            // Setup Mediator to return success
+            MockMediator.Setup(m => m.Send(It.IsAny<PodcastsEnabledCommand>(), default))
+                .ReturnsAsync(new CommandResponse());
 
             // Setup Mediator to return success
             MockMediator.Setup(m => m.Send(It.IsAny<EnableSpotifyPodcastSyncCommand>(), default))
@@ -129,6 +134,45 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             // Assert
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/integrations/spotify");
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Spotify Podcasts configured, Syncing will being shortly");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+        }
+
+        [Fact]
+        public void Spotify_Integration_ValidSubmitForm_Enable_Fails_ShowsMessage()
+        {
+            // Arrange
+            var data = new GetPodcastSettingsResponse(string.Empty, string.Empty, null);
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetPodcastSettingsRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+
+            SetInitialUrl<SpotifyRazor>();
+
+            var cut = Render<SpotifyRazor>();
+            var instance = cut.Instance;
+
+            // Setup InputModel
+            instance.InputModel.SpotifyRSSFeedUrl = "https://localhost/feed.xml";
+            instance.InputModel.NameForContent = "Listen";
+
+            // Setup response
+            var response = new CommandResponse();
+
+            response.AddError("Fail", "");
+
+            // Setup Mediator to return success
+            MockMediator.Setup(m => m.Send(It.IsAny<PodcastsEnabledCommand>(), default))
+                .ReturnsAsync(response);
+
+            // Act
+            var button = cut.Find("#submitFormBtn");
+            button.Click();
+
+            // Assert
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Failed to enable Podcasts");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
         }
 
 
