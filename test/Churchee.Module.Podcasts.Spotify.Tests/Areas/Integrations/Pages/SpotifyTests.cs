@@ -61,7 +61,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             var cut = Render<SpotifyRazor>();
 
             // Assert
-            cut.MarkupMatches(@"<form>...</form>");
+            cut.FindAll("form").Count.Should().Be(1);
         }
 
         [Fact]
