@@ -12,7 +12,7 @@ using System;
 
 namespace Churchee.Module.Logging.Registrations
 {
-    public partial class ServiceRegistrations : IConfigureAdminServicesAction
+    public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 5000;
 
