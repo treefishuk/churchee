@@ -9,6 +9,28 @@ namespace Churchee.Module.Site.Tests.Registrations
 {
     public class MenuRegistrationTests
     {
+
+        [Fact]
+        public void MenuItems_Returns_Empty_Array_When_No_Tenants()
+        {
+            // Arrange
+            var mockDataStore = new Mock<IDataStore>();
+
+            var mockRepository = new Mock<IRepository<ApplicationTenant>>();
+
+            mockRepository.Setup(s => s.Any()).Returns(false);
+
+            mockDataStore.Setup(s => s.GetRepository<ApplicationTenant>())
+                .Returns(mockRepository.Object);
+
+            // Act
+            var menuRegistration = new MenuRegistration(mockDataStore.Object);
+
+            // Assert
+            menuRegistration.MenuItems.Should().BeEmpty();
+
+        }
+
         [Fact]
         public void MenuItems_ShouldReturnExpectedMenuItems()
         {

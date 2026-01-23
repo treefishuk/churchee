@@ -54,8 +54,8 @@
         <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
             <h1>Spotify podcasts is set up!</h1>
 
-            <RadzenButton Click="@DisableSync" Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
-            <RadzenButton Click="@SyncNow" Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" />
+            <RadzenButton Click="@DisableSync" Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" id="disableSync" />
+            <RadzenButton Click="@SyncNow" Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" id="syncNow" />
 
         </RadzenStack>
 
@@ -81,8 +81,6 @@ else
 
     [Inject]
     private ICurrentUser CurrentUser { get; set; } = default!;
-
-
 
     protected override async Task OnInitializedAsync()
     {
