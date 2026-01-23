@@ -18,10 +18,12 @@ namespace Churchee.Module.Podcasts.SpotifyIntegration.Areas.Integrations.Models
 
         [Required]
         [DataType(DataType.Url)]
+        [Display(Name = "Spotify RSS Feed Url", Description = "Found in: Settings → Availability → RSS Distribution", GroupName = "Feed")]
         public string SpotifyRSSFeedUrl { get; set; }
 
         [Required]
         [DataType(DataTypes.TextWithSlug)]
+        [Display(Description = "Will be used in Url for the pulled content. ex. \"Listen\"", GroupName = "Destination")]
         public string NameForContent { get; set; }
     }
 }

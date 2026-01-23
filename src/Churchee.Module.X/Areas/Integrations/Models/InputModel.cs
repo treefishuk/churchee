@@ -11,11 +11,13 @@ namespace Churchee.Module.X.Areas.Integrations.Models
         }
 
         [Required]
+        [Display(GroupName = "Configuration", Description = "Find in: App → Settings → Keys and Tokens")]
         [DataType(DataType.Password)]
         public string BearerToken { get; set; }
 
         [Required]
         [DataType(DataTypes.Text)]
+        [Display(GroupName = "Configuration", Description = "ex. @myawesomechurch")]
         public string AccountName { get; set; }
     }
 }

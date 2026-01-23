@@ -10,7 +10,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             var cmd = new EnableYouTubeSyncCommand("key", "handle");
             Assert.Equal("key", cmd.ApiKey);
-            Assert.Equal("handle", cmd.Handle);
+            Assert.Equal("handle", cmd.ChannelIdentifier);
         }
 
         [Fact]

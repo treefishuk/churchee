@@ -2,7 +2,9 @@
 @using Radzen.Blazor
 @inject NavigationManager _navigationManager
 
-<div class="sticky-formButtons">
+@if (Sticky)
+{
+    <div class="sticky-formButtons">
 
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
             <RadzenButton id="submitFormBtn" Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
@@ -10,7 +12,18 @@
             @ChildContent
         </RadzenStack>
 
-</div>
+    </div>
+}
+else
+{
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+        <RadzenButton id="submitFormBtn" Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
+        <RadzenButton id="cancelFormBtn" Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+        @ChildContent
+    </RadzenStack>
+}
+
+
 
 @code {
 
@@ -19,6 +32,9 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public bool Sticky { get; set; } = true;
 
     protected override void OnParametersSet()
     {

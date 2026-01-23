@@ -17,13 +17,38 @@
 
 <PageName></PageName>
 
+<div style="max-width: 900px; margin: 40px auto;">
+
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="16" class="rz-m-5">
+
+        <svg style="width: 100px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="#1ED760" d="M320 72C183 72 72 183 72 320C72 457 183 568 320 568C457 568 568 457 568 320C568 183 457 72 320 72zM420.7 436.9C416.5 436.9 413.9 435.6 410 433.3C347.6 395.7 275 394.1 203.3 408.8C199.4 409.8 194.3 411.4 191.4 411.4C181.7 411.4 175.6 403.7 175.6 395.6C175.6 385.3 181.7 380.4 189.2 378.8C271.1 360.7 354.8 362.3 426.2 405C432.3 408.9 435.9 412.4 435.9 421.5C435.9 430.6 428.8 436.9 420.7 436.9zM447.6 371.3C442.4 371.3 438.9 369 435.3 367.1C372.8 330.1 279.6 315.2 196.7 337.7C191.9 339 189.3 340.3 184.8 340.3C174.1 340.3 165.4 331.6 165.4 320.9C165.4 310.2 170.6 303.1 180.9 300.2C208.7 292.4 237.1 286.6 278.7 286.6C343.6 286.6 406.3 302.7 455.7 332.1C463.8 336.9 467 343.1 467 351.8C466.9 362.6 458.5 371.3 447.6 371.3zM478.6 295.1C473.4 295.1 470.2 293.8 465.7 291.2C394.5 248.7 267.2 238.5 184.8 261.5C181.2 262.5 176.7 264.1 171.9 264.1C158.7 264.1 148.6 253.8 148.6 240.5C148.6 226.9 157 219.2 166 216.6C201.2 206.3 240.6 201.4 283.5 201.4C356.5 201.4 433 216.6 488.9 249.2C496.7 253.7 501.8 259.9 501.8 271.8C501.8 285.4 490.8 295.1 478.6 295.1z" /></svg>
+        <RadzenStack>
+            <RadzenText TextStyle="TextStyle.H4" Text="Spotify Integration" />
+            <RadzenText TextStyle="TextStyle.Body2" Style="color: var(--rz-text-secondary); max-width: 600px;">
+                Pull your podcast feed from "Spotify for creators", and allow people to listen via your website.
+            </RadzenText>
+        </RadzenStack>
+        @if (spotifyConfigured)
+        {
+            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="Active" />
+        }
+        else
+        {
+            <RadzenBadge BadgeStyle="BadgeStyle.Base" Text="Inactive" />
+        }
+
+    </RadzenStack>
+
+    <hr style="color: #eee; margin: 1rem 0" />
+
+
 @if (spotifyConfigured)
 {
     <div>
 
         @if (lastRun != null)
         {
-            <b>Last Run: @lastRun.Value.ToShortDateString()</b>
+                <b>Last Run: @lastRun.Value.ToString("dd/MM/yyyy HH:mm")</b>
         }
 
         <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
@@ -40,35 +65,10 @@
 
 else
 {
-    <RadzenRow Gap="1rem">
-        <RadzenColumn class="rz-p-5">
-            <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm())>
-            </Form>
-        </RadzenColumn>
-        <RadzenColumn class="rz-p-5">
-            
-            <h3>Configuration Instructions</h3>
-
-            <p>Log in to <a href="https://podcasters.spotify.com/pod/login" target="_blank">https://podcasters.spotify.com/pod/login</a></p>
-
-            <div class="text-center">
-                <img class="rz-p-10 rounded" src="/_content/Churchee.Module.Podcasts.Spotify/img/spotify-login.png" />
-            </div>
-
-            <p>Once the home screen has loaded, click the "Profile Page" button, located next to the "Share" button</p>
-
-            <div class="text-center">
-                <img class="rz-p-10 rounded" src="/_content/Churchee.Module.Podcasts.Spotify/img/spotify-home.png" />
-            </div>
-
-            <p>Finally, click the RSS feed button to copy the RSS feed URL:
-                <RadzenIcon Icon="rss_feed" IconColor="#fff" Style="background: #fe8a4c"></RadzenIcon>
-            </p>
-
-        </RadzenColumn>
-    </RadzenRow>
+        <Form ButtonsOnTop="false" InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
 }
 
+</div>
 
 @code{
 

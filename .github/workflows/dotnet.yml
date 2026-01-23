@@ -23,20 +23,36 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Churchee.sln
 
+    - name: Install SonarScanner
+      run: dotnet tool install --global dotnet-sonarscanner
+
+    - name: Install dotnet-coverage
+      run: dotnet tool install --global dotnet-coverage
+
+    - name: SonarCloud begin
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+        SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+      run: |
+        dotnet sonarscanner begin \
+          /k:"$SONAR_PROJECT_KEY" \
+          /o:"$SONAR_ORGANIZATION" \
+          /d:sonar.token="$SONAR_TOKEN" \
+          /d:sonar.cs.cobertura.reportsPaths=**/coverage.cobertura.xml
+
     - name: Download and extract Bootstrap efore main build
       run: dotnet msbuild src/Churchee.Infrastructure.SassCompilation/Churchee.Infrastructure.SassCompilation.csproj -t:DownloadAndExtractBootstrap
+
     - name: Build
       run: dotnet build Churchee.sln --no-restore
-    - name: Test
-      run: dotnet test Churchee.sln --no-build --verbosity normal
-    - name: Analyze with SonarCloud
-      uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
-      env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-      with:
-        args:
-          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
-        projectBaseDir: .
+
+    - name: Test with coverage
+      run: |
+        dotnet test Churchee.sln \
+          --no-build \
+          --configuration Release \
+          --collect:"XPlat Code Coverage;Format=cobertura"
+
+    - name: SonarCloud end
+      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

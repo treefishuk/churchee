@@ -1,21 +1,16 @@
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Queue;
-using Churchee.Common.ResponseTypes;
+using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Storage;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync;
-using Moq;
-using Xunit;
-using Microsoft.Extensions.Logging;
+using Churchee.Module.YouTube.Jobs;
 using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands;
-using Churchee.Common.Abstractions.Storage;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System.Linq.Expressions;
+using System.Net;
+using System.Text.Json;
 
 namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeSync
 {
@@ -41,7 +36,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "handle");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle");
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -85,7 +80,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "handle");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle");
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -107,7 +102,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
 
             // Prepare a successful channel id response
             var apiResponse = new { items = new[] { new { id = "UC123" } } };
-            var json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            string json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
             var goodResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(json)
@@ -128,8 +123,8 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
 
             // Assert
             Assert.True(result.IsSuccess);
-            jobService.Verify(j => j.ScheduleJob(It.IsAny<string>(), It.IsAny<Expression<Func<Task>>>(), It.IsAny<Func<string>>()), Times.Once);
-            jobService.Verify(j => j.QueueJob(It.IsAny<Expression<Func<Task>>>()), Times.Once);
+            jobService.Verify(j => j.ScheduleJob(It.IsAny<string>(), It.IsAny<Expression<Func<SyncYouTubeVideosJob, Task>>>(), It.IsAny<Func<string>>()), Times.Once);
+            jobService.Verify(j => j.QueueJob(It.IsAny<Expression<Func<FullSyncYouTubeVideosJob, Task>>>()), Times.Once);
         }
     }
 }

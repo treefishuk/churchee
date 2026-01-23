@@ -23,8 +23,8 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Models
         public void ParameterizedConstructor_ShouldAssignValues()
         {
             // Arrange
-            var url = "https://localhost/feed";
-            var name = "My Podcast";
+            string url = "https://localhost/feed";
+            string name = "My Podcast";
 
             // Act
             var model = new InputModel(url, name);
@@ -59,7 +59,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Models
             // Assert
             validationResults.Should().NotBeNull();
             validationResults.Count.Should().Be(2);
-            validationResults.Any(a => a.ErrorMessage == "The SpotifyRSSFeedUrl field is required.").Should().BeTrue();
+            validationResults.Any(a => a.ErrorMessage == "The Spotify RSS Feed Url field is required.").Should().BeTrue();
             validationResults.Any(a => a.ErrorMessage == "The NameForContent field is required.").Should().BeTrue();
         }
 
