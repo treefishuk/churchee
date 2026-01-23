@@ -1,7 +1,5 @@
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using Xunit;
 using Churchee.Module.YouTube.Areas.Integrations.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.YouTube.Tests.Areas.Integrations
 {
@@ -24,9 +22,9 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations
         public void Properties_Have_Required_Attributes()
         {
             var props = typeof(InputModel).GetProperties();
-            var handleAttr = props.First(p => p.Name == "Handle").GetCustomAttributes(typeof(RequiredAttribute), false);
-            var apiKeyAttr = props.First(p => p.Name == "ApiKey").GetCustomAttributes(typeof(RequiredAttribute), false);
-            var nameAttr = props.First(p => p.Name == "NameForContent").GetCustomAttributes(typeof(RequiredAttribute), false);
+            object[] handleAttr = props.First(p => p.Name == "ChannelIdentifier").GetCustomAttributes(typeof(RequiredAttribute), false);
+            object[] apiKeyAttr = props.First(p => p.Name == "ApiKey").GetCustomAttributes(typeof(RequiredAttribute), false);
+            object[] nameAttr = props.First(p => p.Name == "NameForContent").GetCustomAttributes(typeof(RequiredAttribute), false);
 
             Assert.NotEmpty(handleAttr);
             Assert.NotEmpty(apiKeyAttr);
