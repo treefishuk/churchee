@@ -27,8 +27,13 @@ jobs:
       run: dotnet msbuild src/Churchee.Infrastructure.SassCompilation/Churchee.Infrastructure.SassCompilation.csproj -t:DownloadAndExtractBootstrap
     - name: Build
       run: dotnet build Churchee.sln --no-restore
-    - name: Test
-      run: dotnet test Churchee.sln --no-build --verbosity normal
+
+    - name: Install dotnet-coverage
+      run: dotnet tool install --global dotnet-coverage
+
+    - name: Test with coverage
+      run: dotnet-coverage collect "dotnet test Churchee.sln --no-build" -f cobertura -o coverage.xml
+
     - name: Analyze with SonarCloud
       uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
       env:
@@ -39,4 +44,5 @@ jobs:
         args:
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
           -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+          -Dsonar.cs.cobertura.reportsPaths=coverage.xml
         projectBaseDir: .
