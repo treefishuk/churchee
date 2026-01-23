@@ -39,7 +39,7 @@ jobs:
           /k:"$SONAR_PROJECT_KEY" \
           /o:"$SONAR_ORGANIZATION" \
           /d:sonar.token="$SONAR_TOKEN" \
-          /d:sonar.cs.cobertura.reportsPaths="coverage.xml"
+          /d:sonar.cs.cobertura.reportsPaths=**/coverage.cobertura.xml
 
     - name: Download and extract Bootstrap efore main build
       run: dotnet msbuild src/Churchee.Infrastructure.SassCompilation/Churchee.Infrastructure.SassCompilation.csproj -t:DownloadAndExtractBootstrap
@@ -49,10 +49,10 @@ jobs:
 
     - name: Test with coverage
       run: |
-        dotnet-coverage collect \
-          "dotnet test Churchee.sln --no-build" \
-          -f cobertura \
-          -o coverage.xml
+        dotnet test Churchee.sln \
+          --no-build \
+          --configuration Release \
+          --collect:"XPlat Code Coverage;Format=cobertura"
 
     - name: SonarCloud end
       run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

@@ -18,7 +18,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
     public class SpotifyTests : BasePageTests
     {
 
-        private Mock<IDistributedCache> _mockCache;
+        private readonly Mock<IDistributedCache> _mockCache;
 
         public SpotifyTests()
         {
@@ -59,8 +59,29 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             // Act
             var cut = Render<SpotifyRazor>();
 
+
             // Assert
             cut.Find("form").Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Spotify_Integration_Shows_Correct_Markup_When_Configured()
+        {
+            // Arrange
+            var date = DateTime.Now.AddDays(-10);
+
+            var data = new GetPodcastSettingsResponse("https://localhost/spotify.xml", "listen", date);
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetPodcastSettingsRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+
+            SetInitialUrl<SpotifyRazor>();
+
+            // Act
+            var cut = Render<SpotifyRazor>();
+
+            // Assert
+            cut.Markup.Should().Contain("Spotify podcasts is set up!");
+            cut.Markup.Should().Contain($"Last Run: {date:dd/MM/yyyy HH:mm}");
         }
 
 
@@ -141,7 +162,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             // Arrange
             var data = new GetPodcastSettingsResponse("https://localhost/feed.xml", "talks", DateTime.Now.AddDays(-30));
 
-            Guid appTenantId = await MockCurrentUser.Object.GetApplicationTenantId();
+            var appTenantId = await MockCurrentUser.Object.GetApplicationTenantId();
 
             MockMediator.Setup(s => s.Send(It.IsAny<GetPodcastSettingsRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 
