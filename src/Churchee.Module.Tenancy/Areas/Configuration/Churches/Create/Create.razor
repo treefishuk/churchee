@@ -1,0 +1,35 @@
+﻿@page "/management/configuration/churches/create"
+@inherits BasePage
+@using Churchee.Module.Tenancy.Features.Churches.Commands
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using MediatR
+@using Radzen
+
+<PageName Name="Add Church"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+
+    public CreateChurchInputModel InputModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        InputModel = new CreateChurchInputModel()
+        {
+        };
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new AddChurchCommand(InputModel.Name, InputModel.CharityNumber ?? 0), default);
+
+        if (result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/configuration/churches");
+        }
+    }
+}

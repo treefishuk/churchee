@@ -1,0 +1,13 @@
+﻿@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.UI.Components
+@code {
+    [Parameter] public EditMediaItemModel InputModel { get; set; }
+    [Parameter] public EventCallback OnCancelForm { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback<object> OnChange { get; set; }
+}
+
+<ModalForm InputModel="InputModel"
+           OnCancelForm="OnCancelForm"
+           OnChange="OnChange"
+           OnSave="OnSave" />

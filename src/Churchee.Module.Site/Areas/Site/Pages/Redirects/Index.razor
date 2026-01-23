@@ -1,0 +1,63 @@
+﻿@page "/management/redirects"
+@inherits BasePage
+@using Churchee.Module.Site.Features.Blog.Commands
+@using Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
+@using Churchee.Module.Site.Features.Blog.Responses
+@using Churchee.Module.Site.Features.Redirects.Commands
+@using Churchee.Module.Site.Features.Redirects.Queries
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using Microsoft.Extensions.Logging
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Module.UI.Components
+
+<PageName></PageName>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/redirects/create">Create</a>
+    </div>
+</SectionContent>
+
+<Grid TItem="GetListOfRedirectsResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false" OnDelete="OnDelete" Count="count"></Grid>
+
+@code {
+
+    IEnumerable<GetListOfRedirectsResponseItem> listingData;
+
+    bool isLoading = false;
+
+    int count = 0;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        var result = await Mediator.Send(new GetListOfRedirectsQuery(
+            skip: args.Skip ?? 0,
+            take: args.Top ?? 0,
+            searchText: args.Filter ?? string.Empty,
+            orderBy: string.IsNullOrEmpty(args.OrderBy) ? "Path desc" : args.OrderBy), CancellationToken);
+
+        listingData = result.Data;
+
+        count = result.RecordsTotal;
+
+        isLoading = false;
+    }
+
+    async Task OnDelete(GetListOfRedirectsResponseItem item)
+    {
+        var result = await Mediator.Send(new DeleteRedirectCommand(item.Id));
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove Redirect");
+
+            return;
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, "Redirect Deleted");
+    }
+}

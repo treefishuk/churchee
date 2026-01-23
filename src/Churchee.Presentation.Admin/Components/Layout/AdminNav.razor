@@ -1,0 +1,45 @@
+﻿@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.Abstractions.Extensibility
+@using Churchee.Common.Extensibility;
+@using Radzen.Blazor
+
+
+<li class="rz-navigation-item">
+    <a tabindex="-1" href="/management" class="rz-navigation-item-link rz-navigation-item-link-active" aria-current="page">
+        <i class="notranslate rzi rz-navigation-item-icon">dashboard</i>
+        <span class="rz-navigation-item-text">Dashboard</span>
+    </a>
+</li>
+
+@foreach (var item in menuItems.Where(w => w.Children.Any(a => a.RequiredRole == string.Empty || _currentUser.HasRole(a.RequiredRole))))
+{
+    <RadzenPanelMenuItem Text="@item.Name" Icon="@item.Icon">
+
+
+        @foreach (var child in item.Children)
+        {
+            <RadzenPanelMenuItem Text="@child.Name" Path="@child.Path" Icon="@child.Icon"></RadzenPanelMenuItem>
+        }
+
+    </RadzenPanelMenuItem>
+}
+
+@code {
+    [Inject]
+    private ICurrentUser _currentUser { get; set; } = default!;
+
+    [Inject]
+    private IEnumerable<IMenuRegistration> _menuRegistrations { get; set; } = default!;
+
+    private List<MenuItem> menuItems = new ();
+
+    protected override void OnInitialized()
+    {
+        menuItems = _menuRegistrations
+        .SelectMany(m => m.MenuItems)
+        .Where(w => w.RequiredRole == string.Empty || _currentUser.HasRole(w.RequiredRole))
+        .OrderBy(o => o.Order)
+        .GroupBy(g => new { g.Name, g.Path, g.Icon, g.Order })
+        .Select(s => new MenuItem(s.Key.Name, s.Key.Path, s.Key.Icon, s.SelectMany(m => m.Children.Where(w => w.RequiredRole == string.Empty || _currentUser.HasRole(w.RequiredRole))).OrderBy(o => o.Order).ToList())).ToList();
+    }
+}

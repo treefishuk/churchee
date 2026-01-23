@@ -1,0 +1,140 @@
+﻿@page "/management/events/edit/{Id:guid}"
+@inherits BasePage
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.ValueTypes
+@using Churchee.Module.Events.Areas.Website.Models
+@using Churchee.Module.Events.Components
+@using Churchee.Module.Events.Models
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Churchee.Module.Events.Features.Queries
+@using Churchee.Module.Events.Features.Commands
+@using Microsoft.AspNetCore.Components.Forms
+@using Radzen
+@using Radzen.Blazor
+
+<PageName Name="Edit Event"></PageName>
+
+<RadzenStack Orientation="Orientation.Vertical">
+
+    @if (_editContext != null)
+    {
+        <EditForm EditContext="@_editContext" OnValidSubmit="ValidSubmitForm">
+
+            <div class="sticky-formButtons">
+
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+                    <RadzenButton Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+                    <RadzenButton Disabled="_formInvalid" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit">Submit</RadzenButton>
+                </RadzenStack>
+
+            </div>
+
+            <DataAnnotationsValidator />
+
+            <RadzenTabs RenderMode="TabRenderMode.Client" class="pageEdit-tabs">
+                <Tabs>
+                    <RadzenTabsItem Text="Details">
+                        <FormFields EditContext="_editContext" FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "Dates")" OnValueChanged=UpdateFormState></FormFields>
+                    </RadzenTabsItem>
+
+                    <RadzenTabsItem Text="Dates">
+
+                        <RadzenStack>
+                            <EventDatesManager Dates="InputModel.Dates"></EventDatesManager>
+                        </RadzenStack>
+
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+
+        </EditForm>
+    }
+
+
+
+</RadzenStack>
+
+
+@code {
+
+    private bool _formInvalid;
+
+    private EditContext _editContext;
+
+    private void UpdateFormState()
+    {
+        _formInvalid = !_editContext.Validate();
+
+        StateHasChanged();
+    }
+
+    public UpdateEventInputModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var response = await Mediator.Send(new GetDetailByIdQuery(Id));
+
+        MapResponseToInputModel(response);
+    }
+
+    private void MapResponseToInputModel(GetDetailByIdResponse response)
+    {
+        InputModel.Title = response.Title;
+        InputModel.Description = response.Description;
+        InputModel.Content = response.Content;
+        InputModel.LocationName = response.LocationName;
+        InputModel.City = response.City;
+        InputModel.Street = response.Street;
+        InputModel.PostCode = response.PostCode;
+        InputModel.Country = response.Country;
+        InputModel.Latitude = response.Latitude;
+        InputModel.Longitude = response.Longitude;
+        InputModel.ImageUpload = new Upload();
+        InputModel.Dates = response.Dates;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _editContext = new EditContext(InputModel);
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var command = new UpdateEventCommand.Builder()
+            .SetId(Id)
+            .SetTitle(InputModel.Title)
+            .SetDescription(InputModel.Description)
+            .SetContent(InputModel.Content)
+            .SetImageFileName(InputModel.ImageUpload.FileName)
+            .SetBase64Image(InputModel.ImageUpload.Value)
+            .SetLocationName(InputModel.LocationName)
+            .SetCity(InputModel.City)
+            .SetStreet(InputModel.Street)
+            .SetPostCode(InputModel.PostCode)
+            .SetCountry(InputModel.Country)
+            .SetGeoCordinates(InputModel.Latitude, InputModel.Longitude)
+            .SetDates(InputModel.Dates)
+            .Build();
+
+        var updateEventsResult = await Mediator.Send(command, CancellationToken);
+
+        if (updateEventsResult.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/events");
+        }
+    }
+
+    public void CancelForm()
+    {
+        NavigationManager.NavigateTo("/management/events");
+    }
+}

@@ -1,0 +1,540 @@
+﻿@page "/management/media"
+@inherits BasePage
+@using Churchee.Module.Site.Features.CDN.Queries
+@using Churchee.Module.Site.Features.Favicons.Commands
+@using Churchee.Module.Site.Features.Media.Commands
+@using Churchee.Module.Site.Features.Media.Queries
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
+@using Microsoft.JSInterop
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Module.UI.Components
+@using Churchee.Module.Site.Areas.Site.Models
+
+
+<PageName Name="Media"></PageName>
+
+<SectionContent SectionName="top-bar">
+
+    <div class="rz-breadcrumb-item">
+
+        <div class="rz-m-3">
+
+            <RadzenSplitButton Click="@FolderAction"
+            Text="Folder"
+            ButtonStyle="ButtonStyle.Info" Disabled=AddMediaDisabled>
+
+                <ChildContent>
+
+                    <RadzenSplitButtonItem Text="Add Folder" Value="Add"/>
+
+                    <RadzenSplitButtonItem Text="Delete Folder" Value="Delete" Disabled="DeleteFolderDisabled" />
+
+                    <RadzenSplitButtonItem Text="Clear Selection Folder" Value="Clear" />
+
+                </ChildContent>
+
+            </RadzenSplitButton>
+
+        </div>
+
+        <RadzenButton Click=@(args => AddMediaItem()) Text="Add Media Item" ButtonStyle="ButtonStyle.Secondary" bind-dis Disabled=AddMediaDisabled />
+    </div>
+
+</SectionContent>
+
+<RadzenStack Orientation="Orientation.Horizontal" Gap="0" AlignItems="AlignItems.Stretch" Style="height:100%;">
+    <RadzenTree @ref="tree" @bind-Value=@activeFolder Change="@LogChange" Data="@Directories" Expand="@LoadDirectory" Style="width: 500px; margin-right: 1rem; min-width: 500px; height: 100%; padding: 1rem 5rem 1rem 1rem; background: #dde5ec; border:1px solid #d9d8d8">
+        <RadzenTreeLevel HasChildren=@HasChildren ChildrenProperty="Children" Text="@GetTextForNode" Template="@FolderTemplate" />
+    </RadzenTree>
+    <RadzenDataList Style="height:100%; width:100%; overflow:auto;"
+    WrapItems="true"
+    Data="@data" TItem="GetMediaListForFolderQueryResponseItem" PageSize="12" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+
+        <Template Context="item">
+
+            <div style="width:25%; height: 100%; max-width: 25%; min-width: 150px; padding: 0; margin: 0; background: none; border: none;">
+
+                <RadzenCard Style="margin: 5px">
+
+                    <div class="rz-image-wrap" style="width:100%;">
+
+                        @if (IsImageFile(item.MediaUrlSmall))
+                        {
+                            <Image Prefix="@imagePrefix" ImageUrl="@(item.MediaUrlSmall)" AltText="@item.Title" Styles="width: 100%; height: 200px; object-fit:cover;"></Image>
+                        }    
+                        else
+                        {
+                            <div class="file-thumb-wrap">
+                                <img src=" /_content/Churchee.Module.UI/img/file.png" alt="File Image" crossorigin />
+                                <span>@(Path.GetExtension(item.MediaUrl))</span>
+                            </div>
+
+                            <strong class="file-title">@item.Title</strong>
+                        }
+
+                    </div>
+
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" AlignItems="AlignItems.Start" Style="padding: 1rem 0 0;">
+                        <RadzenButton Click=@(args => OnEdit(item.Id)) Icon="edit" ButtonStyle="ButtonStyle.Primary" />
+                        <RadzenButton Click=@(args => OnDelete(item.Id)) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                        <RadzenButton Click=@(args => OpenImage(imagePrefix, item.MediaUrl)) Icon="open_in_new" ButtonStyle="ButtonStyle.Secondary" />
+                    </RadzenStack>
+
+
+                </RadzenCard>
+
+            </div>
+
+        </Template>
+    </RadzenDataList>  
+
+</RadzenStack>
+
+
+@code {
+
+    [Inject]
+    private DialogService DialogService { get; set; } = default!;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    readonly string[] ProtectedPaths = new string[] { "Banners/", "Images/", "Fonts/", "Video/" };
+
+    private static bool IsImageFile(string filePath)
+    {
+        string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+        string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
+        return imageExtensions.Contains(extension);
+    }
+
+
+    bool DeleteFolderDisabled
+    {
+        get
+        {
+            if (activeFolder == null)
+            {
+                return true;
+            }
+
+            if (ProtectedPaths.Contains(ActiveFolderItem.Path))
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    private GetMediaFoldersQueryResponseItem ActiveFolderItem
+    {
+        get => activeFolder as GetMediaFoldersQueryResponseItem;
+    }
+
+    private RadzenTree tree;
+
+    string NewFolderName = "";
+
+    string imagePrefix = "";
+
+    bool AddMediaDisabled => activeFolder == null;
+
+    object activeFolder = null;
+
+    Guid? activeFolderId = (Guid?)null;
+
+    IEnumerable<GetMediaListForFolderQueryResponseItem> data;
+
+    CreateMediaItemModel createModel = new CreateMediaItemModel();
+
+    CreateFaviconModel createFaviconModel = new CreateFaviconModel();
+
+    EditMediaItemModel editModel = new EditMediaItemModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        imagePrefix = TenantResolver.GetCDNPrefix();
+
+        Directories = await Mediator.Send(new GetMediaFoldersQuery(null));
+    }
+
+    private async Task OnCancelEdit(DialogService ds)
+    {
+        await Task.Run(() =>
+        {
+            ds.Close();
+            editModel = new EditMediaItemModel();
+        });
+    }
+
+    private async Task OnDelete(Guid id)
+    {
+        var result = await Mediator.Send(new DeleteMediaItemCommand(id));
+
+        if (result.IsSuccess)
+        {
+            data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
+
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Removed" });
+        }
+    }
+
+    private async Task OnEdit(Guid id)
+    {
+        var selected = data.FirstOrDefault(w => w.Id == id);
+
+        if (selected == null)
+        {
+            return;
+        }
+
+        editModel.Name = selected.Title;
+        editModel.Description = selected.Description ?? string.Empty;
+        editModel.AdditionalContent = selected.AdditionalContent ?? string.Empty;
+        editModel.LinkUrl = selected.LinkUrl ?? string.Empty;
+        editModel.CssClass = selected.CssClass ?? string.Empty;
+        editModel.Order = selected.Order;
+
+        editModel.File = new Common.ValueTypes.Upload { SupportedFileTypes = ActiveFolderItem.SupportedFileTypes };
+
+        await DialogService.OpenAsync("Edit Media Item", ds =>
+            @<ModalForm InputModel="editModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnEditModalFormChange" OnSave=@(async () => await ValidEditSubmitForm(id)) />,
+            new DialogOptions() { Width = "700px"}
+        );
+    }
+
+    private async Task AddMediaItem()
+    {
+        if(ActiveFolderItem.Path == "Favicons/")
+        {
+            createFaviconModel = new CreateFaviconModel
+            {
+                File = new Common.ValueTypes.Upload { SupportedFileTypes =  ActiveFolderItem.SupportedFileTypes}
+            };
+
+           await DialogService.OpenAsync("Add Favicon", ds =>
+                @<ModalForm InputModel="createFaviconModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnSave=@(async () => await ValidFaviconSubmitForm()) />,
+                new DialogOptions() { Width = "700px"}
+            );
+        }
+        else
+        {
+            createModel = new CreateMediaItemModel
+            {
+                File = new Common.ValueTypes.Upload { SupportedFileTypes =  ActiveFolderItem.SupportedFileTypes}
+            };
+
+           await DialogService.OpenAsync("Add Media Item", ds =>
+                @<ModalForm InputModel="createModel" OnCancelForm=@(async () => await OnCancelEdit(ds)) OnChange="OnCreateModalFormChange" OnSave=@(async () => await ValidMediaItemCreateSubmitForm()) />,
+                new DialogOptions() { Width = "700px"}
+            );
+        }
+
+
+
+    }
+
+    IEnumerable<GetMediaFoldersQueryResponseItem> Directories = new List<GetMediaFoldersQueryResponseItem>();
+
+    private async Task ValidFaviconSubmitForm()
+    {
+        var command = new GenerateFaviconCommand(createFaviconModel.File.Value, activeFolderId.Value);
+
+        var result = await Mediator.Send(command);
+
+        if (result.IsSuccess)
+        {
+            DialogService.Close();
+
+            data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
+
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Added" });
+        }
+
+        if (!result.IsSuccess)
+        {
+            foreach (var error in result.Errors)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description, Duration = 5000 });
+            }
+        }
+    }
+
+
+    private async Task ValidMediaItemCreateSubmitForm()
+    {
+        var command = new CreateMediaItemCommand.Builder()
+        .SetSupportedFileTypes(ActiveFolderItem.SupportedFileTypes)
+        .SetName(createModel.Name)
+        .SetFileName(Path.GetFileNameWithoutExtension(createModel.File.FileName))
+        .SetExtension(Path.GetExtension(createModel.File.FileName))
+        .SetDescription(createModel.Description)
+        .SetAdditionalContent(createModel.AdditionalContent)
+        .SetFolderId(activeFolderId)
+        .SetBase64Content(createModel.File.Value)
+        .SetLinkUrl(createModel.LinkUrl)
+        .SetCssClass(createModel.CssClass)
+        .SetOrder(createModel.Order)
+        .Build();
+
+        var result = await Mediator.Send(command);
+
+        if (result.IsSuccess)
+        {
+            DialogService.Close();
+
+            data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
+
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Item Added" });
+            
+            createModel = new CreateMediaItemModel();
+
+        }
+
+        if (!result.IsSuccess)
+        {
+            foreach (var error in result.Errors)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = error.Description, Duration = 5000 });
+            }
+        }
+
+    }
+
+    private async Task ValidEditSubmitForm(Guid id)
+    {
+        var command = new UpdateMediaItemCommand.Builder()
+            .SetSupportedFileTypes(ActiveFolderItem.SupportedFileTypes)
+            .SetId(id)
+            .SetName(editModel.Name)
+            .SetFileName(Path.GetFileNameWithoutExtension(editModel.File.FileName))
+            .SetExtention(Path.GetExtension(editModel.File.FileName))
+            .SetLinkUrl(editModel.LinkUrl)
+            .SetDescription(editModel.Description)
+            .SetAdditionalContent(editModel.AdditionalContent)
+            .SetCssClass(editModel.CssClass)
+            .SetBase64Image(editModel.File.Value)
+            .SetOrder(editModel.Order)
+            .Build();
+
+        var result = await Mediator.Send(command);
+
+        if (result.IsSuccess)
+        {
+            DialogService.Close();
+
+            data = await Mediator.Send(new GetMediaListForFolderQuery(activeFolderId));
+
+            editModel = new EditMediaItemModel();
+        }
+
+        NotificationService.Notify(result, "Media Item Updated");
+    }
+
+    private static bool HasChildren(object data)
+    {
+        var item = data as GetMediaFoldersQueryResponseItem;
+
+        return item.HasChildren;
+    }
+
+    private static string GetTextForNode(object data)
+    {
+        var item = data as GetMediaFoldersQueryResponseItem;
+
+        return item.Title;
+    }
+
+    private void OnCreateModalFormChange()
+    {
+        if (string.IsNullOrEmpty(createModel.Name) && !string.IsNullOrEmpty(createModel.File.FileName))
+        {
+            createModel.Name = Path.GetFileNameWithoutExtension(createModel.File.FileName).Replace("-", " ").Replace("_", " ");
+        }
+    }
+
+    private void OnEditModalFormChange()
+    {
+        if (string.IsNullOrEmpty(editModel.Name) && !string.IsNullOrEmpty(editModel.File.FileName))
+        {
+            editModel.Name = Path.GetFileNameWithoutExtension(editModel.File.FileName).Replace("-", " ").Replace("_", " ");
+        }
+    }
+
+    private readonly RenderFragment<RadzenTreeItem> FolderTemplate = (context) => builder =>
+    {
+        builder.OpenComponent<RadzenIcon>(0);
+        builder.AddAttribute(1, "Icon", "folder");
+        builder.AddAttribute(2, "Style", "margin-left: 24px");
+        builder.CloseComponent();
+        builder.AddContent(3, context.Text);
+    };
+
+    async Task LogChange(TreeEventArgs args)
+    {
+        activeFolder = args.Value;
+
+        activeFolderId = ActiveFolderItem.Id;
+
+        data = await Mediator.Send(new GetMediaListForFolderQuery(ActiveFolderItem.Id));
+
+    }
+
+    async Task LoadDirectory(TreeExpandEventArgs args)
+    {
+        var item = args.Value as GetMediaFoldersQueryResponseItem;
+
+        item.Children = await Mediator.Send(new GetMediaFoldersQuery(item.Id));
+
+        args.Children.Data = item.Children;
+
+        args.Children.Template = FolderTemplate;
+
+        args.Children.Text = GetTextForNode;
+
+        args.Children.HasChildren = HasChildren;
+
+    }
+
+    async Task FolderAction(RadzenSplitButtonItem item)
+    {
+        if (item == null || item.Value == "Add")
+        {
+                await DialogService.OpenAsync("Add Folder", ds =>
+                @<RadzenStack Gap="1.5rem">
+
+                    <RadzenTextBox Placeholder="Folder Name"
+                                   @bind-Value="NewFolderName"
+                                   Style="margin-bottom: 20px" />
+
+
+                    <RadzenButton Text="Add Folder"
+                                  Click="AddFolderNameAsync"
+                                  ButtonStyle="ButtonStyle.Success"
+                                  Style="margin-bottom: 20px;height: 35px" />
+
+                </RadzenStack>);
+        }
+
+        if (item != null && item.Value == "Delete")
+        {
+            await DialogService.OpenAsync("Add Folder", ds =>
+             @<RadzenStack Gap="1.5rem">
+
+
+                        @if (activeFolder is GetMediaFoldersQueryResponseItem item)
+                        {
+                                <p>Are you sure you want to delete the folder @item.Title ? </p>
+
+                        }
+
+                                <RadzenButton Text="Yes, Delete"
+                                                  Click="DeleteFolderAsync"
+                                              ButtonStyle="ButtonStyle.Danger"
+                                              Style="margin-bottom: 20px;height: 35px" />
+
+
+                                <RadzenButton Text="Nope, Cancel"
+                                                      Click="CloseFolderPopup"
+                                                  ButtonStyle="ButtonStyle.Success"
+                                              Style="margin-bottom: 20px;height: 35px" />
+
+                            </RadzenStack>
+    );
+        }
+
+        if (item != null && item.Value == "Clear")
+        {
+            tree.ClearSelection();
+            activeFolderId = null;
+            activeFolder = null;
+        }
+
+
+    }
+
+    void CloseFolderPopup()
+    {
+        DialogService.Close();
+    }
+
+    async Task DeleteFolderAsync()
+    {
+        if(activeFolderId == null){
+
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: No Folder Selected" });
+
+            return;
+        }
+
+        var result = await Mediator.Send(new DeleteMediaFolderCommand(activeFolderId.Value));
+
+        if(result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Media Folder Removed" });
+        }
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Media Folder was not removed." });
+        }
+
+        Directories = await Mediator.Send(new GetMediaFoldersQuery(null));
+
+        DialogService.Close();
+
+    }
+
+    async Task RefreshActiveFolderAsync()
+    {
+        if (activeFolder != null)
+        {
+            var folder = activeFolder as GetMediaFoldersQueryResponseItem;
+
+            folder.Children = await Mediator.Send(new GetMediaFoldersQuery(folder.Id));
+
+            folder.HasChildren = true;
+        }
+        else
+        {
+            Directories = await Mediator.Send(new GetMediaFoldersQuery(null));
+        }
+    }
+
+    async Task AddFolderNameAsync()
+    {
+        var result = await Mediator.Send(new CreateMediaFolderCommand(activeFolderId, NewFolderName));
+
+        if(result.IsSuccess)
+        {
+            await RefreshActiveFolderAsync();
+
+            NewFolderName = string.Empty;
+
+            DialogService.Close();
+        }
+
+        NotificationService.Notify(result, "Media Folder Added");
+    }
+
+    private async Task OpenImage(string prefix, string imageUrl)
+    {
+        string fullPath = imageUrl;
+
+        if (!imageUrl.StartsWith("https") && !imageUrl.StartsWith("/_content"))
+        {
+            fullPath = prefix + imageUrl;
+        }
+
+        await JSRuntime.InvokeVoidAsync("open", fullPath, "_blank");
+    }
+}
+
+
+

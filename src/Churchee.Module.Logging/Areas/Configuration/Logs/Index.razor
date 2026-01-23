@@ -1,0 +1,40 @@
+﻿@page "/management/configuration/logs"
+@inherits SystemAdminPage
+@using Churchee.Module.Logging.Entities
+@using Churchee.Module.Logging.Features.Queries
+@using Churchee.Module.Logging.Infrastructure
+@using Churchee.Module.UI.Components
+@using MediatR
+@using Microsoft.EntityFrameworkCore
+@using Radzen
+@using Radzen.Blazor
+@using Microsoft.AspNetCore.Authorization
+
+<PageName Name="Logging"></PageName>
+
+<Grid TItem="GetLogListingResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowDetail="true" DetailIcon="article"></Grid>
+
+@code {
+
+    bool isLoading = false;
+
+    int count = 0;
+
+    IEnumerable<GetLogListingResponseItem> listingData;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        var result = await Mediator.Send(new GetLogListingQuery(
+            skip: args?.Skip ?? 0,
+            take: args?.Top ?? 20,
+            searchText: args?.Filter ?? string.Empty,
+            orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "TimeStamp desc" : args?.OrderBy), default);
+
+        listingData = result.Data;
+        count = result.RecordsTotal;
+
+        isLoading = false;
+    }
+}

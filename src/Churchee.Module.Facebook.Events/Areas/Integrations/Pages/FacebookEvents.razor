@@ -1,0 +1,112 @@
+﻿@page "/management/integrations/facebook-events"
+@using Churchee.Module.Events.Features.Commands
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Churchee.Module.Facebook.Events.Areas.Integrations.Models
+@using Churchee.Module.UI.Components
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Facebook.Events.Features.Queries
+@using Churchee.Module.Facebook.Events.Features.Commands
+@inject ILogger<FacebookEvents> Logger
+@inject IMediator Mediator
+@inject ICurrentUser _currentUser
+@inject IHttpContextAccessor _httpContextAccessor
+@inject NavigationManager NavigationManager
+
+<PageName></PageName>
+
+@if (!Linked)
+{
+    <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm("Enable"))>
+    </Form>
+}
+else
+{
+
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+        <h1>Facebook Events Sync is set up!</h1>
+
+        <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+        <RadzenButton Click=@(args => SyncWithFacebook()) Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" />
+
+    </RadzenStack>
+
+}
+
+
+@code {
+
+    public InputModel InputModel { get; set; } = new();
+
+    [Inject]
+    private NotificationService _notificationService { get; set; }
+
+    public bool Linked { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Linked = await Mediator.Send(new FacebookConfiguredQuery());
+    }
+
+    private async Task ValidSubmitForm(string submit)
+    {
+        if (submit == "Enable")
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+
+            string redirectUrl = await Mediator.Send(new GetAuthUrlQuery($"{request.Scheme}://{request.Host}", InputModel.FacebookPageId));
+
+            NavigationManager.NavigateTo(redirectUrl, true);
+        }
+        else
+        {
+            var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await _currentUser.GetApplicationTenantId()));
+
+            if (createEventsResult.IsSuccess)
+            {
+                await Mediator.Send(new SyncFacebookEventsToEventsTableCommand());
+            }
+
+        }
+    }
+
+    private async Task SyncWithFacebook()
+    {
+        var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await _currentUser.GetApplicationTenantId()));
+
+        if (!createEventsResult.IsSuccess)
+        {
+            return;
+        }
+
+        var syncResponse = await Mediator.Send(new SyncFacebookEventsToEventsTableCommand());
+
+        if (!syncResponse.IsSuccess)
+        {
+            _notificationService.Notify(NotificationSeverity.Success, "Sync Completed");
+        }
+    }
+
+
+    private async Task DisableSync()
+    {
+        var result = await Mediator.Send(new DisableFacebookSyncCommand());
+
+        if (result.IsSuccess)
+        {
+            Linked = false;
+
+            _notificationService.Notify(NotificationSeverity.Success, "Integration Disabled");
+
+            InputModel = new InputModel();
+
+            StateHasChanged();
+        }
+    }
+
+}

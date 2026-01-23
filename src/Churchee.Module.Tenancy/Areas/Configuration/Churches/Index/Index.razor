@@ -1,0 +1,186 @@
+﻿@page "/management/configuration/churches"
+@inherits BasePage
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Identity.Entities
+@using Churchee.Module.Identity.Managers
+@using Churchee.Module.Tenancy.Features.Churches.Queries
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using System.Text.Json
+@using Microsoft.AspNetCore.Http
+@using Radzen
+@using Radzen.Blazor
+@using System.Net.Http.Json
+@using System.Security.Claims
+
+<PageName Name="Churches"></PageName>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/configuration/churches/create">Create</a>
+    </div> 
+</SectionContent>
+
+<RadzenDataGrid AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+                Data="@churches" TItem="GetListingQueryResponseItem">
+    <Columns>
+
+        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+            <Template Context="data">
+                <a class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default rz-button-icon-only" href="/management/configuration/churches/edit/@(data.Id)">
+                    <span class="rz-button-box">
+                        <i class="rz-button-icon-left rzi">edit</i>
+                    </span>
+                </a>
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Property="Name" Title="Name" />
+
+        <RadzenDataGridColumn TItem="GetListingQueryResponseItem" Title="" Sortable="false" Filterable="false" Width="200px" TextAlign="TextAlign.Center">
+            <Template Context="data">
+
+                @{
+                    if (_activeTenant != data.Id)
+                    {
+                        <RadzenButton Click=@(args => OnClick(data.Id)) Text="Switch To" ButtonStyle="ButtonStyle.Primary" Icon="input" />
+                    }
+                }
+
+
+            </Template>
+        </RadzenDataGridColumn>
+
+
+        
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    [Inject]
+    private IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
+
+    [Inject]
+    private ChurcheeUserManager UserManager { get; set; } = default!;
+
+    private Guid _activeTenant { get; set; } = Guid.Empty;
+
+    IEnumerable<GetListingQueryResponseItem> churches = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _activeTenant = await CurrentUser.GetApplicationTenantId();
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+
+        var result = await Mediator.Send(new GetListingQuery(), default);
+
+        churches = result;
+    }
+
+    private async Task OnClick(Guid newId)
+    {
+
+        var id = HttpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if(id == null)
+        {
+            return;
+        }
+
+        var user = await UserManager.FindByIdAsync(id);
+
+        if (user == null)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to Switch Church Context");
+
+            return;
+        }
+
+        var claims = await UserManager.GetClaimsAsync(user);
+
+        bool replaceNameResult = await ReplaceApplicationTenantId(claims, newId, user);
+        bool replaceIdResult = await ReplaceApplicationTenantName(claims, newId, user);
+
+        if (!replaceNameResult || !replaceIdResult)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to Switch Church Context");
+
+            return;
+        }
+
+        var updateResult = await UserManager.UpdateAsync(user);
+
+        if (!updateResult.Succeeded)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to Switch Church Context");
+
+            return;
+        }
+
+        NavigationManager.NavigateTo($"/account/relogin?returnUrl=/management/configuration/churches", true);
+
+    }
+
+    private async Task<bool> ReplaceApplicationTenantId(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
+    {
+        var oldActiveTenantIdClaim = claims.FirstOrDefault(w => w.Type == "ActiveTenantId");
+
+        if (oldActiveTenantIdClaim == null)
+        {
+            return false;
+        }
+
+        var newActiveTenantIdClaim = new Claim("ActiveTenantId", newTenantId.ToString());
+
+        var replaceIdResult = await UserManager.ReplaceClaimAsync(user, oldActiveTenantIdClaim, newActiveTenantIdClaim);
+
+        if (!replaceIdResult.Succeeded)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task<bool> ReplaceApplicationTenantName(IList<Claim> claims, Guid newTenantId, ApplicationUser user)
+    {
+        var oldActiveTenantNameClaim = claims.FirstOrDefault(w => w.Type == "ActiveTenantName");
+
+        if (oldActiveTenantNameClaim == null)
+        {
+            return false;
+        }
+
+        var applicationTenantName = await Mediator.Send(new GetApplicationNameByIdQuery(newTenantId));
+
+        var newActiveTenantNameClaim = new Claim("ActiveTenantName", applicationTenantName);
+
+        var replaceNameResult = await UserManager.ReplaceClaimAsync(user, oldActiveTenantNameClaim, newActiveTenantNameClaim);
+
+        if (!replaceNameResult.Succeeded)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+}
+
+
+
+
+

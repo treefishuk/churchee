@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:anchor="https://anchor.fm/xmlns">
+	<channel>
+		<title><![CDATA[Channel Name]]></title>
+		<description><![CDATA[Podcast For Channel Name]]></description>
+		<link>https://podcasters.spotify.com/pod/show/channel</link>
+		<image>
+			<url>https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/18372036/18372036-1646649706094-79ccd79a7c498.jpg</url>
+			<title>Channel Name</title>
+			<link>https://example.com/channel-link</link>
+		</image>
+		<generator>Anchor Podcasts</generator>
+		<lastBuildDate>Tue, 31 Dec 2024 17:06:12 GMT</lastBuildDate>
+		<atom:link href="https://anchor.fm/s/example/podcast/rss" rel="self" type="application/rss+xml"/>
+		<author><![CDATA[Channel Name]]></author>
+		<copyright><![CDATA[Channel Name]]></copyright>
+		<language><![CDATA[en]]></language>
+		<atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
+		<itunes:author>Channel Name</itunes:author>
+		<itunes:summary>Podcast For Channel Name</itunes:summary>
+		<itunes:type>episodic</itunes:type>
+		<itunes:owner>
+			<itunes:name>Channel Name</itunes:name>
+			<itunes:email>info@example.com</itunes:email>
+		</itunes:owner>
+		<itunes:explicit>No</itunes:explicit>
+		<itunes:category text="Religion &amp; Spirituality">
+			<itunes:category text="Christianity"/>
+		</itunes:category>
+		<itunes:image href="https://example.com/image.jpg"/>
+		<item>
+			<title><![CDATA[Title]]></title>
+			<description>
+				<![CDATA[<p>15th December 2024</p>
+<p>Title</p>
+]]>
+			</description>
+			<link>https://example.com/showlink</link>
+			<guid isPermaLink="false">11096f0e-4a3a-4781-9470-06e9ba54860d</guid>
+			<dc:creator><![CDATA[Channel Name]]></dc:creator>
+			<pubDate>Sun, 15 Dec 2024 15:00:00 GMT</pubDate>
+			<enclosure url="https://example.com/audio.mp3" length="39002239" type="audio/mpeg"/>
+			<itunes:summary>
+				&lt;p&gt;15th December 2024&lt;/p&gt;
+				&lt;p&gt;Episode Title&lt;/p&gt;
+			</itunes:summary>
+			<itunes:explicit>No</itunes:explicit>
+			<itunes:duration>00:27:04</itunes:duration>
+			<itunes:image href="https://example.com/image.jpg"/>
+			<itunes:season>2024</itunes:season>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Title 2]]></title>
+			<description>
+				<![CDATA[<p>1st December 2024
+Title 2</p>
+]]>
+			</description>
+			<link>https://example.com/showlink2</link>
+			<guid isPermaLink="false">731c975c-1b56-4f95-aa79-68a878e9687e</guid>
+			<dc:creator><![CDATA[Channel Name]]></dc:creator>
+			<pubDate>Sun, 01 Dec 2024 15:00:00 GMT</pubDate>
+			<enclosure url="https://example.com/audio.mp3" length="39002239" type="audio/mpeg"/>
+			<itunes:summary>
+				&lt;p&gt;1st December 2024
+				Title 2&lt;/p&gt;
+			</itunes:summary>
+			<itunes:explicit>No</itunes:explicit>
+			<itunes:duration>00:28:20</itunes:duration>
+			<itunes:image href="https://example.com/image.jpg"/>
+			<itunes:season>2024</itunes:season>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+	</channel>
+</rss>

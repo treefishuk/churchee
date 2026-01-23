@@ -1,0 +1,32 @@
+﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Storage;
+using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
+using Churchee.Module.UI.Models;
+using MediatR;
+
+namespace Churchee.Module.Site.Features.Pages.Queries
+{
+    public class GetParentPagesDropdownDataQueryHandler : IRequestHandler<GetParentPagesDropdownDataQuery, IEnumerable<DropdownInput>>
+    {
+
+        private readonly IDataStore _storage;
+        private readonly ICurrentUser _currentUser;
+
+        public GetParentPagesDropdownDataQueryHandler(IDataStore storage, ICurrentUser currentUser)
+        {
+            _storage = storage;
+            _currentUser = currentUser;
+        }
+
+        public async Task<IEnumerable<DropdownInput>> Handle(GetParentPagesDropdownDataQuery request, CancellationToken cancellationToken)
+        {
+            var applicationTenantId = await _currentUser.GetApplicationTenantId();
+
+            return await _storage.GetRepository<Page>().GetListAsync(new PagesWithNonProtectedPageTypesSpecification(applicationTenantId, request.CurrentPage),
+                selector: s => new DropdownInput { Title = s.Title, Value = s.Id.ToString() },
+                cancellationToken: cancellationToken);
+
+        }
+    }
+}

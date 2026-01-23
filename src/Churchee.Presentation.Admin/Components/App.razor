@@ -1,0 +1,36 @@
+﻿@inject IEnumerable<Churchee.Common.Abstractions.Extensibility.IScriptRegistrations> scriptRegistrations
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="stylesheet" href="/_content/Churchee.Module.UI/css/admin.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="Churchee.Presentation.Admin.styles.css?v=0308" />
+    <HeadOutlet @rendermode="@RenderMode.InteractiveServer" />
+</head>
+
+<body>
+    <Routes @rendermode="@RenderMode.InteractiveServer" />
+
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_framework/blazor.web.js"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+
+    @foreach (var registration in scriptRegistrations){
+        @foreach (var scriptSrc in registration.Scripts)
+        {
+            <script src="@scriptSrc"></script>
+        }
+    }
+
+</body>
+
+</html>

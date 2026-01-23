@@ -1,0 +1,83 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+	<BootstrapVersion>5.3.7</BootstrapVersion>
+	<BootstrapZip>$(BaseIntermediateOutputPath)bootstrap.zip</BootstrapZip>
+	<BootstrapTempDir>$(BaseIntermediateOutputPath)bootstrap-temp</BootstrapTempDir>
+	<BootstrapTargetDir>wwwroot/lib/bootstrap/scss</BootstrapTargetDir>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+		<None Include="tools/dart-sass/linux-x64/sass">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+		<None Include="tools/dart-sass/win-x64/sass.bat">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Dart Sass binaries -->
+		<EmbeddedResource Include="tools\dart-sass\**\*" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+		
+	<ItemGroup>
+		<!-- Count existing SCSS files -->
+		<ExistingBootstrapScss Include="$(BootstrapTargetDir)/**/*.*" />
+	</ItemGroup>
+	
+	<Target Name="DownloadAndExtractBootstrap" BeforeTargets="BeforeBuild" Condition="'@(ExistingBootstrapScss-&gt;Count())' == '0'">
+
+		<!-- Make sure temp and target dirs exist -->
+		<MakeDir Directories="$(BootstrapTempDir)" />
+		<MakeDir Directories="$(BootstrapTargetDir)" />
+
+		<!-- Download Bootstrap full source zip -->
+		<Exec Command="curl -L -o &quot;$(BootstrapZip)&quot; https://github.com/twbs/bootstrap/archive/v$(BootstrapVersion).zip" />
+
+		<!-- Windows extraction -->
+		<Exec Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Expand-Archive -Path \&quot;$(BootstrapZip)\&quot; -DestinationPath \&quot;$(BootstrapTempDir)\&quot; -Force&quot;" />
+
+		<Exec Condition="'$(OS)' == 'Windows_NT'" Command="cmd /c &quot;if exist &quot;$(BootstrapTempDir)\bootstrap-$(BootstrapVersion)&quot; ( rmdir /S /Q &quot;wwwroot\lib\bootstrap\scss&quot; &amp;&amp; move &quot;$(BootstrapTempDir)\bootstrap-$(BootstrapVersion)\scss&quot; &quot;wwwroot\lib\bootstrap\scss&quot; )&quot;" />
+
+		<!-- Linux/macOS extraction -->
+		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="unzip -o $(BootstrapZip) -d $(BootstrapTempDir)" />
+
+		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="bash -c 'if [ -d &quot;$(BootstrapTempDir)/bootstrap-$(BootstrapVersion)&quot; ]; then rm -rf wwwroot/lib/bootstrap/scss; mv $(BootstrapTempDir)/bootstrap-$(BootstrapVersion)/scss wwwroot/lib/bootstrap/scss; fi'" />
+
+		<Exec Condition="'$(OS)' != 'Windows_NT'" Command="ls -l wwwroot/lib/bootstrap/scss" />
+
+		<!-- Cleanup temp files -->
+		
+		<RemoveDir Directories="$(BootstrapTempDir)" />
+		<Delete Files="$(BootstrapZip)" />
+
+	</Target>
+  
+  <Target Name="AddBootstrapScssAsEmbeddedResource" AfterTargets="DownloadAndExtractBootstrap">
+    <ItemGroup>
+      <EmbeddedResource Include="wwwroot\lib\bootstrap\scss\**\*" />
+    </ItemGroup>
+  </Target>
+
+
+</Project>

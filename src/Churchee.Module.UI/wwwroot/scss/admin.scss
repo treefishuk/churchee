@@ -1,0 +1,81 @@
+//----Variables -------------------------------------------|
+
+@import "_variable-overrides";
+
+//----Razden Base-------------------------------------------|
+
+@import "themes/radzen/material-base";
+ 
+//----Overrides-------------------------------------------|
+
+@import "overrides/components/breadcrumb"; 
+@import "overrides/components/images"; 
+
+
+.monaco-editor-container { /* for all editor instances */
+    height: 750px;
+}
+
+.sticky-formButtons {
+    position: sticky;
+    z-index: 3;
+    width: 100%;
+    top: -1rem;
+    background: #e0e9f2;
+    padding: 1rem;
+}
+ 
+
+.pageEdit-tabs .rz-tabview-nav {
+    margin-top: -3rem;
+    z-index: 4;
+    width: 50%;
+}
+
+.validation-message {
+    color: #d74a4a;
+}
+
+.rz-footer:empty {
+    padding: 0;
+}
+
+.rz-menu.rz-dash-menu {
+    background: none;
+    margin-top: 0.3rem;
+
+    * {
+        color: #333;
+    }
+
+    .rz-navigation-item {
+        direction: rtl;
+    }
+
+    > li > .rz-navigation-item-wrapper > .rz-navigation-item-link {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+.file-thumb-wrap { 
+    position: relative;
+    text-align: center;
+}
+
+.file-thumb-wrap img {
+    height: 200px;
+}
+
+.file-thumb-wrap span {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.rz-html-editor-dropdown-item > * {
+    margin: 0;
+}

@@ -1,0 +1,76 @@
+﻿@page "/management/profile/ConfirmEmailChange"
+
+@using Microsoft.Extensions.Primitives
+
+
+<h3>ConfirmEmailChange</h3>
+
+@code {
+
+    private StringValues userId;
+    private StringValues code;
+    private StringValues newEmail;
+
+    [Inject]
+    private ChurcheeUserManager _userManager { get; set; }
+
+    [Inject]
+    private NavigationManager _navigationManager { get; set; }
+
+    [Inject]
+    private NotificationService _notificationService { get; set; }
+
+
+    [Inject]
+    private ChurcheeSignInManager _signInManager { get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("user", out userId);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("email", out newEmail);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out code);
+
+        if (string.IsNullOrEmpty(userId.ToString()) || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(newEmail))
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Error changing email");
+
+            return;
+        }
+
+        string codeCheck = code.ToString();
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Error changing email");
+
+            return;
+        }
+
+        var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(codeCheck));
+
+        var result = await _userManager.ChangeEmailAsync(user, newEmail, token);
+
+        if (!result.Succeeded)
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Error changing email");
+        }
+
+        var setUserNameResult = await _userManager.SetUserNameAsync(user, newEmail);
+
+        if (!setUserNameResult.Succeeded)
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Error changing email");
+        }
+
+        await _userManager.SetUserNameAsync(user, newEmail);
+
+        _notificationService.Notify(NotificationSeverity.Success, "Thank you for confirming your email change.");
+
+        _navigationManager.NavigateTo("/management/profile/email");
+    }
+}

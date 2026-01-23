@@ -1,0 +1,95 @@
+﻿@using BlazorMonaco.Editor
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Logging
+@using Radzen
+@using Radzen.Blazor
+@inject ILogger<Form> _logger
+
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components.Rendering
+
+@if (_editContext != null && InputModel != null)
+{
+
+    <EditForm EditContext="@_editContext" OnSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+
+     <FormButtons FormInvalid="_formInvalid">
+            @ChildContent
+     </FormButtons>
+
+     <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=SetFormInvalidState EditContext="_editContext" OnImageSubmit=OnImageSubmit></FormFields>
+
+</EditForm>
+
+
+}
+
+@code {
+
+    private bool _formInvalid;
+
+    private bool _submitClicked;
+
+    private EditContext _editContext { get; set; } = default!;
+
+    [Parameter]
+    public object InputModel { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<ImageUploadModel> OnImageSubmit { get; set; }
+
+    [Inject]
+    public IServiceProvider _serviceProvider { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        _editContext = new EditContext(InputModel);
+        SetFormInvalidState();
+    }
+
+    private void SetFormInvalidState()
+    {
+        var validationResults = new List<ValidationResult>();
+        var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
+        Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
+
+        _formInvalid = validationResults.Any();
+
+        StateHasChanged();
+    }
+
+
+    private async Task HandleSubmit()
+    {
+
+        try
+        {
+            _submitClicked = true;
+
+            if (_editContext.Validate())
+            {
+                _logger.LogInformation("HandleValidSubmit");
+
+                await OnSave.InvokeAsync(null);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Log(LogLevel.Error, ex, "Error Submitting form");
+        }
+
+    }
+
+    [Parameter]
+    public EventCallback<object> OnSave { get; set; }
+
+}

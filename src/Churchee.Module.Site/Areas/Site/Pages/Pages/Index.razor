@@ -1,0 +1,83 @@
+﻿@page "/management/pages"
+@inherits BasePage
+@using Churchee.Module.Site.Features.Pages.Commands
+@using Churchee.Module.Site.Features.Pages.Queries
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Sections
+@using System.Text.Json
+@using Microsoft.AspNetCore.Http
+@using Radzen
+@using Radzen.Blazor
+@using System.Net.Http.Json
+
+<PageName Name="Pages"></PageName>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/pages/create">Create</a>
+    </div> 
+</SectionContent>
+
+<Grid TItem="GetListingQueryResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="@OnDelete" LoadChildData="@LoadChildData"></Grid>
+
+@code {
+
+    IEnumerable<GetListingQueryResponseItem> listingData;
+
+    bool isLoading = false;
+
+    int count = 0;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        var result = await Mediator.Send(new GetListingQuery(
+                skip: args?.Skip ?? 0,
+                take: args?.Top ?? 20,
+                searchText: args?.Filter ?? string.Empty,
+                orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Url asc" : args.OrderBy,
+                parentId: null
+        ), CancellationToken);
+
+        listingData = result.Data;
+
+        count = result.RecordsTotal;
+
+        isLoading = false;
+    }
+
+    async Task OnDelete(GetListingQueryResponseItem item)
+    {
+        var result = await Mediator.Send(new DeletePageCommand(item.Id), CancellationToken);
+
+        if (result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Page Deleted" });
+        }
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error: Could not remove Page" });
+        }
+    }
+
+    async Task LoadChildData(DataGridLoadChildDataEventArgs<GetListingQueryResponseItem> args)
+    {
+
+        var result = await Mediator.Send(new GetListingQuery(
+                skip: 0,
+                take: 1000,
+                searchText: string.Empty,
+                orderBy: "Url asc",
+                parentId: args.Item.Id
+        ), CancellationToken);
+
+        args.Data = result.Data;
+    }
+}
+
+
+
+

@@ -1,0 +1,88 @@
+﻿@using BlazorMonaco.Editor
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Web
+@using Radzen
+@using Radzen.Blazor
+@using System.Linq.Expressions
+
+
+<RadzenFormField Text=@PropertyInfo.Name.ToSentence()>
+    <ChildContent>
+        <RadzenTextBox Name="@(PropertyInfo.Name)" Value="@Value" Change=@((value) => OnFieldChange(PropertyInfo, value)) @onblur=@((value) => OnFieldChange(PropertyInfo, PropertyInfo.GetValue(InputModel))) />
+    </ChildContent>
+    <Helper>
+        <small class="rz-color-base-600">slug: @Slug</small>
+        <ValidationMessage For="GetExpression(PropertyInfo, InputModel)" />
+    </Helper>
+</RadzenFormField>
+
+
+@code {
+
+    [Parameter]
+    public PropertyInfo PropertyInfo { get; set; } = default!;
+
+    [Parameter]
+    public EditContext EditContext { get; set; } = default!;
+
+    [Parameter]
+    public object InputModel { get; set; } = default!;
+
+    [Parameter]
+    public string Value { get; set; } = default!;
+
+    [Parameter]
+    public string Name { get; set; } = default!;
+
+
+    public string Slug { 
+        get
+        {
+
+            if (string.IsNullOrEmpty(Value))
+            {
+                return string.Empty;
+            }
+
+            if(Value == "Home")
+            {
+                return "/";
+            }
+
+            return Value.ToURL();
+        }
+    }
+
+    public async Task OnFieldChange(PropertyInfo info, object? value)
+    {
+        info.SetValue(InputModel, value);
+
+        // Get the FieldIdentifier with the EditContext from the field name
+        FieldIdentifier fieldIdentifier = EditContext.Field(info.Name);
+
+        // Validate the field when notifying change
+        EditContext.NotifyFieldChanged(fieldIdentifier);
+
+        await OnValueChanged.InvokeAsync(null);
+    }
+
+    private static Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
+    {
+        // Create an expression to set the ValueExpression-attribute.
+        var constant = System.Linq.Expressions.Expression.Constant(inputModel, inputModel.GetType());
+        var exp = System.Linq.Expressions.MemberExpression.Property(constant, info.Name);
+        var lamb = System.Linq.Expressions.Expression.Lambda<Func<object>>(exp);
+
+        return lamb;
+    }
+
+    [Parameter]
+    public EventCallback<object> OnValueChanged { get; set; }
+
+}
+
+
+
+
+

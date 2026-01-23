@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="Churchee.Module.Events.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Site\Churchee.Module.Site.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
+  </ItemGroup>
+
+</Project>

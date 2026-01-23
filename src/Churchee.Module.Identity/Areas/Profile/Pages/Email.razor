@@ -1,0 +1,111 @@
+﻿@using Churchee.Common.Abstractions.Utilities
+@using Churchee.Module.UI.Components
+@using Microsoft.AspNetCore.Http
+
+@page "/management/profile/email"
+
+<PageName Name="Email"></PageName>
+
+﻿@if (_user == null)
+{
+    <div>Loading...</div>
+}
+else
+{
+     <RadzenRow Gap="2rem" RowGap="2rem" class="rz-m-0 rz-m-md-12">
+
+        <RadzenColumn Size="12" SizeMD="4">
+                    <EditForm Model="@InputModel" OnValidSubmit="OnValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        <RadzenStack>
+
+                            <RadzenFormField Text="New Email">
+                                <ChildContent>
+                                    <RadzenTextBox @bind-Value="InputModel.NewEmail" id="floatingCurrentEmail" />
+                                </ChildContent>
+                                <Helper>
+                                    <ValidationMessage For="@(() => InputModel.NewEmail)" />
+                                </Helper>
+                            </RadzenFormField>
+
+                            <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Disabled="@_isLoading" />
+
+                        </RadzenStack>
+
+                    </EditForm>
+        </RadzenColumn>
+
+    </RadzenRow>
+
+}
+
+
+@code {
+
+    [Inject]
+    private ChurcheeUserManager _userManager { get; set; }
+
+    [Inject]
+    private IHttpContextAccessor _context { get; set; }
+
+    [Inject]
+    private NavigationManager _navigationManager { get; set; }
+
+    [Inject]
+    private NotificationService _notificationService { get; set; }
+
+    [Inject]
+    private IEmailService _emailService { get; set; }
+
+    private ApplicationUser _user;
+
+    public ChangeEmailModel InputModel { get; set; } = new();
+
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var id = _context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(id);
+        _user = user;
+    }
+
+    private async void OnValidSubmit()
+    {
+        _isLoading = true;
+
+        try
+        {
+            var isEmailRegistered = await _userManager.FindByEmailAsync(InputModel.NewEmail);
+
+            if (isEmailRegistered != null)
+            {
+                _notificationService.Notify(NotificationSeverity.Error, "This Email cannot be used");
+
+            }
+            else if (InputModel.NewEmail != _user.Email)
+            {
+                await SendEmailChangeConfirmationAsync(_user, InputModel.NewEmail);
+
+                _notificationService.Notify(NotificationSeverity.Info, "Check Your Inbox To Confirm Email Change");
+            }
+        }
+        catch (Exception)
+        {
+            _notificationService.Notify(NotificationSeverity.Error, "Sorry, something appears to have gone wrong, please contact support");
+        }
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task SendEmailChangeConfirmationAsync(ApplicationUser user, string newEmail)
+    {
+        var baseUri = _navigationManager.BaseUri;
+        var code = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = $"{baseUri}Management/Profile/ConfirmEmailChange?user={user.Id}&email={newEmail}&code={code}";
+        await _emailService.SendEmailAsync(user.Email, user.UserName, "Confirm Email", $"Please confirm your email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Click Here To Confirm</a>.", $"Please confirm your email, open the following in a browser to confirm: {HtmlEncoder.Default.Encode(callbackUrl)}");
+    }
+}

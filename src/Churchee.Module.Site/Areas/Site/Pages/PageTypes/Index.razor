@@ -1,0 +1,62 @@
+﻿@page "/management/pagetypes"
+@inherits BasePage
+@using Churchee.Module.Site.Features.PageTypes.Commands
+@using Churchee.Module.Site.Features.PageTypes.Queries
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using Radzen
+@using Radzen.Blazor
+
+<PageName Name="Page Types"/>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/pagetypes/create">Create</a>
+    </div> 
+</SectionContent>
+
+<Grid TItem="GetPageTypesListingResponse" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true" OnDelete="OnDelete"></Grid>
+
+@code {
+
+    IEnumerable<GetPageTypesListingResponse> listingData;
+
+    bool isLoading = false;
+
+    int count = 0;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        var result = await Mediator.Send(new GetPageTypesListingQuery(
+            skip: args?.Skip ?? 0,
+            take: args?.Top ?? 20,
+            searchText: args?.Filter ?? string.Empty,
+            orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Name asc" : args.OrderBy), CancellationToken);
+
+        listingData = result.Data;
+
+        count = result.RecordsTotal;
+
+        isLoading = false;
+    }
+
+    async Task OnDelete(GetPageTypesListingResponse item)
+    {
+        var result = await Mediator.Send(new DeletePageTypeCommand(item.Id));
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove Page Type");
+
+            return;
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, "Page Type Deleted");
+    }
+
+}
+

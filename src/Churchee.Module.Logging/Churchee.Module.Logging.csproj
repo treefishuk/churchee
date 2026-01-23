@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Areas\Configuration\Logs\Details.razor.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Areas\Configuration\Logs\Details.razor.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+	  <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="9.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+	  <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(MSBuildProjectName).Tests" />
+  </ItemGroup>
+
+</Project>

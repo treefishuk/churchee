@@ -1,0 +1,104 @@
+﻿@using BlazorMonaco.Editor
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
+@using Radzen
+
+
+<ChurcheeErrorBoundry>
+    <ChildContent>
+
+        @if (rendered)
+        {
+            <StandaloneCodeEditor @ref=_editorRef Id="@Id" ConstructionOptions="RazorEditorConstructionOptions" OnKeyUp="@(async () => await OnEditorChange())" OnDidInit="@(async () => await OnEditorDidInit())" />
+        }
+
+    </ChildContent>
+    <ErrorContent>
+        Failed to load Editor
+    </ErrorContent>
+</ChurcheeErrorBoundry>
+
+
+@code {
+
+    private bool rendered = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            rendered = true;
+            StateHasChanged();
+        }
+    }
+
+    private string Id { get; set; } = string.Empty;
+
+    [Inject]
+    protected ILogger<RazorEditor> Logger { get; set; } = default!;
+
+    [Inject]
+    protected NotificationService NotificationService { get; set; } = default!;
+
+    [Parameter]
+    public string Value { get; set; } = default!;
+
+    private StandaloneCodeEditor _editorRef = default!;
+
+    private StandaloneEditorConstructionOptions RazorEditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+            {
+                AutomaticLayout = true,
+                Language = "razor"
+            };
+    }
+
+    public async Task OnEditorChange()
+    {
+        try
+        {
+            var value = await _editorRef.GetValue();
+
+            await Change.InvokeAsync(value);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "OnEditorChange Error");
+
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to update editor, please re-load page and re-try");
+        }
+
+
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        Id = Guid.NewGuid().ToString();
+
+        return base.OnInitializedAsync();
+    }
+
+    public async Task OnEditorDidInit()
+    {
+        try
+        {
+            await _editorRef.SetValue(Value);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "OnEditorDidInit Error");
+
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to initialise editor, please re-load page and re-try");
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> Change { get; set; }
+
+
+}
+
+

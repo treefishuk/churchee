@@ -1,0 +1,43 @@
+﻿@using Radzen
+@using Radzen.Blazor
+@inject NavigationManager _navigationManager
+
+<div class="sticky-formButtons">
+
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+            <RadzenButton id="submitFormBtn" Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
+            <RadzenButton id="cancelFormBtn" Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+            @ChildContent
+        </RadzenStack>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public bool FormInvalid { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        StateHasChanged();
+    }
+
+    public void CancelForm()
+    {
+        var uri = new Uri(_navigationManager.Uri);
+        
+        var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        // Get the first two segments
+        var firstTwoSegments = segments.Take(2).ToArray();
+        var basePath = Path.AltDirectorySeparatorChar + string.Join('/', firstTwoSegments);
+
+        // Rebuild the base URL
+        var baseUrl = $"{uri.Scheme}://{uri.Authority}{basePath}";
+
+        _navigationManager.NavigateTo(baseUrl);
+    }
+}

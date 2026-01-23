@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="Churchee.Module.Site.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+    <Compile Remove="Areas\Site\Pages\Podcasts\**" />
+    <Compile Remove="Features\Blog\Responses\**" />
+    <Content Remove="Areas\Site\Pages\Podcasts\**" />
+    <Content Remove="Features\Blog\Responses\**" />
+    <EmbeddedResource Remove="Areas\Site\Pages\Podcasts\**" />
+    <EmbeddedResource Remove="Features\Blog\Responses\**" />
+    <None Remove="Areas\Site\Pages\Podcasts\**" />
+    <None Remove="Features\Blog\Responses\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Site\Pages\Articles\Index.cshtml.cs" />
+    <Compile Remove="Areas\Site\Pages\Pages\Create.cshtml.cs" />
+    <Compile Remove="Areas\Site\Pages\Pages\Index.cshtml.cs" />
+    <Compile Remove="Areas\Site\Pages\Pages\Index.cshtml.GridItem.cs" />
+    <Compile Remove="Areas\Site\Pages\Styles\Index.cshtml.cs" />
+    <Compile Remove="Areas\Site\Pages\Styles\Index.cshtml.InputModel.cs" />
+    <Compile Remove="Areas\Site\Pages\Templates\Data.cshtml.cs" />
+    <Compile Remove="Areas\Site\Pages\Templates\Edit.cshtml.cs" />
+    <Compile Remove="Areas\Site\Pages\Templates\Edit.cshtml.InputModel.cs" />
+    <Compile Remove="Areas\Site\Pages\Templates\Index.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Areas\Site\Pages\Articles\Index.cshtml" />
+    <Content Remove="Areas\Site\Pages\Pages\Create.cshtml" />
+    <Content Remove="Areas\Site\Pages\Pages\Index.cshtml" />
+    <Content Remove="Areas\Site\Pages\Styles\Index.cshtml" />
+    <Content Remove="Areas\Site\Pages\Templates\Data.cshtml" />
+    <Content Remove="Areas\Site\Pages\Templates\Edit.cshtml" />
+    <Content Remove="Areas\Site\Pages\Templates\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+    <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
+    <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
+  </ItemGroup>
+
+</Project>

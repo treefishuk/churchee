@@ -1,0 +1,112 @@
+﻿@page "/management/integrations/x"
+@inherits BasePage
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.X.Areas.Integrations.Models
+@using Churchee.Module.X.Features.Tweets.Commands
+@using Churchee.Module.UI.Models
+@using Churchee.Module.X.Features.Tweets.Queries
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Churchee.Module.UI.Components
+@using Radzen.Blazor
+@using Radzen
+
+<PageName></PageName>
+
+@if (isConfigured)
+{
+    <div>
+
+        @if (lastRun != null)
+        {
+            <b>Last Run: @lastRun.Value.ToShortDateString()</b>
+        }
+
+        <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+            <h1>X Sync is set up!</h1>
+
+            <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+
+        </RadzenStack>
+
+    </div>
+
+}
+
+else
+{
+    <RadzenRow Gap="1rem">
+        <RadzenColumn class="rz-p-5">
+            <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm())>
+            </Form>
+        </RadzenColumn>
+        <RadzenColumn class="rz-p-5">
+
+            <h3>Configuration Instructions</h3>
+
+
+
+        </RadzenColumn>
+    </RadzenRow>
+}
+
+
+@code{
+
+    bool isConfigured = false;
+
+    DateTime? lastRun = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Mediator.Send(new CheckXIntegrationStatusQuery());
+
+        InputModel = new InputModel();
+
+        lastRun = result.LastRun;
+
+        isConfigured = result.Configured;
+    }
+
+    private async Task DisableSync()
+    {
+        var result = await Mediator.Send(new DisableTweetsSyncCommand(await CurrentUser.GetApplicationTenantId()));
+
+        if (result.IsSuccess)
+        {
+            isConfigured = false;
+
+            NotificationService.Notify(NotificationSeverity.Success, "Integration Disabled");
+
+            InputModel = new InputModel();
+
+            StateHasChanged();
+        }
+    }
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    public InputModel InputModel { get; set; } = new();
+
+    private async Task ValidSubmitForm()
+    {
+        var enableResult = await Mediator.Send(new EnableTweetsSyncCommand(InputModel.AccountName, InputModel.BearerToken));
+
+        if (!enableResult.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to enable Tweets Sync");
+        }
+
+        else
+        {
+            NotificationService.Notify(NotificationSeverity.Success, "Enabled Tweets Sync");
+
+            isConfigured = true;
+
+            StateHasChanged();
+        }
+    }
+}

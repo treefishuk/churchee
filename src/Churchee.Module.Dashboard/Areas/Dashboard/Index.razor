@@ -1,0 +1,205 @@
+﻿@page "/management"
+@using Churchee.Module.Dashboard.Features.Queries
+@using Churchee.Module.Dashboard.Features.Queries.GetDashboardData
+@using Churchee.Module.UI.Components
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using Radzen
+@using Radzen.Blazor
+@using System.Globalization
+
+<PageName Name="Dashboard"></PageName>
+
+<FullPageOverlay Visible="overlayVisible" />
+
+@if(data != null)
+{
+    
+<RadzenRow class="rz-mb-5" Gap="1rem">
+    <RadzenColumn Size="3">
+        <RadzenCard Style="width: 100%">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" class="rz-p-4">
+
+                <RadzenIcon Icon="person" Style="font-size: 3rem;" />
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Unique Visitors</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@data.UniqueVisitors</b></RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <RadzenCard Style="width: 100%">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Start"  Gap="1rem" class="rz-p-4">
+                <RadzenIcon Icon="repeat" Style="font-size: 3rem;" />
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Returning Visitors</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@data.ReturningVisitors</b></RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <RadzenCard Style="width: 100%">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Start" Gap="1rem" class="rz-p-4">
+
+                <RadzenIcon Icon="visibility" Style="font-size: 3rem;" />
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Page Views</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@data.TotalPageViews</b></RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+    <RadzenColumn Size="3">
+        <RadzenCard Style="width: 100%">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Start" Gap="1rem" class="rz-p-4">
+
+                <RadzenIcon Icon="show_chart" Style="font-size: 3rem;" />
+                <RadzenStack Gap="0">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-5 rz-my-0">Viewing: @filterRange</RadzenText>
+                </RadzenStack>
+                <RadzenMenu class="rz-dash-menu">
+                    <RadzenMenuItem >
+                        <RadzenMenuItem Text="Today" Click="@(async () => await FilterClick(0))"></RadzenMenuItem>
+                        <RadzenMenuItem Text="Last 7 Days" Click="@(async () => await FilterClick(7))"></RadzenMenuItem>
+                        <RadzenMenuItem Text="Last 30 Days" Click="@(async () => await FilterClick(30))"></RadzenMenuItem>
+                    </RadzenMenuItem>
+                </RadzenMenu>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+
+<RadzenRow class="rz-mb-5" Gap="1rem">
+    <RadzenColumn Size="6">
+
+        <RadzenCard Style="width: 100%; height: 100%">
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0 rz-mb-5">Most Viewed Pages</RadzenText>
+
+            <RadzenDataGrid AllowFiltering="false" AllowPaging="false" PageSize="5" AllowSorting="false" Data="@data.TopPages" TItem="GetDashboardDataResponseItem">
+                <Columns>
+                    <RadzenDataGridColumn Property="@nameof(GetDashboardDataResponseItem.Name)" Title="Page" />
+                    <RadzenDataGridColumn Property="@nameof(GetDashboardDataResponseItem.Count)" Title="Count" />
+                </Columns>
+            </RadzenDataGrid>
+
+        </RadzenCard>
+    </RadzenColumn>
+    <RadzenColumn Size="6">
+        <RadzenCard Style="width: 100%">
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Device Usage %</RadzenText>
+            <RadzenChart>
+                <RadzenPieSeries Data="@data.Devices" Title="Devices" CategoryProperty="Name" ValueProperty="Count" Fills="colours">
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenPieSeries>
+            </RadzenChart>
+        </RadzenCard>
+    </RadzenColumn>
+
+</RadzenRow>
+
+<RadzenRow class="rz-mb-5" Gap="1rem">
+    <RadzenColumn Size="6">
+
+        <RadzenCard Style="width: 100%">
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Peak Times</RadzenText>
+
+            <RadzenChart>
+                    <RadzenAreaSeries Smooth="true" Data="@data.PagesOverTime" Title="Page Views" CategoryProperty="Name" ValueProperty="Count" RenderingOrder="1" Fill="#6A8DAE" Stroke="#87a3be">
+                    <RadzenSeriesDataLabels Visible="false" />
+                </RadzenAreaSeries>
+                <RadzenCategoryAxis Padding="40" LabelAutoRotation="-45" />
+                <RadzenValueAxis>
+                    <RadzenGridLines Visible="true" />
+                </RadzenValueAxis>
+            </RadzenChart>
+
+        </RadzenCard>
+
+    </RadzenColumn>
+    <RadzenColumn Size="6">
+        <RadzenCard Style="width: 100%">
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Referral Sources %</RadzenText>
+                <RadzenChart>
+                <RadzenPieSeries Data="@data.ReferralSource" Title="Referral Source" CategoryProperty="Name" ValueProperty="Count" Fills="colours">
+                    <RadzenSeriesDataLabels Visible="true"/>
+                </RadzenPieSeries>
+            </RadzenChart>
+        </RadzenCard>
+    </RadzenColumn>
+
+    </RadzenRow>
+
+
+}
+
+
+@code {
+    readonly string[] colours = { "#6A8DAE", "#667584", "#5F9ED9", "#4D5359", "#232B33" };
+
+    string filterRange = "Today";
+
+    GetDashboardDataResponse data = null;
+
+    private bool overlayVisible = false;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    [Inject]
+    protected NotificationService NotificationService { get; set; } = default!;
+
+    async Task FilterClick(int days)
+    {
+        await GetData(days);
+
+        switch (days)
+        {
+            case 7:
+                filterRange = "Last 7 days";
+                break;
+            case 30:
+                filterRange = "Last 30 days";
+                break;
+            default:
+                filterRange = "Today";
+                break;
+
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetData(0);
+        }
+    }
+
+    async Task GetData(int days)
+    {
+        overlayVisible = true;
+
+        StateHasChanged();
+
+        data = await Mediator.Send(new GetDashboardDataQuery(days));
+
+        if(data.ErrorMessage != string.Empty)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = data.ErrorMessage,
+                Duration = 5000
+            });
+        }
+
+        overlayVisible = false;
+
+        StateHasChanged();
+
+    }
+
+}

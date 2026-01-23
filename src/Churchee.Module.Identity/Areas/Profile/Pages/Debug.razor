@@ -1,0 +1,50 @@
+﻿@using Churchee.Common.Abstractions.Utilities
+@using Churchee.Module.UI.Components
+@using Microsoft.AspNetCore.Http
+@page "/management/profile/debug"
+
+<PageName Name="Debug"></PageName>
+
+<div>Active Tenant: @_user.ApplicationTenantId.ToString()</div>
+<div>Claims</div>
+
+@if (_claims != null)
+{
+    @foreach (var claim in _claims)
+    {
+        <div>@claim.Type: @claim.Value</div>
+    }           
+}
+else
+{
+    <div>Loading roles...</div>
+}
+
+
+
+@code {
+
+    [Inject]
+    private ChurcheeUserManager _userManager { get; set; }
+
+    [Inject]
+    private IHttpContextAccessor _context { get; set; }
+
+    private ApplicationUser _user;
+
+    private IEnumerable<Claim> _claims { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var id = _context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var user = await _userManager.FindByIdAsync(id);
+
+        ClaimsPrincipal cp = _context.HttpContext.User;
+
+        _claims = cp.Claims.Where(w => w.Type == ClaimTypes.Role).ToList();
+
+        _user = user;
+    }
+
+}

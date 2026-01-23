@@ -1,0 +1,69 @@
+﻿@page "/management/pages/create"
+@inherits BasePage
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.PageTypes.Queries
+@using Churchee.Module.Site.Features.Pages.Commands
+@using Churchee.Module.Site.Features.Pages.Commands.CreatePage
+@using Churchee.Module.Site.Features.Pages.Queries
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Radzen
+
+<PageName Name="Create Page"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    public CreatePageModel InputModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var pageTypesDropdownData = await GetPageTypeOptions();
+        var parentsDropdownData = await GetParentOptions();
+
+        InputModel = new CreatePageModel()
+        {
+
+                PageType = new DropdownInput
+                {
+                    Data = pageTypesDropdownData ?? new List<DropdownInput>()
+                },
+                Parent = new DropdownInput
+                {
+                    Data = parentsDropdownData ?? new List<DropdownInput>()
+                }
+        };
+    }
+
+    private async Task<List<DropdownInput>> GetPageTypeOptions()
+    {
+        var data = await Mediator.Send(new GetPagetypesDropdownDataQuery(), default);
+
+        return data.Select(s => new DropdownInput
+        {
+            Title = s.Text,
+            Value = s.Value
+        }).ToList();
+    }
+
+    private async Task<IEnumerable<DropdownInput>> GetParentOptions()
+    {
+        return await Mediator.Send(new GetParentPagesDropdownDataQuery(), default);
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var result = await Mediator.Send(new CreatePageCommand(InputModel.Title, InputModel.Description, InputModel.PageType.Value, InputModel.Parent.Value), default);
+
+        if (result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/pages");
+        }
+
+    }
+}

@@ -1,0 +1,59 @@
+﻿@page "/management/events/create"
+@inherits BasePage
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Events.Areas.Website.Models
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Churchee.Module.Events.Features.Commands
+@using MediatR
+@using Radzen
+
+<PageName Name="Create Event"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    public CreateEventInputModel InputModel { get; set; } = new();
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        InputModel = new CreateEventInputModel();
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var createEventsResult = await Mediator.Send(new ActivateEventsCommand(await CurrentUser.GetApplicationTenantId()));
+
+        if (createEventsResult.IsSuccess)
+        {
+            var command = new CreateEventCommand.Builder()
+                .SetTitle(InputModel.Title)
+                .SetDescription(InputModel.Description)
+                .SetStart(InputModel.Start)
+                .SetEnd(InputModel.End)
+                .SetContent(InputModel.Content)
+                .SetImageFileName(InputModel.ImageUpload.FileName)
+                .SetBase64Image(InputModel.ImageUpload.Value)
+                .SetLocationName(InputModel.LocationName)
+                .SetCity(InputModel.City)
+                .SetStreet(InputModel.Street)
+                .SetPostCode(InputModel.PostCode)
+                .SetCountry(InputModel.Country)
+                .SetLatitude(InputModel.Latitude)
+                .SetLongitude(InputModel.Longitude)
+                .Build();
+
+            var result = await Mediator.Send(command, CancellationToken);
+
+            if (result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/management/events");
+            }
+        }
+    }
+}

@@ -1,0 +1,60 @@
+﻿@using Churchee.Module.UI.Components
+@inherits LayoutComponentBase
+<RadzenComponents />
+
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" Gap="0">
+            <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+            <Logo />
+            <Breadcrumb>
+                <ErrorBoundary>
+                    <ChildContent>
+                <SectionOutlet SectionName="top-bar" />
+                    </ChildContent>
+                    <ErrorContent>
+                        ...
+                    </ErrorContent>
+                </ErrorBoundary>
+            </Breadcrumb>
+                <SectionOutlet SectionName="top-bar-end" />
+        <ProfileMenu></ProfileMenu>
+        </RadzenStack>
+
+
+    </RadzenHeader>
+    <RadzenSidebar Responsive="true" @bind-Expanded="@sidebarExpanded">
+        <RadzenPanelMenu ShowArrow="true">
+            <AdminNav />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+    <RadzenBody>
+        <ErrorBoundary>
+            <ChildContent>
+                @Body
+            </ChildContent>
+            <ErrorContent>
+                <div class="alert alert-danger" role="alert">
+
+                    <p>Oh dear...</p>
+
+                    <p>It looks like something has gone wrong...</p>
+
+                    <p>Click <a href="/management">HERE</a> to return to the Dashboard.</p>
+
+                </div>
+            </ErrorContent>
+        </ErrorBoundary>
+    </RadzenBody>
+
+    <RadzenFooter>
+        <SectionOutlet SectionName="footer-bar"/>
+    </RadzenFooter>
+</RadzenLayout>
+
+@code {
+    bool sidebarExpanded = true;
+
+    [Inject]
+    private IHttpContextAccessor _context { get; set; } = default!;
+}

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Churchee.Data.EntityFramework.Admin.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Scrutor" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+    <ProjectReference Include="..\Churchee.Data.EntityFramework.Shared\Churchee.Data.EntityFramework.Shared.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Identity\Churchee.Module.Identity.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
+  </ItemGroup>
+
+</Project>

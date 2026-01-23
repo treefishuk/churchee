@@ -1,0 +1,268 @@
+﻿@using Churchee.Module.Events.Models
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Routing
+@using Radzen
+@using Radzen.Blazor
+
+
+<RadzenStack Orientation="Orientation.Horizontal">
+
+    <RadzenFormField Text="Start" AllowFloatingLabel="false">
+
+        <RadzenDatePicker Max=@End?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=Start />
+
+    </RadzenFormField>
+
+    <RadzenFormField Text="End" AllowFloatingLabel="false">
+
+        <RadzenDatePicker Min=@Start?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=End />
+
+    </RadzenFormField>
+
+    <RadzenToggleButton Style="margin-top: 10px;" TValue="bool" @bind-Value="Recouring" Text="@(Recouring ? "Add Single" : "Add Multiple")"></RadzenToggleButton>
+
+    @if(Recouring){
+
+    <RadzenFormField Text="Repeat" AllowFloatingLabel="false">
+            <RadzenDropDown @bind-value=SelectedRecourance Data="TimeSegments" Placeholder="Every" TextProperty="Title" ValueProperty="Value"></RadzenDropDown>
+     </RadzenFormField>
+
+    <RadzenFormField Text="Until" AllowFloatingLabel="false">
+
+        <RadzenDatePicker Min=@End?.Date DateFormat="dd-MM-yyyy HH:mm" ShowTime=true @bind-Value=Final />
+        
+    </RadzenFormField>
+
+    }
+
+    <RadzenButton ButtonStyle="ButtonStyle.Success" class="btn-add rz-mt-2" Icon="add" Click="AddEntry"></RadzenButton>
+
+</RadzenStack>
+
+
+<RadzenDataGrid @ref="radzenGrid" Data="@Dates" IsLoading="false" AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="false" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="EventDateModel">
+    <Columns>
+
+        <RadzenDataGridColumn TItem="EventDateModel" Property="Start" Title="Start" SortOrder="SortOrder.Ascending">
+            <Template Context="data">
+                @FormatWithOrdinal(data.Start)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="EventDateModel" Property="End" Title="End">
+            <Template Context="data">
+                @FormatWithOrdinal(data.End)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="EventDateModel" Title="" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center" Pickable="false">
+            <Template Context="data">
+                <RadzenButton Icon="delete" class="delete-row" ButtonStyle="ButtonStyle.Danger" Click="() => RemoveEntry(data)"></RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+
+    [Parameter] 
+    public List<EventDateModel> Dates { get; set; }
+
+    public DateTime? Start { get; set; }
+    public DateTime? End { get; set; }
+    public DateTime? Final { get; set; }
+
+    private List<DropdownInput> TimeSegments = new();
+
+    public string SelectedRecourance { get; set; }
+
+    RadzenDataGrid<EventDateModel> radzenGrid = default!;
+
+    public bool Recouring { get; set; }
+
+    [Inject]
+    protected NotificationService NotificationService { get; set; } = default!;
+
+    private async Task AddEntry()
+    {
+        if (Start == null)
+        {
+            NotificationService.Notify(NotificationSeverity.Warning, "Validation", "Start date is required.");
+
+            return;
+        }
+        if (End != null && End < Start )
+        {
+            NotificationService.Notify(NotificationSeverity.Warning, "Validation", "End date must be after start date.");
+
+            return;
+        }
+
+        await AddDates();
+        await ResetFormAndReloadGrid();
+
+    }
+
+
+    private static string FormatWithOrdinal(DateTime? dt)
+    {
+        if (!dt.HasValue)
+        {
+            return string.Empty;
+        }
+
+        var d = dt.Value;
+        var day = d.Day;
+        var rem100 = day % 100;
+        string suffix;
+
+        if (rem100 >= 11 && rem100 <= 13)
+        {
+            suffix = "th";
+        }
+        else
+        {
+            suffix = (day % 10) switch
+            {
+                1 => "st",
+                2 => "nd",
+                3 => "rd",
+                _ => "th"
+            };
+        }
+
+        return $"{d:dddd} {day}{suffix} {d:MMMM} @ {d:HH:mm}";
+    }
+
+    private async Task AddDates()
+    {
+        // single entry
+        if (!Recouring)
+        {
+            AddSingleDate();
+            await radzenGrid.Reload();
+            return;
+        }
+
+        // recurring entries
+        var startValue = Start!.Value;
+        var finalValue = Final!.Value;
+        var duration = End.HasValue ? End.Value - Start.Value : (TimeSpan?)null;
+
+        switch (SelectedRecourance)
+        {
+            case "Week":
+                AddWeeklyOccurrences(startValue, finalValue, duration);
+                break;
+
+            case "Month":
+                AddMonthlyOccurrences(startValue, finalValue, duration);
+                break;
+
+            default:
+                NotificationService.Notify(NotificationSeverity.Warning, "Recurrence", $"Unknown recurrence '{SelectedRecourance}'.");
+                break;
+        }
+
+        await radzenGrid.Reload();
+    }
+
+    private void AddSingleDate()
+    {
+        Dates.Add(new EventDateModel(Start, End));
+    }
+
+    private void AddWeeklyOccurrences(DateTime startValue, DateTime finalValue, TimeSpan? duration)
+    {
+        var current = startValue;
+        while (current <= finalValue)
+        {
+            var occEnd = duration.HasValue ? current + duration.Value : (DateTime?)null;
+            Dates.Add(new EventDateModel(current, occEnd));
+            current = current.AddDays(7);
+        }
+    }
+
+    private void AddMonthlyOccurrences(DateTime startValue, DateTime finalValue, TimeSpan? duration)
+    {
+        // Determine weekday and ordinal (e.g., "first Sunday") relative to the start date
+        var originalDayOfWeek = startValue.DayOfWeek;
+        var ordinal = ((startValue.Day - 1) / 7) + 1; // 1 = first, 2 = second, etc.
+        var timeOfDay = startValue.TimeOfDay;
+
+        var current = startValue;
+
+        while (current <= finalValue)
+        {
+            var occEnd = duration.HasValue ? current + duration.Value : (DateTime?)null;
+            Dates.Add(new EventDateModel(current, occEnd));
+
+            // compute candidate for same ordinal weekday in next months, skipping months where it doesn't exist
+            var nextMonth = current.AddMonths(1);
+            DateTime? candidate = null;
+
+            while (nextMonth <= finalValue && candidate == null)
+            {
+                candidate = GetNthWeekdayOfMonth(nextMonth.Year, nextMonth.Month, originalDayOfWeek, ordinal, timeOfDay);
+                if (candidate == null)
+                {
+                    // skip this month and try the following month
+                    nextMonth = nextMonth.AddMonths(1);
+                }
+            }
+
+            if (!candidate.HasValue)
+            {
+                // no further occurrence before finalValue
+                break;
+            }
+
+            current = candidate.Value;
+        }
+    }
+
+    private async Task ResetFormAndReloadGrid()
+    {
+        Start = null;
+        End = null;
+        Final = null;
+        SelectedRecourance = string.Empty;
+
+        await radzenGrid.Reload();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        TimeSegments = new List<DropdownInput>
+        {
+            new DropdownInput { Title = "Week", Value = "Week" },
+            new DropdownInput { Title = "Month", Value = "Month" }
+        };
+    }
+
+    private async Task RemoveEntry(EventDateModel item)
+    {
+        Dates.Remove(item);
+
+        await radzenGrid.Reload();
+    }
+
+    private static DateTime? GetNthWeekdayOfMonth(int year, int month, DayOfWeek dow, int n, TimeSpan timeOfDay)
+    {
+        if (n <= 0)
+        {
+            return null;
+        }
+
+        var firstOfMonth = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Unspecified);
+        var diff = ((int)dow - (int)firstOfMonth.DayOfWeek + 7) % 7;
+        var day = 1 + diff + (n - 1) * 7;
+
+        if (day > DateTime.DaysInMonth(year, month))
+        {
+            return null;
+        }
+
+        return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Unspecified).Add(timeOfDay);
+    }
+}

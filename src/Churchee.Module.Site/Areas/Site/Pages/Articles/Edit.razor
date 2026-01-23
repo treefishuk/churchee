@@ -1,0 +1,208 @@
+﻿@page "/management/articles/edit/{Id:guid}"
+@inherits BasePage
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.Blog.Commands
+@using Churchee.Module.Site.Features.Blog.Queries
+@using Churchee.Module.Site.Features.Media.Commands
+@using Churchee.Module.Site.Features.PageTypes.Queries
+@using Churchee.Module.Site.Features.Pages.Commands
+@using Churchee.Module.Site.Features.Pages.Commands.CreatePage
+@using Churchee.Module.Site.Features.Pages.Queries
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Radzen
+@using Radzen.Blazor
+@using Radzen.Blazor.Rendering
+@using Path = System.IO.Path;
+
+<PageName Name="Edit Article"></PageName>
+
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) OnImageSubmit="OnImageSubmit" >
+
+    <RadzenButton id="distractionFreeModeBtn" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@(() => OpenContentEditor())">Distraction Free Mode</RadzenButton>
+
+    @if (IsPublished)
+    {
+        <RadzenButton id="unPublishBtn" ButtonStyle="ButtonStyle.Warning" ButtonType="ButtonType.Button" Click="@(() => UnPublish())">Unpublish</RadzenButton>
+    }
+    else
+    {
+        <RadzenButton id="publishBtn" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Button" Click="@(() => Publish())">Publish</RadzenButton>
+    }
+
+</Form>
+
+@code {
+    public EditArticleModel InputModel { get; set; } = new();
+
+    public ImageUploadModel ImageUploadModel { get; set; } = new();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [Inject]
+    private DialogService DialogService { get; set; } = default!;
+
+    public bool IsPublished { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var data = await Mediator.Send(new GetArticleByIdQuery(Id), default);
+
+        IsPublished = data.IsPublished;
+
+        var parentsDropdownData = await GetParentOptions();
+
+        InputModel = new EditArticleModel()
+        {
+            Parent = new DropdownInput
+            {
+                Title = data.ParentName,
+                Value = data.ParentId?.ToString().ToUpperInvariant(),
+                Data = parentsDropdownData ?? new List<DropdownInput>()
+            },
+            Content = data.Content ?? string.Empty,
+            Title = data.Title ?? string.Empty,
+            Description = data.Description ?? string.Empty,
+            PublishOnDate = data.PublishOnDate
+        };
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var command = new UpdateArticleCommand
+        {
+            Id = Id,
+            Title = InputModel.Title,
+            Description = InputModel.Description,
+            PublishOnDate = InputModel.PublishOnDate,
+            Content = InputModel.Content,
+            ParentPageId = Guid.Parse(InputModel.Parent?.Value),
+            TempImagePath = InputModel.Image.TempFilePath,
+            ImageAltTag = InputModel.Image.Description,
+            ImageFileName = InputModel.Image.File?.Name ?? string.Empty,
+            ImagePath = InputModel.Image.Path
+        };
+
+        var result = await Mediator.Send(command, default);
+
+        if (result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/management/articles");
+        }
+    }
+
+    private async Task<IEnumerable<DropdownInput>> GetParentOptions()
+    {
+        return await Mediator.Send(new GetParentArticlePagesDropdownDataQuery(), default);
+    }
+
+    private async Task Publish()
+    {
+        var result = await Mediator.Send(new PublishArticleCommand(Id));
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not publish Article");
+
+            return;
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, "Article Published");
+
+        IsPublished = true;
+        InputModel.PublishOnDate = DateTime.UtcNow;
+    }
+
+    private async Task UnPublish()
+    {
+        var result = await Mediator.Send(new UnPublishArticleCommand(Id));
+
+        if (!result.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error: Could not remove publication");
+
+            return;
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, "Article removed from publication");
+
+        IsPublished = false;
+        InputModel.PublishOnDate = null;
+    }
+
+    private async Task OpenContentEditor()
+    {
+       await DialogService.OpenAsync("Update Content", ds =>
+
+                                @<RadzenHtmlEditor @bind-Value=InputModel.Content Style="height: 89vh">
+                                    <RadzenHtmlEditorFormatBlock />
+                                    <RadzenHtmlEditorUndo />
+                                    <RadzenHtmlEditorRedo />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorBold />
+                                    <RadzenHtmlEditorItalic />
+                                    <RadzenHtmlEditorUnderline />
+                                    <RadzenHtmlEditorStrikeThrough />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorRemoveFormat />
+                                    <RadzenHtmlEditorSource />
+                                    <RadzenHtmlEditorUnorderedList />
+                                    <RadzenHtmlEditorOrderedList />
+                                    <EditorButton Title="Insert Image" Click=@OpenImageUploadEditor Icon="image"/>
+                                </RadzenHtmlEditor>,
+            new DialogOptions() { Width = "100%", Height = "100%"}
+        );    
+
+    }
+
+    private async Task OpenImageUploadEditor()
+    {
+       await DialogService.OpenAsync("Insert image", ds =>
+
+            @<ModalForm InputModel="ImageUploadModel" OnCancelForm=@(async () => await OnCancelImageUpload(ds)) OnSave=@(async () => await OnSaveImageUpload(ds)) />,
+            new DialogOptions() { Width = "700px"}
+        );    
+    }
+
+    private async Task OnCancelImageUpload(DialogService ds)
+    {
+        await Task.Run(() =>
+        {
+            ds.Close();
+            ImageUploadModel = new ImageUploadModel();
+        });
+    }
+
+    private async Task OnSaveImageUpload(DialogService ds)
+    {
+        await OnImageSubmit(ImageUploadModel);
+
+        await Task.Run(() =>
+        {
+            ds.Close();
+        });
+
+    }
+
+    private async Task OnImageSubmit(ImageUploadModel model)
+    {
+        NotificationService.Notify(NotificationSeverity.Success, "Image Added");
+
+        var command = new UploadArticleImageCommand.Builder()
+        .SetFileName(Path.GetFileNameWithoutExtension(model.File.FileName))
+        .SetExtension(Path.GetExtension(model.File.FileName))
+        .SetDescription(model.Description)
+        .SetBase64Content(model.File.Value)
+        .SetWidth(model.Width)
+        .Build();
+
+        var result = await Mediator.Send(command);
+
+        InputModel.Content += result.ImageHtml;
+
+    }
+}

@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Radzen.Blazor
+@using System.Security.Claims
+@using System;
+@using System.Security.Cryptography;
+@using System.Text;
+
+<RadzenProfileMenu>
+    <Template>
+        <img class="rz-gravatar" src="@GravatarUrl" alt="gravatar" crossorigin="anonymous">
+    </Template>
+    <ChildContent>
+        <RadzenProfileMenuItem Text="Profile" Path="/management/profile/email" Icon="account_circle"></RadzenProfileMenuItem>
+        <RadzenProfileMenuItem Text="Log Out" Path="/account/logout" Icon="logout"></RadzenProfileMenuItem>
+    </ChildContent>
+</RadzenProfileMenu>
+
+@code{
+    [Inject]
+    private IHttpContextAccessor _context { get; set; } = default!;
+
+    public string GravatarUrl { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        GravatarUrl = GenerateGravatarUrl();
+    }
+
+    private string GenerateGravatarUrl()
+    {
+        int size = 36;
+
+        var email = _context.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
+
+        // Convert the email to lowercase
+        email = email?.Trim().ToLower() ?? string.Empty;
+
+        // Create an MD5 hash of the email
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] emailBytes = Encoding.UTF8.GetBytes(email);
+            byte[] hashBytes = md5.ComputeHash(emailBytes);
+
+            // Convert the byte array to a hex string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("x2"));
+            }
+
+            string hash = sb.ToString();
+
+            // Construct the Gravatar URL
+            return $"https://secure.gravatar.com/avatar/{hash}?s={size}";
+        }
+
+    }
+}

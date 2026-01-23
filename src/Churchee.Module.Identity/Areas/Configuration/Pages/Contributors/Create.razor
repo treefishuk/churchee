@@ -1,0 +1,99 @@
+﻿@page "/management/configuration/contributors/create"
+@inherits BasePage
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.ValueTypes
+@using Churchee.Module.Identity.Features.Contributors.Queries
+@using Churchee.Module.Identity.Features.HIBP.Queries
+@using Churchee.Module.Identity.Features.Roles.Queries
+@using Churchee.Module.UI.Components
+@using MediatR
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Sections
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Radzen
+@using Radzen.Blazor
+
+<PageName Name="Create Contributor"></PageName>
+
+@if (InputModel != null)
+{
+    <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+}
+
+@code {
+    [SupplyParameterFromForm]
+    public CreateContributorModel InputModel { get; set; }
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    [Inject]
+    private ChurcheeUserManager UserManager { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var roles = await Mediator.Send(new GetAllSelectableRolesQuery());
+
+        InputModel = new(new MultiSelect(roles));
+    }
+
+    private async Task ValidSubmitForm()
+    {
+        var emailCheck = await UserManager.FindByEmailAsync(InputModel.Email);
+
+        if (emailCheck != null)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "E-mail address already registered");
+
+            return;
+        }
+
+        var hibpResult = await Mediator.Send(new CheckPasswordAgainstHibpCommand(InputModel.Password));
+
+        if (!hibpResult.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Password found in leaked passwords database. Please try something else");
+
+            return;
+        }
+
+        var activeTenant = await CurrentUser.GetApplicationTenantId();
+
+        var activeTenantName = await CurrentUser.GetApplicationTenantName();
+
+        var newUser = new ApplicationUser(activeTenant, InputModel.Email, InputModel.Email);
+
+        var createUserResult = await UserManager.CreateAsync(newUser);
+
+        if (!createUserResult.Succeeded)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed To Create Contributor");
+
+            return;
+        }
+
+        newUser.EmailConfirmed = true;
+
+        await UserManager.UpdateAsync(newUser);
+
+        var rolesNames = InputModel.Roles.Items.Where(w => InputModel.Roles.SelectedValues.Contains(w.Value)).Select(s => s.Text).ToList();
+
+        await UserManager.AddClaimAsync(newUser, new Claim("ActiveTenantId", activeTenant.ToString()));
+        await UserManager.AddClaimAsync(newUser, new Claim("ActiveTenantName", activeTenantName));
+        await UserManager.AddToRolesAsync(newUser, rolesNames);
+
+        var addPasswordResult = await UserManager.AddPasswordAsync(newUser, InputModel.Password);
+
+        if (!addPasswordResult.Succeeded)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed To assign password to Contributor");
+
+            return;
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, "Contributor Added");
+
+        NavigationManager.NavigateTo("/management/configuration/contributors");
+    }
+
+}

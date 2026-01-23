@@ -1,0 +1,54 @@
+﻿@page
+@model Churchee.Module.Identity.Areas.Account.Pages.LoginWith2FaModel
+@{
+    ViewData["Title"] = "Two-factor authentication";
+    Layout = "./_LoginLayout";
+
+}
+
+
+<main role="main" class="pb-3">
+
+    <section class="login-section bg-gradient-primary-to-secondary">
+
+
+        <form method="post" asp-route-returnUrl="@Model.ReturnUrl" class="wrap">
+
+            <div class="login-header">
+                <h1>Log in to: <span class="sr-only">Churchee</span></h1>
+                <a href="/" class="logo"><img src="/img/churchee-gradient.svg" alt="churchee logo with a blue gradient"></a>
+            </div>
+
+            <hr />
+
+            <input asp-for="RememberMe" type="hidden" />
+
+            <div class="field">
+                @Html.LabelFor(m => m.Input.TwoFactorCode)
+                @Html.EditorFor(m => m.Input.TwoFactorCode)
+                @Html.ValidationMessageFor(m => m.Input.TwoFactorCode)
+            </div>
+            <div class="field">
+                <div class="checkbox-wrap">
+                    @Html.CheckBoxFor(m => m.Input.RememberMachine)
+                    @Html.LabelFor(m => m.Input.RememberMachine)
+                    @Html.ValidationMessageFor(m => m.Input.RememberMachine)
+                </div>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div>
+                <button type="submit">Log in</button>
+            </div>
+
+            <p>
+                Don't have access to your authenticator device? You can
+                <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">log in with a recovery code</a>.
+            </p>
+        </form>
+
+    </section>
+
+
+</main>

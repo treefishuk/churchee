@@ -1,0 +1,50 @@
+﻿@page "/management/templates"
+@inherits BasePage
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.Templates.Queries.GetTemplatesListing;
+@using Churchee.Module.Site.Features.Templates.Responses;
+@using MediatR
+@using Microsoft.AspNetCore.Components.Sections
+@using Microsoft.Extensions.Logging
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Module.UI.Components
+
+<PageName></PageName>
+
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/templates/create">Create</a>
+    </div> 
+</SectionContent>
+
+<Grid TItem="TemplateListingResponse" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="true"></Grid>
+
+@code {
+
+    IEnumerable<TemplateListingResponse> listingData;
+
+    bool isLoading = false;
+
+    int count = 0;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        var result = await Mediator.Send(new GetTemplatesListingQuery(
+                skip: args?.Skip ?? 0,
+                take: args?.Top ?? 20,
+                searchText: args?.Filter ?? string.Empty,
+                orderBy: string.IsNullOrEmpty(args?.OrderBy) ? "Location asc" : args.OrderBy), CancellationToken);
+
+        listingData = result.Data;
+
+        count = result.RecordsTotal;
+
+        isLoading = false;
+    }
+}

@@ -1,0 +1,105 @@
+﻿@using BlazorMonaco.Editor
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Logging
+@using Radzen
+@using Radzen.Blazor
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components.Rendering
+
+@if (_editContext != null)
+{
+    <EditForm EditContext="@_editContext" OnSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=UpdateFormState EditContext="_editContext"></FormFields>
+            <div class="rz-mt-5">
+                <div class="sticky-formButtons">
+
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+                        <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
+                        <RadzenButton Text="Cancel" Click="Cancel" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+                    </RadzenStack>
+
+                </div>
+            </div>
+    </EditForm>
+}
+
+@code {
+
+    [Inject]
+    public ILogger<Form> Logger { get; set; } = default!;
+
+    [Inject]
+    public NotificationService NotificationService { get; set; } = default!;
+
+    [Inject]
+    public IServiceProvider _serviceProvider { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnCancelForm { get; set; }
+
+    [Parameter]
+    public object InputModel { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<object> OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnChange { get; set; }
+
+    private bool _submitClicked;
+
+    private bool _formInvalid;
+
+    private EditContext _editContext { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        _formInvalid = true;
+        _editContext = new EditContext(InputModel);
+    }
+
+    private async Task Cancel()
+    {
+        await OnCancelForm.InvokeAsync();
+    }
+
+    private async void UpdateFormState()
+    {
+        var validationResults = new List<ValidationResult>();
+        var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
+        Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
+
+        _formInvalid = validationResults.Any();
+
+        await OnChange.InvokeAsync(InputModel);
+
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            _submitClicked = true;
+
+            if (_editContext.Validate())
+            {
+                Logger.LogInformation("HandleValidSubmit");
+
+                await OnSave.InvokeAsync(null);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(LogLevel.Error, ex, "Error Submitting form");
+
+            NotificationService.Notify(NotificationSeverity.Error, "Error Submitting form, please try again. If issue persists, please contact support");    
+        }
+    }
+}

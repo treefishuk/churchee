@@ -1,0 +1,50 @@
+﻿@page "/management/podcasts"
+@inherits BasePage
+@using Churchee.Module.Podcasts.Features.Queries
+@using Churchee.Module.Site.Features.CDN.Queries
+@using Churchee.Module.UI.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Radzen.Blazor
+@using Radzen
+
+
+<PageName></PageName>
+
+<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false" ImagePrefix="@(imagePrefix)"></Grid>
+
+@code {
+
+    string imagePrefix = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        imagePrefix = TenantResolver.GetCDNPrefix();
+
+        await base.OnInitializedAsync();
+    }
+
+    IEnumerable<GetListingQueryResponseItem> listingData = default!;
+
+    bool isLoading = false;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        isLoading = true;
+
+        var orderBy = string.IsNullOrEmpty(args?.OrderBy) ? "PublishedDate desc" : args.OrderBy;
+
+        var result = await Mediator.Send(new GetListingQuery(
+                skip: args?.Skip ?? 0,
+                take: args?.Top ?? 20,
+                searchText: args?.Filter ?? string.Empty,
+                orderBy: orderBy), CancellationToken);
+
+        listingData = result.Data;
+
+        isLoading = false;
+    }
+}

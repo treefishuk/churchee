@@ -1,0 +1,131 @@
+﻿@page "/management/pagetypes/edit/{Id:guid}"
+@inherits BasePage
+@using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
+@using Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent
+@using Churchee.Module.Site.Helpers
+@using Churchee.Module.UI.Components
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Radzen
+@using Radzen.Blazor
+
+<PageName Name="Edit Page Type"/>
+
+@if (Content != null)
+{
+
+<EditForm EditContext="@_editContext" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="sticky-formButtons">
+
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+
+            <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@AddContentType">Add New</RadzenButton>
+            <RadzenButton id="submitFormBtn" Text="Save" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
+            <RadzenButton id="cancelFormBtn" Text="Cancel" Click="@(() => NavigationManager.NavigateTo("/management/pagetypes"))" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
+        </RadzenStack>
+
+    </div>
+
+    <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap" JustifyContent="JustifyContent.Stretch">
+
+        @foreach (var item in Content.OrderBy(o => o.Order))
+        {
+            <RadzenCard>
+
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap" JustifyContent="JustifyContent.Stretch">
+
+                        <RadzenFormField Text="Name">
+                            <RadzenTextBox @bind-Value="@item.Name" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="Order">
+                            <RadzenNumeric @bind-Value="@item.Order" />
+                        </RadzenFormField>
+
+
+                        <RadzenFormField Text="Required">
+                            <RadzenCheckBox @bind-Value=@item.Required Name="Required" Style="margin-left:5px;" />
+                            <RadzenLabel Text="Required" Component="CheckBox1" Style="margin: 0 18px; vertical-align: middle; padding:0.5rem" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="Type">
+                            <RadzenDropDown Data=EditorTypes @bind-Value=@item.Type.Value TextProperty="Title" ValueProperty="Value" />
+                        </RadzenFormField>
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" Click="@(() => DeleteContentType(item))" Icon="delete" class="rz-mt-1" />
+
+                    </RadzenStack>
+
+
+            </RadzenCard>
+        }
+
+    </RadzenStack>
+
+</EditForm>
+
+}
+
+
+@code {
+
+    private List<PageTypeContentItemModel> Content = null;
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+
+    private EditContext _editContext { get; set; }
+
+
+    private List<DropdownInput> EditorTypes = new();
+
+    private void AddContentType()
+    {
+        Content.Add(new PageTypeContentItemModel());
+    }
+
+    private void DeleteContentType(PageTypeContentItemModel item)
+    {
+        Content.Remove(item);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        EditorTypes = EditorType.All().Select(s => new DropdownInput { Title = s, Value = s }).ToList();
+
+        var data = await Mediator.Send(new GetContentTypesForPageTypeQuery(Id));
+
+        Content = data.Select(m => new PageTypeContentItemModel
+        {
+            Id = m.Id,
+            Name = m.Name,
+            Order = m.Order,
+            Required = m.Required,
+            Type = new DropdownInput
+            {
+                Title = m.Type,
+                Value = m.Type,
+                Data = EditorTypes
+            }
+        }).ToList();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _editContext = new EditContext(EditorTypes);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await Mediator.Send(new UpdatePageTypeContentCommand(Id, Content));
+
+        NotificationService.Notify(result, "Saved Successfully");
+    }
+
+}
