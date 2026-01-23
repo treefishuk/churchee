@@ -48,7 +48,7 @@ jobs:
       run: dotnet build Churchee.sln --no-restore
 
     - name: Test with coverage
-      run: dotnet test Churchee.sln --no-build --collect:"XPlat Code Coverage;Format=cobertura"
+      run: dotnet test Churchee.sln --no-build --collect:"XPlat Code Coverage;Format=cobertura,opencover"
 
     - name: SonarCloud end
-      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+      run: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
