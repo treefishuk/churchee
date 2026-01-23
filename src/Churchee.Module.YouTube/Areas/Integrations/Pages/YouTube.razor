@@ -4,6 +4,7 @@
 @using Churchee.Module.YouTube.Areas.Integrations.Models
 @using Churchee.Module.YouTube.Features.YouTube.Commands
 @using Churchee.Module.UI.Models
+@using Churchee.Module.YouTube.Features.YouTube.Commands.SyncNow
 @using Churchee.Module.YouTube.Features.YouTube.Queries
 @using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands
 @using Microsoft.AspNetCore.Components.Forms
@@ -16,41 +17,61 @@
 
 <PageName></PageName>
 
-@if (youTubeConfigured)
-{
-    <div>
 
-        @if (lastRun != null)
-        {
-            <b>Last Run: @lastRun.Value.ToShortDateString()</b>
-        }
+<div style="max-width: 900px; margin: 40px auto;">
 
-        <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
-            <h1>YouTube Video Sync is set up!</h1>
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="16" class="rz-m-5">
 
-            <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+    <svg style="width: 100px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path fill="#FF0000" d="M581.7 188.1C575.5 164.4 556.9 145.8 533.4 139.5C490.9 128 320.1 128 320.1 128C320.1 128 149.3 128 106.7 139.5C83.2 145.8 64.7 164.4 58.4 188.1C47 231 47 320.4 47 320.4C47 320.4 47 409.8 58.4 452.7C64.7 476.3 83.2 494.2 106.7 500.5C149.3 512 320.1 512 320.1 512C320.1 512 490.9 512 533.5 500.5C557 494.2 575.5 476.3 581.8 452.7C593.2 409.8 593.2 320.4 593.2 320.4C593.2 320.4 593.2 231 581.8 188.1zM264.2 401.6L264.2 239.2L406.9 320.4L264.2 401.6z" /></svg>
 
-        </RadzenStack>
+    <RadzenStack>
+        <RadzenText TextStyle="TextStyle.H4" Text="YouTube Integration" />
+        <RadzenText TextStyle="TextStyle.Body2" Style="color: var(--rz-text-secondary); max-width: 600px;">
+            Connect you churches YouTube channel to automatically fetch and display videos on your website.
+            Videos can be embedded on pages and kept up to date without manual uploads.
+        </RadzenText>
+    </RadzenStack>
+    @if (youTubeConfigured)
+    {
+        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="Active" />
+    }
+    else
+    {
+        <RadzenBadge BadgeStyle="BadgeStyle.Base" Text="Inactive" />
+    }
 
-    </div>
+</RadzenStack>
 
-}
+    <hr style="color: #eee; margin: 1rem 0" />
 
-else
-{
-    <RadzenRow Gap="1rem">
-        <RadzenColumn class="rz-p-5">
-            <Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm())>
-            </Form>
-        </RadzenColumn>
-        <RadzenColumn class="rz-p-5">
-            
-            <h3>Configuration Instructions</h3>
+    @if (youTubeConfigured)
+    {
+        <div>
 
+            @if (lastRun != null)
+            {
+                <b>Last Run: @lastRun.Value.ToString("dd/MM/yyyy HH:mm")</b>
+            }
 
-        </RadzenColumn>
-    </RadzenRow>
-}
+            <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+                <h1>YouTube Video Sync is set up!</h1>
+
+                <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+                <RadzenButton Click=@(args => SyncNow()) Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" />
+
+            </RadzenStack>
+
+        </div>
+
+    }
+
+    else
+    {
+        <Form ButtonsOnTop="false" InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+    }
+
+</div>
 
 
 @code{
@@ -86,6 +107,13 @@ else
         }
     }
 
+    private async Task SyncNow()
+    {
+        var result = await Mediator.Send(new SyncNowCommand());
+
+        NotificationService.Notify(result);
+    }
+
     public InputModel InputModel { get; set; } = new();
 
     private async Task ValidSubmitForm()
@@ -97,7 +125,7 @@ else
             NotificationService.Notify(NotificationSeverity.Error, "Failed to enable Videos");
         }
 
-        var enableYouTubeSyncResult = await Mediator.Send(new EnableYouTubeSyncCommand(InputModel.ApiKey, InputModel.Handle));
+        var enableYouTubeSyncResult = await Mediator.Send(new EnableYouTubeSyncCommand(InputModel.ApiKey, InputModel.ChannelIdentifier));
 
         if (enableYouTubeSyncResult.IsSuccess)
         {

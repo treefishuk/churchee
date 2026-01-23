@@ -5,9 +5,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Serilog.Sinks.MSSqlServer;
 using System;
+using System.Globalization;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Churchee.Module.Logging.Registrations
 {
@@ -21,14 +29,34 @@ namespace Churchee.Module.Logging.Registrations
 
             var sinkOptions = new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true, AutoCreateSqlDatabase = true };
 
-            var logger = new LoggerConfiguration()
+            var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.MSSqlServer(
                     connectionString: config.GetConnectionString("LogsConnection"),
                     sinkOptions: sinkOptions,
-                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
-                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
-            .CreateLogger();
+                    restrictedToMinimumLevel: LogEventLevel.Warning)
+                .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information);
+
+            // Telegram conditional sink configuration
+            var telegramSection = config.GetSection("Logging:Telegram");
+            bool telegramEnabled = telegramSection.GetValue<bool>("Enabled", false);
+            string botToken = telegramSection.GetValue<string>("BotToken");
+            string chatId = telegramSection.GetValue<string>("ChatId");
+            string minimumLevelName = telegramSection.GetValue("MinimumLevel", "Error");
+
+            if (telegramEnabled && !string.IsNullOrWhiteSpace(botToken) && !string.IsNullOrWhiteSpace(chatId))
+            {
+                if (!Enum.TryParse<LogEventLevel>(minimumLevelName, true, out var telegramMinLevel))
+                {
+                    telegramMinLevel = LogEventLevel.Error;
+                }
+
+                var telegramSink = new TelegramSink(botToken.Trim(), chatId.Trim());
+
+                loggerConfiguration = loggerConfiguration.WriteTo.Sink(telegramSink, restrictedToMinimumLevel: telegramMinLevel);
+            }
+
+            var logger = loggerConfiguration.CreateLogger();
 
             serviceCollection.AddSingleton<ILoggerProvider>(new SerilogLoggerProvider(logger, false));
 
@@ -38,7 +66,108 @@ namespace Churchee.Module.Logging.Registrations
             });
 
             serviceCollection.AddDbContext<LogsDBContext>(options => options.UseSqlServer(config.GetConnectionString("LogsConnection")), ServiceLifetime.Transient);
+        }
 
+        // TelegramSink: sends error logs to Telegram Bot API asynchronously (fire-and-forget).
+        private sealed class TelegramSink : ILogEventSink
+        {
+            private static readonly HttpClient SharedClient = new();
+            private readonly string _sendMessageUrl;
+            private readonly string _chatId;
+
+            public TelegramSink(string botToken, string chatId)
+            {
+                // botToken expected without "bot" prefix; API endpoint requires "bot{token}"
+                _sendMessageUrl = string.Format(CultureInfo.InvariantCulture, "https://api.telegram.org/bot{0}/sendMessage", botToken);
+                _chatId = chatId;
+            }
+
+            public void Emit(LogEvent logEvent)
+            {
+                if (logEvent == null)
+                {
+                    return;
+                }
+
+                try
+                {
+                    // Only send for Error and Fatal by default (the logger configuration will also filter),
+                    // but double-check levels here to avoid unnecessary work.
+                    if (logEvent.Level < LogEventLevel.Error)
+                    {
+                        return;
+                    }
+
+                    string timestamp = logEvent.Timestamp.UtcDateTime.ToString("o", CultureInfo.InvariantCulture);
+                    string level = logEvent.Level.ToString();
+                    string message = RenderMessage(logEvent);
+
+                    // Compose HTML-encoded message to use parse_mode = HTML
+                    var fullMessage = new StringBuilder();
+                    fullMessage.Append("<b>").Append(WebUtility.HtmlEncode(level)).Append("</b>");
+                    fullMessage.Append(" ");
+                    fullMessage.Append("<i>").Append(WebUtility.HtmlEncode(timestamp)).Append("</i>");
+                    fullMessage.AppendLine();
+                    fullMessage.AppendLine();
+                    fullMessage.Append(WebUtility.HtmlEncode(message));
+
+                    if (logEvent.Exception != null)
+                    {
+                        fullMessage.AppendLine();
+                        fullMessage.AppendLine();
+                        fullMessage.Append("<pre>");
+                        fullMessage.Append(WebUtility.HtmlEncode(logEvent.Exception.ToString()));
+                        fullMessage.Append("</pre>");
+                    }
+
+                    var payload = new
+                    {
+                        chat_id = _chatId,
+                        text = fullMessage.ToString(),
+                        parse_mode = "HTML",
+                        disable_web_page_preview = true
+                    };
+
+                    // Fire-and-forget send; do not block logging thread.
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            string json = JsonSerializer.Serialize(payload);
+                            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+                            using var response = await SharedClient.PostAsync(_sendMessageUrl, content).ConfigureAwait(false);
+                            // Intentionally ignore response content; only ensure exceptions are caught.
+                        }
+                        catch
+                        {
+                            // Swallow any exceptions to avoid impacting application flow.
+                        }
+                    });
+                }
+                catch
+                {
+                    // Swallow everything - logging must not throw.
+                }
+            }
+
+            private static string RenderMessage(LogEvent logEvent)
+            {
+                try
+                {
+                    // Use the RenderedMessage if available
+                    if (logEvent.RenderMessage() is string rendered && !string.IsNullOrWhiteSpace(rendered))
+                    {
+                        return rendered;
+                    }
+
+                    // Fallback to message template
+                    return logEvent.MessageTemplate?.Text ?? string.Empty;
+                }
+                catch
+                {
+                    return string.Empty;
+                }
+            }
         }
     }
 }

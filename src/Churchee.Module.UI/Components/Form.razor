@@ -18,11 +18,23 @@
     <EditForm EditContext="@_editContext" OnSubmit="HandleSubmit">
     <DataAnnotationsValidator />
 
-     <FormButtons FormInvalid="_formInvalid">
+    @if(ButtonsOnTop)
+    {
+        <FormButtons FormInvalid="_formInvalid">
             @ChildContent
-     </FormButtons>
+        </FormButtons>
+    }
 
      <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=SetFormInvalidState EditContext="_editContext" OnImageSubmit=OnImageSubmit></FormFields>
+
+    @if(!ButtonsOnTop)
+    {
+        <div class="rz-mt-5">
+            <FormButtons FormInvalid="_formInvalid" Sticky="false">
+                @ChildContent
+            </FormButtons>
+        </div>
+    }
 
 </EditForm>
 
@@ -45,6 +57,9 @@
 
     [Parameter]
     public EventCallback<ImageUploadModel> OnImageSubmit { get; set; }
+
+    [Parameter]
+    public bool ButtonsOnTop { get; set; } = true;
 
     [Inject]
     public IServiceProvider _serviceProvider { get; set; } = default!;

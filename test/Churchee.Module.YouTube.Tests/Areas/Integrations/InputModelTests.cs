@@ -12,10 +12,10 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations
         {
             var model = new InputModel();
 
-            Assert.NotNull(model.Handle);
+            Assert.NotNull(model.ChannelIdentifier);
             Assert.NotNull(model.ApiKey);
             Assert.NotNull(model.NameForContent);
-            Assert.Equal(string.Empty, model.Handle);
+            Assert.Equal(string.Empty, model.ChannelIdentifier);
             Assert.Equal(string.Empty, model.ApiKey);
             Assert.Equal(string.Empty, model.NameForContent);
         }

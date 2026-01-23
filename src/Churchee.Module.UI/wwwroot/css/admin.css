@@ -23509,7 +23509,7 @@ button.rz-colorpicker-trigger .rzi:before {
   --rz-form-field-label-textarea-top: 0.5rem;
   --rz-form-field-label-floating-top: -0.5625rem;
   --rz-form-field-label-floating-background-color: var(--rz-input-background-color);
-  --rz-form-field-helper-padding: 0 1rem;
+  --rz-form-field-helper-padding: 0;
   /* Forms */
   --rz-form-error-color: var(--rz-danger);
   --rz-form-error-font-size: 0.75rem;
@@ -24283,6 +24283,8 @@ img {
 
 .validation-message {
   color: #d74a4a;
+  font-size: 13px;
+  margin-top: 4px;
 }
 
 .rz-footer:empty {
