@@ -45,7 +45,7 @@ namespace Churchee.Module.Logging.Registrations
                 // Compose HTML-encoded message to use parse_mode = HTML
                 var fullMessage = new StringBuilder();
                 fullMessage.Append("<b>").Append(WebUtility.HtmlEncode(level)).Append("</b>");
-                fullMessage.Append(" ");
+                fullMessage.Append(' ');
                 fullMessage.Append("<i>").Append(WebUtility.HtmlEncode(timestamp)).Append("</i>");
                 fullMessage.AppendLine();
                 fullMessage.AppendLine();

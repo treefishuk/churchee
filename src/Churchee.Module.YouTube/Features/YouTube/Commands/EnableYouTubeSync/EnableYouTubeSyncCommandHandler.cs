@@ -34,12 +34,9 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
         public async Task<CommandResponse> Handle(EnableYouTubeSyncCommand request, CancellationToken cancellationToken)
         {
-
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
             await _settingStore.AddOrUpdateSetting(SettingKeys.Handle, applicationTenantId, $"YouTubeHandle", request.ChannelIdentifier);
-
-            string pageNameForVideos = await _settingStore.GetSettingValue(SettingKeys.VideosPageName, applicationTenantId);
 
             var tokenRepo = _dataStore.GetRepository<Token>();
 
@@ -73,7 +70,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
         private async Task<CommandResponse> StoreChannelId(EnableYouTubeSyncCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            if (!request.ChannelIdentifier.StartsWith("@"))
+            if (!request.ChannelIdentifier.StartsWith('@'))
             {
                 await _settingStore.AddOrUpdateSetting(SettingKeys.ChannelId, applicationTenantId, "YouTube Channel Id", request.ChannelIdentifier);
 

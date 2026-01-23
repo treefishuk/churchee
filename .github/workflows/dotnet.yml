@@ -30,11 +30,15 @@ jobs:
       run: dotnet tool install --global dotnet-coverage
 
     - name: SonarCloud begin
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+        SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
       run: |
         dotnet sonarscanner begin \
-          /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
-          /o:"${{ secrets.SONAR_ORGANIZATION }}" \
-          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+          /k:"$SONAR_PROJECT_KEY" \
+          /o:"$SONAR_ORGANIZATION" \
+          /d:sonar.token="$SONAR_TOKEN" \
           /d:sonar.cs.cobertura.reportsPaths="coverage.xml"
 
     - name: Download and extract Bootstrap efore main build

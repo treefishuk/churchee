@@ -1,6 +1,4 @@
-﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Queue;
-using Churchee.Common.Storage;
+﻿using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
 using Churchee.Module.Tokens.Entities;
@@ -10,7 +8,6 @@ using Churchee.Module.Videos.Helpers;
 using Churchee.Module.YouTube.Exceptions;
 using Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync;
 using Churchee.Module.YouTube.Helpers;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
 
@@ -20,19 +17,13 @@ namespace Churchee.Module.YouTube.Jobs
     {
         private readonly ISettingStore _settingStore;
         private readonly IDataStore _dataStore;
-        private readonly ICurrentUser _currentUser;
-        private readonly IJobService _jobService;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger _logger;
 
-        public SyncYouTubeVideosJobBase(ISettingStore settingStore, IDataStore dataStore, ICurrentUser currentUser, IJobService jobService, IHttpClientFactory httpClientFactory, ILogger logger)
+        protected SyncYouTubeVideosJobBase(ISettingStore settingStore, IDataStore dataStore, IHttpClientFactory httpClientFactory)
         {
             _settingStore = settingStore;
             _dataStore = dataStore;
-            _currentUser = currentUser;
-            _jobService = jobService;
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
         }
 
         protected async Task SyncVideos(Guid applicationTenantId, int videoCount, CancellationToken cancellationToken)
