@@ -9,17 +9,18 @@ using System.Threading.Tasks;
 
 namespace Churchee.Module.Logging.Registrations
 {
-    public sealed class TelegramSink : ILogEventSink
+    public class TelegramSink : ILogEventSink
     {
-        private static readonly HttpClient SharedClient = new();
+        private readonly HttpClient _httpClient;
         private readonly string _sendMessageUrl;
         private readonly string _chatId;
 
-        public TelegramSink(string botToken, string chatId)
+        public TelegramSink(string botToken, string chatId, HttpClient httpClient = null)
         {
             // botToken expected without "bot" prefix; API endpoint requires "bot{token}"
             _sendMessageUrl = string.Format(CultureInfo.InvariantCulture, "https://api.telegram.org/bot{0}/sendMessage", botToken);
             _chatId = chatId;
+            _httpClient = httpClient ?? new HttpClient();
         }
 
         public void Emit(LogEvent logEvent)
@@ -68,25 +69,31 @@ namespace Churchee.Module.Logging.Registrations
                     disable_web_page_preview = true
                 };
 
-                // Fire-and-forget send; do not block logging thread.
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        string json = JsonSerializer.Serialize(payload);
-                        using var content = new StringContent(json, Encoding.UTF8, "application/json");
-                        using var response = await SharedClient.PostAsync(_sendMessageUrl, content).ConfigureAwait(false);
-                        // Intentionally ignore response content; only ensure exceptions are caught.
-                    }
-                    catch
-                    {
-                        // Swallow any exceptions to avoid impacting application flow.
-                    }
-                });
+                _ = SendFireAndForgetAsync(payload);
             }
             catch
             {
                 // Swallow everything - logging must not throw.
+            }
+        }
+
+        internal virtual Task SendFireAndForgetAsync(object payload)
+        {
+            return Task.Run(() => SendPostAsync(payload));
+        }
+
+        internal async Task SendPostAsync(object payload)
+        {
+            try
+            {
+                string json = JsonSerializer.Serialize(payload);
+                using var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using var response = await _httpClient.PostAsync(_sendMessageUrl, content).ConfigureAwait(false);
+                // Intentionally ignore response content; only ensure exceptions are caught.
+            }
+            catch
+            {
+                // Swallow any exceptions to avoid impacting application flow.
             }
         }
 
