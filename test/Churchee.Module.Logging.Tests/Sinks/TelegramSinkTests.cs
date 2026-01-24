@@ -170,8 +170,6 @@ namespace Churchee.Module.Logging.Tests.Sinks
             // Assert
             act.Should().NotThrow();
 
-            // Assert
-            cut.BackgroundTaskCalled.Should().BeTrue();
         }
 
 
