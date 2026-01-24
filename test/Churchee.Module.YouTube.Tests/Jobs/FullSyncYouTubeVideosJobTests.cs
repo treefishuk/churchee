@@ -21,10 +21,12 @@ namespace Churchee.Module.YouTube.Tests.Jobs
     public class FullSyncYouTubeVideosJobTests
     {
         private readonly Mock<IRepository<Video>> _mockVideoRepo;
+        private readonly Mock<IRepository<PageType>> _mockPageTypeRepo;
 
         public FullSyncYouTubeVideosJobTests()
         {
             _mockVideoRepo = new Mock<IRepository<Video>>();
+            _mockPageTypeRepo = new Mock<IRepository<PageType>>();
         }
 
         [Fact]
@@ -82,6 +84,45 @@ namespace Churchee.Module.YouTube.Tests.Jobs
         }
 
         [Fact]
+        public async Task Max_Results_In_Call_100()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(false);
+            _mockPageTypeRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.NewGuid());
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var responseContent = GetTestResponseContent(channelId);
+
+            var serializedContent = JsonSerializer.Serialize(responseContent);
+
+            var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent);
+
+            var httpClient = new HttpClient(messageHandler);
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new FullSyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            await cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            messageHandler.RequestPath.Should().Be($"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults=1000&key=key");
+        }
+
+        [Fact]
         public async Task Two_New_Entries_Added_If_Response_Contains_Two_New_Items()
         {
             // Arrange
@@ -95,6 +136,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             var mockDataStore = SetupMockDataStore();
 
             _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(false);
+            _mockPageTypeRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.NewGuid());
 
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
 
@@ -131,6 +173,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             var mockDataStore = SetupMockDataStore();
 
             _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(true);
+            _mockPageTypeRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.NewGuid());
 
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
 
@@ -151,6 +194,43 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             // Assert
             mockDataStore.Verify(v => v.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task VideoDetailPageTypeId_EmptyGuid_Throws_Exception()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(false);
+            _mockPageTypeRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.Empty);
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var responseContent = GetTestResponseContent(channelId);
+
+            var serializedContent = JsonSerializer.Serialize(responseContent);
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent));
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new FullSyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            var act = () => cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<YouTubeSyncException>();
         }
 
         private static GetYouTubeVideosApiResponse GetTestResponseContent(string channelId)
@@ -197,12 +277,10 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             var mockTokenRepository = new Mock<IRepository<Token>>();
             mockTokenRepository.Setup(s => s.FirstOrDefaultAsync(It.IsAny<GetTokenByKeySpecification>(), It.IsAny<Expression<Func<Token, string>>>(), It.IsAny<CancellationToken>())).ReturnsAsync("key");
 
-            var mockPageTypeRepository = new Mock<IRepository<PageType>>();
-            mockPageTypeRepository.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.NewGuid());
 
             mockDataStore.Setup(s => s.GetRepository<Token>()).Returns(mockTokenRepository.Object);
             mockDataStore.Setup(s => s.GetRepository<Video>()).Returns(_mockVideoRepo.Object);
-            mockDataStore.Setup(s => s.GetRepository<PageType>()).Returns(mockPageTypeRepository.Object);
+            mockDataStore.Setup(s => s.GetRepository<PageType>()).Returns(_mockPageTypeRepo.Object);
             return mockDataStore;
         }
     }
