@@ -16,12 +16,12 @@ using SpotifyRazor = Churchee.Module.Podcasts.Spotify.Areas.Integrations.Pages.S
 
 namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
 {
-    public class SpotifyTests : BasePageTests
+    public class SpotifyRazorTests : BasePageTests
     {
 
         private readonly Mock<IDistributedCache> _mockCache;
 
-        public SpotifyTests()
+        public SpotifyRazorTests()
         {
             _mockCache = new Mock<IDistributedCache>();
 

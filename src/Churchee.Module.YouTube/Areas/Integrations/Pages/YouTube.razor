@@ -15,7 +15,7 @@
 @using Radzen.Blazor
 @using Radzen
 
-<PageName></PageName>
+<PageName Name="YouTube Integration"></PageName>
 
 
 <div style="max-width: 900px; margin: 40px auto;">
@@ -56,8 +56,8 @@
             <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
                 <h1>YouTube Video Sync is set up!</h1>
 
-                <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
-                <RadzenButton Click=@(args => SyncNow()) Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" />
+                <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" id="disableSync" />
+                <RadzenButton Click=@(args => SyncNow()) Text="Sync Now" ButtonStyle="ButtonStyle.Primary" Icon="sync" id="syncNow" />
 
             </RadzenStack>
 
@@ -111,7 +111,7 @@
     {
         var result = await Mediator.Send(new SyncNowCommand());
 
-        NotificationService.Notify(result);
+        NotificationService.Notify(result, "Sync Scheduled");
     }
 
     public InputModel InputModel { get; set; } = new();
@@ -129,11 +129,15 @@
 
         if (enableYouTubeSyncResult.IsSuccess)
         {
-            NotificationService.Notify(NotificationSeverity.Success, "YouTube sync configured, Syncing will being shortly");
+            NotificationService.Notify(NotificationSeverity.Success, "YouTube sync configured, syncing will being shortly");
 
             youTubeConfigured = true;
 
             StateHasChanged();
+        }
+        else
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to shedule sync");
         }
     }
 }

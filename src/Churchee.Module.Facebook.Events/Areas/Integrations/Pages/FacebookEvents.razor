@@ -115,6 +115,10 @@
 
             StateHasChanged();
         }
+        else
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Failed to disable Integration");
+        }
     }
 
 }

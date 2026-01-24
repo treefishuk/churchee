@@ -154,5 +154,55 @@ namespace Churchee.Module.Facebook.Events.Tests.Areas.Integrations.Pages
             NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
         }
 
+        [Fact]
+        public void Facebook_DisableSync_Success_ShowsSuccess()
+        {
+            // Arrange
+            MockMediator.Setup(s => s.Send(It.IsAny<FacebookConfiguredQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            SetInitialUrl<FacebookEventsRazor>();
+
+            MockMediator.Setup(m => m.Send(It.IsAny<DisableFacebookSyncCommand>(), default))
+                .ReturnsAsync(new CommandResponse());
+
+            // Act
+            var cut = Render<FacebookEventsRazor>();
+
+            var button = cut.Find("#disableSync");
+            button.Click();
+
+            // Assert
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Integration Disabled");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+        }
+
+        [Fact]
+        public void Facebook_DisableSync_Fails_ShowsError()
+        {
+            // Arrange
+            MockMediator.Setup(s => s.Send(It.IsAny<FacebookConfiguredQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            SetInitialUrl<FacebookEventsRazor>();
+
+            var reponse = new CommandResponse();
+
+            reponse.AddError("DisableFailed", "");
+
+            MockMediator.Setup(m => m.Send(It.IsAny<DisableFacebookSyncCommand>(), default))
+                .ReturnsAsync(reponse);
+
+            // Act
+            var cut = Render<FacebookEventsRazor>();
+
+            var button = cut.Find("#disableSync");
+            button.Click();
+
+            // Assert
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Failed to disable Integration");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+        }
+
     }
 }

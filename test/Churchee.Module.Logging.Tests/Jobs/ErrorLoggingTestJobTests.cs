@@ -39,7 +39,30 @@ namespace Churchee.Module.Logging.Tests.Jobs
 
             // Assert
             act.Should().Throw<TestException>("Start up Exception Logging Test");
+        }
 
+        [Fact]
+        public async Task EnvironmentName_Null_ThrowsException()
+        {
+            // Arrange
+            var mockIHostEnvironment = new Mock<IHostEnvironment>();
+            var cut = new ErrorLoggingTestJob(mockIHostEnvironment.Object);
+
+            // Act
+            Action act = () => cut.ExecuteAsync(CancellationToken.None);
+
+            // Assert
+            act.Should().Throw<TestException>("Start up Exception Logging Test");
+        }
+
+        [Fact]
+        public async Task NullHostEnviroment_ThrowsException()
+        {
+            // Arrange
+            Action act = () => _ = new ErrorLoggingTestJob(null);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>("Value cannot be null. (Parameter 'environment')");
         }
     }
 }
