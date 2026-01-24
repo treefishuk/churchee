@@ -22,7 +22,6 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.SyncNow
 
         public async Task<CommandResponse> Handle(SyncNowCommand request, CancellationToken cancellationToken)
         {
-
             var response = new CommandResponse();
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
