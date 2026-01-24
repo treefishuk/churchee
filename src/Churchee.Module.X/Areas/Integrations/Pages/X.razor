@@ -13,7 +13,7 @@
 @using Radzen.Blazor
 @using Radzen
 
-<PageName></PageName>
+<PageName Name="X Integration"></PageName>
 
 <div style="max-width: 900px; margin: 40px auto;">
 
@@ -52,7 +52,7 @@
         <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
             <h1>X Sync is set up!</h1>
 
-            <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" />
+            <RadzenButton Click=@(args => DisableSync()) Text="Disable Sync" ButtonStyle="ButtonStyle.Danger" Icon="sync_disabled" id="disableSync" />
 
         </RadzenStack>
 
@@ -116,7 +116,7 @@ else
 
         else
         {
-            NotificationService.Notify(NotificationSeverity.Success, "Enabled Tweets Sync");
+            NotificationService.Notify(NotificationSeverity.Success, "X configured, syncing will being shortly");
 
             isConfigured = true;
 
