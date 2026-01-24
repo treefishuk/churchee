@@ -49,7 +49,16 @@ namespace Churchee.Module.YouTube.Jobs
 
             string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            var deserializedResponse = JsonSerializer.Deserialize<GetYouTubeVideosApiResponse>(responseBody) ?? throw new YouTubeSyncException("Failed to deserialize YouTube API response");
+            GetYouTubeVideosApiResponse deserializedResponse;
+
+            try
+            {
+                deserializedResponse = JsonSerializer.Deserialize<GetYouTubeVideosApiResponse>(responseBody) ?? throw new YouTubeSyncException("Failed to deserialize YouTube API response");
+            }
+            catch (JsonException ex)
+            {
+                throw new YouTubeSyncException("Failed to deserialize YouTube API response", ex);
+            }
 
             var videoRepo = _dataStore.GetRepository<Video>();
 

@@ -117,6 +117,65 @@ namespace Churchee.Module.Logging.Tests.Sinks
             cut.BackgroundTaskCalled.Should().BeTrue();
         }
 
+        [Fact]
+        public void SendPostAsync__WithException_Calls_Client()
+        {
+            // Arrange
+            string token = "dummy_token";
+            string chatId = "dummy_chat_id";
+
+            var cut = new TestableTelegramSink(token, chatId, _httpClient);
+
+            var logEvent = new LogEvent(
+                  DateTimeOffset.UtcNow,
+                  LogEventLevel.Error,
+                  new Exception("Test Exception"),
+                  new MessageTemplate("test", []),
+                  []);
+
+            // Act
+            cut.Emit(logEvent);
+
+            // Assert
+            cut.BackgroundTaskCalled.Should().BeTrue();
+        }
+
+        [Fact]
+        public void SendPostAsync__ErrorSwallowed()
+        {
+            // Arrange
+            string token = "dummy_token";
+            string chatId = "dummy_chat_id";
+
+            var cut = new TestableTelegramSink(token, chatId, _httpClient);
+
+            var logEvent = new LogEvent(
+                  DateTimeOffset.UtcNow,
+                  LogEventLevel.Error,
+                  new Exception("Test Exception"),
+                  new MessageTemplate("test", []),
+                  []);
+
+            _mockHttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .Throws(new HttpRequestException("Boom"));
+
+            // Act
+            var act = () => cut.Emit(logEvent);
+
+            // Assert
+            act.Should().NotThrow();
+
+            // Assert
+            cut.BackgroundTaskCalled.Should().BeTrue();
+        }
+
+
+
         private class TestableTelegramSink : TelegramSink
         {
             public TestableTelegramSink(string botToken, string chatId, HttpClient httpClient)

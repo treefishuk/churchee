@@ -5,6 +5,7 @@ using Churchee.Module.Site.Specifications;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
 using Churchee.Module.Videos.Entities;
+using Churchee.Module.YouTube.Exceptions;
 using Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync;
 using Churchee.Module.YouTube.Helpers;
 using Churchee.Module.YouTube.Jobs;
@@ -62,6 +63,81 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             // Assert
             messageHandler.RequestPath.Should().Be($"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults=10&key=key");
+        }
+
+
+        [Fact]
+        public async Task DeserializationFailure_ThrowsException()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(false);
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var responseContent = GetTestResponseContent(channelId);
+
+            string serializedContent = "{test:thing}";
+
+            var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent);
+
+            var httpClient = new HttpClient(messageHandler);
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            var act = () => cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<YouTubeSyncException>("Failed to deserialize YouTube API response");
+        }
+
+        [Fact]
+        public async Task DeserializationNullFailure_ThrowsException()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(false);
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var responseContent = GetTestResponseContent(channelId);
+
+            var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.OK, string.Empty);
+
+            var httpClient = new HttpClient(messageHandler);
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            var act = () => cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<YouTubeSyncException>("Failed to deserialize YouTube API response");
         }
 
         private static GetYouTubeVideosApiResponse GetTestResponseContent(string channelId)

@@ -62,7 +62,7 @@ namespace Churchee.Module.UI.Tests.Components
 
             var cut = GenrateClassUnderTest(inputModel);
 
-            cut.Markup.Contains("<input type=\"hidden\" name=\"MyProperty\" value=\"\" />");
+            cut.Markup.Contains("<input type=\"hidden\" name=\"MyProperty\" value=\"\" />").Should().BeTrue();
         }
 
         [Fact]
@@ -192,7 +192,7 @@ namespace Churchee.Module.UI.Tests.Components
 
         private IRenderedComponent<EditForm> GenrateClassUnderTest(object inputModel)
         {
-            return Render<EditForm>(parameters => parameters
+            var cut = Render<EditForm>(parameters => parameters
                 .Add(p => p.Model, inputModel)
                 .Add(p => p.ChildContent, childParams =>
                     builder =>
@@ -204,6 +204,8 @@ namespace Churchee.Module.UI.Tests.Components
                         builder.CloseComponent();
                     })
             );
+
+            return cut;
         }
 
         private class BasicStringTestInputModel
