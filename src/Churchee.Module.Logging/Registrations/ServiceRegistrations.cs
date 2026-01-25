@@ -1,10 +1,12 @@
 ﻿using Churchee.Common.Abstractions.Extensibility;
+using Churchee.Module.Logging.Extensions;
 using Churchee.Module.Logging.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Serilog.Sinks.MSSqlServer;
 using System;
@@ -21,14 +23,16 @@ namespace Churchee.Module.Logging.Registrations
 
             var sinkOptions = new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true, AutoCreateSqlDatabase = true };
 
-            var logger = new LoggerConfiguration()
+            var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.MSSqlServer(
                     connectionString: config.GetConnectionString("LogsConnection"),
                     sinkOptions: sinkOptions,
-                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
-                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
-            .CreateLogger();
+                    restrictedToMinimumLevel: LogEventLevel.Warning)
+                .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+                .AddTelegramSinkIfConfigured(config);
+
+            var logger = loggerConfiguration.CreateLogger();
 
             serviceCollection.AddSingleton<ILoggerProvider>(new SerilogLoggerProvider(logger, false));
 
@@ -38,7 +42,8 @@ namespace Churchee.Module.Logging.Registrations
             });
 
             serviceCollection.AddDbContext<LogsDBContext>(options => options.UseSqlServer(config.GetConnectionString("LogsConnection")), ServiceLifetime.Transient);
-
         }
+
+
     }
 }

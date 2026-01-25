@@ -8,11 +8,11 @@ namespace Churchee.Module.YouTube.Spotify.Features.YouTube.Commands
         public EnableYouTubeSyncCommand(string apiKey, string handle)
         {
             ApiKey = apiKey;
-            Handle = handle;
+            ChannelIdentifier = handle;
         }
 
         public string ApiKey { get; private set; }
 
-        public string Handle { get; private set; }
+        public string ChannelIdentifier { get; private set; }
     }
 }

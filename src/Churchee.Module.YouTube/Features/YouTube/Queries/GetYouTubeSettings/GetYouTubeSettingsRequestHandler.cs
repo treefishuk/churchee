@@ -27,7 +27,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Queries
 
             string handle = await _store.GetSettingValue(SettingKeys.Handle, applicationTenantId);
 
-            var lastRun = _jobService.GetLastRunDate($"{applicationTenantId}_YouTube");
+            var lastRun = _jobService.GetLastRunDate($"{applicationTenantId}_YouTubeVideos");
 
             return new GetYouTubeSettingsResponse(handle, pageNameForVideos, lastRun);
         }

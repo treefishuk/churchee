@@ -9,15 +9,20 @@ namespace Churchee.Test.Helpers
 
         public int Increment { get; set; }
 
+        public string RequestPath { get; set; }
+
         public FakeHttpMessageHandler(HttpStatusCode statusCode, params string[] responseContent)
         {
             _statusCode = statusCode;
             _responseContent = responseContent;
             Increment = 0;
+            RequestPath = string.Empty;
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            RequestPath = request?.RequestUri?.ToString() ?? string.Empty;
+
             if (_responseContent.Length == 0)
             {
                 var emptyResponse = new HttpResponseMessage(_statusCode)

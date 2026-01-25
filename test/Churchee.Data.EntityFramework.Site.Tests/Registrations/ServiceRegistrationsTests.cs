@@ -33,6 +33,43 @@ namespace Churchee.Data.EntityFramework.Site.Tests.Registrations
         }
 
         [Fact]
+        public void ServiceRegistrations_Priority_ShouldBe5000()
+        {
+            // Arrange
+            var serviceRegistrations = new ServiceRegistrations();
+
+            // Act
+            var priority = serviceRegistrations.Priority;
+
+            // Assert
+            priority.Should().Be(5000);
+
+        }
+
+        [Fact]
+        public void ServiceRegistrations_ShouldThrowException_WhenConnectionStringIsNull()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+
+            var serviceRegistrations = new ServiceRegistrations();
+
+            // Mock Configuration
+            var mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.Setup(s => s.GetSection("ConnectionStrings")["Default"]).Returns(string.Empty);
+            services.AddSingleton(mockConfiguration.Object);
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            // Act
+            Action act = () => serviceRegistrations.Execute(services, serviceProvider);
+
+            // Assert
+            act.Should().Throw<InvalidOperationException>("The connection string 'Default' is not configured.");
+        }
+
+
+        [Fact]
         public void ServiceRegistrations_ShouldReturnExpectedServices()
         {
             // Arrange

@@ -4,6 +4,7 @@ using Churchee.Common.Abstractions.Auth;
 using Churchee.Module.UI.Models;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -78,6 +79,14 @@ namespace Churchee.Test.Helpers.Blazor
                     }
                 }
             }
+        }
+
+        public Mock<IHttpContextAccessor> GetMockHttpContextAccessor()
+        {
+            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var context = new DefaultHttpContext();
+            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+            return mockHttpContextAccessor;
         }
 
     }

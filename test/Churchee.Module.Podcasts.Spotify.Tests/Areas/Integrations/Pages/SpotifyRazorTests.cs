@@ -1,6 +1,7 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Churchee.Common.ResponseTypes;
+using Churchee.Module.Podcasts.Features.Commands;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands;
 using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries;
 using Churchee.Module.UI.Components;
@@ -15,12 +16,12 @@ using SpotifyRazor = Churchee.Module.Podcasts.Spotify.Areas.Integrations.Pages.S
 
 namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
 {
-    public class SpotifyTests : BasePageTests
+    public class SpotifyRazorTests : BasePageTests
     {
 
-        private Mock<IDistributedCache> _mockCache;
+        private readonly Mock<IDistributedCache> _mockCache;
 
-        public SpotifyTests()
+        public SpotifyRazorTests()
         {
             _mockCache = new Mock<IDistributedCache>();
 
@@ -60,7 +61,27 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             var cut = Render<SpotifyRazor>();
 
             // Assert
-            cut.Find("form").Should().NotBeNull();
+            cut.FindAll("form").Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void Spotify_Integration_Shows_Correct_Markup_When_Configured()
+        {
+            // Arrange
+            var date = DateTime.Now.AddDays(-10);
+
+            var data = new GetPodcastSettingsResponse("https://localhost/spotify.xml", "listen", date);
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetPodcastSettingsRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+
+            SetInitialUrl<SpotifyRazor>();
+
+            // Act
+            var cut = Render<SpotifyRazor>();
+
+            // Assert
+            cut.Markup.Should().Contain("Spotify podcasts is set up!");
+            cut.Markup.Should().Contain($"Last Run: {date:dd/MM/yyyy HH:mm}");
         }
 
 
@@ -96,6 +117,11 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
 
             // Setup InputModel
             instance.InputModel.SpotifyRSSFeedUrl = "https://localhost/feed.xml ";
+            instance.InputModel.NameForContent = "Listen";
+
+            // Setup Mediator to return success
+            MockMediator.Setup(m => m.Send(It.IsAny<PodcastsEnabledCommand>(), default))
+                .ReturnsAsync(new CommandResponse());
 
             // Setup Mediator to return success
             MockMediator.Setup(m => m.Send(It.IsAny<EnableSpotifyPodcastSyncCommand>(), default))
@@ -108,6 +134,45 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             // Assert
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/integrations/spotify");
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Spotify Podcasts configured, Syncing will being shortly");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+        }
+
+        [Fact]
+        public void Spotify_Integration_ValidSubmitForm_Enable_Fails_ShowsMessage()
+        {
+            // Arrange
+            var data = new GetPodcastSettingsResponse(string.Empty, string.Empty, null);
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetPodcastSettingsRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+
+            SetInitialUrl<SpotifyRazor>();
+
+            var cut = Render<SpotifyRazor>();
+            var instance = cut.Instance;
+
+            // Setup InputModel
+            instance.InputModel.SpotifyRSSFeedUrl = "https://localhost/feed.xml";
+            instance.InputModel.NameForContent = "Listen";
+
+            // Setup response
+            var response = new CommandResponse();
+
+            response.AddError("Fail", "");
+
+            // Setup Mediator to return success
+            MockMediator.Setup(m => m.Send(It.IsAny<PodcastsEnabledCommand>(), default))
+                .ReturnsAsync(response);
+
+            // Act
+            var button = cut.Find("#submitFormBtn");
+            button.Click();
+
+            // Assert
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Failed to enable Podcasts");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
         }
 
 
@@ -141,7 +206,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Areas.Integrations.Pages
             // Arrange
             var data = new GetPodcastSettingsResponse("https://localhost/feed.xml", "talks", DateTime.Now.AddDays(-30));
 
-            Guid appTenantId = await MockCurrentUser.Object.GetApplicationTenantId();
+            var appTenantId = await MockCurrentUser.Object.GetApplicationTenantId();
 
             MockMediator.Setup(s => s.Send(It.IsAny<GetPodcastSettingsRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
 

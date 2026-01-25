@@ -16,25 +16,33 @@ namespace Churchee.Module.Hangfire.Registrations
 
         public void Execute(IServiceCollection serviceCollection, IServiceProvider serviceProvider)
         {
-            var config = serviceProvider.GetRequiredService<IConfiguration>();
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-            serviceCollection.AddHangfire(configuration => configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            serviceCollection.AddHangfire((provider, config) =>
+            {
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .CreateDatabaseIfNotExists(config.GetConnectionString("HangfireConnection"))
-                .UseSqlServerStorage(config.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
+                .CreateDatabaseIfNotExists(configuration.GetConnectionString("HangfireConnection"))
+
+                .UseFilter(new AutomaticRetryAttribute
+                {
+                    Attempts = 3,          // or 0 to disable retries
+                    DelaysInSeconds = [10, 30, 60] // optional custom delays
+                })
+                .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
                     QueuePollInterval = TimeSpan.Zero,
                     UseRecommendedIsolationLevel = true,
                     DisableGlobalLocks = true,
-                }));
+                });
+            });
 
             serviceCollection.AddScoped<IJobService, JobService>();
 
-            if (config.GetSection("Hangfire")["IsService"] != "true")
+            if (configuration.GetSection("Hangfire")["IsService"] != "true")
             {
                 serviceCollection.AddHangfireServer();
 
