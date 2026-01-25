@@ -20,6 +20,8 @@ namespace Churchee.Module.UI.Tests.Components
 
             var cut = GenrateClassUnderTest(inputModel);
 
+            cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
+
             var child = cut.FindComponent<RadzenTextBox>();
 
             child.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
@@ -36,6 +38,9 @@ namespace Churchee.Module.UI.Tests.Components
             var formField = cut.FindComponent<RadzenFormField>();
             var input = cut.FindComponent<RadzenTextBox>();
 
+            cut.FindComponents<RadzenFormField>().Count.Should().Be(1);
+            cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
+
             input.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
 
             formField.Instance.Text.Should().Be("Custom Name");
@@ -50,6 +55,8 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             var input = cut.FindComponent<TextWithSlug>();
+
+            cut.FindComponents<TextWithSlug>().Count.Should().Be(1);
 
             input.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
         }
@@ -187,6 +194,30 @@ namespace Churchee.Module.UI.Tests.Components
             var input = cut.FindComponent<RadzenTextBox>();
 
             input.Instance.ReadOnly.Should().BeTrue();
+
+        }
+
+        [Fact]
+        public void Renders_Int_When_Set()
+        {
+            // Arrange
+            var inputModel = new IntegerTestInputModel();
+
+            var cut = GenrateClassUnderTest(inputModel);
+
+            cut.FindComponents<RadzenNumeric<int>>().Count.Should().Be(1);
+
+        }
+
+        [Fact]
+        public void Renders_NullableInt_When_Set()
+        {
+            // Arrange
+            var inputModel = new NullableIntegerTestInputModel();
+
+            var cut = GenrateClassUnderTest(inputModel);
+
+            cut.FindComponents<RadzenNumeric<int?>>().Count.Should().Be(1);
 
         }
 
@@ -356,6 +387,26 @@ namespace Churchee.Module.UI.Tests.Components
 
             [DataType(DataTypes.Readonly)]
             public string Value { get; set; }
+        }
+
+        private class IntegerTestInputModel
+        {
+            public IntegerTestInputModel()
+            {
+                Value = 1;
+            }
+
+            public int Value { get; set; }
+        }
+
+        private class NullableIntegerTestInputModel
+        {
+            public NullableIntegerTestInputModel()
+            {
+                Value = 1;
+            }
+
+            public int? Value { get; set; }
         }
     }
 }
