@@ -4,6 +4,7 @@ using Churchee.Test.Helpers.Validation;
 using Moq;
 using Moq.Protected;
 using Serilog.Events;
+using Serilog.Parsing;
 using System.Net;
 
 namespace Churchee.Module.Logging.Tests.Sinks
@@ -141,7 +142,7 @@ namespace Churchee.Module.Logging.Tests.Sinks
         }
 
         [Fact]
-        public void SendPostAsync__ErrorSwallowed()
+        public void SendPostAsync_ErrorSwallowed()
         {
             // Arrange
             string token = "dummy_token";
@@ -149,12 +150,13 @@ namespace Churchee.Module.Logging.Tests.Sinks
 
             var cut = new TestableTelegramSink(token, chatId, _httpClient);
 
-            var logEvent = new LogEvent(
-                  DateTimeOffset.UtcNow,
-                  LogEventLevel.Error,
-                  new Exception("Test Exception"),
-                  new MessageTemplate("test", []),
-                  []);
+            var payload = new
+            {
+                chat_id = "1234",
+                text = "message",
+                parse_mode = "HTML",
+                disable_web_page_preview = true
+            };
 
             _mockHttpMessageHandler
                 .Protected()
@@ -165,14 +167,56 @@ namespace Churchee.Module.Logging.Tests.Sinks
                 .Throws(new HttpRequestException("Boom"));
 
             // Act
-            var act = () => cut.Emit(logEvent);
+            var act = () => cut.SendPostAsync(payload);
 
             // Assert
             act.Should().NotThrow();
 
         }
 
+        [Fact]
+        public void Returns_RenderedMessage_When_RenderMessage_Is_Not_Empty()
+        {
 
+            // Arrange
+            var logEvent = new LogEvent(
+                DateTimeOffset.Now,
+                LogEventLevel.Information,
+                exception: null,
+                messageTemplate: new MessageTemplate("Hello {Name}", new MessageTemplateToken[0]),
+                properties:
+                [
+                    new LogEventProperty("Name", new ScalarValue("World"))
+                ]);
+
+            // Act
+            string result = TelegramSink.RenderMessage(logEvent);
+
+            // Assert
+            Assert.Equal("Hello World", result);
+        }
+
+        [Fact]
+        public void Falls_Back_To_MessageTemplate_Text_When_RenderedMessage_Is_Whitespace()
+        {
+            // Arrange
+            var messageTemplate = new MessageTemplate(
+                "Fallback text",
+                []);
+
+            var logEvent = new LogEvent(
+                DateTimeOffset.Now,
+                LogEventLevel.Information,
+                exception: null,
+                messageTemplate: messageTemplate,
+                properties: []);
+
+            // Act
+            string result = TelegramSink.RenderMessage(logEvent);
+
+            // Assert
+            Assert.Equal("Fallback text", result);
+        }
 
         private class TestableTelegramSink : TelegramSink
         {

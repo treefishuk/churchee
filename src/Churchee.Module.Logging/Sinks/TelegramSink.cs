@@ -97,7 +97,7 @@ namespace Churchee.Module.Logging.Registrations
             }
         }
 
-        private static string RenderMessage(LogEvent logEvent)
+        internal static string RenderMessage(LogEvent logEvent)
         {
             try
             {

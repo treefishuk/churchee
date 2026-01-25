@@ -21,5 +21,10 @@ namespace Churchee.Test.Helpers.Validation
                 exception.Message.Should().Be(exceptionMessage);
             }
         }
+
+        public void NotThrow()
+        {
+            Assert.NotNull(_instance);
+        }
     }
 }
