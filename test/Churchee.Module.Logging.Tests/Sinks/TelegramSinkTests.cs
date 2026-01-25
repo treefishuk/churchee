@@ -177,23 +177,25 @@ namespace Churchee.Module.Logging.Tests.Sinks
         [Fact]
         public void Returns_RenderedMessage_When_RenderMessage_Is_Not_Empty()
         {
-
             // Arrange
+            var parser = new MessageTemplateParser();
+            var template = parser.Parse("Hello {Name}");
+
             var logEvent = new LogEvent(
                 DateTimeOffset.Now,
                 LogEventLevel.Information,
                 exception: null,
-                messageTemplate: new MessageTemplate("Hello {Name}", new MessageTemplateToken[0]),
-                properties:
-                [
-                    new LogEventProperty("Name", new ScalarValue("World"))
-                ]);
+                messageTemplate: template,
+                properties: new[]
+                {
+            new LogEventProperty("Name", new ScalarValue("World"))
+                });
 
             // Act
             string result = TelegramSink.RenderMessage(logEvent);
 
             // Assert
-            Assert.Equal("Hello World", result);
+            Assert.Equal("Hello \"World\"", result);
         }
 
         [Fact]
