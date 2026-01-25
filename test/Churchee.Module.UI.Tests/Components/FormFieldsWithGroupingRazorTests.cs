@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using FormFields = Churchee.Module.UI.Components.FormFields;
 namespace Churchee.Module.UI.Tests.Components
 {
-    public class FormFieldsRazorTests : BasePageTests
+    public class FormFieldsWithGroupingRazorTests : BasePageTests
     {
 
         [Fact]
@@ -18,11 +18,15 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new BasicStringTestInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             var child = cut.FindComponent<RadzenTextBox>();
 
             child.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -31,14 +35,18 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new StringWithNameAttributeTestInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             var formField = cut.FindComponent<RadzenFormField>();
             var input = cut.FindComponent<RadzenTextBox>();
 
             input.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
 
             formField.Instance.Text.Should().Be("Custom Name");
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -47,11 +55,15 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new TextWithSlugInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             var input = cut.FindComponent<TextWithSlug>();
 
             input.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -60,9 +72,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new HiddenInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.Markup.Contains("<input type=\"hidden\" name=\"MyProperty\" value=\"\" />").Should().BeTrue();
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -71,9 +87,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new UploadInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenFileInput<string>>().Count.Should().Be(1);
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -82,9 +102,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new ImageUploadInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenFileInput<string>>().Count.Should().Be(1);
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -93,9 +117,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new MediaUploadInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenFileInput<string>>().Count.Should().Be(1);
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -104,9 +132,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new PasswordInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenPassword>().Count.Should().Be(1);
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -115,9 +147,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new EmailInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -126,13 +162,17 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new DateTimeInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenDatePicker<DateTime>>().Count.Should().Be(1);
 
             var input = cut.FindComponent<RadzenDatePicker<DateTime>>();
 
             input.Instance.DateFormat.Should().Be("dd-MM-yyyy HH:mm");
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -141,13 +181,17 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new DateInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenDatePicker<DateTime>>().Count.Should().Be(1);
 
             var input = cut.FindComponent<RadzenDatePicker<DateTime>>();
 
             input.Instance.DateFormat.Should().Be("dd-MM-yyyy");
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -156,9 +200,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new CheckboxListInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenCheckBoxList<Guid>>().Count.Should().Be(1);
+
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
 
@@ -168,10 +216,13 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new UrlInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
 
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -180,14 +231,17 @@ namespace Churchee.Module.UI.Tests.Components
             // Arrange
             var inputModel = new ReadOnlyInputModel();
 
+            // Act
             var cut = GenrateClassUnderTest(inputModel);
 
+            // Assert
             cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
 
             var input = cut.FindComponent<RadzenTextBox>();
 
             input.Instance.ReadOnly.Should().BeTrue();
 
+            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
 
@@ -220,6 +274,7 @@ namespace Churchee.Module.UI.Tests.Components
                 MyProperty = string.Empty;
             }
 
+            [Display(GroupName = "Group Name")]
             public string MyProperty { get; set; }
         }
 
@@ -230,7 +285,7 @@ namespace Churchee.Module.UI.Tests.Components
                 MyProperty = string.Empty;
             }
 
-            [Display(Name = "Custom Name")]
+            [Display(Name = "Custom Name", GroupName = "Group Name")]
             public string MyProperty { get; set; }
         }
 
@@ -241,7 +296,7 @@ namespace Churchee.Module.UI.Tests.Components
                 MyProperty = string.Empty;
             }
 
-            [Display(Name = "Custom Name")]
+            [Display(Name = "Custom Name", GroupName = "Group Name")]
             [DataType(DataTypes.TextWithSlug)]
             public string MyProperty { get; set; }
         }
@@ -253,6 +308,7 @@ namespace Churchee.Module.UI.Tests.Components
                 MyProperty = string.Empty;
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.Hidden)]
             public string MyProperty { get; set; }
         }
@@ -264,6 +320,7 @@ namespace Churchee.Module.UI.Tests.Components
                 MyProperty = string.Empty;
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.Password)]
             public string MyProperty { get; set; }
         }
@@ -275,6 +332,7 @@ namespace Churchee.Module.UI.Tests.Components
                 MyProperty = string.Empty;
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.EmailAddress)]
             public string MyProperty { get; set; }
         }
@@ -286,6 +344,7 @@ namespace Churchee.Module.UI.Tests.Components
                 Upload = new Upload();
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.Upload)]
             public Upload Upload { get; set; }
         }
@@ -297,6 +356,7 @@ namespace Churchee.Module.UI.Tests.Components
                 Upload = new Upload();
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.ImageUpload)]
             public Upload Upload { get; set; }
         }
@@ -308,6 +368,7 @@ namespace Churchee.Module.UI.Tests.Components
                 Upload = new Upload();
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.MediaUpload)]
             public Upload Upload { get; set; }
         }
@@ -319,6 +380,7 @@ namespace Churchee.Module.UI.Tests.Components
                 MultiSelect = new MultiSelect(new List<MultiSelectItem>());
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.CheckboxList)]
             public MultiSelect MultiSelect { get; set; }
         }
@@ -326,12 +388,14 @@ namespace Churchee.Module.UI.Tests.Components
 
         private class DateTimeInputModel
         {
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.DateTime)]
             public DateTime Date { get; set; }
         }
 
         private class DateInputModel
         {
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.Date)]
             public DateTime Date { get; set; }
         }
@@ -343,6 +407,7 @@ namespace Churchee.Module.UI.Tests.Components
                 Value = string.Empty;
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.Url)]
             public string Value { get; set; }
         }
@@ -354,6 +419,7 @@ namespace Churchee.Module.UI.Tests.Components
                 Value = string.Empty;
             }
 
+            [Display(GroupName = "Group Name")]
             [DataType(DataTypes.Readonly)]
             public string Value { get; set; }
         }
