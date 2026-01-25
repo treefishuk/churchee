@@ -3,6 +3,7 @@ using Churchee.Common.ValueTypes;
 using Churchee.Module.UI.Components;
 using Churchee.Test.Helpers.Blazor;
 using Churchee.Test.Helpers.Validation;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Radzen.Blazor;
 using System.ComponentModel.DataAnnotations;
@@ -24,7 +25,13 @@ namespace Churchee.Module.UI.Tests.Components
 
             var child = cut.FindComponent<RadzenTextBox>();
 
+            var input = child.Find("input");
+
+            input.Change("Hello world");
+
             child.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+
+            Changed.Should().BeTrue();
         }
 
         [Fact]
@@ -36,14 +43,21 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             var formField = cut.FindComponent<RadzenFormField>();
-            var input = cut.FindComponent<RadzenTextBox>();
+            var textBox = cut.FindComponent<RadzenTextBox>();
+
+            var input = textBox.Find("input");
+
+            input.Change("Hello world");
 
             cut.FindComponents<RadzenFormField>().Count.Should().Be(1);
             cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
 
-            input.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+            textBox.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
 
             formField.Instance.Text.Should().Be("Custom Name");
+
+            Changed.Should().BeTrue();
+
         }
 
         [Fact]
@@ -54,11 +68,17 @@ namespace Churchee.Module.UI.Tests.Components
 
             var cut = GenrateClassUnderTest(inputModel);
 
-            var input = cut.FindComponent<TextWithSlug>();
+            var textBox = cut.FindComponent<TextWithSlug>();
+
+            var input = textBox.Find("input");
+
+            input.Change("Hello world");
 
             cut.FindComponents<TextWithSlug>().Count.Should().Be(1);
 
-            input.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+            textBox.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+
+            Changed.Should().BeTrue();
         }
 
         [Fact]
@@ -114,6 +134,15 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             cut.FindComponents<RadzenPassword>().Count.Should().Be(1);
+
+            var field = cut.FindComponent<RadzenPassword>();
+
+            var input = field.Find("input");
+
+            input.Change("Helloworld22!");
+
+            Changed.Should().BeTrue();
+
         }
 
         [Fact]
@@ -125,6 +154,14 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
+
+            var field = cut.FindComponent<RadzenTextBox>();
+
+            var input = field.Find("input");
+
+            input.Change("norepy@example.com");
+
+            Changed.Should().BeTrue();
         }
 
         [Fact]
@@ -137,9 +174,12 @@ namespace Churchee.Module.UI.Tests.Components
 
             cut.FindComponents<RadzenDatePicker<DateTime>>().Count.Should().Be(1);
 
-            var input = cut.FindComponent<RadzenDatePicker<DateTime>>();
+            var field = cut.FindComponent<RadzenDatePicker<DateTime>>();
 
-            input.Instance.DateFormat.Should().Be("dd-MM-yyyy HH:mm");
+            field.Instance.DateFormat.Should().Be("dd-MM-yyyy HH:mm");
+
+
+
         }
 
         [Fact]
@@ -221,6 +261,12 @@ namespace Churchee.Module.UI.Tests.Components
 
         }
 
+        public bool Changed { get; set; }
+
+        private void InputChanged()
+        {
+            Changed = true;
+        }
 
         private IRenderedComponent<EditForm> GenrateClassUnderTest(object inputModel)
         {
@@ -233,6 +279,7 @@ namespace Churchee.Module.UI.Tests.Components
                         builder.AddAttribute(1, "InputModel", inputModel);
                         builder.AddAttribute(2, "EditContext", new EditContext(inputModel));
                         builder.AddAttribute(3, "Properties", inputModel.GetType().GetProperties());
+                        builder.AddAttribute(4, "OnValueChanged", EventCallback.Factory.Create<object>(this, InputChanged));
                         builder.CloseComponent();
                     })
             );
