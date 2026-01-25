@@ -59,7 +59,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error syncing Facebook events");
+                _logger.LogError(ex, "Error syncing YouTube");
 
                 response.AddError("Failed To Sync", "");
             }
