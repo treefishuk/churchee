@@ -15,6 +15,7 @@ namespace Churchee.Module.Logging.Tests.Extensions
             var inMemorySettings = new Dictionary<string, string?>
             {
                 {"Logging:Telegram:BotToken", "test-bot-token"},
+                {"Logging:Telegram:Enabled", "true"},
                 {"Logging:Telegram:ChatId", "test-chat-id"}
             };
             configurationBuilder.AddInMemoryCollection(inMemorySettings);
