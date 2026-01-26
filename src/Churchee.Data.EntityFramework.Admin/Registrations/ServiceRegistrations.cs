@@ -12,6 +12,7 @@ namespace Churchee.Data.EntityFramework.Admin.Registrations
     public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 5000;
+
         public void Execute(IServiceCollection serviceCollection, IServiceProvider serviceProvider)
         {
             var config = serviceProvider.GetRequiredService<IConfiguration>();

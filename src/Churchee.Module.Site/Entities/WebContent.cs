@@ -11,7 +11,6 @@ namespace Churchee.Module.Site.Entities
             Children = [];
         }
 
-
         protected WebContent(Guid applicationTenantId, string source, string title, string url, string description) : base(applicationTenantId)
         {
             RedirectUrls = new HashSet<RedirectUrl>();
@@ -50,7 +49,6 @@ namespace Churchee.Module.Site.Entities
 
         public virtual PageType PageType { get; set; }
 
-
         /// <summary>
         /// For System Pages Such as Blogs, Events or Podcasts
         /// </summary>
@@ -73,6 +71,15 @@ namespace Churchee.Module.Site.Entities
         public string SourceId { get; protected set; }
 
         public int Order { get; set; }
+
+        public string ImageUrl { get; protected set; }
+
+        public void SetImageUrl(string imageUrl)
+        {
+            ImageUrl = imageUrl;
+        }
+
+        public string ImageAltTag { get; protected set; }
 
     }
 }

@@ -16,6 +16,8 @@ namespace Churchee.Module.Podcasts.Registrations
 
                 etb.HasIndex(p => p.AudioUri).IsUnique();
 
+                /// Legacy Property - Not Used but kept for backwards compatibility
+                etb.Property<string>("LegacyImageUrl").HasColumnName("ImageUrl");
             });
 
         }

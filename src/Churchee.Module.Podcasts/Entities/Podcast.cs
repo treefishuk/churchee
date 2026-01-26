@@ -34,8 +34,6 @@ namespace Churchee.Module.Podcasts.Entities
 
         public string AudioUri { get; private set; }
 
-        public string ImageUrl { get; private set; }
-
         public string ThumbnailUrl { get; private set; }
 
         public DateTime PublishedDate { get; private set; }
