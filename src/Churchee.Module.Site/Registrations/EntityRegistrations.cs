@@ -156,6 +156,12 @@ namespace Churchee.Module.Site.Registration
 
                 etb.Property(t => t.Content).HasColumnType(nvarcharMax);
 
+                /// Legacy Property - Not Used but kept for backwards compatibility
+                etb.Property<string>("LegacyImageUrl").HasColumnName("ImageUrl");
+
+                /// Legacy Property - Not Used but kept for backwards compatibility
+                etb.Property<string>("LegacyImageAltTag").HasColumnName("ImageAltTag");
+
             });
         }
     }

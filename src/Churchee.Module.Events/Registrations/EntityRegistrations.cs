@@ -22,6 +22,9 @@ namespace Churchee.Module.Events.Registration
 
                 etb.HasMany(x => x.EventDates).WithOne(o => o.Event).HasForeignKey(x => x.EventId).OnDelete(DeleteBehavior.Cascade);
 
+                /// Legacy Property - Not Used but kept for backwards compatibility
+                etb.Property<string>("LegacyImageUrl").HasColumnName("ImageUrl");
+
             });
 
             modelBuilder.Entity<EventDate>(etb =>
@@ -29,7 +32,6 @@ namespace Churchee.Module.Events.Registration
                 etb.ToTable("EventDates");
 
                 etb.Property(p => p.Id).ValueGeneratedNever();
-
             });
 
         }

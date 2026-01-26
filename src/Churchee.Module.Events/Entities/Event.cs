@@ -8,7 +8,6 @@ namespace Churchee.Module.Events.Entities
         {
             Title = string.Empty;
             Description = string.Empty;
-            ImageUrl = string.Empty;
             LocationName = string.Empty;
             City = string.Empty;
             Street = string.Empty;
@@ -33,13 +32,6 @@ namespace Churchee.Module.Events.Entities
         public decimal? Latitude { get; private set; }
 
         public decimal? Longitude { get; private set; }
-
-        public string ImageUrl { get; private set; }
-
-        public void SetImageUrl(string imageUrl)
-        {
-            ImageUrl = imageUrl;
-        }
 
         public ICollection<EventDate> EventDates { get; set; }
 
@@ -184,7 +176,7 @@ namespace Churchee.Module.Events.Entities
 
             public Builder SetImageUrl(string imageUrl)
             {
-                _event.ImageUrl = imageUrl;
+                _event.SetImageUrl(imageUrl);
                 return this;
             }
 
