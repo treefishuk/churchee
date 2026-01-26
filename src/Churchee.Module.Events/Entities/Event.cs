@@ -176,7 +176,7 @@ namespace Churchee.Module.Events.Entities
 
             public Builder SetImageUrl(string imageUrl)
             {
-                _event.SetImageUrl(imageUrl);
+                _event.ImageUrl = imageUrl;
                 return this;
             }
 
