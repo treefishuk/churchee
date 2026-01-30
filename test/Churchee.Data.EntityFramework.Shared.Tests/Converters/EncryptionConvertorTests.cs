@@ -1,4 +1,4 @@
-﻿using Churchee.Data.EntityFramework.Admin.Converters;
+﻿using Churchee.Data.EntityFramework.Shared.Converters;
 using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
@@ -51,7 +51,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             string result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(null);
 
             // Assert
-            result.Should().Be(String.Empty);
+            result.Should().Be(string.Empty);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             string result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(null);
 
             // Assert
-            result.Should().Be(String.Empty);
+            result.Should().Be(string.Empty);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             string result = _encryptionConvertor.ConvertToProviderExpression.Compile().Invoke(string.Empty);
 
             // Assert
-            result.Should().Be(String.Empty);
+            result.Should().Be(string.Empty);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             string result = _encryptionConvertor.ConvertFromProviderExpression.Compile().Invoke(string.Empty);
 
             // Assert
-            result.Should().Be(String.Empty);
+            result.Should().Be(string.Empty);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Churchee.Common.Attributes;
+using Churchee.Data.EntityFramework.Shared.Converters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
@@ -22,7 +24,7 @@ namespace Churchee.Data.EntityFramework.Shared.Extensions
 
                 var declaredFilters = builder.Metadata.GetDeclaredQueryFilters();
 
-                LambdaExpression? currentQueryFilter = declaredFilters.FirstOrDefault()?.Expression;
+                var currentQueryFilter = declaredFilters.FirstOrDefault()?.Expression;
 
                 if (currentQueryFilter != null)
                 {
@@ -51,6 +53,23 @@ namespace Churchee.Data.EntityFramework.Shared.Extensions
                 if (property.GetMaxLength() == null && colTypeNormalized != "NVARCHAR(MAX)")
                 {
                     property.SetMaxLength(length);
+                }
+            }
+        }
+
+        public static void EncryptProtectedProperties(this ModelBuilder modelBuilder, string key)
+        {
+            var converter = new EncryptionConvertor(key);
+
+            foreach (var property in modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetProperties())
+                .Where(p => p.ClrType == typeof(string)))
+            {
+                object[]? attributes = property.PropertyInfo?.GetCustomAttributes(typeof(EncryptPropertyAttribute), false);
+
+                if (attributes != null && attributes.Length != 0)
+                {
+                    property.SetValueConverter(converter);
                 }
             }
         }
