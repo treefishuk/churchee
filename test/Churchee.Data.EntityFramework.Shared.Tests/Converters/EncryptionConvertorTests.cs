@@ -84,13 +84,6 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             result.Should().Be(string.Empty);
         }
 
-
-
-
-
-
-
-
         [Fact]
         public void ConvertFromProvider_Encrypt_ShouldReturnEmptyString_WhenInputIsEmptyString()
         {
