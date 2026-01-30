@@ -16,7 +16,7 @@ namespace Churchee.Module.Site.Registration
 
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
-            jobService.ScheduleJob<PublishArticlesJob>($"PublishArticles", x => x.ExecuteAsync(CancellationToken.None), Cron.Daily);
+            jobService.ScheduleJob<PublishArticlesJob>($"PublishArticles", x => x.ExecuteAsync(CancellationToken.None), () => Cron.Daily(1));
         }
     }
 }

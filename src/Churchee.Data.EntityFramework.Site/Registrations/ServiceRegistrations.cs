@@ -13,7 +13,7 @@ namespace Churchee.Data.EntityFramework.Site.Registrations
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-            string? connectionString = configuration.GetConnectionString("Default");
+            string connectionString = configuration.GetConnectionString("Default");
 
             if (string.IsNullOrEmpty(connectionString))
             {

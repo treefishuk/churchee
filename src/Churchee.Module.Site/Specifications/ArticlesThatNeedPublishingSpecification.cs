@@ -8,7 +8,7 @@ namespace Churchee.Module.Site.Specifications
 
         public ArticlesThatNeedPublishingSpecification()
         {
-            Query.Where(article => !article.Published && article.LastPublishedDate != null && article.LastPublishedDate <= DateTime.UtcNow);
+            Query.IgnoreQueryFilters().Where(article => !article.Published && article.LastPublishedDate != null && article.LastPublishedDate <= DateTime.UtcNow);
         }
 
     }

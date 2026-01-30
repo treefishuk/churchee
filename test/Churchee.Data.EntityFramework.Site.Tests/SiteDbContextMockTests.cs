@@ -2,6 +2,7 @@ using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -49,7 +50,16 @@ namespace Churchee.Data.EntityFramework.Site.Tests
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var ctx = new SiteDbContext(options, tenantResolver.Object, serviceProvider, logger.Object);
+            var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
+            {
+                { "Security:EncryptionKey", "Secret_Key" }
+            };
+
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
+
+            var ctx = new SiteDbContext(options, tenantResolver.Object, serviceProvider, logger.Object, configuration);
 
             // Force model build now so global filters apply to all needed entities
             _ = ctx.Model;

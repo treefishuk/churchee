@@ -3,6 +3,7 @@ using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Data.EntityFramework.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,13 +14,15 @@ namespace Churchee.Data.EntityFramework.Site
         private readonly ILogger _logger;
         private readonly ITenantResolver _tenantResolver;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IConfiguration _configuration;
 
-        public SiteDbContext(DbContextOptions<SiteDbContext> options, ITenantResolver tenantResolver, IServiceProvider serviceProvider, ILogger<SiteDbContext> logger)
+        public SiteDbContext(DbContextOptions<SiteDbContext> options, ITenantResolver tenantResolver, IServiceProvider serviceProvider, ILogger<SiteDbContext> logger, IConfiguration configuration)
                : base(options)
         {
             _tenantResolver = tenantResolver;
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _configuration = configuration;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,6 +46,7 @@ namespace Churchee.Data.EntityFramework.Site
 
             modelBuilder.ApplyGlobalFilters<IEntity>(a => !a.Deleted);
 
+            modelBuilder.EncryptProtectedProperties(_configuration.GetRequiredSection("Security")["EncryptionKey"]);
         }
 
         public override int SaveChanges()
