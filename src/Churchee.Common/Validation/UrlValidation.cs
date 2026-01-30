@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Churchee.Common.Validation
+﻿namespace Churchee.Common.Validation
 {
     public static class UrlValidation
     {
@@ -11,20 +9,14 @@ namespace Churchee.Common.Validation
                 return false;
             }
 
-            // Must start with a single /
+            // Must start with /
             if (!url.StartsWith('/'))
             {
                 return false;
             }
 
-            // Reject protocol-relative URLs
-            if (url.StartsWith("//"))
-            {
-                return false;
-            }
-
-            // Reject absolute URIs
-            return !Uri.TryCreate(url, UriKind.Absolute, out _);
+            // Must not start with //
+            return !url.StartsWith("//");
         }
 
     }
