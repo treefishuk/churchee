@@ -16,7 +16,7 @@ namespace Churchee.Module.Site.Tests.Registrations
             var registrations = new JobRegistrations();
 
             // Act
-            var priority = registrations.Priority;
+            int priority = registrations.Priority;
 
             // Assert
             Assert.Equal(6000, priority);
@@ -52,7 +52,7 @@ namespace Churchee.Module.Site.Tests.Registrations
                 js.ScheduleJob(
                     "PublishArticles",
                     It.IsAny<Expression<Func<PublishArticlesJob, Task>>>(),
-                    Hangfire.Cron.Daily),
+                    () => Hangfire.Cron.Daily(1)),
                 Times.Once);
         }
     }
