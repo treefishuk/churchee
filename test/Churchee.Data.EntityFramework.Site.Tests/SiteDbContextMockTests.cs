@@ -50,9 +50,16 @@ namespace Churchee.Data.EntityFramework.Site.Tests
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var config = new Mock<IConfiguration>();
+            var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
+            {
+                { "Security:EncryptionKey", "Secret_Key" }
+            };
 
-            var ctx = new SiteDbContext(options, tenantResolver.Object, serviceProvider, logger.Object, config.Object);
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
+
+            var ctx = new SiteDbContext(options, tenantResolver.Object, serviceProvider, logger.Object, configuration);
 
             // Force model build now so global filters apply to all needed entities
             _ = ctx.Model;
