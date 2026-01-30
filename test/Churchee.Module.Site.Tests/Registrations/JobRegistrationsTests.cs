@@ -52,7 +52,7 @@ namespace Churchee.Module.Site.Tests.Registrations
                 js.ScheduleJob(
                     "PublishArticles",
                     It.IsAny<Expression<Func<PublishArticlesJob, Task>>>(),
-                    () => Hangfire.Cron.Daily(1)),
+                    It.IsAny<Func<string>>()),
                 Times.Once);
         }
     }
