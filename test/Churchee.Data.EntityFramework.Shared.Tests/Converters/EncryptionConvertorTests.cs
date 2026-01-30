@@ -83,6 +83,90 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Converters
             // Assert
             result.Should().Be(string.Empty);
         }
+
+
+
+
+
+
+
+
+        [Fact]
+        public void ConvertFromProvider_Encrypt_ShouldReturnEmptyString_WhenInputIsEmptyString()
+        {
+            // Act
+            string result = EncryptionConvertor.EncryptFunc(EncryptionKey, string.Empty);
+
+            // Assert
+            result.Should().Be(string.Empty);
+        }
+
+        [Fact]
+        public void ConvertToProvider_Encrypt_ShouldReturnEmptyString_WhenInputIsNull()
+        {
+            // Act
+            string result = EncryptionConvertor.EncryptFunc(EncryptionKey, null);
+
+            // Assert
+            result.Should().Be(string.Empty);
+        }
+
+        [Fact]
+        public void ConvertToProvider_Encrypt_ShouldEncryptValue()
+        {
+            // Arrange
+            string plainText = "plain text";
+
+            // Act
+            string result = EncryptionConvertor.EncryptFunc(EncryptionKey, plainText);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().NotBeEmpty();
+            result.Should().NotBe(plainText);
+        }
+
+        [Fact]
+        public void ConvertToProvider_Decrypt_ShouldReturnEmptyString_WhenInputIsEmptyString()
+        {
+            // Act
+            string result = EncryptionConvertor.DecryptFunc(EncryptionKey, string.Empty);
+
+            // Assert
+            result.Should().Be(string.Empty);
+        }
+
+        [Fact]
+        public void ConvertToProvider_Decrypt_ShouldReturnEmptyString_WhenInputIsNull()
+        {
+            // Act
+            string result = EncryptionConvertor.DecryptFunc(EncryptionKey, null);
+
+            // Assert
+            result.Should().Be(string.Empty);
+        }
+
+        [Fact]
+        public void ConvertFromProvider_Decrypt_ShouldDecryptValue()
+        {
+            // Arrange
+            string encryptedText = "ngcvfFH0W2iqKypGqln0HGTHMmSgqcksFLjQAVuKKEuUX3YN+/Q=";
+            string plainText = "plain text";
+
+            // Act
+            string result = EncryptionConvertor.DecryptFunc(EncryptionKey, encryptedText);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().NotBeEmpty();
+            result.Should().Be(plainText);
+        }
+
+
+
+
+
+
     }
 }
 

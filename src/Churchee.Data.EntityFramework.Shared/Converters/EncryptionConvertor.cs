@@ -12,12 +12,12 @@ namespace Churchee.Data.EntityFramework.Shared.Converters
 
         }
 
-        private static string EncryptFunc(string key, string val)
+        internal static string EncryptFunc(string key, string val)
         {
             return string.IsNullOrEmpty(val) ? string.Empty : AesEncryptionHelper.Encrypt(key, val);
         }
 
-        private static string DecryptFunc(string key, string val)
+        internal static string DecryptFunc(string key, string val)
         {
             return string.IsNullOrEmpty(val) ? string.Empty : AesEncryptionHelper.Decrypt(key, val);
         }

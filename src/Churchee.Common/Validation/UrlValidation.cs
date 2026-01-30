@@ -11,22 +11,21 @@ namespace Churchee.Common.Validation
                 return false;
             }
 
-            url = Uri.UnescapeDataString(url).Trim();
-
-            // Must start with a single forward slash
+            // Must start with a single /
             if (!url.StartsWith('/'))
             {
                 return false;
             }
 
-            // Reject protocol-relative URLs like //evil.com
+            // Reject protocol-relative URLs
             if (url.StartsWith("//"))
             {
                 return false;
             }
 
-            // Reject absolute URLs
+            // Reject absolute URIs
             return !Uri.TryCreate(url, UriKind.Absolute, out _);
         }
+
     }
 }
