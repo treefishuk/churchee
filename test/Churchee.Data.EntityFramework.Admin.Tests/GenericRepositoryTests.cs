@@ -1,5 +1,6 @@
 ﻿using Ardalis.Specification;
 using Churchee.Common.Abstractions.Entities;
+using Churchee.Data.EntityFramework.Shared;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -143,7 +144,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             _dbContext.SaveChanges();
 
             // Act
-            var count = _repository.Count();
+            int count = _repository.Count();
 
             // Assert
             Assert.Equal(2, count);
@@ -158,7 +159,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             await _dbContext.SaveChangesAsync();
 
             // Act
-            var count = await _repository.CountAsync(CancellationToken.None);
+            int count = await _repository.CountAsync(CancellationToken.None);
 
             // Assert
             Assert.Equal(2, count);
@@ -173,7 +174,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             _dbContext.SaveChanges();
 
             // Act
-            var result = _repository.Any();
+            bool result = _repository.Any();
 
             // Assert
             Assert.True(result);
@@ -223,7 +224,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             var specification = new MockSpecification<TestEntity>(e => e.Name == "Test Entity");
 
             // Act
-            var result = await _repository.FirstOrDefaultAsync(specification, e => e.Name, CancellationToken.None);
+            string result = await _repository.FirstOrDefaultAsync(specification, e => e.Name, CancellationToken.None);
 
             // Assert
             Assert.NotNull(result);
