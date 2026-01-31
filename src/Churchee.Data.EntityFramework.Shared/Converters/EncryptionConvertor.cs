@@ -5,7 +5,7 @@ namespace Churchee.Data.EntityFramework.Shared.Converters
 {
     public class EncryptionConvertor : ValueConverter<string, string>
     {
-        public EncryptionConvertor(string key, ConverterMappingHints? mappingHints = null)
+        public EncryptionConvertor(string key, ConverterMappingHints mappingHints = null)
             : base(x => EncryptFunc(key, x),
                    x => DecryptFunc(key, x), mappingHints)
         {

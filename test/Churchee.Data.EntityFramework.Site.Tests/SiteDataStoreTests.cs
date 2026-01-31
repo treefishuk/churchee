@@ -1,16 +1,16 @@
 using Churchee.Common.Abstractions.Entities;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using System.Security.Claims;
 
-namespace Churchee.Data.EntityFramework.Admin.Tests
+namespace Churchee.Data.EntityFramework.Site.Tests
 {
-    public class EFStorageTests
+    public class SiteDataStoreTests
     {
         private readonly Mock<IHttpContextAccessor> _mockHttpContextAccessor;
 
-        public EFStorageTests()
+        public SiteDataStoreTests()
         {
             _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
         }
@@ -21,7 +21,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             // Arrange
             var dbContext = new TestDbContext();
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new SiteDataStore(dbContext);
 
             // Act
             var repository = efStorage.GetRepository<TestTrackableEntity>();
@@ -31,69 +31,41 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
         }
 
         [Fact]
-        public async Task SaveChangesAsync_ShouldCallSaveChangesOnDbContext()
+        public async Task SaveChangesAsync_Should_Throw_Exception()
         {
             // Arrange
             var dbContext = new TestDbContext();
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new SiteDataStore(dbContext);
 
             var trackableEntity = new TestTrackableEntity();
             dbContext.Add(trackableEntity);
 
             // Act
-            var result = await efStorage.SaveChangesAsync();
+            var act = async () => await efStorage.SaveChangesAsync();
 
             // Assert
-            Assert.Equal(1, result); // Ensure one change was saved to the database
-            Assert.NotNull(dbContext.TestEntities.FirstOrDefault()); // Ensure the entity was saved
+            await act.Should().ThrowAsync<InvalidOperationException>();
+
         }
 
         [Fact]
-        public void SaveChanges_ShouldCallSaveChangesOnDbContext()
+        public void SaveChanges_Should_Throw_Exception()
         {
             // Arrange
             var dbContext = new TestDbContext();
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new SiteDataStore(dbContext);
 
             var trackableEntity = new TestTrackableEntity();
             dbContext.Add(trackableEntity);
 
             // Act
-            efStorage.SaveChanges();
+            var act = efStorage.SaveChanges;
 
             // Assert
-            Assert.NotNull(dbContext.TestEntities.FirstOrDefault()); // Ensure the entity was saved
-        }
+            act.Should().Throw<InvalidOperationException>();
 
-        [Fact]
-        public async Task SaveChangesAsync_ShouldAssignAutoValues_WhenEntityIsTrackable()
-        {
-            // Arrange
-            var dbContext = new TestDbContext();
-
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
-
-            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, "TestUser"),
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
-            }, "mock"));
-
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(ctx => ctx.User).Returns(userClaims);
-            _mockHttpContextAccessor.Setup(accessor => accessor.HttpContext).Returns(mockHttpContext.Object);
-
-            // Act
-            var trackableEntity = new TestTrackableEntity();
-            dbContext.Add(trackableEntity);
-
-            var result = await efStorage.SaveChangesAsync();
-
-            // Assert
-            Assert.NotNull(trackableEntity.CreatedDate);
-            Assert.Equal("TestUser", trackableEntity.CreatedByUser);
         }
 
         private class TestTrackableEntity : ITrackable, IEntity

@@ -65,7 +65,7 @@ namespace Churchee.Data.EntityFramework.Shared.Extensions
                 .SelectMany(t => t.GetProperties())
                 .Where(p => p.ClrType == typeof(string)))
             {
-                object[]? attributes = property.PropertyInfo?.GetCustomAttributes(typeof(EncryptPropertyAttribute), false);
+                object[] attributes = property.PropertyInfo?.GetCustomAttributes(typeof(EncryptPropertyAttribute), false);
 
                 if (attributes != null && attributes.Length != 0)
                 {

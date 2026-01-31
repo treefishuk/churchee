@@ -1,6 +1,5 @@
 ﻿using Ardalis.Specification;
 using Churchee.Module.Tokens.Entities;
-using System.Linq;
 
 namespace Churchee.Module.Tokens.Specifications
 {
@@ -12,6 +11,11 @@ namespace Churchee.Module.Tokens.Specifications
             Query.IgnoreQueryFilters();
 
             Query.Where(x => x.Key == key && x.ApplicationTenantId == applicationTenantId).AsNoTracking();
+        }
+
+        public GetTokenByKeySpecification(string key)
+        {
+            Query.Where(x => x.Key == key).AsNoTracking();
         }
 
     }

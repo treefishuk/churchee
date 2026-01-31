@@ -4,15 +4,10 @@ using Churchee.Common.Abstractions;
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Churchee.Data.EntityFramework.Admin
+namespace Churchee.Data.EntityFramework.Shared
 {
     public class GenericRepository<T> : IRepository<T> where T : class, IEntity
     {
@@ -92,7 +87,7 @@ namespace Churchee.Data.EntityFramework.Admin
             return await _specificationEvaluator.GetQuery(_dbSet.AsNoTracking(), specification).Select(selector).Distinct().CountAsync(cancellationToken);
         }
 
-        public async Task SoftDelete<TId>(TId id)
+        public virtual async Task SoftDelete<TId>(TId id)
         {
             var entity = await _dbSet.FindAsync(id);
 
@@ -172,19 +167,19 @@ namespace Churchee.Data.EntityFramework.Admin
             };
         }
 
-        public void PermanentDelete(T entity)
+        public virtual void PermanentDelete(T entity)
         {
             _dbSet.Remove(entity);
         }
 
-        public async Task PermanentDelete(Guid id)
+        public virtual async Task PermanentDelete(Guid id)
         {
             var entity = await _dbSet.FindAsync(id);
 
             _dbSet.Remove(entity);
         }
 
-        public async Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
+        public virtual async Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
         {
             await _specificationEvaluator.GetQuery(GetQueryable(), specification).ExecuteDeleteAsync(cancellationToken);
         }

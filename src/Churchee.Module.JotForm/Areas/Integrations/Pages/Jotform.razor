@@ -12,8 +12,6 @@
 @using Radzen.Blazor
 @using Radzen
 @using Churchee.Common.Abstractions.Auth
-@inject ICurrentUser _currentUser
-@inject IHttpContextAccessor _httpContextAccessor
 
 <PageName Name="Jotform Integration"></PageName>
 
@@ -73,8 +71,6 @@
 
     private async Task ValidSubmitForm()
     {
-        var request = _httpContextAccessor.HttpContext.Request;
-
         var response = await Mediator.Send(new ConfigureJotformCommand(InputModel.ApiKey));
 
         NotificationService.Notify(response);

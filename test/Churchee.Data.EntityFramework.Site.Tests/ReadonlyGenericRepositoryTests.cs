@@ -1,39 +1,38 @@
 ﻿using Ardalis.Specification;
 using Churchee.Common.Abstractions.Entities;
-using Churchee.Data.EntityFramework.Shared;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System.Linq.Expressions;
 
-namespace Churchee.Data.EntityFramework.Admin.Tests
+namespace Churchee.Data.EntityFramework.Site.Tests
 {
-    public class GenericRepositoryTests
+    public class ReadonlyGenericRepositoryTests
     {
         private readonly TestDbContext _dbContext;
-        private readonly GenericRepository<TestEntity> _repository;
+        private readonly ReadonlyGenericRepository<TestEntity> _repository;
 
-        public GenericRepositoryTests()
+        public ReadonlyGenericRepositoryTests()
         {
             var options = new DbContextOptionsBuilder<TestDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
             _dbContext = new TestDbContext(options);
-            _repository = new GenericRepository<TestEntity>(_dbContext);
+            _repository = new ReadonlyGenericRepository<TestEntity>(_dbContext);
         }
 
         [Fact]
-        public void Create_ShouldAddEntityToDbSet()
+        public async Task Create_Should_Throw_Exception()
         {
             // Arrange
             var entity = new TestEntity { Id = Guid.NewGuid(), Name = "Test Entity" };
 
             // Act
-            _repository.Create(entity);
-            _dbContext.SaveChanges();
+            Action act = () => _repository.Create(entity);
 
             // Assert
-            Assert.Single(_dbContext.TestEntities);
-            Assert.Equal("Test Entity", _dbContext.TestEntities.First().Name);
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -70,70 +69,67 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
         }
 
         [Fact]
-        public void Update_ShouldAttachEntityToDbContext()
+        public void Update_Should_Throw_Exception()
         {
             // Arrange
             var entity = new TestEntity { Id = Guid.NewGuid(), Name = "Test Entity" };
-            _dbContext.TestEntities.Add(entity);
-            _dbContext.SaveChanges();
 
             // Act
-            entity.Name = "Updated Entity";
-            _repository.Update(entity);
-            _dbContext.SaveChanges();
+            Action act = () => _repository.Update(entity);
 
             // Assert
-            Assert.Equal("Updated Entity", _dbContext.TestEntities.First().Name);
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
-        public async Task PermanentDelete_UsingEntity_ShouldRemoveEntityFromDbSet()
+        public async Task PermanentDelete_Should_Throw_Exception()
         {
             // Arrange
             var entity = new TestEntity { Id = Guid.NewGuid(), Name = "Test Entity" };
-            _dbContext.TestEntities.Add(entity);
-            await _dbContext.SaveChangesAsync();
 
             // Act
-            _repository.PermanentDelete(entity);
-            await _dbContext.SaveChangesAsync();
+            Action act = () => _repository.PermanentDelete(entity);
 
             // Assert
-            Assert.Empty(_dbContext.TestEntities);
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
-        public async Task PermanentDelete_ShouldRemoveEntityFromDbSet()
+        public async Task PermanentDelete_ById_Should_Throw_Exception()
         {
-            // Arrange
-            var entity = new TestEntity { Id = Guid.NewGuid(), Name = "Test Entity" };
-            _dbContext.TestEntities.Add(entity);
-            await _dbContext.SaveChangesAsync();
-
             // Act
-            await _repository.PermanentDelete(entity.Id);
-            await _dbContext.SaveChangesAsync();
+            var act = async () => await _repository.PermanentDelete(Guid.NewGuid());
 
             // Assert
-            Assert.Empty(_dbContext.TestEntities);
+            await act.Should().ThrowAsync<InvalidOperationException>();
         }
 
         [Fact]
-        public async Task SoftDelete_ShouldMarkAsTrue()
+        public async Task PermanentDelete_BySpecification_Should_Throw_Exception()
+        {
+            // Arrange
+            var mockSpecification = new Mock<ISpecification<TestEntity>>();
+
+            // Act
+            var act = async () => await _repository.PermanentDelete(mockSpecification.Object, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>();
+        }
+
+
+        [Fact]
+        public async Task SoftDelete_Should_Throw_Exception()
         {
             // Arrange
             var entity = new TestEntity { Id = Guid.NewGuid(), Name = "Test Entity" };
-            _dbContext.TestEntities.Add(entity);
-            await _dbContext.SaveChangesAsync();
 
             // Act
-            await _repository.SoftDelete(entity.Id);
-            await _dbContext.SaveChangesAsync();
+            var act = async () => await _repository.SoftDelete(entity.Id);
 
             // Assert
-            Assert.True(entity.Deleted);
+            await act.Should().ThrowAsync<InvalidOperationException>();
         }
-
 
         [Fact]
         public void Count_ShouldReturnEntityCount()
@@ -251,6 +247,97 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             Assert.Equal(2, result.Count);
         }
 
+
+        [Fact]
+        public async Task GetListAsync_With_Projection_Should_Return_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            // Act
+            var result = await _repository.GetListAsync(specification, o => o.Name, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(2);
+            result[0].Should().Be("Entity 1");
+            result[1].Should().Be("Entity 2");
+        }
+
+        [Fact]
+        public async Task GetListAsync_With_Projection_And_Grouping_ShouldReturn_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Deleted == false);
+
+            // Act
+            var result = await _repository.GetListAsync(specification, o => o.Name, o => o.Key, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(2);
+            result[0].Should().Be("Blue");
+            result[1].Should().Be("Yellow");
+        }
+
+        [Fact]
+        public async Task GetListAsync_With_Projection_And_Grouping_And_Take_ShouldReturn_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Deleted == false);
+
+            // Act
+            var result = await _repository.GetListAsync(specification, o => o.Name, o => o.Key, 1, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+            result[0].Should().Be("Blue");
+        }
+
+        [Fact]
+        public async Task GetDistinctListAsync_With_Projection_And_Grouping_And_Take_ShouldReturn_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Deleted == false);
+
+            // Act
+            var result = await _repository.GetDistinctListAsync(specification, o => o.Name, CancellationToken.None);
+
+            // Assert
+            result.Count.Should().Be(2);
+        }
+
         [Fact]
         public async Task GetListAsync_WithSelector_ShouldReturnProjectedResults_WhenSpecificationMatches()
         {
@@ -328,6 +415,21 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             Assert.Equal(2, result.Count());
         }
 
+        [Fact]
+        public void AddRange_Should_Throw_Exception()
+        {
+            // Arrange
+            var mockSpecification = new Mock<ISpecification<TestEntity>>();
+
+            var data = new List<TestEntity> { new() };
+
+            // Act
+            var act = () => _repository.AddRange(data);
+
+            // Assert
+            act.Should().Throw<InvalidOperationException>();
+        }
+
         // Mock Specification
         private class MockSpecification<T> : Specification<T>
         {
@@ -357,5 +459,6 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
 
             public DbSet<TestEntity> TestEntities { get; set; }
         }
+
     }
 }
