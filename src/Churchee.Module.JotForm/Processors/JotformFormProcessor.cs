@@ -1,6 +1,9 @@
 ﻿using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Storage;
 using Churchee.Module.Tokens.Entities;
+using Churchee.Module.Tokens.Specifications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
@@ -11,14 +14,16 @@ namespace Churchee.Module.Jotform.Processors
     public partial class JotformFormProcessor : IFormProcessor
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly DbContext _dbContext;
+        private readonly IDataStore _dataStore;
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
 
-        public JotformFormProcessor(IHttpClientFactory httpClientFactory, DbContext dbContext, ILogger<JotformFormProcessor> logger)
+        public JotformFormProcessor(IHttpClientFactory httpClientFactory, IDataStore dataStore, ILogger<JotformFormProcessor> logger, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
-            _dbContext = dbContext;
+            _dataStore = dataStore;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task<bool> ProcessForm(IDictionary<string, string> formData)
@@ -38,7 +43,7 @@ namespace Churchee.Module.Jotform.Processors
 
                 var jotFormData = ConvertToJotformFormat(formData);
 
-                string apiKey = await _dbContext.Set<Token>().AsQueryable().Where(w => w.Key == "Jotform").Select(s => s.Value).FirstOrDefaultAsync();
+                string apiKey = await _dataStore.GetRepository<Token>().FirstOrDefaultAsync(new GetTokenByKeySpecification("Jotform"), o => o.Value, CancellationToken.None);
 
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
@@ -47,8 +52,6 @@ namespace Churchee.Module.Jotform.Processors
                 }
 
                 var response = await PostToJotformApi(parsedFormId, jotFormData, apiKey);
-
-                response.EnsureSuccessStatusCode();
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -84,13 +87,14 @@ namespace Churchee.Module.Jotform.Processors
 
             httpClient.DefaultRequestHeaders.Add("APIKEY", apiKey);
 
-            httpClient.BaseAddress = new Uri("https://api.jotform.com/");
+            httpClient.BaseAddress = new Uri(_configuration.GetSection("Jotform").GetValue<string>("Api"));
 
             string json = JsonSerializer.Serialize(jotFormData);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await httpClient.PostAsync($"form/{parsedFormId}/submissions", content);
+
             return response;
         }
 

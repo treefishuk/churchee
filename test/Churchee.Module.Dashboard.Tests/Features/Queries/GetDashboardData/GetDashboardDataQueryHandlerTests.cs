@@ -62,7 +62,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             var handler = new GetDashboardDataQueryHandler(efStorage, _mockLogger.Object);
 
@@ -111,7 +111,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             var newHandler = new GetDashboardDataQueryHandler(efStorage, _mockLogger.Object);
 
@@ -130,7 +130,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             var query = new GetDashboardDataQuery(0);
 
@@ -192,7 +192,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             var query = new GetDashboardDataQuery(7);
 

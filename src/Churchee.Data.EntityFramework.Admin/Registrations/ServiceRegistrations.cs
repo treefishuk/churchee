@@ -28,7 +28,7 @@ namespace Churchee.Data.EntityFramework.Admin.Registrations
 
             serviceCollection.AddTransient<DbContext>(c => c.GetService<ApplicationDbContext>());
 
-            serviceCollection.AddTransient<IDataStore, EFStorage>();
+            serviceCollection.AddTransient<IDataStore, AdminDataStore>();
 
             serviceCollection.AddDataProtection()
                 .PersistKeysToDbContext<ApplicationDbContext>()

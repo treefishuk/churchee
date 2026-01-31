@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Churchee.Data.EntityFramework.Admin
 {
-    public class EFStorage : IDataStore
+    public class AdminDataStore : IDataStore
     {
         private readonly DbContext _dbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -24,11 +24,12 @@ namespace Churchee.Data.EntityFramework.Admin
         private const string ModifiedByName = "ModifiedByName";
         private const string ModifiedById = "ModifiedById";
 
-        public EFStorage(DbContext dbContext, IHttpContextAccessor httpContextAccessor)
+        public AdminDataStore(DbContext dbContext, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _httpContextAccessor = httpContextAccessor;
         }
+
         public IRepository<T> GetRepository<T>() where T : class, IEntity
         {
             return new GenericRepository<T>(_dbContext);

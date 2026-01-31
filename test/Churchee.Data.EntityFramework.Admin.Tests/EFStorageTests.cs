@@ -21,7 +21,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             // Arrange
             var dbContext = new TestDbContext();
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             // Act
             var repository = efStorage.GetRepository<TestTrackableEntity>();
@@ -36,7 +36,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             // Arrange
             var dbContext = new TestDbContext();
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             var trackableEntity = new TestTrackableEntity();
             dbContext.Add(trackableEntity);
@@ -55,7 +55,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             // Arrange
             var dbContext = new TestDbContext();
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             var trackableEntity = new TestTrackableEntity();
             dbContext.Add(trackableEntity);
@@ -73,7 +73,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             // Arrange
             var dbContext = new TestDbContext();
 
-            var efStorage = new EFStorage(dbContext, _mockHttpContextAccessor.Object);
+            var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
             var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
