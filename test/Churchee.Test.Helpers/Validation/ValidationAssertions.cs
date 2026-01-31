@@ -46,5 +46,10 @@
         {
             return new AsyncMethodValidationTester(instance);
         }
+
+        public static AsyncMethodValidationTester Should(this Func<Task<int>> instance)
+        {
+            return new AsyncMethodValidationTester(instance);
+        }
     }
 }
