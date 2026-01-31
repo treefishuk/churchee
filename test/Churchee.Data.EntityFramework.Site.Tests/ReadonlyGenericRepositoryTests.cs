@@ -2,6 +2,7 @@
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System.Linq.Expressions;
 
 namespace Churchee.Data.EntityFramework.Site.Tests
@@ -91,6 +92,29 @@ namespace Churchee.Data.EntityFramework.Site.Tests
 
             // Assert
             act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task PermanentDelete_ById_Should_Throw_Exception()
+        {
+            // Act
+            var act = async () => await _repository.PermanentDelete(Guid.NewGuid());
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task PermanentDelete_BySpecification_Should_Throw_Exception()
+        {
+            // Arrange
+            var mockSpecification = new Mock<ISpecification<TestEntity>>();
+
+            // Act
+            var act = async () => await _repository.PermanentDelete(mockSpecification.Object, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>();
         }
 
 
@@ -300,6 +324,21 @@ namespace Churchee.Data.EntityFramework.Site.Tests
             Assert.Equal(2, result.Count());
         }
 
+        [Fact]
+        public void AddRange_Should_Throw_Exception()
+        {
+            // Arrange
+            var mockSpecification = new Mock<ISpecification<TestEntity>>();
+
+            var data = new List<TestEntity> { new() };
+
+            // Act
+            var act = () => _repository.AddRange(data);
+
+            // Assert
+            act.Should().Throw<InvalidOperationException>();
+        }
+
         // Mock Specification
         private class MockSpecification<T> : Specification<T>
         {
@@ -329,5 +368,6 @@ namespace Churchee.Data.EntityFramework.Site.Tests
 
             public DbSet<TestEntity> TestEntities { get; set; }
         }
+
     }
 }

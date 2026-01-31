@@ -12,24 +12,23 @@ namespace Churchee.Data.EntityFramework.Site
     public class ReadonlyGenericRepository<T> : IRepository<T> where T : class, IEntity
     {
         private readonly DbSet<T> _dbSet;
-        private readonly DbContext _dbContext;
         private readonly SpecificationEvaluator _specificationEvaluator;
+        private const string NotSupportedMessage = "Not supported in the readonly version of this repository";
 
         public ReadonlyGenericRepository(DbContext dbContext)
         {
             _dbSet = dbContext.Set<T>();
-            _dbContext = dbContext;
             _specificationEvaluator = SpecificationEvaluator.Default;
         }
 
         public virtual void Create(T entity)
         {
-            throw new InvalidOperationException("Not supported in the readonly version of this repository");
+            throw new InvalidOperationException(NotSupportedMessage);
         }
 
         public virtual void Update(T entity)
         {
-            throw new InvalidOperationException("Not supported in the readonly version of this repository");
+            throw new InvalidOperationException(NotSupportedMessage);
         }
 
         public virtual T GetById(params object[] keyValues)
@@ -44,7 +43,7 @@ namespace Churchee.Data.EntityFramework.Site
 
         public virtual void AddRange(IEnumerable<T> entities)
         {
-            throw new InvalidOperationException("Not supported in the readonly version of this repository");
+            throw new InvalidOperationException(NotSupportedMessage);
         }
 
         public IQueryable<T> ApplySpecification(ISpecification<T> specification, bool evaluateCriteriaOnly = false)
@@ -89,7 +88,7 @@ namespace Churchee.Data.EntityFramework.Site
 
         public async Task SoftDelete<TId>(TId id)
         {
-            throw new InvalidOperationException("Not supported in the readonly version of this repository");
+            throw new InvalidOperationException(NotSupportedMessage);
         }
 
         public bool AnyWithFiltersDisabled(Expression<Func<T, bool>> predicate)
@@ -167,17 +166,17 @@ namespace Churchee.Data.EntityFramework.Site
 
         public void PermanentDelete(T entity)
         {
-            throw new InvalidOperationException("Not supported in the readonly version of this repository");
+            throw new InvalidOperationException(NotSupportedMessage);
         }
 
         public async Task PermanentDelete(Guid id)
         {
-            throw new InvalidOperationException("Not supported in the readonly version of this repository");
+            throw new InvalidOperationException(NotSupportedMessage);
         }
 
         public async Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
         {
-            throw new InvalidOperationException("Not supported in the readonly version of this repository");
+            throw new InvalidOperationException(NotSupportedMessage);
         }
     }
 }
