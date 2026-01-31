@@ -338,7 +338,6 @@ namespace Churchee.Data.EntityFramework.Site.Tests
             result.Count.Should().Be(2);
         }
 
-
         [Fact]
         public async Task GetListAsync_WithSelector_ShouldReturnProjectedResults_WhenSpecificationMatches()
         {
