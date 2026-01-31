@@ -247,6 +247,98 @@ namespace Churchee.Data.EntityFramework.Site.Tests
             Assert.Equal(2, result.Count);
         }
 
+
+        [Fact]
+        public async Task GetListAsync_With_Projection_Should_Return_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            // Act
+            var result = await _repository.GetListAsync(specification, o => o.Name, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(2);
+            result[0].Should().Be("Entity 1");
+            result[1].Should().Be("Entity 2");
+        }
+
+        [Fact]
+        public async Task GetListAsync_With_Projection_And_Grouping_ShouldReturn_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Deleted == false);
+
+            // Act
+            var result = await _repository.GetListAsync(specification, o => o.Name, o => o.Key, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(2);
+            result[0].Should().Be("Blue");
+            result[1].Should().Be("Yellow");
+        }
+
+        [Fact]
+        public async Task GetListAsync_With_Projection_And_Grouping_And_Take_ShouldReturn_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Deleted == false);
+
+            // Act
+            var result = await _repository.GetListAsync(specification, o => o.Name, o => o.Key, 1, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
+            result[0].Should().Be("Blue");
+        }
+
+        [Fact]
+        public async Task GetDistinctListAsync_With_Projection_And_Grouping_And_Take_ShouldReturn_Valid_Data()
+        {
+            // Arrange
+            _dbContext.Set<TestEntity>().AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Blue", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Yellow", Deleted = false }
+            );
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Deleted == false);
+
+            // Act
+            var result = await _repository.GetDistinctListAsync(specification, o => o.Name, CancellationToken.None);
+
+            // Assert
+            result.Count.Should().Be(2);
+        }
+
+
         [Fact]
         public async Task GetListAsync_WithSelector_ShouldReturnProjectedResults_WhenSpecificationMatches()
         {
