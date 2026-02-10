@@ -3,7 +3,7 @@ using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Module.Tenancy.Tests.Specifications
 {
-    public class ApplicationHostsByApplicationIdSpecificationTests
+    public class ApplicationHostsByApplicationTenantIdSpecificationTests
     {
         [Fact]
         public void Constructor_ShouldInitializeSpecificationWithCorrectCriteria()
@@ -12,7 +12,7 @@ namespace Churchee.Module.Tenancy.Tests.Specifications
             var applicationTenantId = Guid.NewGuid();
 
             // Act
-            var specification = new ApplicationHostsByApplicationIdSpecification(applicationTenantId);
+            var specification = new ApplicationHostsByApplicationTenantIdSpecification(applicationTenantId);
 
             // Assert
             var criteria = specification.WhereExpressions.FirstOrDefault();
@@ -27,7 +27,7 @@ namespace Churchee.Module.Tenancy.Tests.Specifications
             var applicationTenantId = Guid.NewGuid();
 
             // Act
-            var specification = new ApplicationHostsByApplicationIdSpecification(applicationTenantId);
+            var specification = new ApplicationHostsByApplicationTenantIdSpecification(applicationTenantId);
 
             // Assert
             specification.IgnoreQueryFilters.Should().BeTrue();
