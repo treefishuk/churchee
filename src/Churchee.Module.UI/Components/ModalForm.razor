@@ -15,7 +15,7 @@
     <EditForm EditContext="@_editContext" OnSubmit="HandleSubmit">
         <DataAnnotationsValidator />
 
-        <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=UpdateFormState EditContext="_editContext"></FormFields>
+        <FormFields InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=UpdateFormState EditContext="_editContext"></FormFields>
             <div class="rz-mt-5">
                 <div class="sticky-formButtons">
 
@@ -52,15 +52,10 @@
     [Parameter]
     public EventCallback<object> OnChange { get; set; }
 
-    private bool _submitClicked;
-
-    private bool _formInvalid;
-
     private EditContext _editContext { get; set; } = default!;
 
     protected override void OnParametersSet()
     {
-        _formInvalid = true;
         _editContext = new EditContext(InputModel);
     }
 
@@ -75,8 +70,6 @@
         var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
         Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
 
-        _formInvalid = validationResults.Any();
-
         await OnChange.InvokeAsync(InputModel);
 
         StateHasChanged();
@@ -86,8 +79,6 @@
     {
         try
         {
-            _submitClicked = true;
-
             if (_editContext.Validate())
             {
                 Logger.LogInformation("HandleValidSubmit");

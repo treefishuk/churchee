@@ -21,5 +21,9 @@
         public bool IsPublished { get; set; }
 
         public DateTime? PublishOnDate { get; set; }
+
+        public string ImageAltTag { get; set; }
+
+        public string ImageThumbnail { get; set; }
     }
 }

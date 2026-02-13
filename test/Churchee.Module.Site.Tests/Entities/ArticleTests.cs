@@ -29,9 +29,9 @@ namespace Churchee.Module.Site.Tests.Entities
             var tenantId = Guid.NewGuid();
             var pageTypeId = Guid.NewGuid();
             var parentId = Guid.NewGuid();
-            var title = "Title";
-            var url = "url";
-            var description = "desc";
+            string title = "Title";
+            string url = "url";
+            string description = "desc";
 
             // Act
             var article = new Article(tenantId, pageTypeId, parentId, title, url, description);
@@ -50,7 +50,7 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var article = CreateArticle();
-            var content = "<p>Some content</p>";
+            string content = "<p>Some content</p>";
 
             // Act
             article.SetContent(content);
@@ -64,8 +64,8 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var article = CreateArticle();
-            var url = "http://image.url";
-            var alt = "alt text";
+            string url = "http://image.url";
+            string alt = "alt text";
 
             // Act
             article.SetImage(url, alt);
@@ -123,12 +123,12 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var article = CreateArticle();
-            var newTitle = "New Title";
-            var newDescription = "New Description";
+            string newTitle = "New Title";
+            string newDescription = "New Description";
             var newParentId = Guid.NewGuid();
 
             // Act
-            article.UpdateInfo(newTitle, newDescription, newParentId);
+            article.UpdateInfo(newTitle, newDescription, "alt tag", newParentId);
 
             // Assert
             Assert.Equal(newTitle, article.Title);
