@@ -75,14 +75,14 @@ namespace Churchee.Module.UI.Components
                 await file.OpenReadStream(MaxUploadSize * 1024 * 1024).CopyToAsync(tempFileStream);
                 tempFileStream.Position = 0; // Reset stream before resizing
 
-                // Await the resize result (do not use ContinueWith)
+                // Await the resize result
                 await using var resizedStream = await ImageProcessor.ResizeImageAsync(tempFileStream, 300, 0, ".webp", CancellationToken.None);
 
                 // Create base64 thumbnail from resized stream
                 resizedStream.Position = 0;
                 tempSmallImage = await ToBase64ImageAsync(resizedStream, "image/webp");
 
-                // Reset position and generate alt text (await synchronously)
+                // Reset position and generate alt text
                 resizedStream.Position = 0;
                 Model.Description = await AiToolUtilities.GenerateAltTextAsync(resizedStream, _descriptionCts.Token);
             }
