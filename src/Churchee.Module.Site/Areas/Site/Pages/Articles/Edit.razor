@@ -18,7 +18,7 @@
 <PageName Name="Edit Article"></PageName>
 
 
-<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) OnImageSubmit="OnImageSubmit" >
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) OnImageSubmit="OnImageSubmit">
 
     <RadzenButton id="distractionFreeModeBtn" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@(() => OpenContentEditor())">Distraction Free Mode</RadzenButton>
 
@@ -202,7 +202,16 @@
 
         var result = await Mediator.Send(command);
 
-        InputModel.Content += result.ImageHtml;
-
+        if (result.IsSuccess)
+        {
+            InputModel.Content += result.ImageHtml;
+        }
+        else
+        {
+            foreach(var error in result.Errors)
+            {
+                NotificationService.Notify(NotificationSeverity.Error, error.Description);
+            }
+        }
     }
 }

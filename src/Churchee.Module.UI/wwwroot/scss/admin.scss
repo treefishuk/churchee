@@ -81,3 +81,22 @@
 .rz-html-editor-dropdown-item > * {
     margin: 0;
 }
+
+
+/* Style code blocks inside RadzenHtmlEditor */
+.rz-html-editor-content pre {
+    background: #ddd;
+    color: #333;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.9rem;
+    margin: 1rem 0;
+}
+
+.rz-html-editor-content pre code {
+    background: none; /* prevent double-styling */
+    padding: 0;
+    color: inherit;
+} 

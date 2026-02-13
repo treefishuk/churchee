@@ -25,7 +25,7 @@
         </FormButtons>
     }
 
-     <FormFields FormInvalid="_formInvalid" SubmitClicked="_submitClicked" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=SetFormInvalidState EditContext="_editContext" OnImageSubmit=OnImageSubmit></FormFields>
+     <FormFields InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite)" OnValueChanged=SetFormInvalidState EditContext="_editContext" OnImageSubmit="OnImageSubmit"></FormFields>
 
     @if(!ButtonsOnTop)
     {
@@ -44,8 +44,6 @@
 @code {
 
     private bool _formInvalid;
-
-    private bool _submitClicked;
 
     private EditContext _editContext { get; set; } = default!;
 
@@ -87,8 +85,6 @@
 
         try
         {
-            _submitClicked = true;
-
             if (_editContext.Validate())
             {
                 _logger.LogInformation("HandleValidSubmit");
