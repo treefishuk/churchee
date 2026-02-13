@@ -67,7 +67,12 @@
             Content = data.Content ?? string.Empty,
             Title = data.Title ?? string.Empty,
             Description = data.Description ?? string.Empty,
-            PublishOnDate = data.PublishOnDate
+            PublishOnDate = data.PublishOnDate,
+            Image = new Common.ValueTypes.ChunkedImageUploadType
+            {
+                Description = data.ImageAltTag,
+                ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}"
+            }
         };
     }
 

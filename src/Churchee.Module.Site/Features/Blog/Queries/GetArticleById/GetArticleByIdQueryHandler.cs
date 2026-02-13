@@ -31,6 +31,8 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetArticleById
                     PublishOnDate = s.LastPublishedDate,
                     ParentName = s.Parent != null ? s.Parent.Title : string.Empty,
                     ParentId = s.Parent != null ? s.Parent.Id : Guid.Empty,
+                    ImageAltTag = s.ImageAltTag,
+                    ImageThumbnail = s.ImageUrl + "_t.webp"
                 },
                 cancellationToken: cancellationToken);
 

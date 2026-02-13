@@ -16,6 +16,8 @@ namespace Churchee.Common.ValueTypes
 
         public string TempFilePath { get; set; }
 
+        public string ThumbnailUrl { get; set; }
+
         public string Path { get; set; }
 
         public string SupportedFileTypes { get; set; }
