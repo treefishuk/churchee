@@ -52,13 +52,10 @@
     [Parameter]
     public EventCallback<object> OnChange { get; set; }
 
-    private bool _formInvalid;
-
     private EditContext _editContext { get; set; } = default!;
 
     protected override void OnParametersSet()
     {
-        _formInvalid = true;
         _editContext = new EditContext(InputModel);
     }
 

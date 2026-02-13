@@ -3,6 +3,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
 using Churchee.Module.Tenancy.Features.Churches.Commands;
 using Churchee.Module.Tenancy.Features.Churches.Commands.UpdateChurch;
+using Churchee.Module.Tenancy.Specifications;
 using Churchee.Test.Helpers.Validation;
 using Moq;
 

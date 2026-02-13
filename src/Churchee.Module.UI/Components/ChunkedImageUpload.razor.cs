@@ -39,8 +39,6 @@ namespace Churchee.Module.UI.Components
 
         private bool disposedValue;
 
-        private string? CdnPrefix;
-
         private async Task HandleFileUpload(UploadChangeEventArgs e)
         {
             if (e.Files.FirstOrDefault() is not IBrowserFile file)
@@ -114,11 +112,6 @@ namespace Churchee.Module.UI.Components
             _descriptionCts?.Cancel();
             generating = false;
             StateHasChanged();
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            CdnPrefix = await Task.Run(() => TenantResolver.GetCDNPrefix());
         }
 
         private async Task<string> UploadTempFileInChunksAsync(IBrowserFile file, CancellationToken cancellationToken = default)

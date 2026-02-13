@@ -134,7 +134,7 @@ else
 
                 if (dataType == DataTypes.Date)
                 {
-                    <RadzenDatePicker Name="@(Prop.Name)" DateFormat="dd-MM-yyyy" ShowTime=false TValue="DateTime" Value=@Prop.GetValue(InputModel) Change=@((value) => OnFieldChange(Prop, value))/>;
+                    <RadzenDatePicker Name="@(Prop.Name)" DateFormat="dd-MM-yyyy" ShowTime=false TValue="DateTime" Value=@Prop.GetValue(InputModel) Change=@((value) => OnFieldChange(Prop, value))/>
                 }
 
                 if (dataType == DataTypes.Url)
