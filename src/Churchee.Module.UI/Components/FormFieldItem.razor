@@ -174,7 +174,7 @@ else
 
                 if (dataType == DataTypes.Html)
                 {
-                    <RadzenHtmlEditor @ref="_htmlEditor" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
+                    <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
                         <RadzenHtmlEditorFormatBlock />
                         <RadzenHtmlEditorUndo />
                         <RadzenHtmlEditorRedo />
@@ -194,7 +194,7 @@ else
 
                 if (dataType == DataTypes.HtmlNoLinks)
                 {
-                    <RadzenHtmlEditor @ref="_htmlEditor" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
+                    <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
                         <RadzenHtmlEditorFormatBlock />
                         <RadzenHtmlEditorUndo />
                         <RadzenHtmlEditorRedo />
@@ -213,7 +213,7 @@ else
 
                 if (dataType == DataTypes.HtmlTall)
                 {
-                    <RadzenHtmlEditor @ref="_htmlEditor" Execute="OnEditorExecute" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 420px">
+                    <RadzenHtmlEditor Execute="OnEditorExecute" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 420px">
                         <RadzenHtmlEditorFormatBlock />
                         <RadzenHtmlEditorUndo />
                         <RadzenHtmlEditorRedo />
@@ -272,8 +272,6 @@ else
 
     [Parameter]
     public EventCallback<object> OnValueChanged { get; set; } = default!;
-
-    private RadzenHtmlEditor? _htmlEditor;
 
     [Inject]
     public NotificationService NotificationService { get; set; } = default!;
@@ -391,7 +389,7 @@ else
         return lamb;
     }
 
-    async Task OnEditorExecute(HtmlEditorExecuteEventArgs args)
+    static async Task OnEditorExecute(HtmlEditorExecuteEventArgs args)
     {
         if (args.CommandName == "code")
         {
