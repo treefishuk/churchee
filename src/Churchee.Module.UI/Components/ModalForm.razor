@@ -70,8 +70,6 @@
         var validationContext = new ValidationContext(_editContext.Model, _serviceProvider, items: null);
         Validator.TryValidateObject(_editContext.Model, validationContext, validationResults, true);
 
-        _formInvalid = validationResults.Any();
-
         await OnChange.InvokeAsync(InputModel);
 
         StateHasChanged();
