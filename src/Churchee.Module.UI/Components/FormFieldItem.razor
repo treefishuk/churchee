@@ -44,7 +44,7 @@ else if (dataType == DataTypes.Upload)
     var upload = Prop.GetValue(InputModel) as Upload;
     if (upload != null)
     {
-        <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
+        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
     }
 }
 else if (dataType == DataTypes.ImageUpload)
@@ -52,7 +52,7 @@ else if (dataType == DataTypes.ImageUpload)
     var upload = Prop.GetValue(InputModel) as Upload;
     if (upload != null)
     {
-        <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
+        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
     }
 }
 else if (dataType == DataTypes.ChunkedImageUpload)
@@ -69,7 +69,7 @@ else if (dataType == DataTypes.MediaUpload)
     if (upload != null)
     {
         <RadzenFormField Text=@Prop.Name.ToSentence() AllowFloatingLabel="false">
-            <RadzenFileInput TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept=@(upload.SupportedFileTypes) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select document" }})" />
+            <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept=@(upload.SupportedFileTypes) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select document" }})" />
         </RadzenFormField>
     }
 }
