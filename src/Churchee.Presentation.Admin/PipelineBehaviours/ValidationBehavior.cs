@@ -21,15 +21,6 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
 
             if (failures.Any())
             {
-
-                // Ensure TResponse inherits from CommandResponse
-                if (!typeof(CommandResponse).IsAssignableFrom(typeof(TResponse)))
-                {
-                    throw new InvalidOperationException(
-                        "TResponse must inherit from CommandResponse.");
-                }
-
-                // Create the correct response type
                 var response = Activator.CreateInstance<TResponse>();
 
                 foreach (var failure in failures)

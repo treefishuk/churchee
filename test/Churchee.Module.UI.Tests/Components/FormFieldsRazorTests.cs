@@ -101,6 +101,10 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             cut.FindComponents<RadzenFileInput<string>>().Count.Should().Be(1);
+
+            var input = cut.FindComponent<RadzenFileInput<string>>();
+
+            input.Instance.Name.Should().Be(nameof(inputModel.Upload));
         }
 
         [Fact]
@@ -112,6 +116,10 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             cut.FindComponents<RadzenFileInput<string>>().Count.Should().Be(1);
+
+            var input = cut.FindComponent<RadzenFileInput<string>>();
+
+            input.Instance.Name.Should().Be(nameof(inputModel.Upload));
         }
 
         [Fact]
@@ -123,6 +131,10 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             cut.FindComponents<RadzenFileInput<string>>().Count.Should().Be(1);
+
+            var input = cut.FindComponent<RadzenFileInput<string>>();
+
+            input.Instance.Name.Should().Be(nameof(inputModel.Upload));
         }
 
         [Fact]
@@ -177,9 +189,6 @@ namespace Churchee.Module.UI.Tests.Components
             var field = cut.FindComponent<RadzenDatePicker<DateTime>>();
 
             field.Instance.DateFormat.Should().Be("dd-MM-yyyy HH:mm");
-
-
-
         }
 
         [Fact]
@@ -219,6 +228,10 @@ namespace Churchee.Module.UI.Tests.Components
 
             cut.FindComponents<RadzenTextBox>().Count.Should().Be(1);
 
+            var input = cut.FindComponent<RadzenTextBox>();
+
+            input.Instance.Value.Should().Be("https://example.com");
+
         }
 
         [Fact]
@@ -234,7 +247,6 @@ namespace Churchee.Module.UI.Tests.Components
             var input = cut.FindComponent<RadzenTextBox>();
 
             input.Instance.ReadOnly.Should().BeTrue();
-
         }
 
         [Fact]
@@ -394,7 +406,7 @@ namespace Churchee.Module.UI.Tests.Components
         {
             public CheckboxListInputModel()
             {
-                MultiSelect = new MultiSelect(new List<MultiSelectItem>());
+                MultiSelect = new MultiSelect([]);
             }
 
             [DataType(DataTypes.CheckboxList)]
@@ -418,7 +430,7 @@ namespace Churchee.Module.UI.Tests.Components
         {
             public UrlInputModel()
             {
-                Value = string.Empty;
+                Value = "https://example.com";
             }
 
             [DataType(DataTypes.Url)]

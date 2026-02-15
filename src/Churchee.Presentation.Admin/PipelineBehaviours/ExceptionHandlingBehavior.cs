@@ -28,22 +28,11 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
                     _logger.LogError(ex, "Exception caught in pipeline: {Message}", ex.Message);
                 }
 
-                // Try to create the specific TResponse type
-                try
-                {
-                    if (Activator.CreateInstance<TResponse>() is CommandResponse specific)
-                    {
-                        specific.AddError("Oh dear something has gone wrong... please try again. If the issue persists please contact support", string.Empty);
-                        return (TResponse)(object)specific;
-                    }
-                }
-                catch (Exception createEx)
-                {
-                    _logger.LogError(createEx, "Failed to construct TResponse in exception handler.");
-                }
+                var response = Activator.CreateInstance<TResponse>();
 
-                // If we get here we can't produce a TResponse instance reliably - rethrow to avoid returning an invalid object
-                throw;
+                response.AddError("Oh dear something has gone wrong... please try again. If the issue persists please contact support", string.Empty);
+
+                return (TResponse)(object)response;
             }
         }
     }
