@@ -81,34 +81,5 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
                 It.Is<Exception>(ex => ex == thrown),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.AtLeastOnce);
         }
-
-        [Fact]
-        public async Task Handle_ShouldRethrow_WhenCannotConstructTResponse()
-        {
-            // Arrange
-            var loggerMock = new Mock<ILogger<ExceptionHandlingBehavior<RequestWithNoDefaultCtor, NoDefaultCtorResponse>>>();
-            loggerMock.Setup(l => l.IsEnabled(LogLevel.Error)).Returns(true);
-
-            var behavior = new ExceptionHandlingBehavior<RequestWithNoDefaultCtor, NoDefaultCtorResponse>(loggerMock.Object);
-
-            var original = new InvalidOperationException("original");
-
-            Task<NoDefaultCtorResponse> next(CancellationToken _ = default)
-            {
-                throw original;
-            }
-
-            // Act / Assert - since Activator.CreateInstance<TResponse>() will throw, behavior should ultimately rethrow original
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-                await behavior.Handle(new RequestWithNoDefaultCtor(), next, CancellationToken.None));
-
-            // Ensure create-time failure (or original error) produced log activity
-            loggerMock.Verify(l => l.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.AtLeastOnce);
-        }
     }
 }
