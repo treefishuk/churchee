@@ -42,9 +42,14 @@ else if (dataType == DataTypes.TextWithSlug)
 else if (dataType == DataTypes.Upload)
 {
     var upload = Prop.GetValue(InputModel) as Upload;
+
+
+
     if (upload != null)
     {
-        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
+        var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select file" } };
+
+        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) InputAttributes="inputAttributes" />
     }
 }
 else if (dataType == DataTypes.ImageUpload)
@@ -52,12 +57,15 @@ else if (dataType == DataTypes.ImageUpload)
     var upload = Prop.GetValue(InputModel) as Upload;
     if (upload != null)
     {
-        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select image" }})" />
+        var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select image" } };
+
+        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="inputAttributes" />
     }
 }
 else if (dataType == DataTypes.ChunkedImageUpload)
 {
     var upload = Prop.GetValue(InputModel) as ChunkedImageUploadType;
+    
     if (upload != null)
     {
         <ChunkedImageUpload @bind-Model=upload></ChunkedImageUpload>
@@ -68,8 +76,10 @@ else if (dataType == DataTypes.MediaUpload)
     var upload = Prop.GetValue(InputModel) as Upload;
     if (upload != null)
     {
+        var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select document" } };
+
         <RadzenFormField Text=@Prop.Name.ToSentence() AllowFloatingLabel="false">
-            <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept=@(upload.SupportedFileTypes) InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select document" }})" />
+            <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept=@(upload.SupportedFileTypes) InputAttributes="inputAttributes" />
         </RadzenFormField>
     }
 }
@@ -91,11 +101,15 @@ else
             @{
                 if (dataType == typeof(int).Name)
                 {
-                    <RadzenNumeric TValue="int" Value="@(int.Parse(propertyStringValue))" Change=@((value) => OnFieldChange(Prop, value)) />
+                    var parsed = int.Parse(propertyStringValue);
+
+                    <RadzenNumeric TValue="int" Value="parsed" Change=@((value) => OnFieldChange(Prop, value)) />
                 }
                 if (Nullable.GetUnderlyingType(Prop.PropertyType) == typeof(int))
                 {
-                    <RadzenNumeric TValue="int?" Value="@(string.IsNullOrEmpty(propertyStringValue) ? (int?)null : int.Parse(propertyStringValue))" Change=@((value) => OnFieldChange(Prop, value)) />
+                    var parsed = string.IsNullOrEmpty(propertyStringValue) ? (int?)null : int.Parse(propertyStringValue);
+
+                    <RadzenNumeric TValue="int?" Value="parsed" Change=@((value) => OnFieldChange(Prop, value)) />
                 }
                 if (dataType == typeof(string).Name || dataType == DataTypes.Text)
                 {
