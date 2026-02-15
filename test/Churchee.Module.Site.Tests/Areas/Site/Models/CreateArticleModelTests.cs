@@ -15,10 +15,14 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             // Assert
             Assert.Equal(string.Empty, model.Title);
             Assert.Equal(string.Empty, model.Description);
+            Assert.Equal(string.Empty, model.Description);
+            Assert.Equal(string.Empty, model.Description);
             Assert.Equal("<p></p>", model.Content);
             Assert.NotNull(model.Image);
             Assert.Equal(".jpg,.jpeg,.png,.gif", model.Image.SupportedFileTypes);
             Assert.Equal(string.Empty, model.Image.TempFilePath);
+            Assert.Equal(string.Empty, model.Image.ThumbnailUrl);
+            Assert.Equal(string.Empty, model.Image.SupportedFileTypes);
             Assert.Equal("articles/", model.Image.Path);
             Assert.Null(model.Parent);
             Assert.Null(model.PublishOnDate);
@@ -39,7 +43,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             // Act
             var results = new List<ValidationResult>();
             var context = new ValidationContext(model, null, null);
-            var isValid = Validator.TryValidateObject(model, context, results, true);
+            bool isValid = Validator.TryValidateObject(model, context, results, true);
 
             // Assert
             Assert.False(isValid);
@@ -64,7 +68,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             // Act
             var results = new List<ValidationResult>();
             var context = new ValidationContext(model, null, null);
-            var isValid = Validator.TryValidateObject(model, context, results, true);
+            bool isValid = Validator.TryValidateObject(model, context, results, true);
 
             // Assert
             Assert.True(isValid);
@@ -86,7 +90,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             // Act
             var results = new List<ValidationResult>();
             var context = new ValidationContext(model, null, null);
-            var isValid = Validator.TryValidateObject(model, context, results, true);
+            bool isValid = Validator.TryValidateObject(model, context, results, true);
 
             // Assert
             Assert.False(isValid);

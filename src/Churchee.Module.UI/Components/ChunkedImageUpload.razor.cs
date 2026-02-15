@@ -69,7 +69,7 @@ namespace Churchee.Module.UI.Components
             try
             {
                 // Get a read stream for the uploaded file and write temp file
-                await using var tempFileStream = System.IO.File.Create(Model.TempFilePath);
+                await using var tempFileStream = File.Create(Model.TempFilePath);
                 await file.OpenReadStream(MaxUploadSize * 1024 * 1024).CopyToAsync(tempFileStream);
                 tempFileStream.Position = 0; // Reset stream before resizing
 
