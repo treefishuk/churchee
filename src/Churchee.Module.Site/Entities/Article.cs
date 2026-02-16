@@ -18,11 +18,12 @@ namespace Churchee.Module.Site.Entities
 
         public string Content { get; private set; }
 
-        public void UpdateInfo(string title, string description, Guid? parentId)
+        public void UpdateInfo(string title, string description, string imageAltTag, Guid? parentId)
         {
             Title = title;
             Description = description;
             ParentId = parentId;
+            ImageAltTag = imageAltTag;
 
             AddDomainEvent(new PageInfoUpdatedEvent(Id));
         }

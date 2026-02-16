@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Churchee.Test.Helpers.Blazor\Churchee.Test.Helpers.Blazor.csproj" />
+    <ProjectReference Include="..\..\src\Churchee.Presentation.Admin\Churchee.Presentation.Admin.csproj" />
     <ProjectReference Include="..\Churchee.Test.Helpers\Churchee.Test.Helpers.csproj" />
   </ItemGroup>
 

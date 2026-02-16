@@ -26,5 +26,10 @@ namespace Churchee.Test.Helpers.Validation
         {
             Assert.NotNull(_instance);
         }
+
+        public void NotBeNull()
+        {
+            Assert.NotNull(_instance);
+        }
     }
 }

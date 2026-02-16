@@ -35,7 +35,7 @@
             <RadzenTabs RenderMode="TabRenderMode.Client" class="pageEdit-tabs">
                 <Tabs>
                     <RadzenTabsItem Text="Details">
-                        <FormFields EditContext="_editContext" FormInvalid="_formInvalid" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "Dates")" OnValueChanged=UpdateFormState></FormFields>
+                        <FormFields EditContext="_editContext" InputModel="InputModel" Properties="@InputModel.GetType().GetProperties().Where(x => x.CanWrite && x.Name != "Dates")" OnValueChanged=UpdateFormState></FormFields>
                     </RadzenTabsItem>
 
                     <RadzenTabsItem Text="Dates">

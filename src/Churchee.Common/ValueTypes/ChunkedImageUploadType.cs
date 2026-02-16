@@ -10,11 +10,15 @@ namespace Churchee.Common.ValueTypes
         {
             TempFilePath = string.Empty;
             Path = string.Empty;
+            ThumbnailUrl = string.Empty;
+            SupportedFileTypes = string.Empty;
         }
 
         public IBrowserFile File { get; set; }
 
         public string TempFilePath { get; set; }
+
+        public string ThumbnailUrl { get; set; }
 
         public string Path { get; set; }
 

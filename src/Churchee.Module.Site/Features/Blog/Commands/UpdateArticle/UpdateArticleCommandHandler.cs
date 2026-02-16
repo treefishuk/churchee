@@ -31,12 +31,11 @@ namespace Churchee.Module.Site.Features.Blog.Commands
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-
             var articleRepo = _dataStore.GetRepository<Article>();
 
             var entity = await articleRepo.FirstOrDefaultAsync(new ArticleFromIdSpecification(request.Id), cancellationToken: cancellationToken);
 
-            entity.UpdateInfo(request.Title, request.Description, request.ParentPageId);
+            entity.UpdateInfo(request.Title, request.Description, request.ImageAltTag, request.ParentPageId);
             entity.SetContent(request.Content);
             entity.SetPublishDate(request.PublishOnDate);
 
@@ -55,13 +54,17 @@ namespace Churchee.Module.Site.Features.Blog.Commands
                 return;
             }
 
-            await using var tempFileStream = File.OpenRead(request.TempImagePath);
+            // Open the temp file stream (do not rely on await-using to delay disposal until method exit)
+            var tempFileStream = File.OpenRead(request.TempImagePath);
 
             using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
 
             string imagePath = Path.Combine(request.ImagePath, $"{Path.GetFileNameWithoutExtension(request.ImageFileName).ToDevName()}.webp");
 
             string webPPath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
+
+            // Ensure the file handle is released before attempting to delete the temp file
+            await tempFileStream.DisposeAsync();
 
             File.Delete(request.TempImagePath);
 

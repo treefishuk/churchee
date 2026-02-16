@@ -1,0 +1,416 @@
+@using Churchee.Common.ValueTypes
+@using Radzen
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components
+@using System.Reflection
+@using Microsoft.Extensions.Logging
+@using Radzen.Blazor
+@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Radzen.Blazor.Rendering
+@using System.Linq
+
+@{
+    string dataType = Prop.PropertyType.Name;
+    var dataTypeAttribute = Prop.GetCustomAttribute<DataTypeAttribute>();
+    var displayAttribute = Prop.GetCustomAttribute<DisplayAttribute>();
+    var propertyValue = Prop.GetValue(InputModel);
+    string propertyName = displayAttribute?.Name ?? Prop.Name.ToSentence();
+    string propertyStringValue = propertyValue?.ToString() ?? string.Empty;
+
+    if (dataTypeAttribute != null)
+    {
+        dataType = dataTypeAttribute.DataType.ToString();
+        if (dataType == "Custom")
+        {
+            dataType = dataTypeAttribute.CustomDataType ?? string.Empty;
+        }
+    }
+}
+
+@if (dataType == DataTypes.Hidden)
+{
+    <input type="hidden" name="@(Prop.Name)" value="@(Prop.GetValue(InputModel))" />
+}
+else if (dataType == DataTypes.TextWithSlug)
+{
+    <TextWithSlug Name="@Prop.Name" PropertyInfo="@Prop" InputModel="InputModel" Value="@propertyStringValue" OnValueChanged=@(OnValueChanged) EditContext="EditContext"></TextWithSlug>
+}
+else if (dataType == DataTypes.Upload)
+{
+    var upload = Prop.GetValue(InputModel) as Upload;
+
+
+
+    if (upload != null)
+    {
+        var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select file" } };
+
+        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) InputAttributes="inputAttributes" />
+    }
+}
+else if (dataType == DataTypes.ImageUpload)
+{
+    var upload = Prop.GetValue(InputModel) as Upload;
+    if (upload != null)
+    {
+        var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select image" } };
+
+        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="inputAttributes" />
+    }
+}
+else if (dataType == DataTypes.ChunkedImageUpload)
+{
+    var upload = Prop.GetValue(InputModel) as ChunkedImageUploadType;
+    
+    if (upload != null)
+    {
+        <ChunkedImageUpload @bind-Model=upload></ChunkedImageUpload>
+    }
+}
+else if (dataType == DataTypes.MediaUpload)
+{
+    var upload = Prop.GetValue(InputModel) as Upload;
+    if (upload != null)
+    {
+        var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select document" } };
+
+        <RadzenFormField Text=@Prop.Name.ToSentence() AllowFloatingLabel="false">
+            <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept=@(upload.SupportedFileTypes) InputAttributes="inputAttributes" />
+        </RadzenFormField>
+    }
+}
+else if (dataType == DataTypes.CheckboxList)
+{
+    var multiSelect = Prop.GetValue(InputModel) as MultiSelect ?? new MultiSelect(Enumerable.Empty<MultiSelectItem>());
+    <RadzenCheckBoxList @bind-Value=@(multiSelect.SelectedValues) Data="@multiSelect.Items" TValue="Guid" TextProperty="Text" ValueProperty="Value" class="mb-5" Orientation=Orientation.Vertical></RadzenCheckBoxList>
+}
+else
+{
+    var formFieldStyles = "width:100%; margin-top:1rem;";
+    if (dataType == DataTypes.DateTime || dataType == DataTypes.Date)
+    {
+        formFieldStyles = "max-width:300px; margin-top:1rem;";
+    }
+
+    <RadzenFormField Text=@propertyName Style="@formFieldStyles" AllowFloatingLabel="false">
+        <ChildContent>
+            @{
+                if (dataType == typeof(int).Name)
+                {
+                    var parsed = int.Parse(propertyStringValue);
+
+                    <RadzenNumeric TValue="int" Value="parsed" Change=@((value) => OnFieldChange(Prop, value)) />
+                }
+                if (Nullable.GetUnderlyingType(Prop.PropertyType) == typeof(int))
+                {
+                    var parsed = string.IsNullOrEmpty(propertyStringValue) ? (int?)null : int.Parse(propertyStringValue);
+
+                    <RadzenNumeric TValue="int?" Value="parsed" Change=@((value) => OnFieldChange(Prop, value)) />
+                }
+                if (dataType == typeof(string).Name || dataType == DataTypes.Text)
+                {
+                    <RadzenTextBox Name="@(Prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) />
+                }
+                if (Prop.PropertyType == typeof(List<string>))
+                {
+                    var list = Prop.GetValue(InputModel) as List<string>;
+                    if (list != null && list.Count > 0)
+                    {
+                        <RadzenStack Gap="0">
+                            @for (int i = 0; i < list.Count; i++)
+                            {
+                                string name = $"{Prop.Name}_{i}";
+                                var localIndex = i;
+                                string style = i < list.Count - 1 ? "border-bottom: 1px solid #e0e9f2; border-radius:0" : string.Empty;
+                                <RadzenTextBox Name="@name" Value="@list[i]" Change=@((value) => OnFieldChange(Prop, localIndex, value)) Style="@style" />
+                            }
+                        </RadzenStack>
+                    }
+                }
+
+                if (dataType == DataTypes.Password)
+                {
+                    <RadzenPassword Name="@(Prop.Name)" PropertyInfo="@Prop" InputModel="InputModel" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value))></RadzenPassword>
+                }
+                if (dataType == DataTypes.EmailAddress)
+                {
+                    <RadzenTextBox Name="@(Prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) />
+                }
+
+                if (dataType == DataTypes.DateTime)
+                {
+                    <RadzenDatePicker Name="@(Prop.Name)" DateFormat="dd-MM-yyyy HH:mm" ShowTime="true" TValue="DateTime" Value=@Prop.GetValue(InputModel) Change=@((value) => OnFieldChange(Prop, value)) />
+                }
+
+                if (dataType == DataTypes.Date)
+                {
+                    <RadzenDatePicker Name="@(Prop.Name)" DateFormat="dd-MM-yyyy" ShowTime=false TValue="DateTime" Value=@Prop.GetValue(InputModel) Change=@((value) => OnFieldChange(Prop, value))/>
+                }
+
+                if (dataType == DataTypes.Url)
+                {
+                    <RadzenTextBox Name="@(Prop.Name)" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) />
+                }
+
+                if (dataType == DataTypes.Readonly)
+                {
+                    <RadzenTextBox Name="@(Prop.Name)" Value="@propertyStringValue" ReadOnly=true />
+                }
+
+                if (dataType == DataTypes.MultilineText)
+                {
+                    int rows = 2;
+                    var maxLengthDataAttribute = Prop.GetCustomAttribute<MaxLengthAttribute>();
+                    if (maxLengthDataAttribute != null)
+                    {
+                        rows = Math.Max(2, (maxLengthDataAttribute.Length / 50));
+                    }
+                    <RadzenTextArea Name="@Prop.Name" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) class="w-100" Rows="rows" aria-label="TextArea" />
+                }
+
+                if (dataType == DataTypes.CssEditor)
+                {
+                    <CssEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value))></CssEditor>
+                }
+                if (dataType == DataTypes.RazorEditor)
+                {
+                    <RazorEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value))></RazorEditor>
+                }
+
+                if (dataType == DataTypes.GeoCoordinates)
+                {
+                    <RadzenNumeric TValue="decimal?" Format="#.0000" Value="@(GetParsed<Decimal>(Prop, InputModel))" Change=@((value) => OnFieldChange(Prop, value))></RadzenNumeric>
+                }
+
+                if (dataType == DataTypes.Html)
+                {
+                    <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
+                        <RadzenHtmlEditorFormatBlock />
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorRemoveFormat />
+                        <RadzenHtmlEditorLink />
+                        <RadzenHtmlEditorUnorderedList />
+                        <RadzenHtmlEditorOrderedList />
+                        <RadzenHtmlEditorSource />
+                    </RadzenHtmlEditor>
+                }
+
+                if (dataType == DataTypes.HtmlNoLinks)
+                {
+                    <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
+                        <RadzenHtmlEditorFormatBlock />
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorRemoveFormat />
+                        <RadzenHtmlEditorUnorderedList />
+                        <RadzenHtmlEditorOrderedList />
+                        <RadzenHtmlEditorSource />
+                    </RadzenHtmlEditor>
+                }
+
+                if (dataType == DataTypes.HtmlTall)
+                {
+                    <RadzenHtmlEditor Execute="OnEditorExecute" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 420px">
+                        <RadzenHtmlEditorFormatBlock />
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorRemoveFormat />
+                        <RadzenHtmlEditorLink />
+                        <RadzenHtmlEditorUnorderedList />
+                        <RadzenHtmlEditorOrderedList />
+                        <EditorButton Title="Insert Image" Click=@OpenImageUploadEditor Icon="image"/>
+                        <RadzenHtmlEditorCustomTool CommandName="code" Icon="code_blocks" />
+                        <RadzenHtmlEditorSource />
+                    </RadzenHtmlEditor>
+                }
+
+                if (dataType == typeof(DropdownInput).Name)
+                {
+                    var dropdown = Prop.GetValue(InputModel) as DropdownInput ?? new DropdownInput();
+                    <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" Value="dropdown.Value" Change=@((value) => OnDropdownFieldChange(Prop, value)) />
+                }
+            }
+        </ChildContent>
+
+        <Helper>
+            @{
+                var fieldIdentifier = EditContext.Field(Prop.Name);
+                var hasValidationMessages = EditContext.GetValidationMessages(fieldIdentifier).Any();
+            }
+
+            @if (!string.IsNullOrEmpty(displayAttribute?.Description) && !hasValidationMessages){
+                <div style="color:#737477; font-size: 13px; margin-top: 4px;">@displayAttribute.Description</div>
+            }
+
+            @if (dataType != DataTypes.Hidden)
+            {
+                <ValidationMessage For="GetExpression(Prop, InputModel)" />
+            }
+        </Helper>
+    </RadzenFormField>
+}
+
+@code {
+
+    [Parameter]
+    public PropertyInfo Prop { get; set; } = default!;
+
+    [Parameter]
+    public object InputModel { get; set; } = default!;
+
+    [Parameter]
+    public EditContext EditContext { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<object> OnValueChanged { get; set; } = default!;
+
+    [Inject]
+    public NotificationService NotificationService { get; set; } = default!;
+
+    [Inject]
+    protected ILogger<FormFieldItem> Logger { get; set; } = default!;
+
+    [Inject]
+    protected DialogService DialogService { get; set; } = default!;
+
+    public async Task OnFieldChange(PropertyInfo info, object? value)
+    {
+        info.SetValue(InputModel, value);
+
+        // Get the FieldIdentifier with the EditContext from the field name
+        FieldIdentifier fieldIdentifier = EditContext.Field(info.Name);
+
+        // Validate the field when notifying change
+        EditContext.NotifyFieldChanged(fieldIdentifier);
+
+        await OnValueChanged.InvokeAsync(null);
+    }
+
+    public async Task OnFieldChange(PropertyInfo info, int index, string? value)
+    {
+        if (info.GetValue(InputModel) is List<string> list && index >= 0 && index < list.Count)
+        {
+            list[index] = value ?? string.Empty; // Ensure non-null assignment
+
+            // Get the FieldIdentifier for validation
+            FieldIdentifier fieldIdentifier = EditContext.Field($"{info.Name}_{index}");
+            EditContext.NotifyFieldChanged(fieldIdentifier);
+
+            await OnValueChanged.InvokeAsync(null);
+        }
+    }
+
+    public async Task OnDropdownFieldChange(PropertyInfo info, object value)
+    {
+        var dropdown = info.GetValue(InputModel) as DropdownInput ?? new DropdownInput();
+
+        var stringValue = value?.ToString() ?? string.Empty;
+
+        dropdown.Value = stringValue;
+        dropdown.Title = dropdown.Data.Where(w => w.Value == stringValue).Select(s => s.Title).FirstOrDefault() ?? string.Empty;
+
+        info.SetValue(InputModel, dropdown);
+
+        await OnValueChanged.InvokeAsync(null);
+    }
+
+    async Task OnFileChangeAsync(Upload upload)
+    {
+        Logger.LogInformation("{Upload} value changed", upload);
+        await OnValueChanged.InvokeAsync(null);
+    }
+
+    void OnFileError(UploadErrorEventArgs args, string name)
+    {
+        if (args.Message.Contains("File too large"))
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "File size to large. Max upload size is 5MB");
+        }
+        else
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error uploading file");
+        }
+
+        Logger.LogInformation("{Name} value error", name);
+    }
+
+    async Task OpenImageUploadEditor()
+    {
+       await DialogService.OpenAsync("Insert image", ds =>
+            @<ModalForm InputModel="ImageUploadModel" OnCancelForm=@(async () => await OnCancelImageUpload(ds)) OnSave=@(async () => await ValidImageUpload(ds)) />,
+            new DialogOptions() { Width = "700px"}
+        );
+    }
+
+    private ImageUploadModel ImageUploadModel { get; set; } = new();
+
+    private async Task OnCancelImageUpload(DialogService ds)
+    {
+        await Task.Run(() =>
+        {
+            ds.Close();
+            ImageUploadModel = new ImageUploadModel();
+        });
+    }
+
+    private async Task ValidImageUpload(DialogService ds)
+    {
+        await OnImageSubmit.InvokeAsync(ImageUploadModel);
+
+        ds.Close();
+    }
+
+    private static Nullable<T> GetParsed<T>(PropertyInfo info, object inputModel) where T: struct
+    {
+        var value = info.GetValue(inputModel);
+        if(value != null)
+        {
+            return (T)value;
+        }
+        return null;
+    }
+
+    private static Expression<Func<object>> GetExpression(PropertyInfo info, object inputModel)
+    {
+        // Create an expression to set the ValueExpression-attribute.
+        var constant = System.Linq.Expressions.Expression.Constant(inputModel, inputModel.GetType());
+        var exp = System.Linq.Expressions.MemberExpression.Property(constant, info.Name);
+        var conversion = Expression.Convert(exp, typeof(object));
+        var lamb = System.Linq.Expressions.Expression.Lambda<Func<object>>(conversion);
+        return lamb;
+    }
+
+    static async Task OnEditorExecute(HtmlEditorExecuteEventArgs args)
+    {
+        if (args.CommandName == "code")
+        {
+            await args.Editor.ExecuteCommandAsync(HtmlEditorCommands.InsertHtml, "<pre><code>Add Code HERE</code></pre>");
+        }
+    }
+
+    [Parameter]
+    public EventCallback<ImageUploadModel> OnImageSubmit { get; set; }
+}

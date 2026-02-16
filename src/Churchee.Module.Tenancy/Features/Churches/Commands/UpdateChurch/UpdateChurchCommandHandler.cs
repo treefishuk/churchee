@@ -35,7 +35,7 @@ namespace Churchee.Module.Tenancy.Features.Churches.Commands.UpdateChurch
         {
             var repo = _store.GetRepository<ApplicationHost>();
 
-            var existingHosts = await repo.GetListAsync(new ApplicationHostsByApplicationIdSpecification(applicationTenantId), cancellationToken);
+            var existingHosts = await repo.GetListAsync(new ApplicationHostsByApplicationTenantIdSpecification(applicationTenantId), cancellationToken);
 
             // Remove entries from existingHosts whose domain appears in domains
             var domainsSet = domains.Where(d => !string.IsNullOrEmpty(d)).ToHashSet(StringComparer.OrdinalIgnoreCase);

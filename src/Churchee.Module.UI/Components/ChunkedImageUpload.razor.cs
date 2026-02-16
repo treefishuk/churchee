@@ -9,9 +9,11 @@ namespace Churchee.Module.UI.Components
 {
     public partial class ChunkedImageUpload : IDisposable
     {
+        [Inject]
+        protected ITenantResolver TenantResolver { get; set; } = default!;
 
         [Inject]
-        private ICurrentUser CurrentUser { get; set; } = default!;
+        protected IImageProcessor ImageProcessor { get; set; } = default!;
 
         [Inject]
         private IAiToolUtilities AiToolUtilities { get; set; } = default!;
@@ -28,6 +30,8 @@ namespace Churchee.Module.UI.Components
         private double uploadProgress = 0;
 
         private string status = string.Empty;
+
+        private string tempSmallImage = string.Empty;
 
         private bool generating = false;
 
@@ -64,11 +68,21 @@ namespace Churchee.Module.UI.Components
 
             try
             {
-                // Get a read stream for the uploaded file
-                await using var tempFileStream = System.IO.File.Create(Model.TempFilePath);
+                // Get a read stream for the uploaded file and write temp file
+                await using var tempFileStream = File.Create(Model.TempFilePath);
                 await file.OpenReadStream(MaxUploadSize * 1024 * 1024).CopyToAsync(tempFileStream);
+                tempFileStream.Position = 0; // Reset stream before resizing
 
-                Model.Description = await AiToolUtilities.GenerateAltTextAsync(tempFileStream, _descriptionCts.Token);
+                // Await the resize result
+                await using var resizedStream = await ImageProcessor.ResizeImageAsync(tempFileStream, 300, 0, ".webp", CancellationToken.None);
+
+                // Create base64 thumbnail from resized stream
+                resizedStream.Position = 0;
+                tempSmallImage = await ToBase64ImageAsync(resizedStream, "image/webp");
+
+                // Reset position and generate alt text
+                resizedStream.Position = 0;
+                Model.Description = await AiToolUtilities.GenerateAltTextAsync(resizedStream, _descriptionCts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -78,9 +92,19 @@ namespace Churchee.Module.UI.Components
             {
                 generating = false;
                 await ModelChanged.InvokeAsync(Model);
+                Model.ThumbnailUrl = tempSmallImage;
                 StateHasChanged();
-
             }
+        }
+
+
+        public static async Task<string> ToBase64ImageAsync(Stream imageStream, string contentType)
+        {
+            using var ms = new MemoryStream();
+            await imageStream.CopyToAsync(ms);
+            byte[] bytes = ms.ToArray();
+
+            return $"data:{contentType};base64,{Convert.ToBase64String(bytes)}";
         }
 
         private void OnDescriptionChange()

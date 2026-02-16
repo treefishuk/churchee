@@ -21,6 +21,9 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
         {
             var mockAiToolUtilities = new Mock<IAiToolUtilities>();
             Services.AddSingleton(mockAiToolUtilities.Object);
+
+            var mockImageProcessor = new Mock<IImageProcessor>();
+            Services.AddSingleton(mockImageProcessor.Object);
         }
 
         [Fact]

@@ -21,6 +21,10 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
         {
             var mockAiToolUtilities = new Mock<IAiToolUtilities>();
             Services.AddSingleton(mockAiToolUtilities.Object);
+
+            var imageProcessorMock = new Mock<IImageProcessor>();
+            Services.AddSingleton(imageProcessorMock.Object);
+
         }
 
         [Fact]
@@ -258,6 +262,33 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             NotificationService.Notifications.Count.Should().Be(1);
             NotificationService.Notifications.First().Summary.Should().Be("Article removed from publication");
             NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+        }
+
+        [Fact]
+        public void Article_InsertImage_OpensDialog()
+        {
+            // Arrange
+            var data = new GetArticleByIdResponse()
+            {
+                IsPublished = true
+            };
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetArticleByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(data);
+
+            // Act
+            var cut = Render<Edit>();
+
+            var button = cut.Find("#distractionFreeModeBtn");
+
+            button.Click();
+
+            var openImageUploadEditorBtn = cut.Find(".rz-html-editor-button[Title=\"Insert Image\"]");
+
+            openImageUploadEditorBtn.Click();
+
+            // Assert
+            DialogService.Closed.Should().BeFalse();
+            DialogService.LastTitle.Should().Be("Insert image");
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
-        where TResponse : class
+        where TResponse : CommandResponse
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -21,18 +21,16 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
 
             if (failures.Any())
             {
-                var response = new CommandResponse();
+                var response = Activator.CreateInstance<TResponse>();
 
                 foreach (var failure in failures)
                 {
                     string propertyName = failure.PropertyName[(failure.PropertyName.IndexOf('.') + 1)..];
 
-                    response.AddError(failure.ErrorMessage, propertyName);
+                    ((CommandResponse)(object)response).AddError(failure.ErrorMessage, propertyName);
                 }
 
-                return response is TResponse castResponse
-                    ? Task.FromResult(castResponse)
-                    : throw new InvalidOperationException("TResponse must be of type CommandResponse.");
+                return Task.FromResult(response);
             }
 
             return next(cancellationToken);

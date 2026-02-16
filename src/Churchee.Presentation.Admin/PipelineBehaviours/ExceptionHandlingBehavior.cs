@@ -28,7 +28,7 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
                     _logger.LogError(ex, "Exception caught in pipeline: {Message}", ex.Message);
                 }
 
-                var response = new CommandResponse();
+                var response = Activator.CreateInstance<TResponse>();
 
                 response.AddError("Oh dear something has gone wrong... please try again. If the issue persists please contact support", string.Empty);
 
