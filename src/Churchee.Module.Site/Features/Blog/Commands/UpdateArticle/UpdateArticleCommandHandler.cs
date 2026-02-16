@@ -55,7 +55,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
             }
 
             // Open the temp file stream (do not rely on await-using to delay disposal until method exit)
-            using var tempFileStream = File.OpenRead(request.TempImagePath);
+            var tempFileStream = File.OpenRead(request.TempImagePath);
 
             using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
 
