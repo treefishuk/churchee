@@ -38,7 +38,7 @@ namespace Churchee.Module.Facebook.Events.Features.Queries
 
             string facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("AuthUrl");
 
-            if (string.IsNullOrEmpty(facebookAppId))
+            if (string.IsNullOrEmpty(facebookApiUrl))
             {
                 throw new MissingConfigurationSettingException("Facebook:Api");
             }

@@ -321,7 +321,5 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             _imageProcessor.Verify(x => x.ConvertToWebP(It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
             _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
-
-
     }
 }

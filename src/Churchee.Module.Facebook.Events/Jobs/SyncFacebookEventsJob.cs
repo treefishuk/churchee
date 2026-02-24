@@ -78,7 +78,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
                     if (dbPost != null)
                     {
-                        await UpdateEvent(applicationTenantId, client, facebookPageAccessToken, repo, pageTypeId, eventId, cancellationToken);
+                        await UpdateEvent(applicationTenantId, client, facebookPageAccessToken, repo, eventId, cancellationToken);
                     }
                     else
                     {
@@ -103,7 +103,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 : (IEnumerable<FacebookFeedResponseItem>)JsonSerializer.Deserialize<FacebookFeedResponse>(feedJsonString, _jsonSerializerOptions).Data;
         }
 
-        private async Task UpdateEvent(Guid applicationTenantId, HttpClient client, string facebookPageAccessToken, IRepository<Event> repo, Guid pageTypeId, string eventId, CancellationToken cancellationToken)
+        private async Task UpdateEvent(Guid applicationTenantId, HttpClient client, string facebookPageAccessToken, IRepository<Event> repo, string eventId, CancellationToken cancellationToken)
         {
             string facebookEventJson = await client.GetStringAsync($"{eventId}?access_token={facebookPageAccessToken}&format=json&fields=cover,description,name,place,start_time,end_time", cancellationToken);
 
