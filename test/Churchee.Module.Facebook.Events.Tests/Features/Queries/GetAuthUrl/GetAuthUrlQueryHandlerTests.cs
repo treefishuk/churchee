@@ -12,15 +12,6 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
         private readonly Mock<ISettingStore> _settingStoreMock = new();
         private readonly Mock<ICurrentUser> _currentUserMock = new();
 
-        private GetAuthUrlQueryHandler CreateHandler(IConfiguration configuration)
-        {
-            return new GetAuthUrlQueryHandler(
-                configuration,
-                _settingStoreMock.Object,
-                _currentUserMock.Object
-            );
-        }
-
         [Fact]
         public async Task Handle_ReturnsAuthUrl_AndUpdatesSettings()
         {
@@ -31,10 +22,10 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             string facebookAppId = "fb-app-id";
             _currentUserMock.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(tenantId);
 
-            var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
+            var inMemorySettings = new Dictionary<string, string?>
             {
-                { "facebookAppId", facebookAppId },
-                { "Facebook:Api", "https://www.facebook.com/v18.0/" },
+                { "Facebook:AppId", facebookAppId },
+                { "Facebook:AuthUrl", "https://www.facebook.com/v24.0/" },
             };
 
             var configuration = new ConfigurationBuilder()
@@ -63,20 +54,71 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
                     "FacebookStateId",
                     It.IsAny<string>()), Times.Once);
 
-            Assert.StartsWith($"https://www.facebook.com/v18.0/dialog/oauth?client_id={facebookAppId}&redirect_uri={domain}/management/integrations/facebook-events/auth?state=", result);
+            Assert.StartsWith($"https://www.facebook.com/v24.0/dialog/oauth?client_id={facebookAppId}&redirect_uri={domain}/management/integrations/facebook-events/auth?state=", result);
         }
 
         [Fact]
-        public async Task Handle_ThrowsMissingConfirgurationSettingException_WhenAppIdMissing()
+        public async Task Handle_ThrowsMissingConfirgurationSettingException_WhenAuthUrl_IsEmpty()
         {
+            // Arrange
+            var inMemorySettings = new Dictionary<string, string?>
+            {
+                { "Facebook:AppId", "123456" },
+                { "Facebook:AuthUrl", string.Empty },
+            };
+
+            // Act & Assert
+            await ThrowsConfigSettingException(inMemorySettings);
+        }
+
+        [Fact]
+        public async Task Handle_ThrowsMissingConfirgurationSettingException_WhenAuthUrl_IsMissing()
+        {
+            // Arrange
+            var inMemorySettings = new Dictionary<string, string?>
+            {
+                { "Facebook:AppId", "123456" },
+            };
+
+            // Act & Assert
+            await ThrowsConfigSettingException(inMemorySettings);
+        }
+
+        [Fact]
+        public async Task Handle_ThrowsMissingConfirgurationSettingException_WhenAppId_IsMissing()
+        {
+            // Arrange
+            var inMemorySettings = new Dictionary<string, string?>
+            {
+                { "Facebook:AuthUrl", "https://www.facebook.com/v24.0/" },
+            };
+
+            // Act & Assert
+            await ThrowsConfigSettingException(inMemorySettings);
+        }
+
+        [Fact]
+        public async Task Handle_ThrowsMissingConfirgurationSettingException_WhenAppId_IsEmpty()
+        {
+            // Arrange
+            var inMemorySettings = new Dictionary<string, string?>
+            {
+                { "Facebook:AppId", string.Empty },
+                { "Facebook:AuthUrl", "https://www.facebook.com/v24.0/" },
+
+            };
+
+            // Act & Assert
+            await ThrowsConfigSettingException(inMemorySettings);
+        }
+
+
+        private async Task ThrowsConfigSettingException(Dictionary<string, string?> inMemorySettings)
+        {
+
             // Arrange
             var tenantId = Guid.NewGuid();
             _currentUserMock.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(tenantId);
-
-            var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
-            {
-                { "facebookAppId", string.Empty }
-            };
 
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(inMemorySettings)
@@ -86,8 +128,16 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             var query = new GetAuthUrlQuery("https://example.com", "page123");
 
             // Act & Assert
-            await Assert.ThrowsAsync<MissingConfigurationSettingException>(() =>
-                handler.Handle(query, CancellationToken.None));
+            await Assert.ThrowsAsync<MissingConfigurationSettingException>(() => handler.Handle(query, CancellationToken.None));
+        }
+
+        private GetAuthUrlQueryHandler CreateHandler(IConfiguration configuration)
+        {
+            return new GetAuthUrlQueryHandler(
+                configuration,
+                _settingStoreMock.Object,
+                _currentUserMock.Object
+            );
         }
     }
 }

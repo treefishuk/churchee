@@ -17,6 +17,8 @@ namespace Churchee.Module.Site.Registration
 
                 etb.Property(t => t.PublishedData).HasColumnType(nvarcharMax);
 
+                etb.Property(t => t.ImageCheckHash).HasColumnType("char(64)");
+
                 etb.Property(t => t.Order).HasDefaultValue(10);
 
                 /// Legacy Property - Not Used but kept for backwards compatibility
