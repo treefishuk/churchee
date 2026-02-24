@@ -50,6 +50,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
                          .ReturnsAsync("access-token");
 
             _settingStore.Setup(x => x.GetSettingValue(It.IsAny<Guid>(), tenantId)).ReturnsAsync("page-id");
+
+            _logger.Setup(s => s.IsEnabled(LogLevel.Error)).Returns(true);
         }
 
         [Fact]
@@ -59,6 +61,24 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, "{\"data\":[]}"));
+
+            _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Returns(httpClient);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            eventRepoMock.Verify(x => x.Create(It.IsAny<Event>()), Times.Never);
+            _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task SyncFacebookEvents_EmptyResponse_DoesNothing()
+        {
+            // Arrange
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, string.Empty));
 
             _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Returns(httpClient);
 
@@ -321,5 +341,67 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             _imageProcessor.Verify(x => x.ConvertToWebP(It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
             _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Fact]
+        public async Task ConvertImageToLocalImage_ImageProcessorThrows_LogsError()
+        {
+            // Arrange - create a feed + event with cover where image fetch is OK but processor throws
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            var feed = new
+            {
+                data = new[]
+                {
+                    new { id = "page-id_1", story = "Someone created an event" }
+                }
+            };
+            string feedJson = JsonSerializer.Serialize(feed);
+
+            string fbEventJson = JsonSerializer.Serialize(new FacebookEventResult
+            {
+                Id = "1",
+                Name = "Test Event",
+                Description = "Test Description",
+                Place = new Place { Location = new Location { Street = "New Street" } },
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow.AddHours(1),
+                Cover = new Cover { Source = "http://localhost/image" }
+            });
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson, fbEventJson))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Returns(httpClient);
+
+            // Image http client returns OK with some content
+            var httpClientImage = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, "IMAGEBYTES"))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClientImage);
+
+            // Make the image processor throw when converting
+            _imageProcessor.Setup(x => x.ConvertToWebP(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("convert failed"));
+
+            pageTypeRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<ISpecification<PageType>>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert - error logged from ConvertImageToLocalImage catch
+            _logger.Verify(
+                x => x.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.IsAny<It.IsAnyType>(),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.AtLeastOnce);
+        }
+
     }
 }
