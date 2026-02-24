@@ -1,6 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
-using Churchee.Common.Exceptions;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Facebook.Events.API;
@@ -40,8 +39,8 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
             var tokenRepo = _dataStore.GetRepository<Token>();
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string facebookAppId = GetConfigurationValue("facebookAppId");
-            string appSecret = GetConfigurationValue("facebookAppSecret");
+            string facebookAppId = _configuration.GetSection("Facebook").GetValue<string>("AppId");
+            string appSecret = _configuration.GetSection("Facebook").GetValue<string>("AppSecret");
             string pageId = await GetSettingValue("3de048ae-d711-4609-9b66-97564a9d0d68", applicationTenantId);
             string stateId = await GetSettingValue("841fb9d0-92ca-41b2-9cdb-5903a6ab7bad", applicationTenantId);
             string redirectUri = $"{request.Domain}/management/integrations/facebook-events/auth?state={stateId}";
@@ -122,7 +121,7 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
 
         private async Task<FacebookUserIdResponse> GetFacebookUserId(HttpClient client, FacebookAccessTokenResponse accessToken, CancellationToken cancellationToken)
         {
-            var json = await client.GetStringAsync($"me?fields=id&access_token={accessToken.AccessToken}", cancellationToken);
+            string json = await client.GetStringAsync($"me?fields=id&access_token={accessToken.AccessToken}", cancellationToken);
 
             return JsonSerializer.Deserialize<FacebookUserIdResponse>(json, _options);
         }
@@ -131,17 +130,12 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
         {
             string jsonString = await client.GetStringAsync($"oauth/access_token?client_id={facebookAppId}&redirect_uri={redirectUri}&client_secret={appSecret}&code={code}&state={stateId}", cancellationToken);
 
-            if (string.IsNullOrEmpty(jsonString))
-            {
-                return null;
-            }
-
-            return JsonSerializer.Deserialize<FacebookAccessTokenResponse>(jsonString, _options);
+            return string.IsNullOrEmpty(jsonString) ? null : JsonSerializer.Deserialize<FacebookAccessTokenResponse>(jsonString, _options);
         }
 
         private HttpClient CreateClient()
         {
-            var facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("Api");
+            string facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("Api");
 
             if (string.IsNullOrEmpty(facebookApiUrl))
             {
@@ -155,18 +149,6 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
             client.BaseAddress = new Uri(facebookApiUrl);
 
             return client;
-        }
-
-        private string GetConfigurationValue(string key)
-        {
-            string value = _configuration.GetValue<string>(key) ?? string.Empty;
-
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new MissingConfigurationSettingException(key);
-            }
-
-            return value;
         }
 
         private async Task<string> GetSettingValue(string settingId, Guid tenantId)

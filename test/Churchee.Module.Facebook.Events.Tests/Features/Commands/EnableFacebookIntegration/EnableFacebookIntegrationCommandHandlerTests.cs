@@ -53,8 +53,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
         {
             // Arrange
             var configuration = SetUpOptions(new Dictionary<string, string?> {
-                { "facebookAppId", "appid" },
-                { "facebookAppSecret", "secret" }
+                { "Facebook:AppId", "appid" },
+                { "Facebook:AppSecret", "secret" }
             });
 
             var handler = CreateHandler(new HttpClient(), configuration);
@@ -75,7 +75,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
             // Arrange
             var configuration = SetUpOptions(new Dictionary<string, string?> {
                 { "Facebook:Api", "https://facebook.api/" },
-                { "facebookAppId", null }
+                { "Facebook:AppId", null }
             });
 
             var handler = CreateHandler(new HttpClient(), configuration);
@@ -93,8 +93,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
             // Arrange
             var configuration = SetUpOptions(new Dictionary<string, string?> {
                 { "Facebook:Api", "https://facebook.api/" },
-                { "facebookAppId", "appid" },
-                { "facebookAppSecret", "secret" }
+                { "Facebook:AppId", "appid" },
+                { "Facebook:AppSecret", "secret" }
             });
 
             _settingStoreMock.Setup(s => s.GetSettingValue(It.IsAny<Guid>(), _tenantId)).ReturnsAsync("pageid");
@@ -129,17 +129,17 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
             // Arrange
             var configuration = SetUpOptions(new Dictionary<string, string?> {
                { "Facebook:Api", "https://facebook.api/" },
-               { "facebookAppId", "appid" },
-               { "facebookAppSecret", "secret" }
+               { "Facebook:AppId", "appid" },
+               { "Facebook:AppSecret", "secret" }
             });
 
             _settingStoreMock.SetupSequence(s => s.GetSettingValue(It.IsAny<Guid>(), _tenantId))
                 .ReturnsAsync("pageid") // pageId
                 .ReturnsAsync("stateid"); // stateId
 
-            var accessTokenJson = "{\"access_token\":\"access123\",\"token_type\":\"bearer\",\"expires_in\":3600}";
-            var userIdJson = "{\"id\":\"user123\"}";
-            var pagesJson = "{\"data\":[{\"id\":\"pageid\",\"access_token\":\"pagetoken123\"}]}";
+            string accessTokenJson = "{\"access_token\":\"access123\",\"token_type\":\"bearer\",\"expires_in\":3600}";
+            string userIdJson = "{\"id\":\"user123\"}";
+            string pagesJson = "{\"data\":[{\"id\":\"pageid\",\"access_token\":\"pagetoken123\"}]}";
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
             httpMessageHandlerMock.Protected()

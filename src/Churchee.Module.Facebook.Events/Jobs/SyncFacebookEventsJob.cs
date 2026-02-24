@@ -78,11 +78,12 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
                     if (dbPost != null)
                     {
-                        continue;
+                        await UpdateEvent(applicationTenantId, client, facebookPageAccessToken, repo, pageTypeId, eventId, cancellationToken);
                     }
-
-                    await CreateNewEvent(applicationTenantId, client, facebookPageAccessToken, repo, pageTypeId, eventId, cancellationToken);
-
+                    else
+                    {
+                        await CreateNewEvent(applicationTenantId, client, facebookPageAccessToken, repo, pageTypeId, eventId, cancellationToken);
+                    }
                 }
 
                 await _dataStore.SaveChangesAsync(cancellationToken);
@@ -100,6 +101,32 @@ namespace Churchee.Module.Facebook.Events.Jobs
             return string.IsNullOrEmpty(feedJsonString)
                 ? []
                 : (IEnumerable<FacebookFeedResponseItem>)JsonSerializer.Deserialize<FacebookFeedResponse>(feedJsonString, _jsonSerializerOptions).Data;
+        }
+
+        private async Task UpdateEvent(Guid applicationTenantId, HttpClient client, string facebookPageAccessToken, IRepository<Event> repo, Guid pageTypeId, string eventId, CancellationToken cancellationToken)
+        {
+            string facebookEventJson = await client.GetStringAsync($"{eventId}?access_token={facebookPageAccessToken}&format=json&fields=cover,description,name,place,start_time,end_time", cancellationToken);
+
+            var item = JsonSerializer.Deserialize<FacebookEventResult>(facebookEventJson, _jsonSerializerOptions);
+
+            if (item == null)
+            {
+                return;
+            }
+
+            var dbEvent = await repo.FirstOrDefaultAsync(new GetEventByFacebookIdSpecification(eventId), cancellationToken);
+
+            if (dbEvent == null)
+            {
+                return;
+            }
+
+            dbEvent.UpdateInformation(item.Name ?? dbEvent.Title, item.Description ?? dbEvent.Description, item.Description ?? dbEvent.Description);
+            dbEvent.UpdateLocation(item.Place?.Name ?? dbEvent.LocationName, item.Place?.Location?.City ?? dbEvent.City, item.Place?.Location?.Street ?? dbEvent.Street, item.Place?.Location?.Zip ?? dbEvent.PostCode, item.Place?.Location?.Country ?? dbEvent.Country, Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d), Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d));
+
+            string imageUrl = item.Cover?.Source ?? string.Empty;
+
+            await ConvertImageToLocalImage(dbEvent, imageUrl, applicationTenantId, cancellationToken);
         }
 
         private async Task CreateNewEvent(Guid applicationTenantId, HttpClient client, string facebookPageAccessToken, IRepository<Event> repo, Guid pageTypeId, string eventId, CancellationToken cancellationToken)
@@ -143,33 +170,57 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 .SetLatitude(Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d))
                 .SetLongitude(Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d))
                 .SetDates(item.StartTime, item.EndTime)
-                .SetImageUrl(item.Cover?.Source ?? string.Empty)
                 .Build();
 
-            await ConvertImageToLocalImage(newEvent, applicationTenantId, cancellationToken);
+            string imageUrl = item.Cover?.Source ?? string.Empty;
+
+            await ConvertImageToLocalImage(newEvent, imageUrl, applicationTenantId, cancellationToken);
 
             SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore.GetRepository<Event>());
 
             repo.Create(newEvent);
         }
 
-        private async Task ConvertImageToLocalImage(Event facebookEvent, Guid applicationTenantId, CancellationToken cancellationToken)
+        private async Task ConvertImageToLocalImage(Event facebookEvent, string facebookImageUrl, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            var response = await _clientFactory.CreateClient().GetAsync($"{facebookEvent.ImageUrl}", cancellationToken);
+            if (string.IsNullOrEmpty(facebookImageUrl))
+            {
+                return;
+            }
+
+            var response = await _clientFactory.CreateClient().GetAsync(facebookImageUrl, cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
             await using var tempFileStream = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-            using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
+            string hash = await Hasher.HashFirst64KbAsync(tempFileStream, cancellationToken);
 
-            string friendlyFileName = $"{facebookEvent.Title.Replace(" ", "_")}.webp";
+            if (facebookEvent.ImageCheckHash == hash)
+            {
+                return;
+            }
 
-            string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", webPStream, true, cancellationToken);
+            try
+            {
+                using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
 
-            facebookEvent.SetImageUrl($"/img/events/{friendlyFileName}");
+                string friendlyFileName = $"{facebookEvent.Title.Replace(" ", "_")}.webp";
 
-            _jobShedularService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, true, CancellationToken.None));
+                string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", webPStream, true, cancellationToken);
+
+                facebookEvent.SetImageUrl($"/img/events/{friendlyFileName}");
+                facebookEvent.SetImageCheckHash(hash);
+
+                _jobShedularService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, true, CancellationToken.None));
+            }
+            catch (Exception ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex, "Error processing Facebook Event image for event {EventId}", facebookEvent.Id);
+                }
+            }
         }
     }
 }

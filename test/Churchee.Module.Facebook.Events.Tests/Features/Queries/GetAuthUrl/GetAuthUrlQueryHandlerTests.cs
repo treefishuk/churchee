@@ -33,7 +33,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
 
             var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
             {
-                { "facebookAppId", facebookAppId },
+                { "Facebook:AppId", facebookAppId },
                 { "Facebook:Api", "https://www.facebook.com/v18.0/" },
             };
 
@@ -75,7 +75,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
 
             var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
             {
-                { "facebookAppId", string.Empty }
+                { "Facebook:AppId", string.Empty }
             };
 
             var configuration = new ConfigurationBuilder()

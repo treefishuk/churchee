@@ -29,14 +29,14 @@ namespace Churchee.Module.Facebook.Events.Features.Queries
 
             await _settingStore.AddOrUpdateSetting(settingId, applicationTenantId, "FacebookPageId", request.PageId);
 
-            string facebookAppId = _configuration.GetValue<string>("facebookAppId") ?? string.Empty;
+            string facebookAppId = _configuration.GetSection("Facebook").GetValue<string>("AppId") ?? string.Empty;
 
             if (string.IsNullOrEmpty(facebookAppId))
             {
                 throw new MissingConfigurationSettingException(nameof(facebookAppId));
             }
 
-            string facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("Api");
+            string facebookApiUrl = _configuration.GetSection("Facebook").GetValue<string>("AuthUrl");
 
             if (string.IsNullOrEmpty(facebookAppId))
             {
