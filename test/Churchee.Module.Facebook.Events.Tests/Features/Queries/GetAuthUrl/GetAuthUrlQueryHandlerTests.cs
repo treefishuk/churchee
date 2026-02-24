@@ -31,10 +31,10 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             string facebookAppId = "fb-app-id";
             _currentUserMock.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(tenantId);
 
-            var inMemorySettings = new System.Collections.Generic.Dictionary<string, string?>
+            var inMemorySettings = new Dictionary<string, string?>
             {
                 { "Facebook:AppId", facebookAppId },
-                { "Facebook:Api", "https://www.facebook.com/v18.0/" },
+                { "Facebook:AuthUrl", "https://www.facebook.com/v24.0/" },
             };
 
             var configuration = new ConfigurationBuilder()
@@ -63,7 +63,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
                     "FacebookStateId",
                     It.IsAny<string>()), Times.Once);
 
-            Assert.StartsWith($"https://www.facebook.com/v18.0/dialog/oauth?client_id={facebookAppId}&redirect_uri={domain}/management/integrations/facebook-events/auth?state=", result);
+            Assert.StartsWith($"https://www.facebook.com/v24.0/dialog/oauth?client_id={facebookAppId}&redirect_uri={domain}/management/integrations/facebook-events/auth?state=", result);
         }
 
         [Fact]

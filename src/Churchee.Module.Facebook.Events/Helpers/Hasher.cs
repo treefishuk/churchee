@@ -2,7 +2,7 @@
 
 namespace Churchee.Module.Facebook.Events.Helpers
 {
-    public class Hasher
+    public static class Hasher
     {
         public static async Task<string> HashFirst64KbAsync(Stream stream, CancellationToken cancellationToken)
         {

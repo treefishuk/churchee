@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Exceptions;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Facebook.Events.API;
@@ -39,8 +40,8 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
             var tokenRepo = _dataStore.GetRepository<Token>();
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            string facebookAppId = _configuration.GetSection("Facebook").GetValue<string>("AppId");
-            string appSecret = _configuration.GetSection("Facebook").GetValue<string>("AppSecret");
+            string facebookAppId = GetConfigurationValue("AppId");
+            string appSecret = GetConfigurationValue("AppSecret");
             string pageId = await GetSettingValue("3de048ae-d711-4609-9b66-97564a9d0d68", applicationTenantId);
             string stateId = await GetSettingValue("841fb9d0-92ca-41b2-9cdb-5903a6ab7bad", applicationTenantId);
             string redirectUri = $"{request.Domain}/management/integrations/facebook-events/auth?state={stateId}";
@@ -88,6 +89,13 @@ namespace Churchee.Module.Facebook.Events.Features.Commands
             await _dataStore.SaveChangesAsync(cancellationToken);
 
             return new CommandResponse();
+        }
+
+        private string GetConfigurationValue(string key)
+        {
+            string value = _configuration.GetSection("Facebook").GetValue<string>(key) ?? string.Empty;
+
+            return string.IsNullOrEmpty(value) ? throw new MissingConfigurationSettingException(key) : value;
         }
 
         private static string GetPageAccessTokenForPage(string pageId, FacebookPagesReponse pageTokensResponse)
