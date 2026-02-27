@@ -19,9 +19,6 @@ namespace Churchee.Module.Logging.Registrations
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
             jobService.ScheduleJob<ClearLogsJob>($"ClearLogs", x => x.ExecuteAsync(CancellationToken.None), Cron.Monthly);
-
-            jobService.QueueJob<ErrorLoggingTestJob>(x => x.ExecuteAsync(CancellationToken.None));
-
         }
     }
 }

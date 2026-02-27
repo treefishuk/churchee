@@ -1,0 +1,42 @@
+﻿@page "/management/integrations/google-reviews/auth"
+@using Churchee.Module.Events.Features.Commands
+@using Churchee.Module.Google.Reviews.Features.Commands
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Sections
+@using MediatR
+@using Radzen.Blazor
+@using Radzen
+@using Churchee.Common.Abstractions.Auth
+
+<h1>Auth Redirect</h1>
+
+@code {
+
+    [Inject]
+    private IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
+
+    [Inject]
+    private IMediator Mediator { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    public string Code { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string State { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var request = HttpContextAccessor.HttpContext.Request;
+
+        await Mediator.Send(new GenerateTokensFromProvidedCodeCommand(Code, $"{request.Scheme}://{request.Host}"));
+
+        var uri = NavigationManager.BaseUri + "management/integrations/google-reviews";
+
+        HttpContextAccessor.HttpContext.Response.Redirect("/management/integrations/google-reviews");
+    }
+}
