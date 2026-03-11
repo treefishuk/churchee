@@ -1,33 +1,39 @@
 ﻿using Churchee.Common.Abstractions.Queue;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.API;
 using Churchee.Module.Google.Reviews.Exceptions;
 using Churchee.Module.Google.Reviews.Helpers;
-using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Specifications;
+using Churchee.Module.Reviews.Entities;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 
 namespace Churchee.Module.Google.Reviews.Jobs
 {
-    public class SyncGoogleReviewJob : IJob
+    public class GoogleReviewsSyncJob : IJob
     {
         private readonly IDataStore _dataStore;
         private readonly IHttpClientFactory _clientFactory;
         private readonly ISettingStore _settingStore;
+        private readonly IImageProcessor _imageProcessor;
+        private readonly IBlobStore _blobStore;
+        private readonly ILogger _logger;
 
-        public SyncGoogleReviewJob(IDataStore dataStore, IHttpClientFactory clientFactory, ISettingStore settingStore)
+        public GoogleReviewsSyncJob(IDataStore dataStore, IHttpClientFactory clientFactory, ISettingStore settingStore, IImageProcessor imageProcessor, IBlobStore blobStore, ILogger<GoogleReviewsSyncJob> logger)
         {
             _dataStore = dataStore;
             _clientFactory = clientFactory;
             _settingStore = settingStore;
+            _imageProcessor = imageProcessor;
+            _blobStore = blobStore;
+            _logger = logger;
         }
 
         public async Task ExecuteAsync(Guid applicationTenantId, CancellationToken cancellationToken)
@@ -45,9 +51,9 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Value);
 
-            string accountId = await _settingStore.GetSettingValue(SettingKeys.BusinessProfileId, applicationTenantId);
+            string accountId = await GetAccountId(client, cancellationToken);// _settingStore.GetSettingValue(SettingKeys.BusinessProfileId, applicationTenantId);
 
-            string locationId = await GetLocationId(client, accountId, cancellationToken);
+            string locationId = await GetLocationId(client, accountId, applicationTenantId, cancellationToken);
 
             var result = await GetReviews(client, accountId, locationId, cancellationToken);
 
@@ -95,8 +101,6 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             var updatedToken = new Token(applicationTenantId, SettingKeys.GoogleReviewsAccessTokenKey.ToString(), credential.Token.AccessToken);
 
-            // Optionally: store the updated token back in your DB
-
             tokenRepo.Update(updatedToken);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
@@ -106,48 +110,33 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
         private async Task ProcessReviews(Guid applicationTenantId, GoogleReviewsResponse result, CancellationToken cancellationToken)
         {
-            var mediaItemRepo = _dataStore.GetRepository<MediaItem>();
-
-            var mediaFolderRepo = _dataStore.GetRepository<MediaFolder>();
-
-            var mediaFolder = await mediaFolderRepo.FirstOrDefaultAsync(new MediaFolderByNameSpecification("GoogleReviews", applicationTenantId), cancellationToken);
-
-            if (mediaFolder == null)
-            {
-                mediaFolder = new MediaFolder(applicationTenantId, "GoogleReviews", string.Empty);
-                mediaFolderRepo.Create(mediaFolder);
-                await _dataStore.SaveChangesAsync(cancellationToken);
-            }
+            var repo = _dataStore.GetRepository<Review>();
 
             foreach (var review in result.Reviews)
             {
-                string html = $"<span class=\"starrating\">{GenerateStarRatingHtml(review.StarRating)}</span>";
 
-                var newItem = new MediaItem(applicationTenantId, review.Reviewer.DisplayName, review.Reviewer.ProfilePhotoUrl, review.Comment, html, mediaFolder.Id);
+                if (repo.AnyWithFiltersDisabled(f => f.SourceId == review.Name && f.ApplicationTenantId == applicationTenantId))
+                {
+                    continue;
+                }
 
-                mediaItemRepo.Create(newItem);
+                var entity = new Review(applicationTenantId)
+                {
+                    Comment = review.Comment,
+                    ReviewerName = review.Reviewer.DisplayName,
+                    ReviewerImageUrl = review.Reviewer.ProfilePhotoUrl,
+                    Rating = (int)review.StarRating,
+                    SourceName = "Google",
+                    SourceId = review.Name,
+                    CreatedDate = review.CreateTime
+                };
+
+                await ConvertImageToLocalImage(entity, cancellationToken);
+
+                repo.Create(entity);
             }
 
             await _dataStore.SaveChangesAsync(cancellationToken);
-        }
-
-        private string GenerateStarRatingHtml(int starRating)
-        {
-            var html = new StringBuilder();
-
-            for (int i = 0; i < 5; i++)
-            {
-                if (i < starRating)
-                {
-                    html.Append('★'); // Filled star
-                }
-                else
-                {
-                    html.Append('☆'); // Empty star
-                }
-            }
-
-            return html.ToString();
         }
 
         private async Task<GoogleReviewsResponse> GetReviews(HttpClient client, string accountId, string locationId, CancellationToken cancellationToken)
@@ -179,9 +168,10 @@ namespace Churchee.Module.Google.Reviews.Jobs
             return accounts.Accounts.FirstOrDefault()?.Name.Split('/').LastOrDefault() ?? string.Empty;
         }
 
-        private async Task<string> GetLocationId(HttpClient httpClient, string accountId, CancellationToken cancellationToken)
+        private async Task<string> GetLocationId(HttpClient httpClient, string accountId, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            string url = $"https://mybusinessbusinessinformation.googleapis.com/v1/accounts/{accountId}/locations";
+            string url = $"https://mybusinessbusinessinformation.googleapis.com/v1/accounts/{accountId}/locations?readMask=name,title";
+
             var response = await httpClient.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -193,7 +183,44 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             var locationsResponse = JsonSerializer.Deserialize<LocationsResponse>(json);
 
-            return locationsResponse.Locations.FirstOrDefault()?.Name.Split('/').LastOrDefault() ?? string.Empty;
+            string targetAccountId = await _settingStore.GetSettingValue(SettingKeys.BusinessProfileId, applicationTenantId);
+
+            string match = $"locations/{targetAccountId}";
+
+            return locationsResponse.Locations.FirstOrDefault(f => f.Name == match)?.Name.Split('/').LastOrDefault() ?? string.Empty;
+        }
+
+
+        private async Task ConvertImageToLocalImage(Review review, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(review.ReviewerImageUrl))
+            {
+                return;
+            }
+
+            var response = await _clientFactory.CreateClient().GetAsync(review.ReviewerImageUrl, cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+
+            await using var tempFileStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+
+            try
+            {
+                using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
+
+                string friendlyFileName = $"{review.Id}.webp";
+
+                string finalImagePath = await _blobStore.SaveAsync(review.ApplicationTenantId, $"/img/reviews/{friendlyFileName}", webPStream, true, cancellationToken);
+
+                review.ReviewerImageUrl = finalImagePath;
+            }
+            catch (Exception ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex, "Error processing Google User image for review {ReviewId}", review.Id);
+                }
+            }
         }
     }
 }

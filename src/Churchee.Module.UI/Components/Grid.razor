@@ -6,6 +6,7 @@
 @using Radzen.Blazor
 @using System.ComponentModel.DataAnnotations
 @using System.Reflection
+@using System.Text
 @typeparam TItem
 @inject IConfiguration Config
 
@@ -140,6 +141,44 @@
                                     <img src="@($"{ImagePrefix}{imageUrl}")" crossorigin="anonymous" />
 
                                 }
+                            }
+
+
+                        </Template>
+                    </RadzenDataGridColumn>
+                }
+
+                if (dataType == DataTypes.Rating)
+                {
+                    <RadzenDataGridColumn Property="@prop.Name" TItem="TItem" Title="@title" Sortable="true" Filterable="true" Width="120px" TextAlign="TextAlign.Left" Pickable="false">
+                        <Template Context="data">
+
+                            @{
+
+                                int rating = 0;
+
+                                var imgObj = prop.GetValue(data);
+
+                                if (imgObj != null)
+                                {
+                                    rating = int.Parse(imgObj.ToString() ?? "0");
+                                }
+
+                                var html = new StringBuilder();
+
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    if (i < rating)
+                                    {
+                                        html.Append('★'); // Filled star
+                                    }
+                                    else
+                                    {
+                                        html.Append('☆'); // Empty star
+                                    }
+                                }
+
+                                <span>@html.ToString()</span>
                             }
 
 

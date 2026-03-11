@@ -27,7 +27,7 @@ namespace Churchee.Module.Hangfire.Registrations
 
                 .UseFilter(new AutomaticRetryAttribute
                 {
-                    Attempts = 3,          // or 0 to disable retries
+                    Attempts = 0,          // or 0 to disable retries
                     DelaysInSeconds = [10, 30, 60] // optional custom delays
                 })
                 .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions

@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Churchee.Module.Events\Churchee.Module.Events.csproj" />
+		<ProjectReference Include="..\Churchee.Module.Reviews\Churchee.Module.Reviews.csproj" />
 		<ProjectReference Include="..\Churchee.Module.Tokens\Churchee.Module.Tokens.csproj" />
 	</ItemGroup>
 

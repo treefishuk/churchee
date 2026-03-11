@@ -1,30 +1,35 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.Helpers;
+using Churchee.Module.Google.Reviews.Jobs;
 using Churchee.Module.Tokens.Entities;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
+using Hangfire;
 using MediatR;
 
 namespace Churchee.Module.Google.Reviews.Features.Commands
 {
-    public class GenerateTokensFromProvidedCodeCommandHandler : IRequestHandler<GenerateTokensFromProvidedCodeCommand, CommandResponse>
+    public class EnableGoogleReviewsIntegrationCommandHandler : IRequestHandler<EnableGoogleReviewsIntegrationCommand, CommandResponse>
     {
         private readonly ISettingStore _settingStore;
         private readonly ICurrentUser _currentUser;
         private readonly IDataStore _dataStore;
+        private readonly IJobService _jobShedularService;
 
-        public GenerateTokensFromProvidedCodeCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore)
+        public EnableGoogleReviewsIntegrationCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore, IJobService jobShedularService)
         {
             _settingStore = settingStore;
             _currentUser = currentUser;
             _dataStore = dataStore;
+            _jobShedularService = jobShedularService;
         }
 
-        public async Task<CommandResponse> Handle(GenerateTokensFromProvidedCodeCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(EnableGoogleReviewsIntegrationCommand request, CancellationToken cancellationToken)
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
@@ -42,6 +47,7 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
                     ClientSecret = clientSecret
                 },
                 Scopes = ["https://www.googleapis.com/auth/business.manage"],
+                Prompt = "consent"
             });
 
             var tokenResponse = await flow.ExchangeCodeForTokenAsync(
@@ -57,6 +63,10 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
             StoreRefreshToken(tokenRepo, applicationTenantId, tokenResponse);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
+
+            _jobShedularService.ScheduleJob<GoogleReviewsSyncJob>($"{applicationTenantId}_GoogleReviews", a => a.ExecuteAsync(applicationTenantId, CancellationToken.None), Cron.Daily);
+
+            _jobShedularService.QueueJob<GoogleReviewsSyncJob>(a => a.ExecuteAsync(applicationTenantId, CancellationToken.None));
 
             return new CommandResponse();
         }

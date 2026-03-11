@@ -30,8 +30,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         var request = _httpContextAccessor.HttpContext.Request;
 
         await Mediator.Send(new EnableFacebookIntegrationCommand(Code, $"{request.Scheme}://{request.Host}"));

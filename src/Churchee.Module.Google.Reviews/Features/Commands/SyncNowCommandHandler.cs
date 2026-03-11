@@ -43,7 +43,7 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
             //    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
             //}, cancellationToken);
 
-            _jobService.QueueJob<SyncGoogleReviewJob>(a => a.ExecuteAsync(applicationTenantId, CancellationToken.None));
+            _jobService.QueueJob<GoogleReviewsSyncJob>(a => a.ExecuteAsync(applicationTenantId, CancellationToken.None));
 
             return new CommandResponse();
         }

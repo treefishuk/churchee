@@ -33,7 +33,7 @@
     {
         var request = HttpContextAccessor.HttpContext.Request;
 
-        await Mediator.Send(new GenerateTokensFromProvidedCodeCommand(Code, $"{request.Scheme}://{request.Host}"));
+        await Mediator.Send(new EnableGoogleReviewsIntegrationCommand(Code, $"{request.Scheme}://{request.Host}"));
 
         var uri = NavigationManager.BaseUri + "management/integrations/google-reviews";
 

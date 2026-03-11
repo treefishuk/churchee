@@ -3,9 +3,9 @@ using MediatR;
 
 namespace Churchee.Module.Google.Reviews.Features.Commands
 {
-    public class GenerateTokensFromProvidedCodeCommand : IRequest<CommandResponse>
+    public class EnableGoogleReviewsIntegrationCommand : IRequest<CommandResponse>
     {
-        public GenerateTokensFromProvidedCodeCommand(string code, string domain)
+        public EnableGoogleReviewsIntegrationCommand(string code, string domain)
         {
             Code = code;
             Domain = domain;
