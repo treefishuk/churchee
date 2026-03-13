@@ -26,22 +26,22 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            //string cacheKey = $"GoogleReviewsSyncJobQueued_{applicationTenantId}";
+            string cacheKey = $"GoogleReviewsSyncJobQueued_{applicationTenantId}";
 
-            //string existing = await _distributedCache.GetStringAsync(cacheKey, cancellationToken);
+            string existing = await _distributedCache.GetStringAsync(cacheKey, cancellationToken);
 
-            //if (!string.IsNullOrEmpty(existing))
-            //{
-            //    response.AddError("A sync job is already queued or running. Please wait for it to complete before queuing another.", "");
+            if (!string.IsNullOrEmpty(existing))
+            {
+                response.AddError("A sync job is already queued or running. Please wait for it to complete before queuing another.", "");
 
-            //    return response;
-            //}
+                return response;
+            }
 
-            //// Set the flag with a short expiration (e.g., 10 minutes)
-            //await _distributedCache.SetStringAsync(cacheKey, "1", new DistributedCacheEntryOptions
-            //{
-            //    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            //}, cancellationToken);
+            // Set the flag with a short expiration (e.g., 10 minutes)
+            await _distributedCache.SetStringAsync(cacheKey, "1", new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            }, cancellationToken);
 
             _jobService.QueueJob<GoogleReviewsSyncJob>(a => a.ExecuteAsync(applicationTenantId, CancellationToken.None));
 
