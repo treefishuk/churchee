@@ -14,9 +14,6 @@
 @using Churchee.Common.Abstractions.Auth
 @using Churchee.Module.Google.Reviews.Features.Queries
 
-@inject ICurrentUser _currentUser
-@inject IHttpContextAccessor _httpContextAccessor
-
 <PageName Name="Google Reviews Integration"></PageName>
 
 <div style="max-width: 900px; margin: 40px auto;">
@@ -65,6 +62,9 @@
 
 @code {
 
+    [Inject]
+    public IHttpContextAccessor HttpContextAccessor { get; set; }
+
     public InputModel InputModel { get; set; } = new();
 
     public bool Linked { get; set; } = false;
@@ -76,7 +76,7 @@
 
     private async Task ValidSubmitForm()
     {
-        var request = _httpContextAccessor.HttpContext.Request;
+        var request = HttpContextAccessor.HttpContext.Request;
 
         string redirectUrl = await Mediator.Send(new GetOAuthRedirectQuery($"{request.Scheme}://{request.Host}", InputModel.ClientId, InputModel.ClientSecret, InputModel.BusinessProfileId));
 
