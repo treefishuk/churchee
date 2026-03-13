@@ -63,12 +63,12 @@ namespace Churchee.Infrastructure.SassCompilation.tools
             var assembly = typeof(EmbeddedFileHelper).Assembly;
 
             // Remove the namespace prefix, keep the real file name
-            string relativeName = resource.Substring(ScssResourcePathPrefix.Replace("\\", ".").Length + 1);
+            string relativeName = resource[(ScssResourcePathPrefix.Replace("\\", ".").Length + 1)..];
 
             // Only replace dots in folder path, not in file name
             int lastDotIndex = relativeName.LastIndexOf('.');
-            string folderPath = lastDotIndex > 0 ? relativeName.Substring(0, lastDotIndex) : relativeName;
-            string fileName = lastDotIndex > 0 ? relativeName.Substring(lastDotIndex + 1) : "";
+            string folderPath = lastDotIndex > 0 ? relativeName[..lastDotIndex] : relativeName;
+            string fileName = lastDotIndex > 0 ? relativeName[(lastDotIndex + 1)..] : "";
 
             string folderPathClean = folderPath.Replace('.', Path.DirectorySeparatorChar);
             string fullPath = Path.Combine(bootstrapPath, folderPathClean + (string.IsNullOrEmpty(fileName) ? "" : "." + fileName));
@@ -115,14 +115,14 @@ namespace Churchee.Infrastructure.SassCompilation.tools
             var assembly = typeof(EmbeddedFileHelper).Assembly;
 
             // Remove the prefix
-            string relativeName = resource.Substring(prefix.Length + 1);
+            string relativeName = resource[(prefix.Length + 1)..];
 
             string fullPath;
 
             if (relativeName.StartsWith("src."))
             {
                 // Remove the "src." part and put under src folder
-                string filePath = relativeName.Substring(4);
+                string filePath = relativeName[4..];
                 fullPath = Path.Combine(tempDir, "src", filePath);
             }
             else
@@ -135,6 +135,26 @@ namespace Churchee.Infrastructure.SassCompilation.tools
             await using var stream = assembly.GetManifestResourceStream(resource) ?? throw new InvalidOperationException($"Resource '{resource}' not found.");
             using var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write);
             await stream.CopyToAsync(fs);
+
+            fs.Close();
+
+            if (relativeName == "sass")
+            {
+                await NormalizeShebangAsync(fullPath);
+            }
+        }
+
+
+        private static async Task NormalizeShebangAsync(string fullPath)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return;
+            }
+
+            string[] lines = await File.ReadAllLinesAsync(fullPath);
+            lines[0] = lines[0].Replace("\r", "");
+            await File.WriteAllLinesAsync(fullPath, lines);
         }
     }
 }
