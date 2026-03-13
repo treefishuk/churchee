@@ -139,7 +139,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
             await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task<GoogleReviewsResponse> GetReviews(HttpClient client, string accountId, string locationId, CancellationToken cancellationToken)
+        internal async Task<GoogleReviewsResponse> GetReviews(HttpClient client, string accountId, string locationId, CancellationToken cancellationToken)
         {
             string url = $"https://mybusiness.googleapis.com/v4/accounts/{accountId}/locations/{locationId}/reviews";
 
@@ -152,7 +152,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
             return result;
         }
 
-        private async Task<string> GetAccountId(HttpClient httpClient, CancellationToken cancellationToken)
+        internal async Task<string> GetAccountId(HttpClient httpClient, CancellationToken cancellationToken)
         {
             var response = await httpClient.GetAsync("https://mybusinessaccountmanagement.googleapis.com/v1/accounts", cancellationToken);
 
@@ -168,7 +168,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
             return accounts.Accounts.FirstOrDefault()?.Name.Split('/').LastOrDefault() ?? string.Empty;
         }
 
-        private async Task<string> GetLocationId(HttpClient httpClient, string accountId, Guid applicationTenantId, CancellationToken cancellationToken)
+        internal async Task<string> GetLocationId(HttpClient httpClient, string accountId, Guid applicationTenantId, CancellationToken cancellationToken)
         {
             string url = $"https://mybusinessbusinessinformation.googleapis.com/v1/accounts/{accountId}/locations?readMask=name,title";
 
@@ -191,7 +191,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
         }
 
 
-        private async Task ConvertImageToLocalImage(Review review, CancellationToken cancellationToken)
+        internal async Task ConvertImageToLocalImage(Review review, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(review.ReviewerImageUrl))
             {
