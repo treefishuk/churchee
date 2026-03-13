@@ -19,8 +19,5 @@ namespace Churchee.Module.Reviews.Features.Queries
         [Display(Name = "Created")]
         [DataType(DataTypes.Date)]
         public DateTime CreatedDate { get; set; }
-
-
-
     }
 }

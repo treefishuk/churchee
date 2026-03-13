@@ -3,7 +3,7 @@ using Churchee.Common.Extensibility;
 using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
 
-namespace Churchee.Module.Site.Registration
+namespace Churchee.Module.Reviews.Registration
 {
     public class MenuRegistration : IMenuRegistration
     {
