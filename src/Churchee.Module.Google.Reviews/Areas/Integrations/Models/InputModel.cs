@@ -8,6 +8,7 @@ namespace Churchee.Module.Google.Reviews.Areas.Integrations.Models
         {
             ClientId = string.Empty;
             ClientSecret = string.Empty;
+            BusinessProfileId = string.Empty;
         }
 
         [Required]

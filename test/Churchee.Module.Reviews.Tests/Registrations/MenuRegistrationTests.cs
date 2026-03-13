@@ -59,7 +59,7 @@ namespace Churchee.Module.Reviews.Tests.Registrations
             mainMenuItem.Path.Should().Be("/management/pages");
             mainMenuItem.Icon.Should().Be("devices");
             mainMenuItem.Order.Should().Be(1);
-            mainMenuItem.Children.Count.Should().Be(10);
+            mainMenuItem.Children.Count.Should().Be(1);
 
             var pagesMenuItem = mainMenuItem.Children[0];
             pagesMenuItem.Name.Should().Be("Reviews");

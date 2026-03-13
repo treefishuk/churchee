@@ -6,6 +6,7 @@ using Churchee.Module.Reviews.Features.Queries;
 using Churchee.Module.Reviews.Specifications;
 using Churchee.Test.Helpers.Validation;
 using Moq;
+using System.Linq.Expressions;
 
 namespace Churchee.Module.Reviews.Tests.Features.Queries.GetListing
 {
@@ -18,7 +19,7 @@ namespace Churchee.Module.Reviews.Tests.Features.Queries.GetListing
         {
             _dataStoreMock = new Mock<IDataStore>();
             _repositoryMock = new Mock<IRepository<Review>>();
-            _repositoryMock.Setup(s => s.GetDataTableResponseAsync(It.IsAny<ReviewTextFilterSpecification>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Expression<Func<Podcast, GetListingQueryResponseItem>>>(), It.IsAny<CancellationToken>()))
+            _repositoryMock.Setup(s => s.GetDataTableResponseAsync(It.IsAny<ReviewTextFilterSpecification>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Expression<Func<Review, GetListingQueryResponseItem>>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DataTableResponse<GetListingQueryResponseItem>()
                 {
                     Data =
