@@ -1,9 +1,12 @@
+using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.Exceptions;
 using Churchee.Module.Google.Reviews.Helpers;
 using Churchee.Module.Google.Reviews.Jobs;
 using Churchee.Module.Reviews.Entities;
+using Churchee.Module.Tokens.Entities;
+using Churchee.Module.Tokens.Specifications;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -171,6 +174,56 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
             result.Should().NotBeNull();
             result.Reviews.Should().NotBeNull();
         }
+
+
+        [Fact]
+        public async Task ExecuteAsync_Calls_SaveChanges_When_Reviews_Returned()
+        {
+            // Arrange
+            var appicationTenantId = Guid.NewGuid();
+
+            string json = JsonSerializer.Serialize(new
+            {
+                reviews = new[]
+                {
+                    new {
+                        name = "reviews/1",
+                        comment = "Great",
+                        starRating = 5,
+                        createTime = DateTime.UtcNow,
+                        reviewer = new { displayName = "Alice", profilePhotoUrl = "https://img" }
+                    }
+                }
+            });
+
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            var mockTokenRepo = new Mock<IRepository<Token>>();
+
+            mockTokenRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<GetTokenByKeySpecification>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Token(Guid.NewGuid(), "google_api_key", "FAKE_KEY"));
+
+            var mockReviewRepo = new Mock<IRepository<Review>>();
+
+            _mockDataStore.Setup(s => s.GetRepository<Review>()).Returns(mockReviewRepo.Object);
+            _mockDataStore.Setup(s => s.GetRepository<Token>()).Returns(mockTokenRepo.Object);
+
+            var client = CreateHttpClientReturning(response);
+
+            _mockClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var job = CreateJob();
+
+            // Act
+            await job.ExecuteAsync(appicationTenantId, CancellationToken.None);
+
+            // Assert
+            _mockDataStore.Verify(b => b.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
 
         [Fact]
         public async Task ConvertImageToLocalImage_UpdatesReviewerImageUrl_OnSuccess()

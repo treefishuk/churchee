@@ -40,7 +40,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
         {
             var tokenRepo = _dataStore.GetRepository<Token>();
 
-            var accessToken = await tokenRepo.ApplySpecification(new GetTokenByKeySpecification(SettingKeys.GoogleReviewsAccessTokenKey.ToString(), applicationTenantId)).FirstOrDefaultAsync(cancellationToken);
+            var accessToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.GoogleReviewsAccessTokenKey.ToString(), applicationTenantId), cancellationToken);
 
             if (accessToken.CreatedDate < DateTime.Now.AddHours(-1))
             {
@@ -51,7 +51,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Value);
 
-            string accountId = await GetAccountId(client, cancellationToken);// _settingStore.GetSettingValue(SettingKeys.BusinessProfileId, applicationTenantId);
+            string accountId = await GetAccountId(client, cancellationToken);
 
             string locationId = await GetLocationId(client, accountId, applicationTenantId, cancellationToken);
 
