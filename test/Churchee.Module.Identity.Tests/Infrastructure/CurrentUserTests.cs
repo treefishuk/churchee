@@ -73,6 +73,51 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         }
 
         [Fact]
+        public async Task GetApplicationTenantName_Should_Return_Value_When_Exists()
+        {
+            // Arrange
+            var claims = new List<Claim>
+            {
+                new("ActiveTenantName", "TestTenantName")
+            };
+
+            var identity = new ClaimsIdentity(claims);
+            var principal = new ClaimsPrincipal(identity);
+            var context = new DefaultHttpContext { User = principal };
+
+            _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
+            _mockUserManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser(Guid.NewGuid(), "userName", "no-reply@churchee.com"));
+            _mockUserManager.Setup(x => x.GetClaimsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(claims);
+
+            // Act
+            string result = await _currentUser.GetApplicationTenantName();
+
+            // Assert
+            result.Should().Be("TestTenantName");
+        }
+
+        [Fact]
+        public async Task GetApplicationTenantName_Should_Return_Null_When_Claim_Does_Not_Exist()
+        {
+            // Arrange
+            var claims = new List<Claim>();
+
+            var identity = new ClaimsIdentity(claims);
+            var principal = new ClaimsPrincipal(identity);
+            var context = new DefaultHttpContext { User = principal };
+
+            _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
+            _mockUserManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser(Guid.NewGuid(), "userName", "no-reply@churchee.com"));
+            _mockUserManager.Setup(x => x.GetClaimsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(claims);
+
+            // Act
+            string result = await _currentUser.GetApplicationTenantName();
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
         public void HasFeature_Should_Return_True_When_Feature_Claim_Exists()
         {
             // Arrange
@@ -174,6 +219,30 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
 
             // Assert
             result.Should().BeFalse();
+        }
+
+        [Fact]
+        public void GetUserId_Return_String_When_Exists()
+        {
+            // Arrange
+            var userId = Guid.NewGuid().ToString();
+
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, userId)
+            };
+
+            var identity = new ClaimsIdentity(claims);
+            var principal = new ClaimsPrincipal(identity);
+            var context = new DefaultHttpContext { User = principal };
+
+            _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
+
+            // Act
+            string result = _currentUser.GetUserId();
+
+            // Assert
+            result.Should().Be(userId);
         }
     }
 }
