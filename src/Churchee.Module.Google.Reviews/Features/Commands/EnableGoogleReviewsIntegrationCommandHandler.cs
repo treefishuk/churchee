@@ -20,13 +20,19 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
         private readonly ICurrentUser _currentUser;
         private readonly IDataStore _dataStore;
         private readonly IJobService _jobShedularService;
+        public IAuthorizationCodeFlow Flow { get; set; }
 
-        public EnableGoogleReviewsIntegrationCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore, IJobService jobShedularService)
+        public EnableGoogleReviewsIntegrationCommandHandler(ISettingStore settingStore, ICurrentUser currentUser, IDataStore dataStore, IJobService jobShedularService, IAuthorizationCodeFlow authorizationFlow = null)
         {
             _settingStore = settingStore;
             _currentUser = currentUser;
             _dataStore = dataStore;
             _jobShedularService = jobShedularService;
+
+            if (authorizationFlow != null)
+            {
+                Flow = authorizationFlow;
+            }
         }
 
         public async Task<CommandResponse> Handle(EnableGoogleReviewsIntegrationCommand request, CancellationToken cancellationToken)
@@ -39,18 +45,21 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
 
             string redirectUri = $"{request.Domain}/management/integrations/google-reviews/auth";
 
-            var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+            if (Flow == null)
             {
-                ClientSecrets = new ClientSecrets
+                var Flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
                 {
-                    ClientId = clientId,
-                    ClientSecret = clientSecret
-                },
-                Scopes = ["https://www.googleapis.com/auth/business.manage"],
-                Prompt = "consent"
-            });
+                    ClientSecrets = new ClientSecrets
+                    {
+                        ClientId = clientId,
+                        ClientSecret = clientSecret
+                    },
+                    Scopes = ["https://www.googleapis.com/auth/business.manage"],
+                    Prompt = "consent"
+                });
+            }
 
-            var tokenResponse = await flow.ExchangeCodeForTokenAsync(
+            var tokenResponse = await Flow.ExchangeCodeForTokenAsync(
                 userId: userId,
                 code: request.Code,
                 redirectUri: redirectUri,

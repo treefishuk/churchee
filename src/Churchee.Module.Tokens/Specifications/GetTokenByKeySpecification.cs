@@ -8,6 +8,8 @@ namespace Churchee.Module.Tokens.Specifications
     {
         public GetTokenByKeySpecification(string key, Guid applicationTenantId)
         {
+            Key = key;
+
             Query.IgnoreQueryFilters();
 
             Query.Where(x => x.Key == key && x.ApplicationTenantId == applicationTenantId).AsNoTracking();
@@ -15,8 +17,12 @@ namespace Churchee.Module.Tokens.Specifications
 
         public GetTokenByKeySpecification(string key)
         {
+            Key = key;
+
             Query.Where(x => x.Key == key).AsNoTracking();
         }
+
+        public string Key { get; }
 
     }
 }
