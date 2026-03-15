@@ -20,8 +20,6 @@ namespace Churchee.Module.Reviews.Features.Queries
         {
             var repo = _storage.GetRepository<Review>();
 
-            var now = DateTime.Now;
-
             var dataTableResponse = await repo.GetDataTableResponseAsync(
                 specification: new ReviewTextFilterSpecification(request.SearchText),
                 orderBy: request.OrderBy,

@@ -47,7 +47,7 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
 
             if (Flow == null)
             {
-                var Flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+                Flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
                 {
                     ClientSecrets = new ClientSecrets
                     {

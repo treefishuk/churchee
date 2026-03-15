@@ -1,6 +1,6 @@
 ﻿namespace Churchee.Module.Google.Reviews.Exceptions
 {
-    internal class GoogleReviewSyncException : Exception
+    public class GoogleReviewSyncException : Exception
     {
         public GoogleReviewSyncException()
         {

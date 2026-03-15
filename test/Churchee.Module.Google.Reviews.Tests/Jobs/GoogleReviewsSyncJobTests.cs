@@ -8,6 +8,7 @@ using Churchee.Module.Reviews.Entities;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
 using Churchee.Test.Helpers.Validation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
@@ -27,13 +28,21 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
 
         private GoogleReviewsSyncJob CreateJob()
         {
+            // Mock configuration
+            var inMemorySettings = new Dictionary<string, string?>();
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
+
             return new GoogleReviewsSyncJob(
                 _mockDataStore.Object,
                 _mockClientFactory.Object,
                 _mockSettingStore.Object,
                 _mockImageProcessor.Object,
                 _mockBlobStore.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                configuration);
         }
 
         private static HttpClient CreateHttpClientReturning(HttpResponseMessage response)

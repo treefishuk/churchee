@@ -11,6 +11,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -25,8 +26,11 @@ namespace Churchee.Module.Google.Reviews.Jobs
         private readonly IImageProcessor _imageProcessor;
         private readonly IBlobStore _blobStore;
         private readonly ILogger _logger;
+        private readonly string _mybusinessaccountmanagementUri;
+        private readonly string _mybusinessbusinessinformationUri;
+        private readonly string _mybusinessUri;
 
-        public GoogleReviewsSyncJob(IDataStore dataStore, IHttpClientFactory clientFactory, ISettingStore settingStore, IImageProcessor imageProcessor, IBlobStore blobStore, ILogger<GoogleReviewsSyncJob> logger)
+        public GoogleReviewsSyncJob(IDataStore dataStore, IHttpClientFactory clientFactory, ISettingStore settingStore, IImageProcessor imageProcessor, IBlobStore blobStore, ILogger<GoogleReviewsSyncJob> logger, IConfiguration configuration)
         {
             _dataStore = dataStore;
             _clientFactory = clientFactory;
@@ -34,10 +38,18 @@ namespace Churchee.Module.Google.Reviews.Jobs
             _imageProcessor = imageProcessor;
             _blobStore = blobStore;
             _logger = logger;
+
+            var googleSection = configuration.GetSection("Google");
+
+            _mybusinessaccountmanagementUri = googleSection.GetValue<string>("mybusinessaccountmanagementUri");
+            _mybusinessbusinessinformationUri = googleSection.GetValue<string>("mybusinessbusinessinformationUri");
+            _mybusinessUri = googleSection.GetValue<string>("mybusinessUri");
+
         }
 
         public async Task ExecuteAsync(Guid applicationTenantId, CancellationToken cancellationToken)
         {
+
             var tokenRepo = _dataStore.GetRepository<Token>();
 
             var accessToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.GoogleReviewsAccessTokenKey.ToString(), applicationTenantId), cancellationToken);
@@ -96,7 +108,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             if (!success)
             {
-                throw new Exception("Failed to refresh Google access token.");
+                throw new GoogleReviewSyncException("Failed to refresh Google access token.");
             }
 
             var updatedToken = new Token(applicationTenantId, SettingKeys.GoogleReviewsAccessTokenKey.ToString(), credential.Token.AccessToken);
@@ -141,7 +153,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
         internal async Task<GoogleReviewsResponse> GetReviews(HttpClient client, string accountId, string locationId, CancellationToken cancellationToken)
         {
-            string url = $"https://mybusiness.googleapis.com/v4/accounts/{accountId}/locations/{locationId}/reviews";
+            string url = $"{_mybusinessUri}accounts/{accountId}/locations/{locationId}/reviews";
 
             var response = await client.GetAsync(url, cancellationToken);
 
@@ -154,7 +166,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
         internal async Task<string> GetAccountId(HttpClient httpClient, CancellationToken cancellationToken)
         {
-            var response = await httpClient.GetAsync("https://mybusinessaccountmanagement.googleapis.com/v1/accounts", cancellationToken);
+            var response = await httpClient.GetAsync($"{_mybusinessaccountmanagementUri}accounts", cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -170,7 +182,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
         internal async Task<string> GetLocationId(HttpClient httpClient, string accountId, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            string url = $"https://mybusinessbusinessinformation.googleapis.com/v1/accounts/{accountId}/locations?readMask=name,title";
+            string url = $"{_mybusinessbusinessinformationUri}accounts/{accountId}/locations?readMask=name,title";
 
             var response = await httpClient.GetAsync(url, cancellationToken);
 
@@ -189,7 +201,6 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             return locationsResponse.Locations.FirstOrDefault(f => f.Name == match)?.Name.Split('/').LastOrDefault() ?? string.Empty;
         }
-
 
         internal async Task ConvertImageToLocalImage(Review review, CancellationToken cancellationToken)
         {
