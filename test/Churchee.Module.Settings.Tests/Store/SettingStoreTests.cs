@@ -339,5 +339,10 @@ namespace Churchee.Module.Settings.Tests.Store
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
