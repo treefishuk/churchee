@@ -54,5 +54,10 @@ namespace Churchee.Module.Identity.Infrastructure
         {
             return _httpContextAccessor.HttpContext.User.IsInRole(roleName) || _httpContextAccessor.HttpContext.User.IsInRole("SysAdmin");
         }
+
+        public string GetUserId()
+        {
+            return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
     }
 }

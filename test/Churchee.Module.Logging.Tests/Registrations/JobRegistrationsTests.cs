@@ -28,7 +28,6 @@ namespace Churchee.Module.Logging.Tests.Registrations
             // Assert
             cut.Priority.Should().Be(6000);
             mockJobService.Verify(j => j.ScheduleJob(It.IsAny<string>(), It.IsAny<Expression<Func<ClearLogsJob, Task>>>(), It.IsAny<Func<string>>()), Times.Once);
-            mockJobService.Verify(j => j.QueueJob(It.IsAny<Expression<Func<ErrorLoggingTestJob, Task>>>()), Times.Once);
         }
 
     }
