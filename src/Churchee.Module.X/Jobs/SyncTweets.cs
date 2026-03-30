@@ -83,24 +83,22 @@ namespace Churchee.Module.X.Jobs
 
         private static void ThrowXSyncException(HttpResponseMessage response)
         {
+            const string unknown = "unknown";
+
             string remaining = response.Headers.TryGetValues("x-rate-limit-remaining", out var remainingVals)
-                ? remainingVals.FirstOrDefault() ?? "unknown"
-                : "unknown";
+                ? remainingVals.FirstOrDefault() ?? unknown
+                : unknown;
 
             string resetRaw = response.Headers.TryGetValues("x-rate-limit-reset", out var resetVals)
-                ? resetVals.FirstOrDefault() ?? "unknown"
-                : "unknown";
+                ? resetVals.FirstOrDefault() ?? unknown
+                : unknown;
 
-            string reset = "unknown";
+            string reset = unknown;
 
-            if (!string.IsNullOrEmpty(resetRaw) && long.TryParse(resetRaw, out long unix))
+            if (long.TryParse(resetRaw, out long unix))
             {
                 var dt = DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
                 reset = $"{resetRaw} (UTC {dt:yyyy-MM-dd HH:mm:ss})";
-            }
-            else if (!string.IsNullOrEmpty(resetRaw))
-            {
-                reset = resetRaw;
             }
 
             throw new XSyncException($"Failed To Get Tweets. Response code: {response.StatusCode}. x-rate-limit-remaining: {remaining}. x-rate-limit-reset: {reset}");
