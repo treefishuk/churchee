@@ -214,6 +214,8 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
             if (facebookEventResult.EndTime != null)
             {
+                facebookEventResult.EndTime.Value.ToUniversalTime();
+
                 var endUtc = (facebookEventResult.EndTime?.Kind == DateTimeKind.Utc ? facebookEventResult.EndTime : facebookEventResult.EndTime?.ToUniversalTime()) ?? DateTime.UtcNow;
 
                 var endTime = (timezone == TimeZoneInfo.Utc) ? endUtc : TimeZoneInfo.ConvertTimeFromUtc(endUtc, timezone);

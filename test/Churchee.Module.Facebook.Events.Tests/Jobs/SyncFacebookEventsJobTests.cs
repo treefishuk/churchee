@@ -419,8 +419,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var eventData = new FacebookEventResult
             {
                 Id = "1",
-                StartTime = new DateTime(2026, 03, 31, 15, 0, 0).ToUniversalTime(),
-                EndTime = new DateTime(2026, 03, 31, 17, 0, 0).ToUniversalTime(),
+                StartTime = new DateTime(2026, 03, 31, 14, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(2026, 03, 31, 16, 0, 0, DateTimeKind.Utc),
             };
 
             var existingDate = new EventDate();
@@ -451,8 +451,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var eventData = new FacebookEventResult
             {
                 Id = "1",
-                StartTime = new DateTime(2026, 03, 31, 15, 0, 0).ToUniversalTime(),
-                EndTime = new DateTime(2026, 03, 31, 17, 0, 0).ToUniversalTime(),
+                StartTime = new DateTime(2026, 03, 31, 15, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(2026, 03, 31, 17, 0, 0, DateTimeKind.Utc),
             };
 
             var existingDate = new EventDate();
@@ -480,8 +480,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var eventData = new FacebookEventResult
             {
                 Id = "1",
-                StartTime = new DateTime(2026, 03, 31, 15, 0, 0).ToUniversalTime(),
-                EndTime = new DateTime(2026, 03, 31, 17, 0, 0).ToUniversalTime(),
+                StartTime = new DateTime(2026, 03, 31, 15, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(2026, 03, 31, 17, 0, 0, DateTimeKind.Utc),
             };
 
             var existingDate = new EventDate();
