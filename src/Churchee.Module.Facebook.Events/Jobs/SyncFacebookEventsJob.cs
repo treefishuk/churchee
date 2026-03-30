@@ -191,21 +191,35 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
             var date = await eventDateRepo.FirstOrDefaultAsync(new EventDatesForEventSpecification(eventId), cancellationToken);
 
-            var startTime = TimeZoneInfo.ConvertTimeFromUtc(facebookEventResult.StartTime ?? DateTime.UtcNow, timezone);
+            if (date == null)
+            {
+                date = new EventDate
+                {
+                    EventId = eventId
+                };
+
+                eventDateRepo.Create(date);
+            }
+
+            var startUtc = (facebookEventResult.StartTime?.Kind == DateTimeKind.Utc ? facebookEventResult.StartTime : facebookEventResult.StartTime?.ToUniversalTime()) ?? DateTime.UtcNow;
+
+            var startTime = (timezone == TimeZoneInfo.Utc) ? startUtc : TimeZoneInfo.ConvertTimeFromUtc(startUtc, timezone);
 
             if (date.Start == startTime && facebookEventResult.EndTime == null)
             {
                 return;
             }
 
-            if (facebookEventResult.EndTime != null)
-            {
-                var endTime = TimeZoneInfo.ConvertTimeFromUtc(facebookEventResult.EndTime ?? DateTime.UtcNow, timezone);
-                date.End = endTime;
-            }
-
             date.Start = startTime;
 
+            if (facebookEventResult.EndTime != null)
+            {
+                var endUtc = (facebookEventResult.EndTime?.Kind == DateTimeKind.Utc ? facebookEventResult.EndTime : facebookEventResult.EndTime?.ToUniversalTime()) ?? DateTime.UtcNow;
+
+                var endTime = (timezone == TimeZoneInfo.Utc) ? endUtc : TimeZoneInfo.ConvertTimeFromUtc(endUtc, timezone);
+
+                date.End = endTime;
+            }
         }
 
         private async Task ConvertImageToLocalImage(Event facebookEvent, string facebookImageUrl, Guid applicationTenantId, CancellationToken cancellationToken)

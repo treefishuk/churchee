@@ -204,6 +204,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_FeedItems_EventStories_ExistingEvent_UpdatesEvent_NoImageChange()
         {
             // Arrange
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
+
             var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
@@ -277,6 +279,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_FeedItems_EventStories_ExistingEvent_UpdatesEvent_ImageChange()
         {
             // Arrange
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
+
             var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
@@ -415,8 +419,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var eventData = new FacebookEventResult
             {
                 Id = "1",
-                StartTime = new DateTime(2026, 03, 31, 14, 0, 0),
-                EndTime = new DateTime(2026, 03, 31, 16, 0, 0),
+                StartTime = new DateTime(2026, 03, 31, 15, 0, 0).ToUniversalTime(),
+                EndTime = new DateTime(2026, 03, 31, 17, 0, 0).ToUniversalTime(),
             };
 
             var existingDate = new EventDate();
@@ -447,8 +451,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var eventData = new FacebookEventResult
             {
                 Id = "1",
-                StartTime = new DateTime(2026, 03, 31, 14, 0, 0),
-                EndTime = new DateTime(2026, 03, 31, 16, 0, 0),
+                StartTime = new DateTime(2026, 03, 31, 15, 0, 0).ToUniversalTime(),
+                EndTime = new DateTime(2026, 03, 31, 17, 0, 0).ToUniversalTime(),
             };
 
             var existingDate = new EventDate();
@@ -476,8 +480,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var eventData = new FacebookEventResult
             {
                 Id = "1",
-                StartTime = new DateTime(2026, 03, 31, 14, 0, 0),
-                EndTime = new DateTime(2026, 03, 31, 16, 0, 0),
+                StartTime = new DateTime(2026, 03, 31, 15, 0, 0).ToUniversalTime(),
+                EndTime = new DateTime(2026, 03, 31, 17, 0, 0).ToUniversalTime(),
             };
 
             var existingDate = new EventDate();
