@@ -3,7 +3,7 @@ using Churchee.Module.Events.Entities;
 
 namespace Churchee.Module.Events.Specifications
 {
-    internal class EventDatesForEventSpecification : Specification<EventDate>
+    public class EventDatesForEventSpecification : Specification<EventDate>
     {
         public EventDatesForEventSpecification(Guid eventId)
         {

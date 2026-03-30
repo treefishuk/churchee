@@ -20,7 +20,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Helpers
         public void Read_ParsesIso8601String_AsDateTime()
         {
             // Arrange
-            var json = "\"2024-05-31T14:30:00\"";
+            string json = "\"2024-05-31T14:30:00\"";
             var expected = DateTime.Parse("2024-05-31T14:30:00", new CultureInfo("en-GB"));
 
             // Act
@@ -35,10 +35,10 @@ namespace Churchee.Module.Facebook.Events.Tests.Helpers
         {
             // Arrange
             var date = new DateTime(2024, 5, 31, 14, 30, 0);
-            var expected = $"\"{date}\"";
+            string expected = $"\"{date}\"";
 
             // Act
-            var json = JsonSerializer.Serialize(date, _options);
+            string json = JsonSerializer.Serialize(date, _options);
 
             // Assert
             Assert.Equal(expected, json);
@@ -48,7 +48,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Helpers
         public void Read_ThrowsFormatException_OnInvalidDate()
         {
             // Arrange
-            var json = "\"not-a-date\"";
+            string json = "\"not-a-date\"";
 
             // Act & Assert
             Assert.Throws<FormatException>(() =>
