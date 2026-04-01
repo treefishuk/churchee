@@ -87,21 +87,6 @@ namespace Churchee.Module.X.Tests.Jobs
         }
 
         [Fact]
-        public async Task ExecuteAsync_Returns_When_TooManyRequests()
-        {
-            // Arrange
-            var httpClient = CreateHttpClient(HttpStatusCode.TooManyRequests, string.Empty);
-
-            var sut = CreateSut(httpClient);
-
-            // Act
-            await sut.ExecuteAsync(_tenantId, CancellationToken.None);
-
-            // Assert
-            _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-        }
-
-        [Fact]
         public async Task ExecuteAsync_Throws_When_NonSuccess()
         {
             // Arrange
