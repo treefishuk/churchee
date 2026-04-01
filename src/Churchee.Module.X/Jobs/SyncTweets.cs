@@ -43,14 +43,9 @@ namespace Churchee.Module.X.Jobs
 
             var response = await httpClient.GetAsync(getTweetsUrl, cancellationToken);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-            {
-                return;
-            }
-
             if (!response.IsSuccessStatusCode)
             {
-                throw new XSyncException($"Failed To Get Tweets. Response code: {response.StatusCode}");
+                ThrowXSyncException(response);
             }
 
             string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -79,6 +74,29 @@ namespace Churchee.Module.X.Jobs
             }
 
             await _dataStore.SaveChangesAsync(cancellationToken);
+        }
+
+        private static void ThrowXSyncException(HttpResponseMessage response)
+        {
+            const string unknown = "unknown";
+
+            string remaining = response.Headers.TryGetValues("x-rate-limit-remaining", out var remainingVals)
+                ? remainingVals.FirstOrDefault() ?? unknown
+                : unknown;
+
+            string resetRaw = response.Headers.TryGetValues("x-rate-limit-reset", out var resetVals)
+                ? resetVals.FirstOrDefault() ?? unknown
+                : unknown;
+
+            string reset = unknown;
+
+            if (long.TryParse(resetRaw, out long unix))
+            {
+                var dt = DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
+                reset = $"{resetRaw} (UTC {dt:yyyy-MM-dd HH:mm:ss})";
+            }
+
+            throw new XSyncException($"Failed To Get Tweets. Response code: {response.StatusCode}. x-rate-limit-remaining: {remaining}. x-rate-limit-reset: {reset}");
         }
 
         private async Task<string> GetTweetsUrl(string userId, Guid applicationTenantId, CancellationToken cancellationToken)

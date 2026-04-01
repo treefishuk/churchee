@@ -4,6 +4,7 @@ using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
+using Churchee.Module.Events.Specifications;
 using Churchee.Module.Facebook.Events.API;
 using Churchee.Module.Facebook.Events.Jobs;
 using Churchee.Module.Facebook.Events.Specifications;
@@ -32,6 +33,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
 
         private readonly Mock<IRepository<Token>> tokenRepoMock = new();
         private readonly Mock<IRepository<Event>> eventRepoMock = new();
+        private readonly Mock<IRepository<EventDate>> eventDateRepoMock = new();
         private readonly Mock<IRepository<PageType>> pageTypeRepoMock = new();
         private readonly Mock<IRepository<Page>> pageRepoMock = new();
 
@@ -45,6 +47,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             _dataStore.Setup(x => x.GetRepository<Event>()).Returns(eventRepoMock.Object);
             _dataStore.Setup(x => x.GetRepository<PageType>()).Returns(pageTypeRepoMock.Object);
             _dataStore.Setup(x => x.GetRepository<Page>()).Returns(pageRepoMock.Object);
+            _dataStore.Setup(x => x.GetRepository<EventDate>()).Returns(eventDateRepoMock.Object);
 
             tokenRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<ISpecification<Token>>(), It.IsAny<Expression<Func<Token, string>>>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync("access-token");
@@ -201,6 +204,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_FeedItems_EventStories_ExistingEvent_UpdatesEvent_NoImageChange()
         {
             // Arrange
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
+
             var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
@@ -274,6 +279,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_FeedItems_EventStories_ExistingEvent_UpdatesEvent_ImageChange()
         {
             // Arrange
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
+
             var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
@@ -401,6 +408,96 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public async Task UpdateEventDateTime_UKSetAsTimezone_UsesUKTimeFormat()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+
+            var eventData = new FacebookEventResult
+            {
+                Id = "1",
+                StartTime = new DateTime(2026, 03, 31, 14, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(2026, 03, 31, 16, 0, 0, DateTimeKind.Utc),
+            };
+
+            var existingDate = new EventDate();
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync("Europe/London");
+
+            eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            // Act
+            await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
+
+            // Assert
+            var ukDateStart = new DateTime(2026, 03, 31, 15, 0, 0);
+            var ukDateEnd = new DateTime(2026, 03, 31, 17, 0, 0);
+
+            existingDate.Start.Should().Be(ukDateStart);
+            existingDate.End.Should().Be(ukDateEnd);
+        }
+
+        [Fact]
+        public async Task UpdateEventDateTime_NoTimeZoneSet_UsesUTC()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+
+            var eventData = new FacebookEventResult
+            {
+                Id = "1",
+                StartTime = new DateTime(2026, 03, 31, 15, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(2026, 03, 31, 17, 0, 0, DateTimeKind.Utc),
+            };
+
+            var existingDate = new EventDate();
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
+
+            eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            // Act
+            await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
+
+            // Assert
+            existingDate.Start.Should().Be(eventData.StartTime);
+            existingDate.End.Should().Be(eventData.EndTime);
+        }
+
+        [Fact]
+        public async Task UpdateEventDateTime_EmptyTimeZoneSet_UsesUTC()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+
+            var eventData = new FacebookEventResult
+            {
+                Id = "1",
+                StartTime = new DateTime(2026, 03, 31, 15, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(2026, 03, 31, 17, 0, 0, DateTimeKind.Utc),
+            };
+
+            var existingDate = new EventDate();
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync(string.Empty);
+
+            eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            // Act
+            await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
+
+            // Assert
+            existingDate.Start.Should().Be(eventData.StartTime);
+            existingDate.End.Should().Be(eventData.EndTime);
         }
 
     }
