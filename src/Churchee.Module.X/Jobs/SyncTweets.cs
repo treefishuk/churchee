@@ -43,11 +43,6 @@ namespace Churchee.Module.X.Jobs
 
             var response = await httpClient.GetAsync(getTweetsUrl, cancellationToken);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-            {
-                return;
-            }
-
             if (!response.IsSuccessStatusCode)
             {
                 ThrowXSyncException(response);
