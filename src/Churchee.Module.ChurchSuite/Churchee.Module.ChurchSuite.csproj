@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\churchee-internal\src\Churchee.Presentation.Sites\Churchee.Presentation.Sites.csproj" />
+    <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+    <ProjectReference Include="..\Churchee.Module.Events\Churchee.Module.Events.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(MSBuildProjectName).Tests" />
+  </ItemGroup>
+	
+</Project>
