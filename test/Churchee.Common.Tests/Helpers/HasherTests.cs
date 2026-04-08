@@ -22,10 +22,7 @@
 
                 // expected: SHA256 of the whole data
                 string expected;
-                using (var sha = SHA256.Create())
-                {
-                    expected = Convert.ToHexString(sha.ComputeHash(data));
-                }
+                expected = Convert.ToHexString(SHA256.HashData(data));
 
                 string result = await Hasher.HashFirst64KbAsync(ms, ct);
 
@@ -52,10 +49,7 @@
 
                 // expected: SHA256 of the first 64 KB
                 string expected;
-                using (var sha = SHA256.Create())
-                {
-                    expected = Convert.ToHexString(sha.ComputeHash(first));
-                }
+                expected = Convert.ToHexString(SHA256.HashData(first));
 
                 string result = await Hasher.HashFirst64KbAsync(ms, ct);
 
@@ -70,10 +64,8 @@
                 var ct = CancellationToken.None;
 
                 string expected;
-                using (var sha = SHA256.Create())
-                {
-                    expected = Convert.ToHexString(sha.ComputeHash(Array.Empty<byte>()));
-                }
+
+                expected = Convert.ToHexString(SHA256.HashData([]));
 
                 string result = await Hasher.HashFirst64KbAsync(ms, ct);
 
