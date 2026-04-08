@@ -17,10 +17,10 @@ namespace Churchee.Module.ChurchSuite.API
         public string Name { get; set; }
 
         [JsonPropertyName("datetime_start")]
-        public string DatetimeStart { get; set; }
+        public DateTime DatetimeStart { get; set; }
 
         [JsonPropertyName("datetime_end")]
-        public string DatetimeEnd { get; set; }
+        public DateTime DatetimeEnd { get; set; }
 
         [JsonPropertyName("description")]
         public string Description { get; set; }
@@ -40,8 +40,9 @@ namespace Churchee.Module.ChurchSuite.API
         [JsonPropertyName("capacity")]
         public int? Capacity { get; set; }
 
-        //[JsonPropertyName("images")]
-        //public Images Images { get; set; }
+        [JsonConverter(typeof(ImagesConverter))]
+        [JsonPropertyName("images")]
+        public Images Images { get; set; }
 
         [JsonPropertyName("location")]
         public Location Location { get; set; }

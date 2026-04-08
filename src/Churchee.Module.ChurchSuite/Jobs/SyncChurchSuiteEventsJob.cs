@@ -4,18 +4,20 @@ using Churchee.Common.Helpers;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.ChurchSuite.API;
+using Churchee.Module.ChurchSuite.Events.Helpers;
+using Churchee.Module.ChurchSuite.Events.Specifications;
+using Churchee.Module.ChurchSuite.Helpers;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Site.Specifications;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 using System.Text.Json;
 
 namespace Churchee.Module.ChurchSuite.Jobs
 {
-    public class SyncChurchSuiteEventsJob : IJob
+    public partial class SyncChurchSuiteEventsJob : IJob
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly ISettingStore _settingStore;
@@ -32,7 +34,10 @@ namespace Churchee.Module.ChurchSuite.Jobs
             _settingStore = settingStore;
             _dataStore = dataStore;
             _blobStore = blobStore;
-            _jsonSerializerOptions = new JsonSerializerOptions();
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                Converters = { new ChurchSuiteDateTimeConverter() }
+            };
             _jobShedularService = jobShedularService;
             _imageProcessor = imageProcessor;
             _logger = logger;
@@ -60,55 +65,112 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             await ProcessGrouping(applicationTenantId, grouped, parentSlug, parentId, pageTypeId, repo, cancellationToken);
 
-            await _dataStore.SaveChangesAsync(cancellationToken);
-
         }
 
         private async Task ProcessGrouping(Guid applicationTenantId, IEnumerable<IGrouping<Grouping, ApiResponse>> grouped, string parentSlug, Guid? parentId, Guid pageTypeId, Common.Abstractions.Storage.IRepository<Event> repo, CancellationToken cancellationToken)
         {
             foreach (var item in grouped)
             {
-                var newEvent = new Event.Builder()
-                     .SetApplicationTenantId(applicationTenantId)
-                     .SetParentId(parentId)
-                     .SetParentSlug(parentSlug)
-                     .SetPageTypeId(pageTypeId)
-                     .SetSourceName("ChurchSuite")
-                     .SetSourceId("N/A")
-                     .SetTitle(item.Key.Name)
-                     .SetDescription(item.Key.Name + " at " + item.Key.Location.Address)
-                     .SetContent(item.Key.Description)
-                     .SetLocationName(item.Key.Location.Address)
-                     .SetLatitude(item.Key.Location.Latitude == null ? null : Convert.ToDecimal(item.Key.Location.Latitude.Value))
-                     .SetLongitude(item.Key.Location.Longitude == null ? null : Convert.ToDecimal(item.Key.Location.Longitude.Value))
-                     .SetImageUrl(item.Key.Images.Large.Url)
-                     .SetPublished(true)
-                     .Build();
 
-                foreach (var date in item.Where(w => !string.IsNullOrEmpty(w.DatetimeStart)))
+                string sourceId = (item.Key.Sequence ?? 0).ToString();
+
+                var dbEvent = await repo.FirstOrDefaultAsync(new GetEventByChurchSuiteSequenceSpecification(sourceId), cancellationToken);
+
+                if (dbEvent == null)
                 {
-                    var start = DateTime.ParseExact(date.DatetimeStart, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-
-                    if (date.DatetimeEnd == null)
-                    {
-                        newEvent.AddDate(Guid.NewGuid(), start, null);
-                        continue;
-                    }
-
-                    var end = DateTime.ParseExact(date.DatetimeEnd, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-
-                    newEvent.AddDate(Guid.NewGuid(), start, end);
+                    await CreateNewEvent(applicationTenantId, parentSlug, parentId, pageTypeId, repo, item, sourceId, cancellationToken);
+                }
+                else
+                {
+                    await UpdateEvent(item, dbEvent, applicationTenantId, cancellationToken);
                 }
 
-                await ConvertImageToLocalImage(newEvent, newEvent.ImageUrl, applicationTenantId, cancellationToken);
-
-                SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore.GetRepository<Event>());
-
-                repo.Create(newEvent);
             }
         }
 
-        private async Task<IEnumerable<IGrouping<Grouping, ApiResponse>>> GetGroupedData(Guid applicationTenantId)
+        private async Task UpdateEvent(IGrouping<Grouping, ApiResponse> item, Event dbEvent, Guid applicationTenantId, CancellationToken cancellationToken)
+        {
+            dbEvent.UpdateInformation(item.Key.Name ?? dbEvent.Title, dbEvent.Description, item.Key.Description ?? dbEvent.Description);
+            dbEvent.UpdateLocation(item.Key.LocationName ?? dbEvent.LocationName, null, item.Key.LocationAddress ?? dbEvent.Street, string.Empty, string.Empty, item.Key.LocationLatitude, item.Key.LocationLongitude);
+
+            string imageUrl = item.Key.ImageLargeUrl;
+
+            await ConvertImageToLocalImage(dbEvent, imageUrl, applicationTenantId, cancellationToken);
+
+            var churchSuiteDates = item.Select(s => new { Start = s.DatetimeStart, End = s.DatetimeEnd, BookingUrl = s.SignupOptions.SignupEnabled == "1" ? s.SignupOptions.Tickets.Url : null }).ToList();
+
+            var datesToAdd = churchSuiteDates.Where(ed => !dbEvent.EventDates.Any(a => a.Start.Value.Date != ed.Start.Date)).ToList();
+
+            var datesToRemove = dbEvent.EventDates.Where(ed => !churchSuiteDates.Any(a => a.Start.Date == ed.Start.Value.Date)).ToList();
+
+            if (datesToAdd.Count == 0 && datesToRemove.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var date in datesToRemove)
+            {
+                dbEvent.EventDates.Remove(date);
+            }
+
+            foreach (var date in datesToAdd)
+            {
+                dbEvent.AddDate(Guid.NewGuid(), date.Start, date.End, date.BookingUrl);
+            }
+
+            try
+            {
+                await _dataStore.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update event {event}", item.Key.Sequence);
+            }
+
+        }
+
+        private async Task CreateNewEvent(Guid applicationTenantId, string parentSlug, Guid? parentId, Guid pageTypeId, Common.Abstractions.Storage.IRepository<Event> repo, IGrouping<Grouping, ApiResponse> item, string sourceId, CancellationToken cancellationToken)
+        {
+            var newEvent = new Event.Builder()
+                 .SetApplicationTenantId(applicationTenantId)
+                 .SetParentId(parentId)
+                 .SetParentSlug(parentSlug)
+                 .SetPageTypeId(pageTypeId)
+                 .SetSourceName("ChurchSuite")
+                 .SetSourceId(sourceId)
+                 .SetTitle(item.Key.Name)
+                 .SetDescription(item.Key.Name + " at " + item.Key.LocationAddress)
+                 .SetContent(item.Key.Description)
+                 .SetLocationName(item.Key.LocationName)
+                 .SetLatitude(item.Key.LocationLatitude == null ? null : Convert.ToDecimal(item.Key.LocationLatitude.Value))
+                 .SetLongitude(item.Key.LocationLongitude == null ? null : Convert.ToDecimal(item.Key.LocationLongitude.Value))
+                 .SetImageUrl(item.Key.ImageLargeUrl)
+                 .SetPublished(true)
+                 .Build();
+
+            foreach (var date in item)
+            {
+                newEvent.AddDate(Guid.NewGuid(), date.DatetimeStart, date.DatetimeEnd);
+            }
+
+            await ConvertImageToLocalImage(newEvent, newEvent.ImageUrl, applicationTenantId, cancellationToken);
+
+            SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore.GetRepository<Event>());
+
+            repo.Create(newEvent);
+
+            try
+            {
+                await _dataStore.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to ceate event {event}", item.Key.Sequence);
+            }
+
+        }
+
+        internal async Task<IEnumerable<IGrouping<Grouping, ApiResponse>>> GetGroupedData(Guid applicationTenantId)
         {
             var result = await GetFeedResult(applicationTenantId);
 
@@ -119,8 +181,12 @@ namespace Churchee.Module.ChurchSuite.Jobs
                 Sequence = x.Sequence,
                 Name = x.Name,
                 Description = x.Description,
-                Location = x.Location//,
-                //Images = x.Images
+                LocationAddress = x.Location.Address,
+                LocationLatitude = x.Location.Latitude == null ? (decimal?)null : Convert.ToDecimal(x.Location.Latitude.Value),
+                LocationLongitude = x.Location.Longitude == null ? (decimal?)null : Convert.ToDecimal(x.Location.Longitude.Value),
+                ImageSmallUrl = x.Images.Small.Url,
+                ImageMediumUrl = x.Images.Medium.Url,
+                ImageLargeUrl = x.Images.Large.Url
             });
 
             return grouped;
@@ -130,7 +196,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
         {
             var client = _clientFactory.CreateClient();
 
-            string churchSuiteUri = await _settingStore.GetSettingValue(Guid.Parse("9d15a41a-3f12-4907-ba9e-495f11d254dc"), tenantId);
+            string churchSuiteUri = await _settingStore.GetSettingValue(Guid.Parse(SettingKeys.ChurchSuiteEventsUrl), tenantId);
 
             string feedJsonString = await client.GetStringAsync(churchSuiteUri);
 
@@ -163,7 +229,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
             {
                 using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
 
-                string friendlyFileName = $"{churchSuiteEvent.Title.Replace(" ", "_")}.webp";
+                string friendlyFileName = $"{churchSuiteEvent.Title.ToURL()}.webp";
 
                 string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, $"/img/events/{friendlyFileName}", webPStream, true, cancellationToken);
 
@@ -180,15 +246,6 @@ namespace Churchee.Module.ChurchSuite.Jobs
                     _logger.LogError(ex, "Error processing churchSuite Event image for event {EventId}", churchSuiteEvent.Id);
                 }
             }
-        }
-
-        private class Grouping
-        {
-            public int? Sequence { get; set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public Location Location { get; set; }
-            public Images Images { get; set; }
         }
     }
 }

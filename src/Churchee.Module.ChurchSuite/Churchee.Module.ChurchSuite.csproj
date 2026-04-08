@@ -1,12 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\..\churchee-internal\src\Churchee.Presentation.Sites\Churchee.Presentation.Sites.csproj" />
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
     <ProjectReference Include="..\Churchee.Module.Events\Churchee.Module.Events.csproj" />
   </ItemGroup>

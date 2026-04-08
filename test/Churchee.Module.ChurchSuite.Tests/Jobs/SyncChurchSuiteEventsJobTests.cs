@@ -67,8 +67,24 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
             var result = await cut.GetFeedResult(tenantId);
 
             result.Count().Should().BeGreaterThan(0);
-
-
         }
+
+
+        [Fact]
+        public async Task GetGroupedData_With_Test_Api_Returns_Data()
+        {
+            // Arrange
+            _settingStore.Setup(x => x.GetSettingValue(It.IsAny<Guid>(), tenantId)).ReturnsAsync("https://demo.churchsuite.com/embed/calendar/json");
+
+            _httpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
+
+            var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
+
+            var result = await cut.GetGroupedData(tenantId);
+
+            result.Count().Should().BeGreaterThan(0);
+        }
+
+
     }
 }

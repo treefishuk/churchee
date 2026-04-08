@@ -55,9 +55,14 @@ namespace Churchee.Module.Events.Entities
 
         public void AddDate(Guid id, DateTime? start, DateTime? end)
         {
+            AddDate(id, start, end, string.Empty);
+        }
+
+        public void AddDate(Guid id, DateTime? start, DateTime? end, string bookingUrl)
+        {
             if (start != null)
             {
-                EventDates.Add(new EventDate { Id = id, Start = start, End = end, EventId = Id, Event = this, Deleted = false });
+                EventDates.Add(new EventDate { Id = id, Start = start, End = end, EventId = Id, Event = this, Deleted = false, BookingUrl = bookingUrl });
             }
         }
 

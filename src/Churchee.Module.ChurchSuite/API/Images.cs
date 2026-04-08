@@ -4,6 +4,15 @@ namespace Churchee.Module.ChurchSuite.API
 {
     public class Images
     {
+
+        public Images()
+        {
+            Thumb = new Image();
+            Small = new Image();
+            Medium = new Image();
+            Large = new Image();
+        }
+
         [JsonPropertyName("thumb")]
         public Image Thumb { get; set; }
 
@@ -16,4 +25,5 @@ namespace Churchee.Module.ChurchSuite.API
         [JsonPropertyName("lg")]
         public Image Large { get; set; }
     }
+
 }

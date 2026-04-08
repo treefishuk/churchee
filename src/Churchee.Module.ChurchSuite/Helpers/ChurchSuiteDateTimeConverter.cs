@@ -3,15 +3,14 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Churchee.Module.Facebook.Events.Helpers
+namespace Churchee.Module.ChurchSuite.Events.Helpers
 {
-    public class DateTimeIso8601JsonConverter : JsonConverter<DateTime>
+    public class ChurchSuiteDateTimeConverter : JsonConverter<DateTime>
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             Debug.Assert(typeToConvert == typeof(DateTime));
-
-            return DateTime.ParseExact(reader.GetString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            return DateTime.Parse(reader.GetString(), new CultureInfo("en-GB"));
         }
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
