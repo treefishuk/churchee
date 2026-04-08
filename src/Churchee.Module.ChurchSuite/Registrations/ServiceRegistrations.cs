@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Churchee.Module.ChurchSuite.Registrations
 {
-    public class JobRegistrations : IConfigureAdminServicesAction
+    public class ServiceRegistrations : IConfigureAdminServicesAction
     {
         public int Priority => 6000;
 

@@ -1,17 +1,13 @@
-﻿using Ardalis.Specification;
-using Churchee.Common.Abstractions.Queue;
+﻿using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
-using Churchee.Module.ChurchSuite.API;
 using Churchee.Module.ChurchSuite.Jobs;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Site.Entities;
-using Churchee.Module.Tokens.Entities;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Linq.Expressions;
 
 namespace Churchee.Module.ChurchSuite.Tests.Jobs
 {
@@ -25,8 +21,6 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
         private readonly Mock<ILogger<SyncChurchSuiteEventsJob>> _logger = new();
         private readonly Mock<IJobService> _jobService = new();
         private readonly Mock<IImageProcessor> _imageProcessor = new();
-
-        private readonly Mock<IRepository<Token>> tokenRepoMock = new();
         private readonly Mock<IRepository<Event>> eventRepoMock = new();
         private readonly Mock<IRepository<EventDate>> eventDateRepoMock = new();
         private readonly Mock<IRepository<PageType>> pageTypeRepoMock = new();
@@ -39,17 +33,11 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
 
             tenantId = Guid.NewGuid();
 
-            _dataStore.Setup(x => x.GetRepository<Token>()).Returns(tokenRepoMock.Object);
             _dataStore.Setup(x => x.GetRepository<Event>()).Returns(eventRepoMock.Object);
             _dataStore.Setup(x => x.GetRepository<PageType>()).Returns(pageTypeRepoMock.Object);
             _dataStore.Setup(x => x.GetRepository<Page>()).Returns(pageRepoMock.Object);
             _dataStore.Setup(x => x.GetRepository<EventDate>()).Returns(eventDateRepoMock.Object);
-
-            tokenRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<ISpecification<Token>>(), It.IsAny<Expression<Func<Token, string>>>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync("access-token");
-
             _settingStore.Setup(x => x.GetSettingValue(It.IsAny<Guid>(), tenantId)).ReturnsAsync("page-id");
-
             _logger.Setup(s => s.IsEnabled(LogLevel.Error)).Returns(true);
 
         }
