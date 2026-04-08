@@ -10,6 +10,8 @@ namespace Churchee.Module.ChurchSuite.API
             // Case B: images: []
             if (reader.TokenType == JsonTokenType.StartArray)
             {
+                using var doc = JsonDocument.ParseValue(ref reader);
+
                 return new Images();
             }
 
