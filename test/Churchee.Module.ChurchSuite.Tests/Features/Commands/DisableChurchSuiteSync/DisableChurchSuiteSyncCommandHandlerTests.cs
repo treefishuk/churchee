@@ -4,7 +4,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.ChurchSuite.Features.Commands.DisableChurchSuiteSync;
 using Moq;
 
-namespace Churchee.Module.ChurchSuite.Tests.Features.DisableChurchSuiteSync
+namespace Churchee.Module.ChurchSuite.Tests.Features.Commands.DisableChurchSuiteSync
 {
     public class DisableChurchSuiteSyncCommandHandlerTests
     {

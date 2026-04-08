@@ -7,7 +7,7 @@ using Churchee.Test.Helpers.Validation;
 using Moq;
 using System.Net;
 
-namespace Churchee.Module.ChurchSuite.Tests.Features.EnableChurchSuiteIntegration
+namespace Churchee.Module.ChurchSuite.Tests.Features.Commands.EnableChurchSuiteIntegration
 {
     public class EnableChurchSuiteIntegrationCommandHandlerTests
     {

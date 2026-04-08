@@ -10,8 +10,6 @@ namespace Churchee.Module.ChurchSuite.API
             // Case B: images: []
             if (reader.TokenType == JsonTokenType.StartArray)
             {
-                // Skip the empty array
-                while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) { }
                 return new Images();
             }
 
@@ -21,6 +19,7 @@ namespace Churchee.Module.ChurchSuite.API
                 var images = new Images();
 
                 using var doc = JsonDocument.ParseValue(ref reader);
+
                 var root = doc.RootElement;
 
                 if (root.TryGetProperty("thumb", out var thumbObj))

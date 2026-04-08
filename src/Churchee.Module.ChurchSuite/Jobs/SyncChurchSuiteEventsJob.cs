@@ -78,7 +78,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
                 if (dbEvent == null)
                 {
-                    await CreateNewEvent(applicationTenantId, parentSlug, parentId, pageTypeId, repo, item, sourceId, cancellationToken);
+                    await CreateNewEvent(applicationTenantId, parentSlug, parentId, pageTypeId, item, sourceId, cancellationToken);
                 }
                 else
                 {
@@ -124,13 +124,15 @@ namespace Churchee.Module.ChurchSuite.Jobs
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to update event {event}", item.Key.Sequence);
+                _logger.LogError(ex, "Failed to update event {Event}", item.Key.Sequence);
             }
 
         }
 
-        private async Task CreateNewEvent(Guid applicationTenantId, string parentSlug, Guid? parentId, Guid pageTypeId, Common.Abstractions.Storage.IRepository<Event> repo, IGrouping<Grouping, ApiResponse> item, string sourceId, CancellationToken cancellationToken)
+        private async Task CreateNewEvent(Guid applicationTenantId, string parentSlug, Guid? parentId, Guid pageTypeId, IGrouping<Grouping, ApiResponse> item, string sourceId, CancellationToken cancellationToken)
         {
+            var repo = _dataStore.GetRepository<Event>();
+
             var newEvent = new Event.Builder()
                  .SetApplicationTenantId(applicationTenantId)
                  .SetParentId(parentId)
@@ -165,7 +167,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to ceate event {event}", item.Key.Sequence);
+                _logger.LogError(ex, "Failed to create event {Event}", item.Key.Sequence);
             }
 
         }
