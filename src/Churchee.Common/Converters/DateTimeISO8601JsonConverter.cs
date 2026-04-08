@@ -1,9 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Churchee.Module.Facebook.Events.Helpers
+namespace Churchee.Common.Converters
 {
     public class DateTimeIso8601JsonConverter : JsonConverter<DateTime>
     {

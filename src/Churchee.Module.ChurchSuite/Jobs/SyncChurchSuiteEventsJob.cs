@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Converters;
 using Churchee.Common.Helpers;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
@@ -36,7 +37,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
             _blobStore = blobStore;
             _jsonSerializerOptions = new JsonSerializerOptions
             {
-                Converters = { new ChurchSuiteDateTimeConverter() }
+                Converters = { new DateTimeIso8601JsonConverter() }
             };
             _jobShedularService = jobShedularService;
             _imageProcessor = imageProcessor;
@@ -95,9 +96,12 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             string imageUrl = item.Key.ImageLargeUrl;
 
-            await ConvertImageToLocalImage(dbEvent, imageUrl, applicationTenantId, cancellationToken);
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                await ConvertImageToLocalImage(dbEvent, imageUrl, applicationTenantId, cancellationToken);
+            }
 
-            var churchSuiteDates = item.Select(s => new { Start = s.DatetimeStart, End = s.DatetimeEnd, BookingUrl = s.SignupOptions.SignupEnabled == "1" ? s.SignupOptions.Tickets.Url : null }).ToList();
+            var churchSuiteDates = item.Select(s => new { Start = s.DatetimeStart, End = s.DatetimeEnd, BookingUrl = s.SignupOptions?.SignupEnabled == "1" ? s.SignupOptions?.Tickets?.Url : null }).ToList();
 
             var datesToAdd = churchSuiteDates.Where(ed => !dbEvent.EventDates.Any(a => a.Start.Value.Date != ed.Start.Date)).ToList();
 
@@ -183,12 +187,12 @@ namespace Churchee.Module.ChurchSuite.Jobs
                 Sequence = x.Sequence,
                 Name = x.Name,
                 Description = x.Description,
-                LocationAddress = x.Location.Address,
-                LocationLatitude = x.Location.Latitude == null ? (decimal?)null : Convert.ToDecimal(x.Location.Latitude.Value),
-                LocationLongitude = x.Location.Longitude == null ? (decimal?)null : Convert.ToDecimal(x.Location.Longitude.Value),
-                ImageSmallUrl = x.Images.Small.Url,
-                ImageMediumUrl = x.Images.Medium.Url,
-                ImageLargeUrl = x.Images.Large.Url
+                LocationAddress = x.Location?.Address,
+                LocationLatitude = x.Location?.Latitude == null ? null : Convert.ToDecimal(x.Location.Latitude.Value),
+                LocationLongitude = x.Location?.Longitude == null ? null : Convert.ToDecimal(x.Location.Longitude.Value),
+                ImageSmallUrl = x.Images?.Small?.Url,
+                ImageMediumUrl = x.Images?.Medium?.Url,
+                ImageLargeUrl = x.Images?.Large?.Url
             });
 
             return grouped;

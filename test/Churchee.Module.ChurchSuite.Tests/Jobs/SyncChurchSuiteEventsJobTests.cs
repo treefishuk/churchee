@@ -2,12 +2,17 @@
 using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
+using Churchee.Module.ChurchSuite.API;
+using Churchee.Module.ChurchSuite.Events.Specifications;
 using Churchee.Module.ChurchSuite.Jobs;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Site.Entities;
+using Churchee.Test.Helpers;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Net;
+using System.Text.Json;
 
 namespace Churchee.Module.ChurchSuite.Tests.Jobs
 {
@@ -72,6 +77,168 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
 
             result.Count().Should().BeGreaterThan(0);
         }
+
+        [Fact]
+        public async Task ExecuteAsync_Does_Nothing_When_Nothing_Returned()
+        {
+            // Arrange
+            string json = JsonSerializer.Serialize(new List<ApiResponse>());
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, json))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            _dataStore.Verify(v => v.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_Creates_SingleEvent_When_Two_Events_With_Same_Sequence()
+        {
+            // Arrange
+            string json = JsonSerializer.Serialize(new List<ApiResponse>() {
+                new ApiResponse
+                {
+                    Id = 1,
+                    Name = "Test Event",
+                    Sequence = 1234,
+                    DatetimeStart = DateTime.UtcNow,
+                    DatetimeEnd = DateTime.UtcNow.AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true,
+                },
+                new ApiResponse
+                {
+                    Id = 2,
+                    Name = "Test Event",
+                    Sequence = 1234,
+                    DatetimeStart = DateTime.UtcNow.AddDays(1),
+                    DatetimeEnd = DateTime.UtcNow.AddDays(1).AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true
+                }
+
+            });
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, json))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            eventRepoMock.Verify(r => r.Create(It.IsAny<Event>()), Times.Once);
+            _dataStore.Verify(v => v.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_Creates_Two_Events_When_Not_Same_Sequence()
+        {
+            // Arrange
+            string json = JsonSerializer.Serialize(new List<ApiResponse>() {
+                new ApiResponse
+                {
+                    Id = 1,
+                    Name = "Test Event",
+                    Sequence = 9876,
+                    DatetimeStart = DateTime.UtcNow,
+                    DatetimeEnd = DateTime.UtcNow.AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true,
+                },
+                new ApiResponse
+                {
+                    Id = 2,
+                    Name = "Test Event",
+                    Sequence = 1234,
+                    DatetimeStart = DateTime.UtcNow.AddDays(1),
+                    DatetimeEnd = DateTime.UtcNow.AddDays(1).AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true
+                }
+
+            });
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, json))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            eventRepoMock.Verify(r => r.Create(It.IsAny<Event>()), Times.Exactly(2));
+            _dataStore.Verify(v => v.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
+        }
+
+
+        [Fact]
+        public async Task ExecuteAsync_Updates_Event_When_Already_Exists()
+        {
+            // Arrange
+            string json = JsonSerializer.Serialize(new List<ApiResponse>() {
+                new ApiResponse
+                {
+                    Id = 1,
+                    Name = "Test Event",
+                    Sequence = 9876,
+                    DatetimeStart = DateTime.UtcNow,
+                    DatetimeEnd = DateTime.UtcNow.AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true,
+                }
+            });
+
+            var existingEvent = new Event.Builder()
+                .SetSourceId("9876")
+                .SetTitle("Existing Event")
+                .SetDescription("This is an existing event")
+                .SetDates(DateTime.UtcNow, DateTime.UtcNow.AddHours(1))
+                .Build();
+
+            eventRepoMock.Setup(s => s.FirstOrDefaultAsync(It.IsAny<GetEventByChurchSuiteSequenceSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingEvent);
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, json))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            eventRepoMock.Verify(r => r.Create(It.IsAny<Event>()), Times.Never);
+            _dataStore.Verify(v => v.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
 
 
     }
