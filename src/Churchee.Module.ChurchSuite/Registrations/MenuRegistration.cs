@@ -12,7 +12,7 @@ namespace Churchee.Module.ChurchSuite.Registrations
                 var list = new List<MenuItem>
                 {
                     new MenuItem("Integrations", "/management/integrations", "integration_instructions", 100)
-                    .AddChild(new MenuItem("Churchsuite Events", "/management/integrations/churchsuite-events", "event"))
+                    .AddChild(new MenuItem("ChurchSuite Events", "/management/integrations/churchsuite-events", "event"))
                 };
 
                 return list;
