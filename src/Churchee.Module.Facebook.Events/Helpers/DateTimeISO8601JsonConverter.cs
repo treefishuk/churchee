@@ -11,7 +11,26 @@ namespace Churchee.Module.Facebook.Events.Helpers
         {
             Debug.Assert(typeToConvert == typeof(DateTime));
 
-            return DateTime.ParseExact(reader.GetString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            string s = reader.GetString();
+
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                return default;
+            }
+
+            // Try round-trip ISO 8601 first, then fall back to Parse
+            if (DateTime.TryParseExact(s, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dt))
+            {
+                return dt;
+            }
+
+            if (DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out dt))
+            {
+                return dt;
+            }
+
+            // Let ParseExact throw if you want a hard failure; otherwise throw a clear FormatException
+            throw new FormatException($"Invalid DateTime format: '{s}'");
         }
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
