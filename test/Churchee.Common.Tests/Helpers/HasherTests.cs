@@ -89,7 +89,7 @@
                 var cts = new CancellationTokenSource();
                 cts.Cancel();
 
-                await Assert.ThrowsAsync<OperationCanceledException>(() => Hasher.HashFirst64KbAsync(ms, cts.Token));
+                await Assert.ThrowsAsync<TaskCanceledException>(() => Hasher.HashFirst64KbAsync(ms, cts.Token));
 
                 Assert.Equal(0, ms.Position);
             }
