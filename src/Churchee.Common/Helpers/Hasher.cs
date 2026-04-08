@@ -1,6 +1,12 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Churchee.Module.Facebook.Events.Helpers
+namespace Churchee.Common.Helpers
 {
     public static class Hasher
     {

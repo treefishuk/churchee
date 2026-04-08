@@ -15,5 +15,7 @@ namespace Churchee.Module.Events.Entities
         public DateTime? End { get; set; }
 
         public bool Deleted { get; set; }
+
+        public string BookingUrl { get; set; }
     }
 }

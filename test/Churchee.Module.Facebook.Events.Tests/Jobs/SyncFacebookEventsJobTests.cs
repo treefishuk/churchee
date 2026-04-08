@@ -30,7 +30,6 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         private readonly Mock<ILogger<SyncFacebookEventsJob>> _logger = new();
         private readonly Mock<IJobService> _jobService = new();
         private readonly Mock<IImageProcessor> _imageProcessor = new();
-
         private readonly Mock<IRepository<Token>> tokenRepoMock = new();
         private readonly Mock<IRepository<Event>> eventRepoMock = new();
         private readonly Mock<IRepository<EventDate>> eventDateRepoMock = new();
@@ -290,6 +289,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
                     new { id = "page-id_1", story = "Someone created an event" }
                 }
             };
+
             string feedJson = JsonSerializer.Serialize(feed);
 
             // Simulate Facebook event details
