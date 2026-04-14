@@ -149,6 +149,8 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 parentId = parentPage.Id;
             }
 
+            var timezone = await GetTimeZoneInfo(applicationTenantId);
+
             var newEvent = new Event.Builder()
                 .SetApplicationTenantId(applicationTenantId)
                 .SetParentId(parentId)
@@ -166,7 +168,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 .SetCountry(item.Place?.Location?.Country ?? string.Empty)
                 .SetLatitude(Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d))
                 .SetLongitude(Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d))
-                .SetDates(item.StartTime, item.EndTime)
+                .SetDatesFromUtc(item.StartTime, item.EndTime, timezone)
                 .Build();
 
             string imageUrl = item.Cover?.Source ?? string.Empty;
@@ -185,14 +187,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 return;
             }
 
-            string timeZoneSetting = await _settingStore.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), applicationTenantId);
-
-            var timezone = TimeZoneInfo.Utc;
-
-            if (!string.IsNullOrEmpty(timeZoneSetting))
-            {
-                timezone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneSetting);
-            }
+            var timezone = await GetTimeZoneInfo(applicationTenantId);
 
             var eventDateRepo = _dataStore.GetRepository<EventDate>();
 
@@ -229,6 +224,20 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
                 date.End = endTime;
             }
+        }
+
+        private async Task<TimeZoneInfo> GetTimeZoneInfo(Guid applicationTenantId)
+        {
+            string timeZoneSetting = await _settingStore.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), applicationTenantId);
+
+            var timezone = TimeZoneInfo.Utc;
+
+            if (!string.IsNullOrEmpty(timeZoneSetting))
+            {
+                timezone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneSetting);
+            }
+
+            return timezone;
         }
 
         private async Task ConvertImageToLocalImage(Event facebookEvent, string facebookImageUrl, Guid applicationTenantId, CancellationToken cancellationToken)
