@@ -180,6 +180,11 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
         internal async Task UpdateEventDateTime(FacebookEventResult facebookEventResult, Guid eventId, Guid applicationTenantId, CancellationToken cancellationToken)
         {
+            if (facebookEventResult.StartTime < DateTime.Now)
+            {
+                return;
+            }
+
             string timeZoneSetting = await _settingStore.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), applicationTenantId);
 
             var timezone = TimeZoneInfo.Utc;
