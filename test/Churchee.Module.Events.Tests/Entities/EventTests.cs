@@ -32,5 +32,29 @@ namespace Churchee.Module.Events.Tests.Entities
             eventEntity.EventDates.FirstOrDefault()?.Start?.Hour.Should().Be(15);
         }
 
+        [Fact]
+        public void SetDatesFromUtc_Does_Nothing_When_Null()
+        {
+            // Arrange
+            var builder = new Event.Builder();
+
+            builder.SetTitle("New Event");
+
+            // Act
+            if (OperatingSystem.IsWindows())
+            {
+                builder.SetDatesFromUtc(null, null, TimeZoneInfo.FindSystemTimeZoneById("Europe/London"));
+            }
+            else
+            {
+                builder.SetDatesFromUtc(null, null, TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time"));
+            }
+
+            var eventEntity = builder.Build();
+
+            // Assert
+            eventEntity.EventDates.Count.Should().Be(0);
+        }
+
     }
 }
