@@ -614,5 +614,192 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             existingDate.End.Should().Be(eventData.EndTime);
         }
 
+        [Fact]
+        public async Task CreateNewEvent_WithParentPage_SetsParentSlugAndParentId()
+        {
+            // Arrange
+            var createdEvent = (Event?)null;
+
+            eventRepoMock.Setup(r => r.Create(It.IsAny<Event>()))
+                         .Callback<Event>(e => createdEvent = e);
+
+            var parentPage = new Page(Guid.NewGuid(), "Title", "/events/custom", "Description", Guid.NewGuid(), Guid.NewGuid(), false);
+
+            pageRepoMock.Setup(p => p.FirstOrDefaultAsync(It.IsAny<EventListingPageSpecification>(), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(parentPage);
+
+            pageTypeRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<ISpecification<PageType>>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), It.IsAny<Guid>())).ReturnsAsync((string?)null);
+
+            var feed = new
+            {
+                data = new[]
+                {
+                    new { id = "page-id_1", story = "Someone created an event" }
+                }
+            };
+
+            string feedJson = JsonSerializer.Serialize(feed);
+
+            string fbEventJson = JsonSerializer.Serialize(new
+            {
+                id = "1",
+                name = "New Event",
+                description = "desc",
+                place = (object?)null,
+                start_time = DateTime.UtcNow.AddDays(1),
+                end_time = DateTime.UtcNow.AddDays(1).AddHours(1),
+                cover = (object?)null
+            });
+
+            var fbClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson, fbEventJson))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Returns(fbClient);
+
+            // Default image client should not be needed
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK)) { BaseAddress = new Uri("http://localhost/") });
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            createdEvent.Should().NotBeNull();
+            createdEvent!.ParentId.Should().Be(parentPage.Id);
+            createdEvent.Url.Should().Contain(parentPage.Url);
+            _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateEventDateTime_StartBeforeNow_ReturnsWithoutUpdating()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var now = DateTime.UtcNow;
+            var timeProviderMock = new Mock<TimeProvider>();
+
+            timeProviderMock
+                .Setup(t => t.GetUtcNow())
+                .Returns(new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero));
+
+            timeProviderMock
+                .Setup(t => t.LocalTimeZone)
+                .Returns(TimeZoneInfo.Utc);
+
+            // start is 5 minutes ago
+            var eventData = new FacebookEventResult
+            {
+                Id = "1",
+                StartTime = now.AddMinutes(-5),
+                EndTime = now.AddHours(1)
+            };
+
+            var existingDate = new EventDate { Start = DateTime.UtcNow.AddDays(5) };
+
+            eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object, timeProviderMock.Object);
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), It.IsAny<Guid>())).ReturnsAsync(string.Empty);
+
+            // Act
+            await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
+
+            // Assert - start should not have been changed
+            eventDateRepoMock.Verify(x => x.Create(It.IsAny<EventDate>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateEventDateTime_DateDoesNotExist_CreatesNewEventDate()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+
+            var eventData = new FacebookEventResult
+            {
+                Id = "1",
+                StartTime = DateTime.UtcNow.AddDays(2),
+                EndTime = DateTime.UtcNow.AddDays(2).AddHours(2)
+            };
+
+            EventDate? createdDate = null;
+
+            eventDateRepoMock.Setup(x => x.Create(It.IsAny<EventDate>())).Callback<EventDate>(d => createdDate = d);
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), It.IsAny<Guid>())).ReturnsAsync((string?)null);
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            // Act
+            await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
+
+            // Assert
+            eventDateRepoMock.Verify(x => x.Create(It.IsAny<EventDate>()), Times.Once);
+            createdDate.Should().NotBeNull();
+            createdDate!.EventId.Should().Be(eventId);
+            createdDate.Start.Should().Be(eventData.StartTime);
+            createdDate.End.Should().Be(eventData.EndTime);
+        }
+
+        [Fact]
+        public async Task SyncFacebookEvents_CreateNewEvent_WithNoCover_DoesNotFetchImageClient()
+        {
+            // Arrange
+            Event? createdEvent = null;
+
+            eventRepoMock.Setup(r => r.Create(It.IsAny<Event>()))
+                         .Callback<Event>(e => createdEvent = e);
+
+            pageTypeRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<ISpecification<PageType>>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), It.IsAny<Guid>())).ReturnsAsync((string?)null);
+
+            var feed = new
+            {
+                data = new[]
+                {
+                    new { id = "page-id_1", story = "Someone created an event" }
+                }
+            };
+            string feedJson = JsonSerializer.Serialize(feed);
+
+            string fbEventJson = JsonSerializer.Serialize(new
+            {
+                id = "1",
+                name = "No Cover Event",
+                description = "desc",
+                place = (object?)null,
+                start_time = DateTime.UtcNow.AddDays(1),
+                end_time = DateTime.UtcNow.AddDays(1).AddHours(1),
+                cover = (object?)null
+            });
+
+            var fbClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson, fbEventJson))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Returns(fbClient);
+
+            // Default image client should not be called
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK)) { BaseAddress = new Uri("http://localhost/") });
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            createdEvent.Should().NotBeNull();
+            _httpClientFactory.Verify(f => f.CreateClient(string.Empty), Times.Never);
+            eventRepoMock.Verify(r => r.Create(It.IsAny<Event>()), Times.Once);
+        }
     }
 }
