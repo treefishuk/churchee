@@ -35,7 +35,6 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         private readonly Mock<IRepository<EventDate>> eventDateRepoMock = new();
         private readonly Mock<IRepository<PageType>> pageTypeRepoMock = new();
         private readonly Mock<IRepository<Page>> pageRepoMock = new();
-
         private readonly Guid tenantId;
 
         public SyncFacebookEventsJobTests()
@@ -124,6 +123,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         {
             // Arrange
             var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), It.IsAny<Guid>())).ReturnsAsync((string?)null);
 
             var feed = new
             {
@@ -416,6 +417,16 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             // Arrange
             var eventId = Guid.NewGuid();
 
+            var timeProviderMock = new Mock<TimeProvider>();
+
+            timeProviderMock
+                .Setup(t => t.GetUtcNow())
+                .Returns(new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero));
+
+            timeProviderMock
+                .Setup(t => t.LocalTimeZone)
+                .Returns(TimeZoneInfo.Utc);
+
             var eventData = new FacebookEventResult
             {
                 Id = "1",
@@ -429,7 +440,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
 
             eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
 
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object, timeProviderMock.Object);
 
             // Act
             await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
@@ -447,6 +458,17 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         {
             // Arrange
             var eventId = Guid.NewGuid();
+            var timeProviderMock = new Mock<TimeProvider>();
+
+            timeProviderMock
+                .Setup(t => t.GetUtcNow())
+                .Returns(new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero));
+
+            timeProviderMock
+                .Setup(t => t.LocalTimeZone)
+                .Returns(TimeZoneInfo.Utc);
+
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), It.IsAny<Guid>())).ReturnsAsync((string?)null);
 
             var eventData = new FacebookEventResult
             {
@@ -461,7 +483,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
 
             eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
 
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object, timeProviderMock.Object);
 
             // Act
             await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
@@ -480,11 +502,13 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             var eventData = new FacebookEventResult
             {
                 Id = "1",
-                StartTime = new DateTime(2026, 03, 31, 15, 0, 0, DateTimeKind.Utc),
-                EndTime = new DateTime(2026, 03, 31, 17, 0, 0, DateTimeKind.Utc),
+                StartTime = DateTime.Now.AddDays(3).ToUniversalTime(),
+                EndTime = DateTime.Now.AddDays(3).AddHours(1).ToUniversalTime()
             };
 
             var existingDate = new EventDate();
+
+            existingDate.Start = DateTime.Now.AddDays(1).ToUniversalTime();
 
             _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync(string.Empty);
 

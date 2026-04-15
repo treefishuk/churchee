@@ -30,8 +30,9 @@ namespace Churchee.Module.Facebook.Events.Jobs
         private readonly IJobService _jobShedularService;
         private readonly IImageProcessor _imageProcessor;
         private readonly ILogger<SyncFacebookEventsJob> _logger;
+        private readonly TimeProvider _timeProvider;
 
-        public SyncFacebookEventsJob(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, IJobService jobShedularService, ILogger<SyncFacebookEventsJob> logger, IImageProcessor imageProcessor)
+        public SyncFacebookEventsJob(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, IJobService jobShedularService, ILogger<SyncFacebookEventsJob> logger, IImageProcessor imageProcessor, TimeProvider timeProvider = null)
         {
             _clientFactory = clientFactory;
             _settingStore = settingStore;
@@ -42,6 +43,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
             _jobShedularService = jobShedularService;
             _logger = logger;
             _imageProcessor = imageProcessor;
+            _timeProvider = timeProvider ?? TimeProvider.System;
         }
 
         public async Task ExecuteAsync(Guid applicationTenantId, CancellationToken cancellationToken)
@@ -182,7 +184,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
         internal async Task UpdateEventDateTime(FacebookEventResult facebookEventResult, Guid eventId, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            if (facebookEventResult.StartTime < DateTime.Now)
+            if (facebookEventResult.StartTime < _timeProvider.GetLocalNow().DateTime)
             {
                 return;
             }
@@ -203,7 +205,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 eventDateRepo.Create(date);
             }
 
-            var startUtc = (facebookEventResult.StartTime?.Kind == DateTimeKind.Utc ? facebookEventResult.StartTime : facebookEventResult.StartTime?.ToUniversalTime()) ?? DateTime.UtcNow;
+            var startUtc = (facebookEventResult.StartTime?.Kind == DateTimeKind.Utc ? facebookEventResult.StartTime : facebookEventResult.StartTime?.ToUniversalTime()) ?? _timeProvider.GetUtcNow().DateTime;
 
             var startTime = (timezone == TimeZoneInfo.Utc) ? startUtc : TimeZoneInfo.ConvertTimeFromUtc(startUtc, timezone);
 
@@ -218,7 +220,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
             {
                 facebookEventResult.EndTime.Value.ToUniversalTime();
 
-                var endUtc = (facebookEventResult.EndTime?.Kind == DateTimeKind.Utc ? facebookEventResult.EndTime : facebookEventResult.EndTime?.ToUniversalTime()) ?? DateTime.UtcNow;
+                var endUtc = (facebookEventResult.EndTime?.Kind == DateTimeKind.Utc ? facebookEventResult.EndTime : facebookEventResult.EndTime?.ToUniversalTime()) ?? _timeProvider.GetUtcNow().DateTime;
 
                 var endTime = (timezone == TimeZoneInfo.Utc) ? endUtc : TimeZoneInfo.ConvertTimeFromUtc(endUtc, timezone);
 
