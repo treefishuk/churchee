@@ -355,6 +355,91 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
+
+        [Fact]
+        public async Task SyncFacebookEvents_ImageProcessor_Logs_Exception_When_Thrown()
+        {
+            // Arrange
+            _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
+
+            _imageProcessor.Setup(x => x.ConvertToWebP(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).ThrowsAsync(new Exception());
+
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+
+            var feed = new
+            {
+                data = new[]
+                {
+                    new { id = "page-id_1", story = "Someone created an event" }
+                }
+            };
+
+            string feedJson = JsonSerializer.Serialize(feed);
+
+            // Simulate Facebook event details
+            string fbEventJson = JsonSerializer.Serialize(new FacebookEventResult
+            {
+                Id = "1",
+                Name = "Test Event",
+                Description = "Test Description",
+                Place = new Place { Location = new Location { Street = "New Street" } },
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow.AddHours(1),
+                Cover = new Cover { Source = "http://localhost/123456" }
+            });
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, feedJson, fbEventJson))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Returns(httpClient);
+
+            // Simulate image has not changed
+
+            string imageContent = "NOTTHESAMEIMAGE";
+
+            var httpClient2 = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, imageContent))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient2);
+
+            var existingEvent = new Event.Builder()
+                .SetSourceId("1")
+                .SetTitle("Old Title")
+                .SetDescription("Old Description")
+                .SetStreet("Old Street")
+                .Build();
+
+            existingEvent.SetImageCheckHash("E2E87C7BCB3145C0177A94CC9BE7769C3CF3F2161F09C65ADF1CE78B1892D5DB");
+
+            // Simulate event does not exist
+            eventRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<GetEventByFacebookIdSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingEvent);
+
+            pageTypeRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<ISpecification<PageType>>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            existingEvent.Title.Should().Be("Test Event");
+            existingEvent.Description.Should().Be("Test Description");
+            existingEvent.Street.Should().Be("New Street");
+
+            _logger.Verify(
+                x => x.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.IsAny<It.IsAnyType>(),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
+        }
+
+
         [Fact]
         public async Task ConvertImageToLocalImage_ImageProcessorThrows_LogsError()
         {
