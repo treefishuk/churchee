@@ -32,12 +32,12 @@ namespace Churchee.Module.Facebook.Events.Jobs
         private readonly ILogger<SyncFacebookEventsJob> _logger;
         private readonly TimeProvider _timeProvider;
 
-        public SyncFacebookEventsJob(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, IJobService jobShedularService, ILogger<SyncFacebookEventsJob> logger, IImageProcessor imageProcessor, TimeProvider timeProvider = null)
+        public SyncFacebookEventsJob(IHttpClientFactory clientFactory, IStores stores, IJobService jobShedularService, ILogger<SyncFacebookEventsJob> logger, IImageProcessor imageProcessor, TimeProvider timeProvider = null)
         {
             _clientFactory = clientFactory;
-            _settingStore = settingStore;
-            _dataStore = dataStore;
-            _blobStore = blobStore;
+            _settingStore = stores.SettingStore;
+            _dataStore = stores.DataStore;
+            _blobStore = stores.BlobStore;
             _jsonSerializerOptions = new JsonSerializerOptions();
             _jsonSerializerOptions.Converters.Add(new DateTimeIso8601JsonConverter());
             _jobShedularService = jobShedularService;
