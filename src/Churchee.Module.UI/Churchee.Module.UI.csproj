@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Churchee.Module.UI.Tests" />
+  </ItemGroup>  
+  
+  <ItemGroup>
     <Content Remove="compilerconfig.json" />
   </ItemGroup>
 
