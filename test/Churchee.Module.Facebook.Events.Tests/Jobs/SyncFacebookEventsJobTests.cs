@@ -27,6 +27,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         private readonly Mock<ISettingStore> _settingStore = new();
         private readonly Mock<IDataStore> _dataStore = new();
         private readonly Mock<IBlobStore> _blobStore = new();
+        private readonly Mock<IStores> _storesMock = new();
         private readonly Mock<ILogger<SyncFacebookEventsJob>> _logger = new();
         private readonly Mock<IJobService> _jobService = new();
         private readonly Mock<IImageProcessor> _imageProcessor = new();
@@ -53,13 +54,17 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             _settingStore.Setup(x => x.GetSettingValue(It.IsAny<Guid>(), tenantId)).ReturnsAsync("page-id");
 
             _logger.Setup(s => s.IsEnabled(LogLevel.Error)).Returns(true);
+
+            _storesMock.Setup(s => s.SettingStore).Returns(_settingStore.Object);
+            _storesMock.Setup(s => s.DataStore).Returns(_dataStore.Object);
+            _storesMock.Setup(s => s.BlobStore).Returns(_blobStore.Object);
         }
 
         [Fact]
         public async Task SyncFacebookEvents_NoFeedItems_DoesNothing()
         {
             // Arrange
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, "{\"data\":[]}"));
 
@@ -77,7 +82,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_EmptyResponse_DoesNothing()
         {
             // Arrange
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, string.Empty));
 
@@ -95,7 +100,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_FeedItems_NoEventStories_DoesNothing()
         {
             // Arrange
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
             {
@@ -122,7 +127,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_FeedItems_EventStories_NewEvent_CreatesEvent()
         {
             // Arrange
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), It.IsAny<Guid>())).ReturnsAsync((string?)null);
 
@@ -180,7 +185,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task SyncFacebookEvents_Exception_LogsError()
         {
             // Arrange
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
             var tenantId = Guid.NewGuid();
 
             _httpClientFactory.Setup(f => f.CreateClient("Facebook")).Throws(new Exception("fail"));
@@ -206,7 +211,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             // Arrange
             _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
 
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
             {
@@ -281,7 +286,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
             // Arrange
             _settingStore.Setup(x => x.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), tenantId)).ReturnsAsync((string?)null);
 
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
             {
@@ -354,7 +359,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
         public async Task ConvertImageToLocalImage_ImageProcessorThrows_LogsError()
         {
             // Arrange - create a feed + event with cover where image fetch is OK but processor throws
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             var feed = new
             {
@@ -440,7 +445,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
 
             eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
 
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object, timeProviderMock.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object, timeProviderMock.Object);
 
             // Act
             await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
@@ -483,7 +488,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
 
             eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
 
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object, timeProviderMock.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object, timeProviderMock.Object);
 
             // Act
             await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
@@ -514,7 +519,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
 
             eventDateRepoMock.Setup(x => x.FirstOrDefaultAsync(It.IsAny<EventDatesForEventSpecification>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingDate);
 
-            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
+            var cut = new SyncFacebookEventsJob(_httpClientFactory.Object, _storesMock.Object, _jobService.Object, _logger.Object, _imageProcessor.Object);
 
             // Act
             await cut.UpdateEventDateTime(eventData, eventId, tenantId, CancellationToken.None);
