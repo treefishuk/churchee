@@ -179,6 +179,27 @@ namespace Churchee.Module.Events.Entities
                 return this;
             }
 
+            public Builder SetDatesFromUtc(DateTime? start, DateTime? end, TimeZoneInfo timeZoneInfo)
+            {
+                if (start == null)
+                {
+                    return this;
+                }
+
+                var startTime = (timeZoneInfo == TimeZoneInfo.Utc) ? start : TimeZoneInfo.ConvertTimeFromUtc(start.Value, timeZoneInfo);
+
+                var date = new EventDate { Id = Guid.NewGuid(), EventId = _event.Id, Start = startTime };
+
+                if (end != null)
+                {
+                    date.End = (timeZoneInfo == TimeZoneInfo.Utc) ? end : TimeZoneInfo.ConvertTimeFromUtc(end.Value, timeZoneInfo);
+                }
+
+                _event.EventDates.Add(date);
+
+                return this;
+            }
+
             public Builder SetImageUrl(string imageUrl)
             {
                 _event.ImageUrl = imageUrl;
