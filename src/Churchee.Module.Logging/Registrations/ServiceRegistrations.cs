@@ -26,7 +26,7 @@ namespace Churchee.Module.Logging.Registrations
             var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.MSSqlServer(
-                    connectionString: config.GetConnectionString("LogsConnection"),
+                    connectionString: config.GetConnectionString("Logs"),
                     sinkOptions: sinkOptions,
                     restrictedToMinimumLevel: LogEventLevel.Warning)
                 .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
@@ -41,7 +41,7 @@ namespace Churchee.Module.Logging.Registrations
                 options.AddFilter<SerilogLoggerProvider>(null, LogLevel.Trace);
             });
 
-            serviceCollection.AddDbContext<LogsDBContext>(options => options.UseSqlServer(config.GetConnectionString("LogsConnection")), ServiceLifetime.Transient);
+            serviceCollection.AddDbContext<LogsDBContext>(options => options.UseSqlServer(config.GetConnectionString("Logs")), ServiceLifetime.Transient);
         }
 
 

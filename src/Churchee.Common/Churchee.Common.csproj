@@ -15,10 +15,10 @@
 	<PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.6" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Radzen.Blazor" Version="8.3.0" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
@@ -30,7 +30,7 @@
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
     <PackageReference Include="Scrutor" Version="7.0.0" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.23.0.137933">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.25.0.139117">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -23,14 +23,14 @@ namespace Churchee.Module.Hangfire.Registrations
                 config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .CreateDatabaseIfNotExists(configuration.GetConnectionString("HangfireConnection"))
+                .CreateDatabaseIfNotExists(configuration.GetConnectionString("Hangfire"))
 
                 .UseFilter(new AutomaticRetryAttribute
                 {
                     Attempts = 0,          // or 0 to disable retries
                     DelaysInSeconds = [10, 30, 60] // optional custom delays
                 })
-                .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
+                .UseSqlServerStorage(configuration.GetConnectionString("Hangfire"), new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
