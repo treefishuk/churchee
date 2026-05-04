@@ -39,7 +39,7 @@ namespace Churchee.Module.Logging.Tests.Registrations
             // Use in-memory configuration for connection string
             var inMemorySettings = new Dictionary<string, string?>
             {
-                {"ConnectionStrings:LogsConnection", _msSqlContainer.GetConnectionString()}
+                {"ConnectionStrings:Logs", _msSqlContainer.GetConnectionString()}
             };
 
             IConfiguration configuration = new ConfigurationBuilder()
