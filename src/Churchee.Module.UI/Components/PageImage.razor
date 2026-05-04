@@ -1,0 +1,50 @@
+﻿@using Churchee.Common.ValueTypes
+@using Churchee.Module.UI.Models
+@using Radzen
+@using Radzen.Blazor
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components;
+@using System.Text.Json
+
+<ChunkedImageUpload Model="new ChunkedImageUploadType { Description = AltText, ThumbnailUrl = FullImageUrl }"/>
+
+@code {
+
+
+    protected override void OnInitialized()
+    {
+
+        if(string.IsNullOrEmpty(JsonValue))
+        {
+            return;
+        }
+
+        var deconstructed = JsonSerializer.Deserialize<ImageSimple>(JsonValue);
+
+        ImageUrl = deconstructed?.Url ?? string.Empty;
+
+        AltText = deconstructed?.AltText ?? string.Empty;
+    }
+
+    [Parameter]
+    public string JsonValue { get; set; } = string.Empty;
+
+    [Parameter]
+    public Guid PageId { get; set; }
+
+    [Parameter]
+    public string ImageUrl { get; set; } = string.Empty;
+
+
+    public string AltText { get; set; }  = string.Empty;
+
+
+    private string FullImageUrl 
+    {
+        get
+        {
+            return ImageUrl + "_t.webp";
+        }
+    }
+}

@@ -31,5 +31,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         public List<GetPageDetailsResponseContentItem> ContentItems { get; set; }
 
+        public ImageUploadModel Image { get; set; }
+
     }
 }

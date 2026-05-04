@@ -92,6 +92,12 @@
                                         {
                                             <RadzenTextBox @bind-Value=@item.Value />
                                         }
+
+                                        @if (item.Type == EditorType.Image)
+                                        {
+                                            <PageImage JsonValue="@item.Value" PageId="@Id" />
+                                        }
+
                                     </ChildContent>
                                 </RadzenFormField>
                             }
@@ -246,6 +252,15 @@
     public void CancelForm()
     {
         NavigationManager.NavigateTo("/management/pages");
+    }
+
+
+    void OnImageUpload(UploadChangeEventArgs args)
+    {
+        foreach (var file in args.Files)
+        {
+            Console.WriteLine("Do thing");
+        }
     }
 
 }
