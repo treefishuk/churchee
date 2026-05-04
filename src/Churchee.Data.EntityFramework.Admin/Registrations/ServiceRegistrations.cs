@@ -21,7 +21,7 @@ namespace Churchee.Data.EntityFramework.Admin.Registrations
 
             var cert = X509CertificateLoader.LoadPkcs12FromFile("dp.pfx", dpKey);
 
-            string connectionString = config.GetConnectionString("DefaultConnection");
+            string connectionString = config.GetConnectionString("Default");
 
             serviceCollection.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString), ServiceLifetime.Transient);

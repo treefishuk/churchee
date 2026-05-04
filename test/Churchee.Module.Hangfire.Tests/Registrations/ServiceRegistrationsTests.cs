@@ -47,7 +47,7 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
             var services = new ServiceCollection();
 
             var inMemorySettings = new Dictionary<string, string?> {
-                {"ConnectionStrings:HangfireConnection", _msSqlContainer.GetConnectionString()}
+                {"ConnectionStrings:Hangfire", _msSqlContainer.GetConnectionString()}
             };
 
             IConfiguration configuration = new ConfigurationBuilder()

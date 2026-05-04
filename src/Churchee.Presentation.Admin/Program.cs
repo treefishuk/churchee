@@ -61,7 +61,7 @@ namespace Churchee.Presentation.Admin
 
             builder.Services.AddDistributedSqlServerCache(options =>
             {
-                options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+                options.ConnectionString = builder.Configuration.GetConnectionString("Default");
                 options.SchemaName = "dbo";
                 options.TableName = "Caching";
             });
