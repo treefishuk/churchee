@@ -1,5 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog.Context;
 using Serilog.Core;
 using Serilog.Core.Enrichers;
@@ -17,11 +18,18 @@ namespace Churchee.Module.Logging.Middleware
         {
             try
             {
-                // Resolve ICurrentUser from DI (scoped). Use GetService to avoid hard failure.
-                var currentUser = context.RequestServices.GetService(typeof(ICurrentUser)) as ICurrentUser;
-                string userId = currentUser?.GetUserId() ?? "anonymous";
-                string tenantName = await currentUser?.GetApplicationTenantName() ?? "Unknown";
-                var userName = context.User.Identity?.Name ?? "anonymous";
+                var currentUser = context.RequestServices.GetService<ICurrentUser>();
+
+                if (currentUser == null)
+                {
+                    await _next(context);
+
+                    return;
+                }
+
+                string userId = currentUser.GetUserId() ?? "anonymous";
+                string tenantName = await currentUser.GetApplicationTenantName() ?? "Unknown";
+                string userName = context.User.Identity?.Name ?? "anonymous";
 
                 ILogEventEnricher[] enrichers =
                 {
