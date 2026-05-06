@@ -7,6 +7,7 @@ using Churchee.Module.Tokens.Specifications;
 using Churchee.Module.X.Exceptions;
 using Churchee.Module.X.Features.Tweets.Commands.EnableTweetsSync;
 using Churchee.Module.X.Jobs;
+using Churchee.Test.Helpers.Validation;
 using Moq;
 using Moq.Protected;
 using System.Linq.Expressions;
@@ -48,9 +49,20 @@ namespace Churchee.Module.X.Tests.Jobs
             _dataStore.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
         }
 
-        private static HttpClient CreateHttpClient(HttpStatusCode statusCode, string content)
+        private static HttpClient CreateHttpClient(HttpStatusCode statusCode, string content, Dictionary<string, string> headers = null)
         {
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
+
+            var response = new HttpResponseMessage
+            {
+                StatusCode = statusCode,
+                Content = new StringContent(content ?? string.Empty),
+            };
+
+            foreach (var header in headers ?? [])
+            {
+                response.Headers.Add(header.Key, header.Value);
+            }
 
             handlerMock
                 .Protected()
@@ -58,15 +70,13 @@ namespace Churchee.Module.X.Tests.Jobs
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = statusCode,
-                    Content = new StringContent(content ?? string.Empty)
-                })
+                .ReturnsAsync(response)
                 .Verifiable();
 
             return new HttpClient(handlerMock.Object);
         }
+
+
 
         private SyncTweets CreateSut(HttpClient httpClient)
         {
@@ -74,21 +84,6 @@ namespace Churchee.Module.X.Tests.Jobs
             httpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
             return new SyncTweets(httpClientFactory.Object, _dataStore.Object, _settingStore.Object);
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_Returns_When_TooManyRequests()
-        {
-            // Arrange
-            var httpClient = CreateHttpClient(HttpStatusCode.TooManyRequests, string.Empty);
-
-            var sut = CreateSut(httpClient);
-
-            // Act
-            await sut.ExecuteAsync(_tenantId, CancellationToken.None);
-
-            // Assert
-            _dataStore.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -113,6 +108,27 @@ namespace Churchee.Module.X.Tests.Jobs
 
             // Act & Assert
             await Assert.ThrowsAsync<XSyncException>(() => sut.ExecuteAsync(_tenantId, CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_Throws_Detailed_Error_When_Call_Fails()
+        {
+            // Arrange
+            string resetTime = DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds().ToString();
+
+            var headers = new Dictionary<string, string>{
+                { "x-rate-limit-remaining", "0" },
+                { "x-rate-limit-reset", DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds().ToString() }
+            };
+
+            var httpClient = CreateHttpClient(HttpStatusCode.TooManyRequests, "null", headers);
+
+            var sut = CreateSut(httpClient);
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<XSyncException>(() => sut.ExecuteAsync(_tenantId, CancellationToken.None));
+
+            ex.Message.Should().Contain($"Failed To Get Tweets. Response code: {HttpStatusCode.TooManyRequests}. x-rate-limit-remaining: 0. x-rate-limit-reset: {resetTime}");
         }
 
         [Fact]

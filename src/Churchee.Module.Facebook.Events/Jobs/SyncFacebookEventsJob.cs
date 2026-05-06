@@ -30,18 +30,20 @@ namespace Churchee.Module.Facebook.Events.Jobs
         private readonly IJobService _jobShedularService;
         private readonly IImageProcessor _imageProcessor;
         private readonly ILogger<SyncFacebookEventsJob> _logger;
+        private readonly TimeProvider _timeProvider;
 
-        public SyncFacebookEventsJob(IHttpClientFactory clientFactory, ISettingStore settingStore, IDataStore dataStore, IBlobStore blobStore, IJobService jobShedularService, ILogger<SyncFacebookEventsJob> logger, IImageProcessor imageProcessor)
+        public SyncFacebookEventsJob(IHttpClientFactory clientFactory, IStores stores, IJobService jobShedularService, ILogger<SyncFacebookEventsJob> logger, IImageProcessor imageProcessor, TimeProvider timeProvider = null)
         {
             _clientFactory = clientFactory;
-            _settingStore = settingStore;
-            _dataStore = dataStore;
-            _blobStore = blobStore;
+            _settingStore = stores.SettingStore;
+            _dataStore = stores.DataStore;
+            _blobStore = stores.BlobStore;
             _jsonSerializerOptions = new JsonSerializerOptions();
             _jsonSerializerOptions.Converters.Add(new DateTimeIso8601JsonConverter());
             _jobShedularService = jobShedularService;
             _logger = logger;
             _imageProcessor = imageProcessor;
+            _timeProvider = timeProvider ?? TimeProvider.System;
         }
 
         public async Task ExecuteAsync(Guid applicationTenantId, CancellationToken cancellationToken)
@@ -149,6 +151,8 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 parentId = parentPage.Id;
             }
 
+            var timezone = await GetTimeZoneInfo(applicationTenantId);
+
             var newEvent = new Event.Builder()
                 .SetApplicationTenantId(applicationTenantId)
                 .SetParentId(parentId)
@@ -166,7 +170,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 .SetCountry(item.Place?.Location?.Country ?? string.Empty)
                 .SetLatitude(Convert.ToDecimal(item.Place?.Location?.Latitude ?? 0d))
                 .SetLongitude(Convert.ToDecimal(item.Place?.Location?.Longitude ?? 0d))
-                .SetDates(item.StartTime, item.EndTime)
+                .SetDatesFromUtc(item.StartTime, item.EndTime, timezone)
                 .Build();
 
             string imageUrl = item.Cover?.Source ?? string.Empty;
@@ -180,14 +184,12 @@ namespace Churchee.Module.Facebook.Events.Jobs
 
         internal async Task UpdateEventDateTime(FacebookEventResult facebookEventResult, Guid eventId, Guid applicationTenantId, CancellationToken cancellationToken)
         {
-            string timeZoneSetting = await _settingStore.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), applicationTenantId);
-
-            var timezone = TimeZoneInfo.Utc;
-
-            if (!string.IsNullOrEmpty(timeZoneSetting))
+            if (facebookEventResult.StartTime < _timeProvider.GetLocalNow().DateTime)
             {
-                timezone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneSetting);
+                return;
             }
+
+            var timezone = await GetTimeZoneInfo(applicationTenantId);
 
             var eventDateRepo = _dataStore.GetRepository<EventDate>();
 
@@ -203,7 +205,7 @@ namespace Churchee.Module.Facebook.Events.Jobs
                 eventDateRepo.Create(date);
             }
 
-            var startUtc = (facebookEventResult.StartTime?.Kind == DateTimeKind.Utc ? facebookEventResult.StartTime : facebookEventResult.StartTime?.ToUniversalTime()) ?? DateTime.UtcNow;
+            var startUtc = (facebookEventResult.StartTime?.Kind == DateTimeKind.Utc ? facebookEventResult.StartTime : facebookEventResult.StartTime?.ToUniversalTime()) ?? _timeProvider.GetUtcNow().DateTime;
 
             var startTime = (timezone == TimeZoneInfo.Utc) ? startUtc : TimeZoneInfo.ConvertTimeFromUtc(startUtc, timezone);
 
@@ -218,12 +220,26 @@ namespace Churchee.Module.Facebook.Events.Jobs
             {
                 facebookEventResult.EndTime.Value.ToUniversalTime();
 
-                var endUtc = (facebookEventResult.EndTime?.Kind == DateTimeKind.Utc ? facebookEventResult.EndTime : facebookEventResult.EndTime?.ToUniversalTime()) ?? DateTime.UtcNow;
+                var endUtc = (facebookEventResult.EndTime?.Kind == DateTimeKind.Utc ? facebookEventResult.EndTime : facebookEventResult.EndTime?.ToUniversalTime()) ?? _timeProvider.GetUtcNow().DateTime;
 
                 var endTime = (timezone == TimeZoneInfo.Utc) ? endUtc : TimeZoneInfo.ConvertTimeFromUtc(endUtc, timezone);
 
                 date.End = endTime;
             }
+        }
+
+        private async Task<TimeZoneInfo> GetTimeZoneInfo(Guid applicationTenantId)
+        {
+            string timeZoneSetting = await _settingStore.GetSettingValue(Guid.Parse("1a1d575c-40ed-4ce8-b7f0-4fcd176be0d9"), applicationTenantId);
+
+            var timezone = TimeZoneInfo.Utc;
+
+            if (!string.IsNullOrEmpty(timeZoneSetting))
+            {
+                timezone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneSetting);
+            }
+
+            return timezone;
         }
 
         private async Task ConvertImageToLocalImage(Event facebookEvent, string facebookImageUrl, Guid applicationTenantId, CancellationToken cancellationToken)

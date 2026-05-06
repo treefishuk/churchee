@@ -26,8 +26,7 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             _mockLogger = new Mock<ILogger<GetDashboardDataQueryHandler>>();
             _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
 
-            _msSqlContainer = new MsSqlBuilder()
-             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
              .WithPassword("yourStrong(!)Password")
              .Build();
 

@@ -184,6 +184,9 @@ namespace Churchee.Data.EntityFramework.Shared
             await _specificationEvaluator.GetQuery(GetQueryable(), specification).ExecuteDeleteAsync(cancellationToken);
         }
 
-
+        public async Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            return await _specificationEvaluator.GetQuery(GetQueryable(), specification).AnyAsync(cancellationToken);
+        }
     }
 }

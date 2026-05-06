@@ -20,8 +20,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
 
         public ServiceRegistrationsTests()
         {
-            _msSqlContainer = new MsSqlBuilder()
-             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
              .WithPassword("yourStrong(!)Password")
              .Build();
         }
@@ -52,7 +51,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
 
             // Mock Configuration
             var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(s => s.GetSection("ConnectionStrings")["DefaultConnection"]).Returns(_msSqlContainer.GetConnectionString());
+            mockConfiguration.Setup(s => s.GetSection("ConnectionStrings")["Default"]).Returns(_msSqlContainer.GetConnectionString());
 
             var mockConfigurationSection = new Mock<IConfigurationSection>();
             mockConfigurationSection.Setup(s => s["DPK"]).Returns("TestDPKValue");

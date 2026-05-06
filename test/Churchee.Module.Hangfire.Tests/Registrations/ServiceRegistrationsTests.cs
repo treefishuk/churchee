@@ -13,8 +13,7 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
 
         public ServiceRegistrationsTests()
         {
-            _msSqlContainer = new MsSqlBuilder()
-              .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
               .WithPassword("yourStrong(!)Password")
               .Build();
         }
@@ -48,7 +47,7 @@ namespace Churchee.Module.Hangfire.Tests.Registrations
             var services = new ServiceCollection();
 
             var inMemorySettings = new Dictionary<string, string?> {
-                {"ConnectionStrings:HangfireConnection", _msSqlContainer.GetConnectionString()}
+                {"ConnectionStrings:Hangfire", _msSqlContainer.GetConnectionString()}
             };
 
             IConfiguration configuration = new ConfigurationBuilder()

@@ -11,6 +11,5 @@
         internal static readonly Guid GoogleReviewsAccessTokenKey = Guid.Parse("cb115d89-4ec9-492c-8ae1-547d698b1d4b");
 
         internal static readonly Guid GoogleReviewsRefreshTokenKey = Guid.Parse("95907410-e904-4aac-8f7b-c35170fa4525");
-
     }
 }

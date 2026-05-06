@@ -35,8 +35,6 @@
 
         await Mediator.Send(new EnableGoogleReviewsIntegrationCommand(Code, $"{request.Scheme}://{request.Host}"));
 
-        var uri = NavigationManager.BaseUri + "management/integrations/google-reviews";
-
         HttpContextAccessor.HttpContext.Response.Redirect("/management/integrations/google-reviews");
     }
 }

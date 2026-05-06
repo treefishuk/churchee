@@ -17,8 +17,7 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
 
         public AzureBlobStoreTests()
         {
-            _azuriteContainer = new ContainerBuilder()
-                .WithImage("mcr.microsoft.com/azure-storage/azurite:latest")
+            _azuriteContainer = new ContainerBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
                 .WithPortBinding(10000, true)
                 .WithPortBinding(10001, true)
                 .WithPortBinding(10002, true)
