@@ -1,4 +1,5 @@
-﻿@using Churchee.Common.ValueTypes
+﻿@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.ValueTypes
 @using Churchee.Module.UI.Models
 @using Radzen
 @using Radzen.Blazor
@@ -7,44 +8,71 @@
 @using Microsoft.AspNetCore.Components;
 @using System.Text.Json
 
-<ChunkedImageUpload Model="new ChunkedImageUploadType { Description = AltText, ThumbnailUrl = FullImageUrl }"/>
+<ChunkedImageUpload Model="@Model" ModelChanged="HandleModelChange" />
 
 @code {
-
 
     protected override void OnInitialized()
     {
 
-        if(string.IsNullOrEmpty(JsonValue))
+        if (string.IsNullOrEmpty(Value))
         {
+            Model = new ChunkedImageUploadType { SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+
             return;
         }
 
-        var deconstructed = JsonSerializer.Deserialize<ImageSimple>(JsonValue);
+        var deconstructed = JsonSerializer.Deserialize<ImageSimple>(Value);
 
-        ImageUrl = deconstructed?.Url ?? string.Empty;
-
-        AltText = deconstructed?.AltText ?? string.Empty;
+        if(deconstructed != null)
+        {
+            Model = new ChunkedImageUploadType { Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+        }
     }
 
-    [Parameter]
-    public string JsonValue { get; set; } = string.Empty;
+    public ChunkedImageUploadType Model { get; set; } = new();
+
+    [Inject]
+    protected ITenantResolver TenantResolver { get; set; } = default!;
+
+    [Parameter] 
+    public string? Value { get; set; }
+
+    [Parameter] 
+    public EventCallback<string?> ValueChanged { get; set; }
 
     [Parameter]
-    public Guid PageId { get; set; }
+    public string? Name { get; set; }
 
     [Parameter]
-    public string ImageUrl { get; set; } = string.Empty;
+    public Guid? PageId { get; set; }
 
+    [Parameter] 
+    public Func<ChunkedUploadRequest, Task<string?>>? OnUpload { get; set; }
 
-    public string AltText { get; set; }  = string.Empty;
+    [Parameter] 
+    public EventCallback<string?> OnChanged { get; set; }
 
-
-    private string FullImageUrl 
+    private async Task HandleModelChange(ChunkedImageUploadType newValue)
     {
-        get
+        var data = new ImageSimple { AltText = newValue.Description, Url = newValue.TempFilePath };
+
+        if (OnUpload != null)
         {
-            return ImageUrl + "_t.webp";
+            var upload = new ChunkedUploadRequest
+            {
+                FileName = newValue.File.Name,
+                TempFilePath = newValue.TempFilePath,
+                FinalFilePath = $"/pages/{PageId}/{Name}/{Path.GetFileNameWithoutExtension(newValue.File.Name)}"
+            };
+
+            var finalPath = await OnUpload.Invoke(upload);
+
+            data.Url = finalPath;
         }
+
+        Value = JsonSerializer.Serialize(data);
+
+        await ValueChanged.InvokeAsync(Value);
     }
 }
