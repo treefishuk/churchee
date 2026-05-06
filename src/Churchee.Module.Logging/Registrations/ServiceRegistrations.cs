@@ -24,6 +24,7 @@ namespace Churchee.Module.Logging.Registrations
             var sinkOptions = new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true, AutoCreateSqlDatabase = true };
 
             var loggerConfiguration = new LoggerConfiguration()
+                .Enrich.FromLogContext()
                 .MinimumLevel.Information()
                 .WriteTo.MSSqlServer(
                     connectionString: config.GetConnectionString("Logs"),

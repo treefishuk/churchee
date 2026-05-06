@@ -8,6 +8,7 @@ using Churchee.EmailConfiguration.MailGun.Infrastructure;
 using Churchee.Module.Identity.Entities;
 using Churchee.Module.Identity.Infrastructure;
 using Churchee.Module.Identity.Managers;
+using Churchee.Module.Logging.Middleware;
 using Churchee.Module.Tenancy.Infrastructure;
 using Churchee.Module.UI.Models;
 using Churchee.Presentation.Admin.PipelineBehaviours;
@@ -165,6 +166,7 @@ namespace Churchee.Presentation.Admin
             app.UseAuthorization();
             app.UseAntiforgery();
             app.UseSecurityHeadersMiddleware();
+            app.UseMiddleware<UserLoggingMiddleware>();
 
             app.MapRazorComponents<Components.App>()
                 .AddInteractiveServerRenderMode()

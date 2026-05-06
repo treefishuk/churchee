@@ -196,7 +196,7 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
 
 
         [Fact]
-        public async Task ExecuteAsync_Updates_Event_When_Already_Exists()
+        public async Task ExecuteAsync_Adds_Event_Date_When_Already_Exists()
         {
             // Arrange
             string json = JsonSerializer.Serialize(new List<ApiResponse>() {
@@ -205,8 +205,8 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
                     Id = 1,
                     Name = "Test Event",
                     Sequence = 9876,
-                    DatetimeStart = DateTime.UtcNow,
-                    DatetimeEnd = DateTime.UtcNow.AddHours(1),
+                    DatetimeStart = DateTime.UtcNow.AddDays(1),
+                    DatetimeEnd = DateTime.UtcNow.AddDays(1).AddHours(1),
                     Description = "This is a test event",
                     Status = "confirmed",
                     PublicVisible = true,

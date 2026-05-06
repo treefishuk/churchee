@@ -103,7 +103,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             var churchSuiteDates = item.Select(s => new { Start = s.DatetimeStart, End = s.DatetimeEnd, BookingUrl = s.SignupOptions?.SignupEnabled == "1" ? s.SignupOptions?.Tickets?.Url : null }).ToList();
 
-            var datesToAdd = churchSuiteDates.Where(ed => !dbEvent.EventDates.Any(a => a.Start.Value.Date != ed.Start.Date)).ToList();
+            var datesToAdd = churchSuiteDates.Where(ed => !dbEvent.EventDates.Any(a => a.Start.Value.Date == ed.Start.Date)).ToList();
 
             var datesToRemove = dbEvent.EventDates.Where(ed => !churchSuiteDates.Any(a => a.Start.Date == ed.Start.Value.Date)).ToList();
 
