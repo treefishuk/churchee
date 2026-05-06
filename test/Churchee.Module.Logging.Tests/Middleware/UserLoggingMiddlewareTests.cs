@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
+using Churchee.Module.Logging.Middleware;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ namespace Churchee.Module.Logging.Tests.Middleware
                 return Task.CompletedTask;
             }
 
-            var middleware = new Churchee.Module.Logging.Middleware.UserLoggingMiddleware(next);
+            var middleware = new UserLoggingMiddleware(next);
 
             // Act
             await middleware.InvokeAsync(context);
@@ -63,7 +64,7 @@ namespace Churchee.Module.Logging.Tests.Middleware
                 return Task.CompletedTask;
             }
 
-            var middleware = new Churchee.Module.Logging.Middleware.UserLoggingMiddleware(next);
+            var middleware = new UserLoggingMiddleware(next);
 
             // Act
             await middleware.InvokeAsync(context);
@@ -99,7 +100,7 @@ namespace Churchee.Module.Logging.Tests.Middleware
                 return Task.CompletedTask;
             }
 
-            var middleware = new Churchee.Module.Logging.Middleware.UserLoggingMiddleware(next);
+            var middleware = new UserLoggingMiddleware(next);
 
             // Act & Assert - should not throw despite ICurrentUser throwing
             await middleware.InvokeAsync(context);
