@@ -46,8 +46,6 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             if (string.IsNullOrEmpty(request.Base64Content))
             {
-                response.AddError("Content not found", "");
-
                 return response;
             }
 
