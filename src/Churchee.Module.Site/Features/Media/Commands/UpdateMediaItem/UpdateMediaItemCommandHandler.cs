@@ -44,6 +44,8 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             entity.UpdateDetails(request.Name, request.Description, request.AdditionalContent, request.LinkUrl, request.CssClass, request.Order);
 
+            await _dataStore.SaveChangesAsync(cancellationToken);
+
             if (string.IsNullOrEmpty(request.Base64Content))
             {
                 return response;
