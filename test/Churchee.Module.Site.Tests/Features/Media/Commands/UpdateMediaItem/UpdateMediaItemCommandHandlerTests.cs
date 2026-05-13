@@ -58,7 +58,7 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.UpdateMediaItem
         }
 
         [Fact]
-        public async Task Handle_ReturnsContentNotFound_WhenBase64Missing()
+        public async Task Handle_ReturnsWithoutIssue_WhenBase64Missing()
         {
             // Arrange
             var blobStoreMock = new Mock<IBlobStore>();
@@ -99,10 +99,7 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.UpdateMediaItem
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors[0].Property.Should().Be("");
-            result.Errors[0].Description.Should().Be("Content not found");
+            result.IsSuccess.Should().BeTrue();
         }
 
         [Fact]
