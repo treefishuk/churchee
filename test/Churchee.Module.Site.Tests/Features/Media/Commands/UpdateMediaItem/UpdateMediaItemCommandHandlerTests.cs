@@ -172,7 +172,7 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.UpdateMediaItem
             // Media url should be updated on the entity instance
             mediaItem.MediaUrl.Should().Be(finalFilePath);
 
-            dataStoreMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
+            dataStoreMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
             // Verify blob saved (path is constructed - verify call occurred)
             blobStoreMock.Verify(x => x.SaveAsync(tenantId, It.Is<string>(p => p.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)), It.IsAny<Stream>(), true, It.IsAny<CancellationToken>()), Times.Once);
