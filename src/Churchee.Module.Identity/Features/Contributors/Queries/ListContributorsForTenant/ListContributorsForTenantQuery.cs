@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Churchee.CQRS.Abstractions;
 using System.Collections.Generic;
 
 namespace Churchee.Module.Identity.Features.Contributors.Queries

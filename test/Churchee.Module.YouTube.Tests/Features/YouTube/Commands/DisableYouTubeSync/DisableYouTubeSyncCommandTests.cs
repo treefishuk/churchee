@@ -1,6 +1,6 @@
-using Xunit;
-using Churchee.Module.YouTube.Features.YouTube.Commands;
 using Churchee.Common.ResponseTypes;
+using Churchee.CQRS.Abstractions;
+using Churchee.Module.YouTube.Features.YouTube.Commands;
 
 namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.DisableYouTubeSync
 {
@@ -10,7 +10,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.DisableYouTube
         public void Command_Is_Request_Of_CommandResponse()
         {
             var cmd = new DisableYouTubeSyncCommand();
-            Assert.IsType<MediatR.IRequest<CommandResponse>>(cmd, exactMatch: false);
+            Assert.IsType<IRequest<CommandResponse>>(cmd, exactMatch: false);
         }
     }
 }

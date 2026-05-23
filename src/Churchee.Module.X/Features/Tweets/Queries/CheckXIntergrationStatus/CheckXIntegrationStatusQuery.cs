@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.X.Features.Tweets.Queries
 {

@@ -3,7 +3,7 @@ using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.ResponseTypes;
 using Churchee.Module.Facebook.Events.Jobs;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace Churchee.Module.Facebook.Events.Features.Commands.SyncFacebookEventsToEventsTable

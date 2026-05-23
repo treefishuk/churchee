@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Tenancy.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Moq;
 
 namespace Churchee.Module.Tenancy.Tests.Entities

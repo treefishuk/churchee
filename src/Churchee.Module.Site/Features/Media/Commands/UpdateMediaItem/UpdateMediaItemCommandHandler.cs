@@ -3,11 +3,11 @@ using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Common.Validation;
+using Churchee.CQRS.Abstractions;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Media.Specifications;
 using Hangfire;
-using MediatR;
 
 namespace Churchee.Module.Site.Features.Media.Commands
 {

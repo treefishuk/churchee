@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using System.Linq.Dynamic.Core;
 
 namespace Churchee.Module.Events.Features.Queries

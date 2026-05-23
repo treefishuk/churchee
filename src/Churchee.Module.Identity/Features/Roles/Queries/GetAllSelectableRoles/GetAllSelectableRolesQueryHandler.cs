@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Common.ValueTypes;
 using Churchee.Module.Events.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

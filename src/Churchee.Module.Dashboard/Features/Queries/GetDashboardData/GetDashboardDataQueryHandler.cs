@@ -2,7 +2,7 @@
 using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Specifications;
 using DeviceDetectorNET;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
 

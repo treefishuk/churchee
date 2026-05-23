@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Events;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.EventHandlers

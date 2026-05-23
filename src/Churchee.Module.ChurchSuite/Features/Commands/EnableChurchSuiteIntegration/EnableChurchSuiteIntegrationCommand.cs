@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ResponseTypes;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.ChurchSuite.Features.Commands.EnableChurchSuiteIntegration
 {

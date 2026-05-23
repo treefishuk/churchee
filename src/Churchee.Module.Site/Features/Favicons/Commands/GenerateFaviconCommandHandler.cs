@@ -3,7 +3,7 @@ using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 
 namespace Churchee.Module.Site.Features.Favicons.Commands

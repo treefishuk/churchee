@@ -2,7 +2,7 @@
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Models;
 using Churchee.Module.Events.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Events.Features.Queries
 {

@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Storage;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.Media.Queries

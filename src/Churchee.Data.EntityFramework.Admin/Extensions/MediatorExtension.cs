@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ namespace Churchee.Data.EntityFramework.Admin.Extensions
 {
     internal static class MediatorExtension
     {
-        public static async Task DispatchDomainEventsAsync(this IMediator mediator, DbContext ctx)
+        public static async Task DispatchDomainEventsAsync(this IPublisher mediator, DbContext ctx)
         {
             var domainEntities = ctx.ChangeTracker
                 .Entries<IHasEvents>()

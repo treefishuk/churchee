@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Site.Features.CDN.Queries

@@ -7,7 +7,7 @@ using Churchee.Module.Tokens.Entities;
 using Churchee.Module.x.Helpers;
 using Churchee.Module.X.Jobs;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text.Json;
