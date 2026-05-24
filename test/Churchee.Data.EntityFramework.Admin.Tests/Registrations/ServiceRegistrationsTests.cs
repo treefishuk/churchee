@@ -42,8 +42,8 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
             var services = new ServiceCollection();
 
             // Mock Mediator
-            var mediatorMock = new Mock<ISender>();
-            services.AddSingleton(mediatorMock.Object);
+            var publisherMock = new Mock<IPublisher>();
+            services.AddSingleton(sp => publisherMock.Object);
 
             // Mock Logger
             var logger = new Mock<ILogger<ApplicationDbContext>>();
