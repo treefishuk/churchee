@@ -9,10 +9,10 @@ namespace Churchee.CQRS.Infrastructure
     /// Activator.CreateInstance and stored in the FrozenDictionary. The Handle method is a
     /// strongly-typed call site - no reflection, no MakeGenericType.
     /// </summary>
-    internal sealed class RequestHandlerWrapper<TRequest, TResponse> : RequestHandlerBase<TResponse>
+    internal sealed class RequestHandlerWrapper<TRequest, TResponse> : IRequestHandlerBase<TResponse>
         where TRequest : IRequest<TResponse>
     {
-        public override Task<TResponse> Handle(
+        public Task<TResponse> Handle(
             IRequest<TResponse> request,
             IServiceProvider provider,
             CancellationToken cancellationToken)

@@ -10,12 +10,12 @@ namespace Churchee.CQRS.Tests.Infrastructure
     {
         private sealed class TestRequest : IRequest<string> { }
 
-        private sealed class TestRequestHandler : RequestHandlerBase<string>
+        private sealed class TestRequestHandler : IRequestHandlerBase<string>
         {
             private readonly string _result;
             public TestRequestHandler(string result) => _result = result;
 
-            public override Task<string> Handle(IRequest<string> request, IServiceProvider provider, CancellationToken cancellationToken)
+            public Task<string> Handle(IRequest<string> request, IServiceProvider provider, CancellationToken cancellationToken)
                 => Task.FromResult(_result);
         }
 

@@ -25,7 +25,7 @@ namespace Churchee.CQRS.Infrastructure
             }
 
             // Reference-type cast - cheap, no boxing.
-            return ((RequestHandlerBase<TResponse>)wrapper).Handle(request, provider, cancellationToken);
+            return ((IRequestHandlerBase<TResponse>)wrapper).Handle(request, provider, cancellationToken);
         }
 
         public Task Publish<TNotification>(
