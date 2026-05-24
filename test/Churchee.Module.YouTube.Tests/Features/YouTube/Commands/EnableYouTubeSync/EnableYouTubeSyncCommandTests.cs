@@ -1,4 +1,5 @@
 using Churchee.Common.ResponseTypes;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands;
 
 namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeSync
@@ -17,7 +18,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         public void Is_Request_Of_CommandResponse()
         {
             var cmd = new EnableYouTubeSyncCommand("key", "h");
-            Assert.IsType<MediatR.IRequest<CommandResponse>>(cmd, exactMatch: false);
+            Assert.IsType<IRequest<CommandResponse>>(cmd, exactMatch: false);
         }
     }
 }

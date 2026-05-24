@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ResponseTypes;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Media.Commands
 {
@@ -52,6 +52,11 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             public Builder SetFileName(string fileName)
             {
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    return this;
+                }
+
                 string dashedFileName = string.Join("-", fileName.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
                 _command.FileName = dashedFileName;

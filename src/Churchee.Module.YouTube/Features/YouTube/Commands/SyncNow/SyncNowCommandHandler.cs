@@ -2,7 +2,7 @@
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.ResponseTypes;
 using Churchee.Module.YouTube.Jobs;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Churchee.Module.YouTube.Features.YouTube.Commands.SyncNow

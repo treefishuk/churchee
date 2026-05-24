@@ -1,17 +1,17 @@
 ﻿@page "/management/integrations/facebook-events/auth"
+@using Churchee.CQRS.Abstractions
 @using Churchee.Module.Events.Features.Commands
 @using Microsoft.AspNetCore.Http
 @using Microsoft.Extensions.Logging
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Sections
-@using MediatR
 @using Churchee.Module.Facebook.Events.Areas.Integrations.Models
 @using Radzen.Blazor
 @using Radzen
 @using Churchee.Common.Abstractions.Auth
 @using Churchee.Module.Facebook.Events.Features.Queries
 @using Churchee.Module.Facebook.Events.Features.Commands
-@inject IMediator Mediator
+@inject ISender Mediator
 @inject ICurrentUser _currentUser
 @inject IHttpContextAccessor _httpContextAccessor
 @inject NavigationManager NavigationManager

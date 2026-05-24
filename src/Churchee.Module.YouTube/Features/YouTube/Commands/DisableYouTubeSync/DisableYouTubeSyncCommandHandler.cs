@@ -4,7 +4,7 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Videos.Entities;
 using Churchee.Module.YouTube.Helpers;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.YouTube.Features.YouTube.Commands
 {

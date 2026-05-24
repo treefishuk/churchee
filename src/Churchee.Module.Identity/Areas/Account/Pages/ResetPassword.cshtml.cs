@@ -1,9 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Identity.Attributes;
 using Churchee.Module.Identity.Features.HIBP.Queries;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,9 +17,9 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
     public class ResetPasswordModel : PageModel
     {
         private readonly ChurcheeUserManager _userManager;
-        private readonly IMediator _mediator;
+        private readonly ISender _mediator;
 
-        public ResetPasswordModel(ChurcheeUserManager userManager, IMediator mediator)
+        public ResetPasswordModel(ChurcheeUserManager userManager, ISender mediator)
         {
             _userManager = userManager;
             _mediator = mediator;

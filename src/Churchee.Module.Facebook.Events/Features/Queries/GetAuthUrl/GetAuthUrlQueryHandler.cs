@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Exceptions;
 using Churchee.Common.Storage;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Facebook.Events.Features.Queries

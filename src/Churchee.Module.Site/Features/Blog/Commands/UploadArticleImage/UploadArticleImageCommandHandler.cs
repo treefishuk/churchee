@@ -5,7 +5,7 @@ using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Blog.Commands.UploadArticleImage;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Radzen;
 

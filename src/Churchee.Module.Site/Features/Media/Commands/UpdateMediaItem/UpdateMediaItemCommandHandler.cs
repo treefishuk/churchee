@@ -3,11 +3,11 @@ using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Common.Validation;
+using Churchee.CQRS.Abstractions;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Media.Specifications;
 using Hangfire;
-using MediatR;
 
 namespace Churchee.Module.Site.Features.Media.Commands
 {
@@ -46,7 +46,7 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
             if (string.IsNullOrEmpty(request.Base64Content))
             {
-                response.AddError("Content not found", "");
+                await _dataStore.SaveChangesAsync(cancellationToken);
 
                 return response;
             }

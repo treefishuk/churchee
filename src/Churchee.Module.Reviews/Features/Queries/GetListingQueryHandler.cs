@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Reviews.Entities;
 using Churchee.Module.Reviews.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Reviews.Features.Queries
 {

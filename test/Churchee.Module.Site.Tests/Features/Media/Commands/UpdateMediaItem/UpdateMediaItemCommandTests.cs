@@ -36,5 +36,21 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.UpdateMediaItem
             // Act & Assert
             command.FileName.Should().Be("I-am-a-new-file");
         }
+
+        [Fact]
+        public void UpdateMediaItemCommand_Builder_Set_Null_FileName_Works()
+        {
+            // Arrange
+            var command = new UpdateMediaItemCommand.Builder()
+                .SetId(Guid.NewGuid())
+                .SetFileName(null)
+                .SetName("Name")
+                .SetDescription("Desc")
+                .SetOrder(0)
+                .Build();
+
+            // Act & Assert
+            command.FileName.Should().BeNull();
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.ResponseTypes;
 using Churchee.Module.Site.Areas.Site.Models;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
 {

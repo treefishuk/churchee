@@ -4,7 +4,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Helpers;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Podcasts.Features.Commands
 {

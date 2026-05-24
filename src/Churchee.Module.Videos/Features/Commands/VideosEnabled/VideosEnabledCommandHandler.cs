@@ -4,7 +4,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Tenancy.Entities;
 using Churchee.Module.Videos.Helpers;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Videos.Features.Commands
 {

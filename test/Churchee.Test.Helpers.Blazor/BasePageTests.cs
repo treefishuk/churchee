@@ -1,8 +1,8 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Churchee.Common.Abstractions.Auth;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.UI.Models;
-using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +17,7 @@ namespace Churchee.Test.Helpers.Blazor
         protected Mock<ICurrentUser> MockCurrentUser;
         protected CustomNotificationService NotificationService;
         protected TestDialogService DialogService;
-        protected Mock<IMediator> MockMediator;
+        protected Mock<ISender> MockMediator;
         protected Mock<IConfiguration> MockConfiguration;
         protected CurrentPage CurrentPage;
         protected ITenantResolver TenantResolver;
@@ -36,7 +36,7 @@ namespace Churchee.Test.Helpers.Blazor
             NotificationService = new CustomNotificationService();
             Services.AddSingleton<NotificationService>(NotificationService);
 
-            MockMediator = new Mock<IMediator>();
+            MockMediator = new Mock<ISender>();
             Services.AddSingleton(MockMediator.Object);
 
             MockConfiguration = new Mock<IConfiguration>();

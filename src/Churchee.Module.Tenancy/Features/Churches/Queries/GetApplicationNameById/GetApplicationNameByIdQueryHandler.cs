@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
 using Churchee.Module.Tenancy.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Tenancy.Features.Churches.Queries
 {

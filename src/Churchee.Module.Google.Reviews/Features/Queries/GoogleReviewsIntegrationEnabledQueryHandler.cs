@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.Specifications;
 using Churchee.Module.Tokens.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Google.Reviews.Features.Queries
 {
