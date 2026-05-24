@@ -6,7 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="Churchee.CQRS.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="FluentValidation" Version="*" />
 	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
