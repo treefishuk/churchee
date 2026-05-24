@@ -8,7 +8,6 @@ namespace Churchee.CQRS.Resgistration
 {
     public static class Registrations
     {
-
         public static IServiceCollection AddDispatcher(this IServiceCollection services, Assembly[] assemblies)
         {
             var requestWrappers = new Dictionary<Type, RequestHandlerBase>();
@@ -24,28 +23,9 @@ namespace Churchee.CQRS.Resgistration
                 notificationWrappers.ToFrozenDictionary());
 
             services.AddSingleton(registry);
-            services.AddScoped<Dispatcher>();
-            services.AddScoped<ISender>(sp => sp.GetRequiredService<Dispatcher>());
-            services.AddScoped<IPublisher>(sp => sp.GetRequiredService<Dispatcher>());
-
-            return services;
-        }
-
-        public static IServiceCollection AddDispatcher(this IServiceCollection services, Assembly assembly)
-        {
-            var requestWrappers = new Dictionary<Type, RequestHandlerBase>();
-            var notificationWrappers = new Dictionary<Type, NotificationHandlerBase>();
-
-            AddTypesFromAssembly(services, assembly, requestWrappers, notificationWrappers);
-
-            var registry = new DispatcherRegistry(
-                requestWrappers.ToFrozenDictionary(),
-                notificationWrappers.ToFrozenDictionary());
-
-            services.AddSingleton(registry);
-            services.AddScoped<Dispatcher>();
-            services.AddScoped<ISender>(sp => sp.GetRequiredService<Dispatcher>());
-            services.AddScoped<IPublisher>(sp => sp.GetRequiredService<Dispatcher>());
+            services.AddTransient<Dispatcher>();
+            services.AddTransient<ISender>(sp => sp.GetRequiredService<Dispatcher>());
+            services.AddTransient<IPublisher>(sp => sp.GetRequiredService<Dispatcher>());
 
             return services;
         }
@@ -70,7 +50,7 @@ namespace Churchee.CQRS.Resgistration
 
                     if (def == typeof(IRequestHandler<,>))
                     {
-                        services.AddScoped(iface, type);
+                        services.AddTransient(iface, type);
 
                         var args = iface.GetGenericArguments();
                         var requestType = args[0];
@@ -86,7 +66,7 @@ namespace Churchee.CQRS.Resgistration
                     }
                     else if (def == typeof(INotificationHandler<>))
                     {
-                        services.AddScoped(iface, type);
+                        services.AddTransient(iface, type);
 
                         var notificationType = iface.GetGenericArguments()[0];
                         if (!notificationWrappers.ContainsKey(notificationType))
@@ -100,15 +80,6 @@ namespace Churchee.CQRS.Resgistration
                 }
             }
         }
-
-        public static IServiceCollection AddPipelineBehavior(
-            this IServiceCollection services,
-            Type openGenericBehaviorType)
-        {
-            services.AddScoped(typeof(IPipelineBehavior<,>), openGenericBehaviorType);
-            return services;
-        }
-
     }
 
 }
