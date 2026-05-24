@@ -3,10 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Churchee.CQRS.Infrastructure
 {
-    internal sealed class NotificationHandlerWrapper<TNotification> : NotificationHandlerBase
+    internal sealed class NotificationHandlerWrapper<TNotification> : INotificationHandlerBase
         where TNotification : INotification
     {
-        public override async Task Handle(
+        public async Task Handle(
             object notification,
             IServiceProvider provider,
             CancellationToken cancellationToken)

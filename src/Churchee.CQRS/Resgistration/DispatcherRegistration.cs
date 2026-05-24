@@ -10,8 +10,8 @@ namespace Churchee.CQRS.Resgistration
     {
         public static IServiceCollection AddDispatcher(this IServiceCollection services, Assembly[] assemblies)
         {
-            var requestWrappers = new Dictionary<Type, RequestHandlerBase>();
-            var notificationWrappers = new Dictionary<Type, NotificationHandlerBase>();
+            var requestWrappers = new Dictionary<Type, IRequestHandlerBase>();
+            var notificationWrappers = new Dictionary<Type, INotificationHandlerBase>();
 
             foreach (var assembly in assemblies)
             {
@@ -30,7 +30,7 @@ namespace Churchee.CQRS.Resgistration
             return services;
         }
 
-        private static void AddTypesFromAssembly(IServiceCollection services, Assembly assembly, Dictionary<Type, RequestHandlerBase> requestWrappers, Dictionary<Type, NotificationHandlerBase> notificationWrappers)
+        private static void AddTypesFromAssembly(IServiceCollection services, Assembly assembly, Dictionary<Type, IRequestHandlerBase> requestWrappers, Dictionary<Type, INotificationHandlerBase> notificationWrappers)
         {
             foreach (var type in assembly.GetTypes())
             {
@@ -50,34 +50,45 @@ namespace Churchee.CQRS.Resgistration
 
                     if (def == typeof(IRequestHandler<,>))
                     {
-                        services.AddTransient(iface, type);
-
-                        var args = iface.GetGenericArguments();
-                        var requestType = args[0];
-                        var responseType = args[1];
-
-                        if (!requestWrappers.ContainsKey(requestType))
-                        {
-                            var wrapperType = typeof(RequestHandlerWrapper<,>)
-                                .MakeGenericType(requestType, responseType);
-                            requestWrappers[requestType] =
-                                (RequestHandlerBase)Activator.CreateInstance(wrapperType)!;
-                        }
+                        AddRequestHandler(services, requestWrappers, type, iface);
                     }
                     else if (def == typeof(INotificationHandler<>))
                     {
-                        services.AddTransient(iface, type);
-
-                        var notificationType = iface.GetGenericArguments()[0];
-                        if (!notificationWrappers.ContainsKey(notificationType))
-                        {
-                            var wrapperType = typeof(NotificationHandlerWrapper<>)
-                                .MakeGenericType(notificationType);
-                            notificationWrappers[notificationType] =
-                                (NotificationHandlerBase)Activator.CreateInstance(wrapperType)!;
-                        }
+                        AddNotificationHandler(services, notificationWrappers, type, iface);
                     }
                 }
+            }
+        }
+
+        private static void AddNotificationHandler(IServiceCollection services, Dictionary<Type, INotificationHandlerBase> notificationWrappers, Type type, Type iface)
+        {
+            services.AddTransient(iface, type);
+
+            var notificationType = iface.GetGenericArguments()[0];
+
+            if (!notificationWrappers.ContainsKey(notificationType))
+            {
+                var wrapperType = typeof(NotificationHandlerWrapper<>)
+                    .MakeGenericType(notificationType);
+                notificationWrappers[notificationType] =
+                    (INotificationHandlerBase)Activator.CreateInstance(wrapperType)!;
+            }
+        }
+
+        private static void AddRequestHandler(IServiceCollection services, Dictionary<Type, IRequestHandlerBase> requestWrappers, Type type, Type iface)
+        {
+            services.AddTransient(iface, type);
+
+            var args = iface.GetGenericArguments();
+            var requestType = args[0];
+            var responseType = args[1];
+
+            if (!requestWrappers.ContainsKey(requestType))
+            {
+                var wrapperType = typeof(RequestHandlerWrapper<,>)
+                    .MakeGenericType(requestType, responseType);
+                requestWrappers[requestType] =
+                    (IRequestHandlerBase)Activator.CreateInstance(wrapperType)!;
             }
         }
     }

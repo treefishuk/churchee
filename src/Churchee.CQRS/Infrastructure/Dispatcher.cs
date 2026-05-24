@@ -48,10 +48,10 @@ namespace Churchee.CQRS.Infrastructure
     /// Built once at startup, frozen for the lifetime of the application. Singleton.
     /// </summary>
     internal sealed class DispatcherRegistry(
-        FrozenDictionary<Type, RequestHandlerBase> requestWrappers,
-        FrozenDictionary<Type, NotificationHandlerBase> notificationWrappers)
+        FrozenDictionary<Type, IRequestHandlerBase> requestWrappers,
+        FrozenDictionary<Type, INotificationHandlerBase> notificationWrappers)
     {
-        public FrozenDictionary<Type, RequestHandlerBase> RequestWrappers { get; } = requestWrappers;
-        public FrozenDictionary<Type, NotificationHandlerBase> NotificationWrappers { get; } = notificationWrappers;
+        public FrozenDictionary<Type, IRequestHandlerBase> RequestWrappers { get; } = requestWrappers;
+        public FrozenDictionary<Type, INotificationHandlerBase> NotificationWrappers { get; } = notificationWrappers;
     }
 }

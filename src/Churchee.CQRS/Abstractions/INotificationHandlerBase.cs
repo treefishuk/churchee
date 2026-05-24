@@ -1,6 +1,6 @@
-﻿namespace Churchee.CQRS.Infrastructure
+﻿namespace Churchee.CQRS.Abstractions
 {
-    internal abstract class NotificationHandlerBase
+    internal interface INotificationHandlerBase
     {
         public abstract Task Handle(
             object notification,
