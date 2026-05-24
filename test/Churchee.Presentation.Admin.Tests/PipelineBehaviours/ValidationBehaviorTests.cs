@@ -1,9 +1,9 @@
 using Churchee.Common.ResponseTypes;
+using Churchee.CQRS.Abstractions;
 using Churchee.Presentation.Admin.PipelineBehaviours;
 using Churchee.Test.Helpers.Validation;
 using FluentValidation;
 using FluentValidation.Results;
-using MediatR;
 using Moq;
 
 namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
@@ -28,14 +28,14 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
             var expected = new TestResponse();
             bool nextCalled = false;
 
-            Task<TestResponse> Next(CancellationToken _)
+            Task<TestResponse> next()
             {
                 nextCalled = true;
                 return Task.FromResult(expected);
             }
 
             // Act
-            var actual = await behavior.Handle(new TestRequest(), Next, CancellationToken.None);
+            var actual = await behavior.Handle(new TestRequest(), next, CancellationToken.None);
 
             // Assert
             nextCalled.Should().BeTrue();
@@ -60,7 +60,7 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
             var behavior = new ValidationBehavior<TestRequest, TestResponse>(new[] { validatorMock.Object });
 
             // next should not be called when there are failures
-            static Task<TestResponse> Next(CancellationToken _)
+            static Task<TestResponse> Next()
             {
                 throw new InvalidOperationException("Next should not be invoked when validation fails");
             }
