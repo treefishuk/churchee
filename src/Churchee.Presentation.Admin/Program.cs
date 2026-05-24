@@ -3,6 +3,9 @@ using Churchee.Common.Abstractions.Extensibility;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Extensions;
 using Churchee.Common.Helpers;
+using Churchee.CQRS.Abstractions;
+using Churchee.CQRS.Behaviors;
+using Churchee.CQRS.Resgistration;
 using Churchee.Data.EntityFramework.Admin;
 using Churchee.EmailConfiguration.MailGun.Infrastructure;
 using Churchee.Module.Identity.Entities;
@@ -15,7 +18,6 @@ using Churchee.Presentation.Admin.PipelineBehaviours;
 using Churchee.Presentation.Admin.Registrations;
 using FluentValidation;
 using Hangfire;
-using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -99,11 +101,11 @@ namespace Churchee.Presentation.Admin
             builder.Services.AddScoped<IStores, Stores>();
             builder.Services.RegisterAllTypes<IMenuRegistration>(ServiceLifetime.Scoped);
             builder.Services.RegisterAllTypes<IScriptRegistrations>(ServiceLifetime.Scoped);
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
+            builder.Services.AddDispatcher(assemblies);
             builder.Services.AddValidatorsFromAssemblies(assemblies);
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandlingBehavior<,>));
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
             if (builder.Configuration.GetValue<bool>("data:seed"))
             {

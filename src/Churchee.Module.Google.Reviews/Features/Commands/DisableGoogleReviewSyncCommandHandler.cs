@@ -4,7 +4,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.Helpers;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Google.Reviews.Features.Commands
 {

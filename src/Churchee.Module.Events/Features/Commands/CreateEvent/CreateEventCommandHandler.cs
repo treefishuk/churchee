@@ -9,7 +9,7 @@ using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Site.Specifications;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Events.Features.Commands
 {

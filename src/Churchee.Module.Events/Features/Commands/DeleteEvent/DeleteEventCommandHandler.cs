@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Events.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Events.Features.Commands
 {

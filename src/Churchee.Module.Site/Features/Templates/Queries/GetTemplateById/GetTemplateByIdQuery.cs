@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Site.Features.Templates.Responses;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Templates.Queries.GetTemplateById
 {

@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Tenancy.Entities;
 using Churchee.Module.Tenancy.Events;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Configuration;
 
 namespace Churchee.Module.Tenancy.Features.Churches.Commands

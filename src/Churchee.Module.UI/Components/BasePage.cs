@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Radzen;
@@ -25,7 +25,7 @@ namespace Churchee.Module.UI.Components
         protected ITenantResolver TenantResolver { get; set; } = default!;
 
         [Inject]
-        protected IMediator Mediator { get; set; } = default!;
+        protected ISender Mediator { get; set; } = default!;
 
         protected CancellationToken CancellationToken => _cancellationTokenSource.Token;
 

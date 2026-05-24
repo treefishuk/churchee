@@ -7,7 +7,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Facebook.Events.API;
 using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Tokens.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;

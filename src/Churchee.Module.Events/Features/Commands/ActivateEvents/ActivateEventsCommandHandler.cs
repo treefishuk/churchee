@@ -3,7 +3,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Tenancy.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Page = Churchee.Module.Site.Entities.Page;
 
 namespace Churchee.Module.Events.Features.Commands

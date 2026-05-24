@@ -1,10 +1,10 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Data.EntityFramework.Admin.Extensions;
 using Churchee.Data.EntityFramework.Shared.Extensions;
 using Churchee.Module.Identity.Entities;
-using MediatR;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +21,7 @@ namespace Churchee.Data.EntityFramework.Admin
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IMediator _mediator;
+        private readonly IPublisher _mediator;
         private readonly ITenantResolver _tenantResolver;
         private readonly IConfiguration _configuration;
 
@@ -33,7 +33,7 @@ namespace Churchee.Data.EntityFramework.Admin
 
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
-        public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options, IServiceProvider serviceProvider, IMediator mediator, IConfiguration configuration, ITenantResolver tenantResolver = null)
+        public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options, IServiceProvider serviceProvider, IPublisher mediator, IConfiguration configuration, ITenantResolver tenantResolver = null)
             : base(options)
         {
             _logger = logger;

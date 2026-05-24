@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.Media.Queries

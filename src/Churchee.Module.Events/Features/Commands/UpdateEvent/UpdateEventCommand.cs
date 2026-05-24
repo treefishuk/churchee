@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.ResponseTypes;
 using Churchee.Module.Events.Models;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Events.Features.Commands
 {

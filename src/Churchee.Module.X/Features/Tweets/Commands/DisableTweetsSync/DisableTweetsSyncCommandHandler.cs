@@ -3,7 +3,7 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.x.Helpers;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.X.Features.Tweets.Commands
 {

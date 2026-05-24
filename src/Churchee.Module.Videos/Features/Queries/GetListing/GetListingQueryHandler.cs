@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Videos.Entities;
 using Churchee.Module.Videos.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Videos.Features.Queries
 {

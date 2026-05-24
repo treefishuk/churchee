@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.Site.Features.Blog.Commands.UploadArticleImage;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Blog.Commands
 {

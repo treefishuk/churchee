@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Jotform.Features.Queries.GetJotformConfigurationStatus
 {

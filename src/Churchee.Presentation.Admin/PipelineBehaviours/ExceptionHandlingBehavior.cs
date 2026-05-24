@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ResponseTypes;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Presentation.Admin.PipelineBehaviours
 {
@@ -19,7 +19,7 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
         {
             try
             {
-                return await next(cancellationToken);
+                return await next();
             }
             catch (Exception ex)
             {

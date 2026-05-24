@@ -6,7 +6,7 @@ using Churchee.Common.Validation;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Media.Commands
 {

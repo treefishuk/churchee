@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using System;
 using System.Collections.Generic;
 

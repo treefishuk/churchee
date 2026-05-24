@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions;
 using Churchee.Module.Logging.Entities;
 using Churchee.Module.Logging.Infrastructure;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Dynamic.Core;

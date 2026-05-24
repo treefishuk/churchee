@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Data.EntityFramework.Admin.Registrations;
 using Churchee.Test.Helpers.Validation;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -42,8 +42,8 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
             var services = new ServiceCollection();
 
             // Mock Mediator
-            var mediatorMock = new Mock<IMediator>();
-            services.AddSingleton(mediatorMock.Object);
+            var publisherMock = new Mock<IPublisher>();
+            services.AddSingleton(sp => publisherMock.Object);
 
             // Mock Logger
             var logger = new Mock<ILogger<ApplicationDbContext>>();

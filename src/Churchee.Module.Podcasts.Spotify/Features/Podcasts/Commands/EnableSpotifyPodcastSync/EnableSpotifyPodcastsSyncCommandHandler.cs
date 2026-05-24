@@ -12,7 +12,7 @@ using Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands.EnablePodcasts
 using Churchee.Module.Podcasts.Spotify.Specifications;
 using Churchee.Module.Site.Entities;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.Xml.Linq;

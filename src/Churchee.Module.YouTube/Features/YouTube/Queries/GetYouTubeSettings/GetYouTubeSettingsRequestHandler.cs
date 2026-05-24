@@ -2,7 +2,7 @@
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Storage;
 using Churchee.Module.YouTube.Helpers;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.YouTube.Features.YouTube.Queries
 {
