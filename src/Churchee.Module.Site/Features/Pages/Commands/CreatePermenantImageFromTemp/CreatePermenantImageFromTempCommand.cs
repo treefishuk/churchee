@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ValueTypes;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.CreatePermenantImageFromTemp
 {

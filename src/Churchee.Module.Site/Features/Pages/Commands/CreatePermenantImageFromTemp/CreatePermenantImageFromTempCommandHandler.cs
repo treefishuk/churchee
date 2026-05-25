@@ -2,8 +2,8 @@
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.ImageProcessing.Jobs;
-using MediatR;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.CreatePermenantImageFromTemp
 {
