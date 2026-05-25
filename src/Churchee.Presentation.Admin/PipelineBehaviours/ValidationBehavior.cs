@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.ResponseTypes;
 using Churchee.CQRS.Abstractions;
 using FluentValidation;
+using FluentValidation.Results;
 
 namespace Churchee.Presentation.Admin.PipelineBehaviours
 {
@@ -26,9 +27,20 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
                 return await next();
             }
 
-            var failures = _validators.Select(x => x.Validate(request)).SelectMany(m => m.Errors).Where(w => w != null);
+            var failures = new List<ValidationFailure>();
 
-            if (failures.Any())
+            var context = new ValidationContext<TRequest>(request);
+
+            foreach (var validator in _validators)
+            {
+                var result = await validator.ValidateAsync(context, cancellationToken);
+                if (!result.IsValid)
+                {
+                    failures.AddRange(result.Errors);
+                }
+            }
+
+            if (failures.Count != 0)
             {
                 var response = Activator.CreateInstance<TResponse>();
 
