@@ -1,6 +1,7 @@
 ﻿using Serilog.Core;
 using Serilog.Events;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -39,15 +40,25 @@ namespace Churchee.Module.Logging.Registrations
                     return;
                 }
 
-                string timestamp = logEvent.Timestamp.UtcDateTime.ToString("o", CultureInfo.InvariantCulture);
+                string timestamp = logEvent.Timestamp.UtcDateTime.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture);
                 string level = logEvent.Level.ToString();
+                string username = logEvent.Properties.FirstOrDefault(w => w.Key == "Username").Value?.ToString() ?? "Unknown User";
+                string tenantName = logEvent.Properties.FirstOrDefault(w => w.Key == "Tenant").Value?.ToString() ?? "Unknown Tenant";
                 string message = RenderMessage(logEvent);
 
                 // Compose HTML-encoded message to use parse_mode = HTML
                 var fullMessage = new StringBuilder();
-                fullMessage.Append("<b>").Append(WebUtility.HtmlEncode(level)).Append("</b>");
-                fullMessage.Append(' ');
-                fullMessage.Append("<i>").Append(WebUtility.HtmlEncode(timestamp)).Append("</i>");
+                fullMessage.Append("<b>User: </b>")
+                           .Append(WebUtility.HtmlEncode(username));
+                fullMessage.AppendLine();
+                fullMessage.Append("<b>Tenant: </b>")
+                           .Append(WebUtility.HtmlEncode(tenantName));
+                fullMessage.AppendLine();
+                fullMessage.Append("<b>Type: </b>")
+                            .Append(WebUtility.HtmlEncode(level));
+                fullMessage.AppendLine();
+                fullMessage.Append("<b>Time: </b>")
+                            .Append(WebUtility.HtmlEncode(timestamp));
                 fullMessage.AppendLine();
                 fullMessage.AppendLine();
                 fullMessage.Append(WebUtility.HtmlEncode(message));
