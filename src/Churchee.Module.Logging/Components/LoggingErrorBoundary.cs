@@ -21,9 +21,9 @@ namespace Churchee.Module.Logging.Components
                 string route = Nav.ToBaseRelativePath(Nav.Uri);
                 Logger.LogError(exception, "UI error at {Route}", route);
             }
-            catch
+            catch (Exception ex)
             {
-                Logger.LogError(exception, "UI error");
+                Logger.LogError(exception, "UI error, additional error thrown: {error}", ex);
             }
 
             return base.OnErrorAsync(exception);
