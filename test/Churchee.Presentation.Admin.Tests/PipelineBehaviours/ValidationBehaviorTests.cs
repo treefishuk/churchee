@@ -20,8 +20,8 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
             // Arrange
             var validatorMock = new Mock<IValidator<TestRequest>>();
             validatorMock
-                .Setup(v => v.Validate(It.IsAny<TestRequest>()))
-                .Returns(new ValidationResult()); // no failures
+                .Setup(v => v.ValidateAsync(It.IsAny<IValidationContext>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ValidationResult()); // no failures
 
             var behavior = new ValidationBehavior<TestRequest, TestResponse>([validatorMock.Object]);
 
@@ -54,8 +54,8 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
 
             var validatorMock = new Mock<IValidator<TestRequest>>();
             validatorMock
-                .Setup(v => v.Validate(It.IsAny<TestRequest>()))
-                .Returns(validationResult);
+                .Setup(v => v.ValidateAsync(It.IsAny<IValidationContext>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(validationResult);
 
             var behavior = new ValidationBehavior<TestRequest, TestResponse>(new[] { validatorMock.Object });
 
