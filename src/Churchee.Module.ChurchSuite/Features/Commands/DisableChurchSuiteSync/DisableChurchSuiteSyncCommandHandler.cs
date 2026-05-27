@@ -3,7 +3,7 @@ using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.ChurchSuite.Events.Helpers;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.ChurchSuite.Features.Commands.DisableChurchSuiteSync
 {

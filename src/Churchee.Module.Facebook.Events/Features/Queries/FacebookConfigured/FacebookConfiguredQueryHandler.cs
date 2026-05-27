@@ -3,7 +3,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Facebook.Events.Features.Queries
 {

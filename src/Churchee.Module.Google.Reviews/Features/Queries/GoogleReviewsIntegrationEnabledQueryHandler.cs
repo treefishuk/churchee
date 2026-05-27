@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.Specifications;
 using Churchee.Module.Tokens.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Google.Reviews.Features.Queries
 {
@@ -16,7 +16,7 @@ namespace Churchee.Module.Google.Reviews.Features.Queries
 
         public async Task<bool> Handle(GoogleReviewsIntegrationEnabledQuery request, CancellationToken cancellationToken)
         {
-            bool exists = _dataStore.GetRepository<Token>().ApplySpecification(new HasAccessTokenSpecification()).Any();
+            bool exists = await _dataStore.GetRepository<Token>().AnyAsync(new HasAccessTokenSpecification(), cancellationToken);
 
             return await Task.FromResult(exists);
         }

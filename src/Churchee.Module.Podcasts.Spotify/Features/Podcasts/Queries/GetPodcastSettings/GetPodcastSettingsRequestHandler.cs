@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Storage;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Queries
 {

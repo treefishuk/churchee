@@ -6,7 +6,7 @@ using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Blog.Commands
 {

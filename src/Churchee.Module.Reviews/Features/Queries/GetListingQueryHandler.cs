@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Reviews.Entities;
 using Churchee.Module.Reviews.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Reviews.Features.Queries
 {
@@ -19,8 +19,6 @@ namespace Churchee.Module.Reviews.Features.Queries
         public async Task<DataTableResponse<GetListingQueryResponseItem>> Handle(GetListingQuery request, CancellationToken cancellationToken)
         {
             var repo = _storage.GetRepository<Review>();
-
-            var now = DateTime.Now;
 
             var dataTableResponse = await repo.GetDataTableResponseAsync(
                 specification: new ReviewTextFilterSpecification(request.SearchText),

@@ -12,8 +12,7 @@ namespace Churchee.Module.Identity.Tests.Registrations
 
         public EntityRegistrationIntegrationTests()
         {
-            _msSqlContainer = new MsSqlBuilder()
-                .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithPassword("yourStrong(!)Password")
                 .Build();
 

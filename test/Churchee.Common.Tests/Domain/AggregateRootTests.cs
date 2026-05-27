@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Data;
 using Churchee.Test.Helpers.Validation;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Moq;
 
 namespace Churchee.Common.Tests.Domain

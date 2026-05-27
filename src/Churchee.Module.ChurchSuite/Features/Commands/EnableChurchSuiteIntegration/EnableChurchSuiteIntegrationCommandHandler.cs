@@ -5,7 +5,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.ChurchSuite.Events.Helpers;
 using Churchee.Module.ChurchSuite.Jobs;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.ChurchSuite.Features.Commands.EnableChurchSuiteIntegration
 {

@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.ResponseTypes;
+using Churchee.CQRS.Abstractions;
 using FluentValidation;
-using MediatR;
+using FluentValidation.Results;
 
 namespace Churchee.Presentation.Admin.PipelineBehaviours
 {
@@ -15,11 +16,31 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
             _validators = validators;
         }
 
-        public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+        public async Task<TResponse> Handle(
+            TRequest request,
+            RequestHandlerDelegate<TResponse> next,
+            CancellationToken cancellationToken)
         {
-            var failures = _validators.Select(x => x.Validate(request)).SelectMany(m => m.Errors).Where(w => w != null);
 
-            if (failures.Any())
+            if (!_validators.Any())
+            {
+                return await next();
+            }
+
+            var failures = new List<ValidationFailure>();
+
+            var context = new ValidationContext<TRequest>(request);
+
+            foreach (var validator in _validators)
+            {
+                var result = await validator.ValidateAsync(context, cancellationToken);
+                if (!result.IsValid)
+                {
+                    failures.AddRange(result.Errors);
+                }
+            }
+
+            if (failures.Count != 0)
             {
                 var response = Activator.CreateInstance<TResponse>();
 
@@ -30,10 +51,10 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
                     ((CommandResponse)(object)response).AddError(failure.ErrorMessage, propertyName);
                 }
 
-                return Task.FromResult(response);
+                return await Task.FromResult(response);
             }
 
-            return next(cancellationToken);
+            return await next();
         }
 
     }

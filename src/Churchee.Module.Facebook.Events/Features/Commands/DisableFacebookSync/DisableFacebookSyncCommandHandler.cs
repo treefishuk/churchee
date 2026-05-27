@@ -4,7 +4,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Facebook.Events.Helpers;
 using Churchee.Module.Tokens.Entities;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace Churchee.Module.Facebook.Events.Features.Commands

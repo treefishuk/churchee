@@ -1,7 +1,7 @@
 using Churchee.Common.ResponseTypes;
+using Churchee.CQRS.Abstractions;
 using Churchee.Presentation.Admin.PipelineBehaviours;
 using Churchee.Test.Helpers.Validation;
-using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -29,7 +29,7 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
 
             var expected = new TestResponse();
 
-            Task<TestResponse> next(CancellationToken _ = default)
+            Task<TestResponse> next()
             {
                 return Task.FromResult(expected);
             }
@@ -60,7 +60,7 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
 
             var thrown = new InvalidOperationException("boom");
 
-            Task<TestResponse> next(CancellationToken _ = default)
+            Task<TestResponse> next()
             {
                 throw thrown;
             }

@@ -7,7 +7,7 @@ using Churchee.Module.YouTube.Helpers;
 using Churchee.Module.YouTube.Jobs;
 using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 

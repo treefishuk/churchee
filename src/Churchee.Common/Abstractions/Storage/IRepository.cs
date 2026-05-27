@@ -43,6 +43,8 @@ namespace Churchee.Common.Abstractions.Storage
 
         bool Any();
 
+        Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken);
+
         bool AnyWithFiltersDisabled(Expression<Func<T, bool>> predicate);
 
         int Count();

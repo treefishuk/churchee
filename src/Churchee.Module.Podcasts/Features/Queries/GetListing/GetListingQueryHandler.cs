@@ -2,7 +2,7 @@
 using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Entities;
 using Churchee.Module.Podcasts.Specifications;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Podcasts.Features.Queries
 {

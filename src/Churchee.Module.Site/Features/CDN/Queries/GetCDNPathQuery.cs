@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.CDN.Queries
 {

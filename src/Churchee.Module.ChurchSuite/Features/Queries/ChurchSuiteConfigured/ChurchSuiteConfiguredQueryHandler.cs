@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Storage;
 using Churchee.Module.ChurchSuite.Events.Helpers;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.ChurchSuite.Features.Queries.ChurchSuiteConfigured
 {

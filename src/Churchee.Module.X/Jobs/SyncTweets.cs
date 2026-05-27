@@ -37,16 +37,13 @@ namespace Churchee.Module.X.Jobs
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Churchee/1.0");
+
             string userId = await _settingStore.GetSettingValue(Guid.Parse(SettingKeys.XUserId), applicationTenantId);
 
             string getTweetsUrl = await GetTweetsUrl(userId, applicationTenantId, cancellationToken);
 
             var response = await httpClient.GetAsync(getTweetsUrl, cancellationToken);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-            {
-                return;
-            }
 
             if (!response.IsSuccessStatusCode)
             {

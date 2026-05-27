@@ -1,8 +1,8 @@
 ﻿@page "/management"
+@using Churchee.CQRS.Abstractions
 @using Churchee.Module.Dashboard.Features.Queries
 @using Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 @using Churchee.Module.UI.Components
-@using MediatR
 @using Microsoft.AspNetCore.Components.Sections
 @using Radzen
 @using Radzen.Blazor
@@ -145,7 +145,7 @@
     private bool overlayVisible = false;
 
     [Inject]
-    private IMediator Mediator { get; set; } = default!;
+    private ISender Mediator { get; set; } = default!;
 
     [Inject]
     protected NotificationService NotificationService { get; set; } = default!;

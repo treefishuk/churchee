@@ -11,8 +11,10 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.CreateMediaItem
 {
     public class CreateMediaItemCommandHandlerTests
     {
-        [Fact]
-        public async Task Handle_CreatesMediaItemAndSavesChanges()
+        [Theory]
+        [InlineData("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA", ".webp")]
+        [InlineData("data:application/pdf;base64,JVBERi0xLjEKMSAwIG9iago8PD4+CmVuZG9iagp4cmVmCjAgMgowMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgMiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKMjkKJSVFT0YK", ".pdf")]
+        public async Task Handle_CreatesMediaItemAndSavesChanges(string base64, string ext)
         {
             // Arrange
             var blobStoreMock = new Mock<IBlobStore>();
@@ -26,10 +28,9 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.CreateMediaItem
             var folderId = Guid.NewGuid();
             string folderPath = "folder-path";
             string fileName = "file";
-            string filePath = $"/{folderPath}{fileName}.webp";
-            string base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA";
+            string filePath = $"/{folderPath}{fileName}{ext}";
             var webpStream = new MemoryStream(new byte[] { 1, 2, 3 });
-            string finalFilePath = "/folder-pathfile.webp";
+            string finalFilePath = $"/folder-pathfile{ext}";
 
             currentUserMock.Setup(x => x.GetApplicationTenantId()).ReturnsAsync(tenantId);
             dataStoreMock.Setup(x => x.GetRepository<MediaFolder>()).Returns(mediaFolderRepoMock.Object);
@@ -43,7 +44,7 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.CreateMediaItem
             {
                 Name = "name",
                 FileName = fileName,
-                FileExtension = ".webp",
+                FileExtension = ext,
                 Base64Content = base64,
                 FolderId = folderId
             };

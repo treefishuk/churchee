@@ -3,7 +3,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.Helpers;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Google.Reviews.Features.Queries
 {

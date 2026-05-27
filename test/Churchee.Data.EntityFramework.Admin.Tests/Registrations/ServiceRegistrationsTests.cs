@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Data.EntityFramework.Admin.Registrations;
 using Churchee.Test.Helpers.Validation;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,8 +20,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
 
         public ServiceRegistrationsTests()
         {
-            _msSqlContainer = new MsSqlBuilder()
-             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
              .WithPassword("yourStrong(!)Password")
              .Build();
         }
@@ -43,8 +42,8 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
             var services = new ServiceCollection();
 
             // Mock Mediator
-            var mediatorMock = new Mock<IMediator>();
-            services.AddSingleton(mediatorMock.Object);
+            var publisherMock = new Mock<IPublisher>();
+            services.AddSingleton(sp => publisherMock.Object);
 
             // Mock Logger
             var logger = new Mock<ILogger<ApplicationDbContext>>();
@@ -52,7 +51,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Registrations
 
             // Mock Configuration
             var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(s => s.GetSection("ConnectionStrings")["DefaultConnection"]).Returns(_msSqlContainer.GetConnectionString());
+            mockConfiguration.Setup(s => s.GetSection("ConnectionStrings")["Default"]).Returns(_msSqlContainer.GetConnectionString());
 
             var mockConfigurationSection = new Mock<IConfigurationSection>();
             mockConfigurationSection.Setup(s => s["DPK"]).Returns("TestDPKValue");

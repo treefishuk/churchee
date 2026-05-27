@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Churchee.Module.UI.Tests" />
+  </ItemGroup>  
+  
+  <ItemGroup>
     <Content Remove="compilerconfig.json" />
   </ItemGroup>
 
@@ -15,7 +19,7 @@
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 	
-  <ItemGroup>
+  <ItemGroup> 
     <None Include="compilerconfig.json" />
   </ItemGroup>
 

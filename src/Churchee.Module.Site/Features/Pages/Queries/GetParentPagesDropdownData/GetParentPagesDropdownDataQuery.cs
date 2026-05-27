@@ -1,5 +1,5 @@
 ﻿using Churchee.Module.UI.Models;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {

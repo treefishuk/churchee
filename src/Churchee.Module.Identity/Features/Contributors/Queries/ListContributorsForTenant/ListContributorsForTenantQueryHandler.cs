@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Storage;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

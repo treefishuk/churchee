@@ -1,5 +1,5 @@
 ﻿using Churchee.Common.ResponseTypes;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;

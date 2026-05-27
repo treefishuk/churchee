@@ -2,7 +2,7 @@
 using Churchee.Common.Abstractions;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 

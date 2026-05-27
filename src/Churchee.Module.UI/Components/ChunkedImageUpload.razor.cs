@@ -41,7 +41,7 @@ namespace Churchee.Module.UI.Components
 
         private async Task HandleFileUpload(UploadChangeEventArgs e)
         {
-            if (e.Files.FirstOrDefault() is not IBrowserFile file)
+            if (e.Files?.FirstOrDefault() is not IBrowserFile file)
             {
                 uploadProgress = 0;
 

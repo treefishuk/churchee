@@ -343,9 +343,9 @@ else
         await OnValueChanged.InvokeAsync(null);
     }
 
-    void OnFileError(UploadErrorEventArgs args, string name)
+    internal void OnFileError(UploadErrorEventArgs args, string name)
     {
-        if (args.Message.Contains("File too large"))
+        if (!string.IsNullOrEmpty(args.Message) && args.Message.Contains("File too large"))
         {
             NotificationService.Notify(NotificationSeverity.Error, "File size to large. Max upload size is 5MB");
         }

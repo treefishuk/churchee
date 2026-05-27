@@ -15,8 +15,7 @@ namespace Churchee.Module.Logging.Tests.Registrations
 
         public ServiceRegistrationsTests()
         {
-            _msSqlContainer = new MsSqlBuilder()
-             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
              .WithPassword("yourStrong(!)Password")
              .Build();
         }
@@ -40,7 +39,7 @@ namespace Churchee.Module.Logging.Tests.Registrations
             // Use in-memory configuration for connection string
             var inMemorySettings = new Dictionary<string, string?>
             {
-                {"ConnectionStrings:LogsConnection", _msSqlContainer.GetConnectionString()}
+                {"ConnectionStrings:Logs", _msSqlContainer.GetConnectionString()}
             };
 
             IConfiguration configuration = new ConfigurationBuilder()

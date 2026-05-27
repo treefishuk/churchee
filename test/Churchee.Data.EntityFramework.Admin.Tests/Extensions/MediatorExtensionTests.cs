@@ -1,8 +1,8 @@
 ﻿using Churchee.Common.Abstractions.Entities;
+using Churchee.CQRS.Abstractions;
 using Churchee.Data.EntityFramework.Admin.Extensions;
 using Churchee.Module.Identity.Entities;
 using Churchee.Test.Helpers.Validation;
-using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -19,7 +19,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Extensions
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
 
-            var mediatorMock = new Mock<IMediator>();
+            var mediatorMock = new Mock<IPublisher>();
             using var context = new ApplicationDbContext(options);
 
             var testEntity = new TestEntity();
@@ -43,7 +43,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Extensions
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
 
-            var mediatorMock = new Mock<IMediator>();
+            var mediatorMock = new Mock<IPublisher>();
             using var context = new ApplicationDbContext(options);
 
             var testEntity = new TestEntity();
@@ -65,7 +65,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Extensions
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
 
-            var mediatorMock = new Mock<IMediator>();
+            var mediatorMock = new Mock<IPublisher>();
             using var context = new ApplicationDbContext(options);
 
             var testEntity = new TestEntity();

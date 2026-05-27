@@ -3,7 +3,7 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Podcasts.Entities;
 using Hangfire;
-using MediatR;
+using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Podcasts.Spotify.Features.Podcasts.Commands
 {
