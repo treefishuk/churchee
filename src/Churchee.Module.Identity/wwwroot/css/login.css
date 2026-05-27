@@ -186,3 +186,18 @@ h2 {
   border: 0 !important;
   position: absolute !important;
 }
+
+.validation-summary-errors {
+    background: #f6c4c4;
+    width: 100%;
+    padding: 0.5rem;
+    color: #c91414;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.validation-summary-errors ul {
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0;
+}

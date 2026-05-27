@@ -6,7 +6,11 @@
 }
 
 <section class="login-section bg-gradient-primary-to-secondary">
+
+
     <form id="account" method="post" autocomplete="off" class="wrap">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
         <div class="login-header">
             <h1>Log in to: <span class="sr-only">Churchee</span></h1>
             <a href="/" class="logo"><img src="/img/churchee-gradient.svg" alt="churchee logo with a blue gradient" /></a>
@@ -30,8 +34,6 @@
                 @Html.ValidationMessageFor(m => m.Input.RememberMe)
             </div>
         </div>
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div>
             <button type="submit">Log in</button>
