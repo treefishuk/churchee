@@ -30,7 +30,7 @@ namespace Churchee.Module.Site.EventHandlers
             await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
-        private string Styles => """"
+        private static string Styles => """"
 
             // ------ Variable Overrides 
             $primary: #009898;   

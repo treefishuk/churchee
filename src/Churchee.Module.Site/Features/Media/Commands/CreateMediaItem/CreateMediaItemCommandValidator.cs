@@ -66,16 +66,10 @@ namespace Churchee.Module.Site.Features.Media.Commands
             // Split the allowed file extensions by commas
             string[] extensions = allowedFileExtensions.Split(',');
 
-            // Remove any leading/trailing whitespace and convert to lowercase for comparison
-            foreach (string ext in extensions)
-            {
-                if (command.FileExtension.EndsWith(ext.Trim().ToLower()))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return extensions
+                .Any(ext => command.FileExtension
+                    .ToLower()
+                    .EndsWith(ext.Trim().ToLower()));
         }
     }
 }

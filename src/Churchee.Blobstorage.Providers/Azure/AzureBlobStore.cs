@@ -28,7 +28,9 @@ namespace Churchee.Blobstorage.Providers.Azure
 
             var blob = client.GetBlobClient(fullPath);
 
-            if (!blob.Exists(cancellationToken))
+            var exists = await blob.ExistsAsync(cancellationToken);
+
+            if (!exists)
             {
                 return null;
             }

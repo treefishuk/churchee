@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.EventHandlers
         {
             var applicationTenantId = notification.ApplicationTenantId;
 
-            var tenant = await _dataStore.GetRepository<ApplicationTenant>().GetByIdAsync(notification.ApplicationTenantId);
+            var tenant = await _dataStore.GetRepository<ApplicationTenant>().GetByIdAsync(notification.ApplicationTenantId, cancellationToken);
 
             var repo = _dataStore.GetRepository<ViewTemplate>();
 
@@ -31,20 +31,20 @@ namespace Churchee.Module.Site.EventHandlers
             await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
-        private string ViewStartContent => """"
+        private static string ViewStartContent => """"
             @{
                 Layout = "_Layout";
             }
         """";
 
-        private string ImportsContent => """"
+        private static string ImportsContent => """"
             @using Churchee.Sites
             @using Churchee.Sites.Models
             @using Churchee.Sites.Services
             @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
         """";
 
-        private string GetLayoutContent(string tenantName, string tenantDevName) => $""""
+        private static string GetLayoutContent(string tenantName, string tenantDevName) => $""""
 
             <!DOCTYPE html>
             <html lang="en">
