@@ -23,7 +23,7 @@ namespace Churchee.Module.Logging.Components
             }
             catch (Exception ex)
             {
-                Logger.LogError(exception, "UI error, additional error thrown: {error}", ex);
+                Logger.LogError(ex, "Couldn't get Nav Path, original error thrown: {Exception}", exception);
             }
 
             return base.OnErrorAsync(exception);
