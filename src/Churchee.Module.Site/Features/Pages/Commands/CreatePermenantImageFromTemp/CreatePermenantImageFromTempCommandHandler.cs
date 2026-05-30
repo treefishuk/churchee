@@ -31,6 +31,8 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePermenantImageFromT
 
             using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
 
+            tempFileStream.Close();
+
             string imagePath = $"{request.UploadRequest.FinalFilePath}.webp";
 
             string webPPath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
