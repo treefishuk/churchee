@@ -15,17 +15,17 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Queries.GetAllPagesDropdownD
         {
             // Arrange
             var storageMock = new Mock<IDataStore>();
-            var repoMock = new Mock<IRepository<Page>>();
+            var repoMock = new Mock<IRepository<WebContent>>();
             var dropdowns = new List<DropdownInput>
             {
                 new() { Title = "Page1", Value = Guid.NewGuid().ToString() },
                 new() { Title = "Page2", Value = Guid.NewGuid().ToString() }
             };
-            storageMock.Setup(x => x.GetRepository<Page>()).Returns(repoMock.Object);
+            storageMock.Setup(x => x.GetRepository<WebContent>()).Returns(repoMock.Object);
 
             repoMock.Setup(x => x.GetListAsync(
-                It.IsAny<ISpecification<Page>>(),
-                It.IsAny<System.Linq.Expressions.Expression<Func<Page, DropdownInput>>>(),
+                It.IsAny<ISpecification<WebContent>>(),
+                It.IsAny<System.Linq.Expressions.Expression<Func<WebContent, DropdownInput>>>(),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dropdowns);
 
