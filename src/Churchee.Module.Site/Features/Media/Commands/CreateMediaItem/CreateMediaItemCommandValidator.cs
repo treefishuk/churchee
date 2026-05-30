@@ -1,5 +1,8 @@
-﻿using Churchee.Common.Validation;
+﻿using Churchee.Common.Storage;
+using Churchee.Common.Validation;
 using Churchee.ImageProcessing.Validation;
+using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
 using FluentValidation;
 
 namespace Churchee.Module.Site.Features.Media.Commands
@@ -7,8 +10,18 @@ namespace Churchee.Module.Site.Features.Media.Commands
 
     public class CreateMediaItemCommandValidator : AbstractValidator<CreateMediaItemCommand>
     {
-        public CreateMediaItemCommandValidator()
+
+        private readonly IDataStore _dataStore;
+
+        public CreateMediaItemCommandValidator(IDataStore dataStore)
         {
+            _dataStore = dataStore;
+
+            RuleFor(x => x)
+                .NotEmpty()
+                .MustAsync(AllowedFileType)
+                .WithMessage("File format is not supported");
+
             RuleFor(x => x.Name).NotEmpty();
 
             RuleFor(x => x.FileName)
@@ -16,10 +29,6 @@ namespace Churchee.Module.Site.Features.Media.Commands
                 .WithMessage("File name contains invalid characters. Only letters, numbers, underscores, hyphens, and a single dot are allowed.");
 
             RuleFor(x => x.Description).NotEmpty();
-
-            RuleFor(x => x.FileExtension)
-                .Must(m => FileValidation.AllowedFormats.Contains(m))
-                .WithMessage("File format is not supported.");
 
             RuleFor(x => x.Base64Content)
                 .Must(ImageValidation.BeValidImage)
@@ -42,6 +51,25 @@ namespace Churchee.Module.Site.Features.Media.Commands
             RuleFor(x => x.Base64Content)
                 .Must(FileValidation.BeValidMp4).When(w => w.FileExtension == ".mp4")
                 .WithMessage("File does not match MP4 format");
+        }
+
+
+        private async Task<bool> AllowedFileType(CreateMediaItemCommand command, CancellationToken ct)
+        {
+            string allowedFileExtensions = await _dataStore.GetRepository<MediaFolder>().FirstOrDefaultAsync(new MediaFolderByIdSpecification(command.FolderId.Value), w => w.SupportedFileTypes, ct);
+
+            if (string.IsNullOrEmpty(allowedFileExtensions))
+            {
+                return FileValidation.AllowedFormats.Contains(command.FileExtension);
+            }
+
+            // Split the allowed file extensions by commas
+            string[] extensions = allowedFileExtensions.Split(',');
+
+            return extensions
+                .Any(ext => command.FileExtension
+                    .ToLower()
+                    .EndsWith(ext.Trim().ToLower()));
         }
     }
 }

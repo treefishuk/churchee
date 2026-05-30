@@ -50,7 +50,7 @@ namespace Churchee.Module.Site.Entities
 
         public void UpdateContent(List<KeyValuePair<Guid, string>> content)
         {
-            if(content == null || content.Count == 0)
+            if (content == null || content.Count == 0)
             {
                 return;
             }
@@ -80,7 +80,7 @@ namespace Churchee.Module.Site.Entities
 
             var versionData = new
             {
-                Content = PageContent.Select(s => new { Name = s.PageTypeContent.DevName, s.Value }).ToList(),
+                Content = PageContent.Select(s => new { Name = s.PageTypeContent.DevName, s.Value, Type = s.PageTypeContent.DevName }).ToList(),
             };
 
             PublishedData = JsonSerializer.Serialize(versionData, jsonSerializerOptions);

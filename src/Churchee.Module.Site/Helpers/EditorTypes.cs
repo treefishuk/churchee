@@ -6,12 +6,13 @@
         public const string Number = "Number";
         public const string SimpleText = "SimpleText";
         public const string MultilineText = "MultilineText";
+        public const string Image = "Image";
 
         public static List<string> All()
         {
             return
             [
-                RichTextEditor, Number, SimpleText, MultilineText
+                RichTextEditor, Number, SimpleText, MultilineText, Image
             ];
         }
     }

@@ -4,6 +4,7 @@
 @using Churchee.Module.Identity.Configuration
 @using Microsoft.AspNetCore.Identity.UI
 @using Microsoft.Extensions.Logging
+@using Microsoft.Extensions.Options
 
 <PageName Name="MFA"></PageName>
 
@@ -119,7 +120,7 @@
     private IHttpContextAccessor _context { get; set; }
 
     [Inject]
-    private OtpOptions _otpOptions { get; set; }
+    private IOptions<OtpOptions> _otpOptions { get; set; }
 
     [Inject]
     private IJSRuntime _js { get; set; }
@@ -141,6 +142,7 @@
     public string AuthenticatorUri { get; set; }
 
     ElementReference QrCode;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -196,7 +198,7 @@
 
     private string GenerateQrCodeUri(string email, string unformattedKey) => string.Format(
             CultureInfo.InvariantCulture,
-            _otpOptions.AuthenticatorUriFormat,
+            _otpOptions.Value.AuthenticatorUriFormat,
             UrlEncoder.Encode("Churchee"),
             UrlEncoder.Encode(email),
             unformattedKey);

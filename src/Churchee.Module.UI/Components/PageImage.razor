@@ -1,0 +1,78 @@
+﻿@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.ValueTypes
+@using Churchee.Module.UI.Models
+@using Radzen
+@using Radzen.Blazor
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components;
+@using System.Text.Json
+
+<ChunkedImageUpload Model="@Model" ModelChanged="HandleModelChange" />
+
+@code {
+
+    protected override void OnInitialized()
+    {
+
+        if (string.IsNullOrEmpty(Value))
+        {
+            Model = new ChunkedImageUploadType { SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+
+            return;
+        }
+
+        var deconstructed = JsonSerializer.Deserialize<ImageSimple>(Value);
+
+        if(deconstructed != null)
+        {
+            Model = new ChunkedImageUploadType { Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+        }
+    }
+
+    public ChunkedImageUploadType Model { get; set; } = new();
+
+    [Inject]
+    protected ITenantResolver TenantResolver { get; set; } = default!;
+
+    [Parameter] 
+    public string? Value { get; set; }
+
+    [Parameter] 
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? Name { get; set; }
+
+    [Parameter]
+    public Guid? PageId { get; set; }
+
+    [Parameter] 
+    public Func<ChunkedUploadRequest, Task<string?>>? OnUpload { get; set; }
+
+    [Parameter] 
+    public EventCallback<string?> OnChanged { get; set; }
+
+    private async Task HandleModelChange(ChunkedImageUploadType newValue)
+    {
+        var data = new ImageSimple { AltText = newValue.Description, Url = newValue.TempFilePath };
+
+        if (OnUpload != null)
+        {
+            var upload = new ChunkedUploadRequest
+            {
+                FileName = newValue.File.Name,
+                TempFilePath = newValue.TempFilePath,
+                FinalFilePath = $"/pages/{PageId}/{Name}/{Path.GetFileNameWithoutExtension(newValue.File.Name)}"
+            };
+
+            var finalPath = await OnUpload.Invoke(upload);
+
+            data.Url = finalPath;
+        }
+
+        Value = JsonSerializer.Serialize(data);
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

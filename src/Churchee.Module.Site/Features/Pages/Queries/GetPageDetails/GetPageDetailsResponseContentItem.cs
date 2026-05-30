@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Churchee.Module.Site.Features.Pages.Queries.GetPageContent;
-
-namespace Churchee.Module.Site.Features.Pages.Queries
+﻿namespace Churchee.Module.Site.Features.Pages.Queries
 {
     public class GetPageDetailsResponseContentItem
     {
@@ -18,8 +11,6 @@ namespace Churchee.Module.Site.Features.Pages.Queries
         public string DevName { get; set; }
 
         public string Value { get; set; }
-
-
 
     }
 }

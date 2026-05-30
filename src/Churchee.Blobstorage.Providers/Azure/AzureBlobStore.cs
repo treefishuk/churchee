@@ -28,6 +28,13 @@ namespace Churchee.Blobstorage.Providers.Azure
 
             var blob = client.GetBlobClient(fullPath);
 
+            var exists = await blob.ExistsAsync(cancellationToken);
+
+            if (!exists)
+            {
+                return null;
+            }
+
             return await blob.OpenReadAsync(cancellationToken: cancellationToken);
         }
 
