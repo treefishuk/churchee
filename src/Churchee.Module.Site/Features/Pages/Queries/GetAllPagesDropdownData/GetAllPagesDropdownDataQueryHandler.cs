@@ -1,8 +1,8 @@
 ﻿using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
 using Churchee.Module.UI.Models;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
@@ -18,7 +18,7 @@ namespace Churchee.Module.Site.Features.Pages.Queries
 
         public async Task<IEnumerable<DropdownInput>> Handle(GetAllPagesDropdownDataQuery request, CancellationToken cancellationToken)
         {
-            return await _storage.GetRepository<Page>().GetListAsync(new AllPagesSpecification(),
+            return await _storage.GetRepository<WebContent>().GetListAsync(new PagesAndArticlesSpecification(),
                 selector: s => new DropdownInput { Title = s.Title, Value = s.Id.ToString() },
                 cancellationToken: cancellationToken);
 
