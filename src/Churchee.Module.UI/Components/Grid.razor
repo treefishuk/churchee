@@ -6,11 +6,12 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Reflection
 @using System.Text
+@using System.Text.Json
 @typeparam TItem
 @inject IConfiguration Config
 
 <CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">
-    <RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" LoadChildData="@LoadChildData" RowRender="@RowRender">
+    <RadzenDataGrid @bind-Settings="@Settings" @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" Sort="SaveStateAsync" LoadChildData="@LoadChildData" RowRender="@RowRender">
         <Columns>
 
             @if (ShowDetail)
@@ -232,19 +233,6 @@
         await radzenGrid.Reload();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            prefix = NavigationManager.Uri;
-
-            Columns = await LoadColumnSettingsAsync();
-
-            StateHasChanged();
-
-        }
-    }
-
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
@@ -285,6 +273,52 @@
     [Parameter]
     public EventCallback<DataGridLoadChildDataEventArgs<TItem>> LoadChildData { get; set; }
 
+    DataGridSettings _settings = default!;
+
+    public DataGridSettings Settings
+    {
+        get
+        {
+            return _settings;
+        }
+        set
+        {
+            if (_settings != value)
+            {
+                _settings = value;
+                InvokeAsync(SaveStateAsync);
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadStateAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadStateAsync()
+    {
+        string key = GetLocalStorageKey();
+
+        var result = await JSRuntime.InvokeAsync<string>("window.localStorage.getItem", key);
+
+        if (!string.IsNullOrEmpty(result))
+        {
+            _settings = JsonSerializer.Deserialize<DataGridSettings>(result, new JsonSerializerOptions()) ?? _settings;
+        }
+    }
+
+    private async Task SaveStateAsync()
+    {
+        string key = GetLocalStorageKey();
+
+        await JSRuntime.InvokeVoidAsync("window.localStorage.setItem", key, JsonSerializer.Serialize<DataGridSettings>(Settings));
+    }
+
     public async Task ReloadAsync()
     {
         if (radzenGrid != null)
@@ -311,23 +345,8 @@
 
     async Task ColumnResized(DataGridColumnResizedEventArgs<TItem> args)
     {
-        // Load existing column settings
-        string key = GetLocalStorageKey();
-
-        var resizedColumn = Columns.FirstOrDefault(c => c.Property == args.Column.Property);
-        if (resizedColumn != null)
-        {
-            resizedColumn.Width = $"{args.Width}px";
-        }
-        else
-        {
-            Columns.Add(new ColumnInfo { Property = args.Column.Property, Width = $"{args.Width}px" });
-        }
-
-        // Save the updated column settings
-        await JSRuntime.InvokeVoidAsync("localStorageHelper.save", key, Columns);
+        await SaveStateAsync();
     }
-
 
     static void RowRender(RowRenderEventArgs<TItem> args)
     {
@@ -354,26 +373,14 @@
     /// </summary>
     async Task ColumnsChanged(DataGridPickedColumnsChangedEventArgs<TItem> args)
     {
-        var columnsSelected = args.Columns.Select(c => new ColumnInfo { Property = c.Property, Width = c.Width });
-
-        string key = GetLocalStorageKey();
-
-        await JSRuntime.InvokeVoidAsync("localStorageHelper.save", key, columnsSelected);
+        await SaveStateAsync();
     }
 
     private string GetLocalStorageKey()
     {
         var uri = new Uri(NavigationManager.Uri);
-        return $"columnSettings_{uri.AbsolutePath}";
+        return $"gridSettings_{uri.AbsolutePath}";
     }
-
-    private async Task<List<ColumnInfo>> LoadColumnSettingsAsync()
-    {
-        string key = GetLocalStorageKey();
-
-        return await JSRuntime.InvokeAsync<List<ColumnInfo>>("localStorageHelper.load", key);
-    }
-
 
     private sealed class ColumnInfo
     {
