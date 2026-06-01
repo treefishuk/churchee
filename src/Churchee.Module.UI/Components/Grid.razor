@@ -232,12 +232,17 @@
         await radzenGrid.Reload();
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        prefix = NavigationManager.Uri;
+        if (firstRender)
+        {
+            prefix = NavigationManager.Uri;
 
-        Columns = await LoadColumnSettingsAsync();
+            Columns = await LoadColumnSettingsAsync();
 
+            StateHasChanged();
+
+        }
     }
 
     [Parameter]
