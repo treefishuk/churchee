@@ -44,7 +44,7 @@ namespace Churchee.Module.YouTube.Jobs
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new YouTubeSyncException();
+                throw new YouTubeSyncException($"Status code: {response.StatusCode}, message: {response.ReasonPhrase ?? "Unknown"}");
             }
 
             string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
