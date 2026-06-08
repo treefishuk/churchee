@@ -233,6 +233,11 @@
         await radzenGrid.Reload();
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        prefix = NavigationManager.Uri;
+    }
+
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
