@@ -1,8 +1,11 @@
 ﻿using Bunit;
+using Bunit.TestDoubles;
 using Churchee.Module.UI.Components;
 using Churchee.Test.Helpers.Blazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
+using Radzen;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
@@ -208,6 +211,47 @@ namespace Churchee.Module.UI.Tests.Components
             Assert.Contains(JSInterop.Invocations, i => i.Identifier == "window.localStorage.getItem");
         }
 
+        [Fact]
+        public async Task ReloadAsync_Invokes_RadzenGrid_Reload_Which_Triggers_LoadData_Callback()
+        {
+            // Arrange
+            var cut = Render<ReloadWrapper>();
+            var wrapperInstance = cut.Instance;
+
+            // Find the rendered Grid<TestItem> component and get its instance
+            var gridComp = cut.FindComponent<Grid<TestItem>>();
+
+            // Act - dispatch the ReloadAsync call through the renderer so it runs on the Dispatcher
+            await cut.InvokeAsync(async () => await gridComp.Instance.ReloadAsync());
+
+            // Wait for either the LoadData callback to be triggered or a timeout
+            var completed = await Task.WhenAny(wrapperInstance.LoadCalled.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+
+            // Assert - LoadData callback was invoked
+            Assert.True(wrapperInstance.LoadCalled.Task.IsCompleted, "Expected LoadData callback to be invoked by ReloadAsync.");
+        }
+
+        [Fact]
+        public void DetailButton_IsRendered_When_ShowDetailTrue()
+        {
+            // Arrange
+            var navMan = Services.GetRequiredService<BunitNavigationManager>();
+            // Provide a sensible prefix so hrefs include a path
+            navMan.NavigateTo("/management/testpage");
+
+            // Act
+            var cut = Render<DetailEditWrapper>();
+
+            // Find anchors that include the details suffix
+            var anchors = cut.FindAll("a").Where(a => !string.IsNullOrEmpty(a.GetAttribute("href"))).ToArray();
+
+            // Assert - at least one anchor should end with /details/{id}
+            var wrapperInstance = (DetailEditWrapper)cut.Instance;
+            var expectedSuffix = $"/details/{wrapperInstance.Item.Id}";
+
+            Assert.True(anchors.Any(a => a.GetAttribute("href")!.EndsWith(expectedSuffix)), $"Expected an anchor href to end with '{expectedSuffix}' but none found.");
+        }
+
         // wrapper class used by DetailAndEditLinks_UseCurrentUriPrefix
         private class DetailEditWrapper : ComponentBase
         {
@@ -221,6 +265,29 @@ namespace Churchee.Module.UI.Tests.Components
                 builder.AddAttribute(3, "ShowDetail", true);
                 builder.AddAttribute(4, "ShowEdit", true);
                 builder.CloseComponent();
+            }
+        }
+
+        private class ReloadWrapper : ComponentBase
+        {
+            public TaskCompletionSource<bool> LoadCalled { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            protected override void BuildRenderTree(RenderTreeBuilder builder)
+            {
+                builder.OpenComponent<Grid<TestItem>>(0);
+                builder.AddAttribute(1, "Data", Array.Empty<TestItem>());
+                builder.AddAttribute(2, "Count", 0);
+                builder.AddAttribute(3, "ShowDetail", false);
+                builder.AddAttribute(4, "ShowEdit", false);
+                // Pass LoadData callback which completes the TaskCompletionSource when invoked
+                builder.AddAttribute(5, "LoadData", EventCallback.Factory.Create<LoadDataArgs>(this, OnLoadData));
+                builder.CloseComponent();
+            }
+
+            private Task OnLoadData(LoadDataArgs _)
+            {
+                LoadCalled.TrySetResult(true);
+                return Task.CompletedTask;
             }
         }
     }
