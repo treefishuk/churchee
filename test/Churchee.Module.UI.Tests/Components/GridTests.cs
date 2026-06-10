@@ -4,6 +4,7 @@ using Churchee.Test.Helpers.Blazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Churchee.Module.UI.Tests.Components
 {
@@ -167,6 +168,44 @@ namespace Churchee.Module.UI.Tests.Components
             // Assert
             Assert.NotNull(img);
             Assert.Equal("https://cdn.example.com/img.jpg", img.GetAttribute("src"));
+        }
+
+
+        [Fact]
+        public async Task SaveStateAsync_Invokes_LocalStorage_SetItem()
+        {
+            // Arrange - render a wrapper that contains the Grid<T>
+            var cut = Render<ActionColumnWrapper>();
+
+            // Find the Grid<T> instance
+            var gridComp = cut.FindComponent<Grid<TestItem>>();
+            var gridInstance = gridComp.Instance;
+
+            // Act - invoke the private SaveStateAsync method via reflection
+            var saveMethod = gridInstance.GetType().GetMethod("SaveStateAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.NotNull(saveMethod);
+
+            var task = (Task?)saveMethod!.Invoke(gridInstance, null);
+            if (task is not null)
+            {
+                await task;
+            }
+
+            // Assert - JS interop should have been used to call window.localStorage.setItem
+            Assert.Contains(JSInterop.Invocations, i => i.Identifier == "window.localStorage.setItem");
+        }
+
+        [Fact]
+        public void OnAfterRenderAsync_Triggers_LoadState_From_LocalStorage()
+        {
+            // Arrange - ensure JSInterop will respond to the getItem call
+            JSInterop.Setup<string>("window.localStorage.getItem").SetResult(string.Empty);
+
+            // Act - render the wrapper. OnAfterRenderAsync should call LoadStateAsync -> getItem
+            var cut = Render<ActionColumnWrapper>();
+
+            // Assert - the getItem invocation was made
+            Assert.Contains(JSInterop.Invocations, i => i.Identifier == "window.localStorage.getItem");
         }
 
         // wrapper class used by DetailAndEditLinks_UseCurrentUriPrefix
