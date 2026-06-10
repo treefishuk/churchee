@@ -104,6 +104,43 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             await act.Should().ThrowAsync<YouTubeSyncException>("Failed to deserialize YouTube API response");
         }
 
+
+
+
+        [Fact]
+        public async Task Bad_Response_Throws_Exception()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(false);
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.Unauthorized, string.Empty);
+
+            var httpClient = new HttpClient(messageHandler);
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            var act = () => cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<YouTubeSyncException>($"Status code: {HttpStatusCode.Unauthorized}");
+        }
+
         [Fact]
         public async Task DeserializationNullFailure_ThrowsException()
         {

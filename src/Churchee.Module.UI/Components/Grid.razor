@@ -6,11 +6,23 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Reflection
 @using System.Text
+@using System.Text.Json
 @typeparam TItem
 @inject IConfiguration Config
 
+@if (!_stateLoaded)
+{
+    <RadzenStack AlignItems="AlignItems.Center" class="rz-m-12" Gap="2rem">
+        <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" AriaLabel="Loading grid" />
+    </RadzenStack>
+}
+else
+{
+
+
+
 <CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">
-    <RadzenDataGrid @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" PickedColumnsChanged="ColumnsChanged" ColumnResized="ColumnResized" LoadChildData="@LoadChildData" RowRender="@RowRender">
+    <RadzenDataGrid @bind-Settings="@Settings" @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="false" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" LoadChildData="@LoadChildData" RowRender="@RowRender">
         <Columns>
 
             @if (ShowDetail)
@@ -48,8 +60,6 @@
                     continue;
                 }
 
-                bool visible = Columns == null || (Columns.Any() && Columns.Select(s => s.Property).Contains(prop.Name));
-
                 string dataType = prop.PropertyType.Name;
 
                 var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
@@ -75,14 +85,12 @@
 
                 if (dataType == DataTypes.Text)
                 {
-                    string width = Columns?.FirstOrDefault(w => w.Property == prop.Name)?.Width ?? "";
-
-                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Visible="visible" Width=@width />
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" />
                 }
 
                 if (dataType == typeof(bool).Name)
                 {
-                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center" Visible="visible">
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" Sortable="true" Filterable="true" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="data">
                             @{
                                 var properyValue = prop.GetValue(data);
@@ -106,12 +114,12 @@
                 {
                     string width = $"{EstimatePixelWidth(title, 160)}px";
 
-                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy}" Width="@width" Visible="visible" />
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy}" Width="@width" />
                 }
 
                 if (dataType == DataTypes.DateTime)
                 {
-                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" Visible="visible" />
+                    <RadzenDataGridColumn TItem="TItem" Property="@prop.Name" Title="@title" FormatString="{0:dd/MM/yyyy HH:mm}" Width="200px" />
                 }
 
                 if (dataType == DataTypes.ImageUrl)
@@ -218,6 +226,8 @@
     </div>
 </CascadingValue>
 
+}
+
 @code {
 
     [Inject]
@@ -235,9 +245,6 @@
     protected override async Task OnParametersSetAsync()
     {
         prefix = NavigationManager.Uri;
-
-        Columns = await LoadColumnSettingsAsync();
-
     }
 
     [Parameter]
@@ -280,6 +287,57 @@
     [Parameter]
     public EventCallback<DataGridLoadChildDataEventArgs<TItem>> LoadChildData { get; set; }
 
+    private bool _stateLoaded = false;
+
+    DataGridSettings _settings = default!;
+
+    public DataGridSettings Settings
+    {
+        get
+        {
+            return _settings;
+        }
+        set
+        {
+            if (_settings != value)
+            {
+                _settings = value;
+                InvokeAsync(SaveStateAsync);
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!_stateLoaded)
+        {   
+            await LoadStateAsync();
+            _stateLoaded = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadStateAsync()
+    {
+        await Task.CompletedTask;
+
+        string key = GetLocalStorageKey();
+
+        var result = await JSRuntime.InvokeAsync<string>("window.localStorage.getItem", key);
+
+        if (!string.IsNullOrEmpty(result))
+        {
+            _settings = JsonSerializer.Deserialize<DataGridSettings>(result, new JsonSerializerOptions()) ?? _settings;
+        }
+    }
+
+    private async Task SaveStateAsync()
+    {
+        string key = GetLocalStorageKey();
+
+        await JSRuntime.InvokeVoidAsync("window.localStorage.setItem", key, JsonSerializer.Serialize<DataGridSettings>(Settings));
+    }
+
     public async Task ReloadAsync()
     {
         if (radzenGrid != null)
@@ -289,8 +347,6 @@
     }
 
     private bool OnDeleteSet => OnDelete.HasDelegate;
-
-    private List<ColumnInfo> Columns = new List<ColumnInfo>();
 
     // Holds action/button columns registered by children
     private readonly List<ButtonColumn> ActionColumns = new List<ButtonColumn>();
@@ -303,26 +359,6 @@
         ActionColumns.Add(new ButtonColumn { Title = title, Template = template, Width = width });
         StateHasChanged();
     }
-
-    async Task ColumnResized(DataGridColumnResizedEventArgs<TItem> args)
-    {
-        // Load existing column settings
-        string key = GetLocalStorageKey();
-
-        var resizedColumn = Columns.FirstOrDefault(c => c.Property == args.Column.Property);
-        if (resizedColumn != null)
-        {
-            resizedColumn.Width = $"{args.Width}px";
-        }
-        else
-        {
-            Columns.Add(new ColumnInfo { Property = args.Column.Property, Width = $"{args.Width}px" });
-        }
-
-        // Save the updated column settings
-        await JSRuntime.InvokeVoidAsync("localStorageHelper.save", key, Columns);
-    }
-
 
     static void RowRender(RowRenderEventArgs<TItem> args)
     {
@@ -344,37 +380,10 @@
         return Math.Max(calculated, fallback);
     }
 
-    /// <summary>
-    /// Only used to print the changes to the console.
-    /// </summary>
-    async Task ColumnsChanged(DataGridPickedColumnsChangedEventArgs<TItem> args)
-    {
-        var columnsSelected = args.Columns.Select(c => new ColumnInfo { Property = c.Property, Width = c.Width });
-
-        string key = GetLocalStorageKey();
-
-        await JSRuntime.InvokeVoidAsync("localStorageHelper.save", key, columnsSelected);
-    }
-
     private string GetLocalStorageKey()
     {
         var uri = new Uri(NavigationManager.Uri);
-        return $"columnSettings_{uri.AbsolutePath}";
-    }
-
-    private async Task<List<ColumnInfo>> LoadColumnSettingsAsync()
-    {
-        string key = GetLocalStorageKey();
-
-        return await JSRuntime.InvokeAsync<List<ColumnInfo>>("localStorageHelper.load", key);
-    }
-
-
-    private sealed class ColumnInfo
-    {
-        public string Width { get; set; } = string.Empty;
-
-        public string Property { get; set; } = string.Empty;
+        return $"gridSettings_{uri.AbsolutePath}";
     }
 
     private sealed class ButtonColumn
