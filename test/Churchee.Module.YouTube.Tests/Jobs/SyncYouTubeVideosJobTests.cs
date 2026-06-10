@@ -138,7 +138,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             var act = () => cut.ExecuteAsync(appTenantId, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<YouTubeSyncException>($"Status code: {HttpStatusCode.Unauthorized}, message: Unauthorized");
+            await act.Should().ThrowAsync<YouTubeSyncException>($"Status code: {HttpStatusCode.Unauthorized}");
         }
 
         [Fact]
