@@ -141,8 +141,6 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             await act.Should().ThrowAsync<YouTubeSyncException>($"Status code: {HttpStatusCode.Unauthorized}, message: Unauthorized");
         }
 
-
-
         [Fact]
         public async Task DeserializationNullFailure_ThrowsException()
         {
