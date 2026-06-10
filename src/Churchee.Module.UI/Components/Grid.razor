@@ -21,7 +21,7 @@ else
 
 
 
-<CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">e
+<CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">
     <RadzenDataGrid @bind-Settings="@Settings" @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="false" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" LoadChildData="@LoadChildData" RowRender="@RowRender">
         <Columns>
 
@@ -287,9 +287,9 @@ else
     [Parameter]
     public EventCallback<DataGridLoadChildDataEventArgs<TItem>> LoadChildData { get; set; }
 
-    DataGridSettings _settings = default!;
-
     private bool _stateLoaded = false;
+
+    DataGridSettings _settings = default!;
 
     public DataGridSettings Settings
     {
@@ -360,11 +360,6 @@ else
         StateHasChanged();
     }
 
-    async Task ColumnResized(DataGridColumnResizedEventArgs<TItem> args)
-    {
-        await SaveStateAsync();
-    }
-
     static void RowRender(RowRenderEventArgs<TItem> args)
     {
         if (args.Data is IHierarchicalDataTableResponse casted)
@@ -385,25 +380,10 @@ else
         return Math.Max(calculated, fallback);
     }
 
-    /// <summary>
-    /// Only used to print the changes to the console.
-    /// </summary>
-    async Task ColumnsChanged(DataGridPickedColumnsChangedEventArgs<TItem> args)
-    {
-        await SaveStateAsync();
-    }
-
     private string GetLocalStorageKey()
     {
         var uri = new Uri(NavigationManager.Uri);
         return $"gridSettings_{uri.AbsolutePath}";
-    }
-
-    private sealed class ColumnInfo
-    {
-        public string Width { get; set; } = string.Empty;
-
-        public string Property { get; set; } = string.Empty;
     }
 
     private sealed class ButtonColumn
