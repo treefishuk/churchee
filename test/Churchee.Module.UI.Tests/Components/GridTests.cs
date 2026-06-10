@@ -17,6 +17,9 @@ namespace Churchee.Module.UI.Tests.Components
             [DataType(DataTypes.ImageUrl)]
             public string? Image { get; set; }
 
+            [DataType(DataTypes.Rating)]
+            public int Rating { get; set; }
+
             public bool IsActive { get; set; }
 
             public DateTime Created { get; set; }
