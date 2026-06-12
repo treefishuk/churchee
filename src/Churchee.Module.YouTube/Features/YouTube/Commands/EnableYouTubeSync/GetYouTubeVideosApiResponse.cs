@@ -69,8 +69,8 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
         {
             Kind = string.Empty;
             Etag = string.Empty;
-            Id = new Id();
             Snippet = new Snippet();
+            Id = string.Empty;
         }
 
         [JsonPropertyName("kind")]
@@ -80,7 +80,9 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
         public string Etag { get; set; }
 
         [JsonPropertyName("id")]
-        public Id Id { get; set; }
+        [JsonConverter(typeof(IdConverter))]
+        public string Id { get; set; }
+
 
         [JsonPropertyName("snippet")]
         public Snippet Snippet { get; set; }
