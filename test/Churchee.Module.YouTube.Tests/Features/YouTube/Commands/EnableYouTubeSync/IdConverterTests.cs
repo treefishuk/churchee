@@ -28,6 +28,27 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             result.Id.Should().Be("abc123");
         }
 
+
+        [Fact]
+        public void Returns_Empty_String_When_VideoId_Null()
+        {
+            // Arrange
+            string json = """"
+            {
+                "id": {
+                    "videoId": null
+                }
+            }
+            """";
+
+            // Act
+            var result = JsonSerializer.Deserialize<TestClass>(json);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(string.Empty);
+        }
+
         [Fact]
         public void Can_Convert_PlaylistId_Object_To_String()
         {
@@ -49,6 +70,27 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             result.Id.Should().Be("abc123");
         }
 
+
+        [Fact]
+        public void Returns_Empty_String_When_PlaylistId_Null()
+        {
+            // Arrange
+            string json = """"
+            {
+                "id": {
+                    "playlistId": null
+                }
+            }
+            """";
+
+            // Act
+            var result = JsonSerializer.Deserialize<TestClass>(json);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(string.Empty);
+        }
+
         [Fact]
         public void Can_Convert_ChannelId_Object_To_String()
         {
@@ -68,6 +110,26 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             // Assert
             result.Should().NotBeNull();
             result.Id.Should().Be("abc123");
+        }
+
+        [Fact]
+        public void Returns_Empty_String_When_ChannelId_Null()
+        {
+            // Arrange
+            string json = """"
+            {
+                "id": {
+                    "channelId": null
+                }
+            }
+            """";
+
+            // Act
+            var result = JsonSerializer.Deserialize<TestClass>(json);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(string.Empty);
         }
 
         [Fact]
