@@ -8,13 +8,55 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
     public class IdConverterTests
     {
         [Fact]
-        public void Can_Convert_Id_Object_To_String()
+        public void Can_Convert_VideoId_Object_To_String()
         {
             // Arrange
             string json = """"
             {
                 "id": {
                     "videoId": "abc123"
+                }
+            }
+
+            """";
+
+            // Act
+            var result = JsonSerializer.Deserialize<TestClass>(json);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be("abc123");
+        }
+
+        [Fact]
+        public void Can_Convert_PlaylistId_Object_To_String()
+        {
+            // Arrange
+            string json = """"
+            {
+                "id": {
+                    "playlistId": "abc123"
+                }
+            }
+
+            """";
+
+            // Act
+            var result = JsonSerializer.Deserialize<TestClass>(json);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be("abc123");
+        }
+
+        [Fact]
+        public void Can_Convert_ChannelId_Object_To_String()
+        {
+            // Arrange
+            string json = """"
+            {
+                "id": {
+                    "channelId": "abc123"
                 }
             }
 
