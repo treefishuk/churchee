@@ -1,4 +1,6 @@
-﻿@using Churchee.Common.Abstractions.Queries
+﻿@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.Abstractions.Queries
+@using Microsoft.Extensions.Caching.Distributed
 @using Microsoft.Extensions.Configuration
 @using Microsoft.JSInterop
 @using Radzen
@@ -10,19 +12,8 @@
 @typeparam TItem
 @inject IConfiguration Config
 
-@if (!_stateLoaded)
-{
-    <RadzenStack AlignItems="AlignItems.Center" class="rz-m-12" Gap="2rem">
-        <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" AriaLabel="Loading grid" />
-    </RadzenStack>
-}
-else
-{
-
-
-
 <CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">
-    <RadzenDataGrid @bind-Settings="@Settings" @ref="radzenGrid" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadData AllowSorting="true" AllowFiltering="false" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" LoadChildData="@LoadChildData" RowRender="@RowRender">
+    <RadzenDataGrid @ref="radzenGrid" @bind-Settings="@Settings" LoadSettings="@LoadSettings" Data="Data" IsLoading="IsLoading" Count=Count LoadData=@LoadDataWrap AllowSorting="true" AllowFiltering="false" AllowPaging="true" AllowColumnResize="true" AllowColumnPicking="AllowColumnPicking" PageSize="15" PagerHorizontalAlign="HorizontalAlign.Center" TItem="@TItem" LoadChildData="@LoadChildData" RowRender="@RowRender">
         <Columns>
 
             @if (ShowDetail)
@@ -226,12 +217,14 @@ else
     </div>
 </CascadingValue>
 
-}
 
 @code {
 
     [Inject]
-    public IJSRuntime JSRuntime { get; set; } = default!;
+    public IDistributedCache  DistributedCache  { get; set; } = default!;
+
+    [Inject]
+    public ICurrentUser CurrentUser { get; set; } = default!;
 
     [Inject]
     public NavigationManager NavigationManager { get; set; } = default!;
@@ -287,11 +280,9 @@ else
     [Parameter]
     public EventCallback<DataGridLoadChildDataEventArgs<TItem>> LoadChildData { get; set; }
 
-    private bool _stateLoaded = false;
+    DataGridSettings? _settings;
 
-    DataGridSettings _settings = default!;
-
-    public DataGridSettings Settings
+    public DataGridSettings? Settings
     {
         get
         {
@@ -307,35 +298,51 @@ else
         }
     }
 
+    async Task LoadDataWrap(LoadDataArgs args)
+    {
+        IsLoading = true;
+
+        await Task.Yield();
+
+        await LoadData.InvokeAsync(args);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(!_stateLoaded)
-        {   
+        if (firstRender)
+        {
             await LoadStateAsync();
-            _stateLoaded = true;
-            StateHasChanged();
         }
     }
 
+    private void LoadSettings(DataGridLoadSettingsEventArgs args)
+    {
+        if (Settings != null)
+        {
+            args.Settings = Settings;
+        }
+    }
+
+
     private async Task LoadStateAsync()
     {
-        await Task.CompletedTask;
+        string key = GetStorageKey();
 
-        string key = GetLocalStorageKey();
+        var searialzed = await DistributedCache.GetStringAsync(key);
 
-        var result = await JSRuntime.InvokeAsync<string>("window.localStorage.getItem", key);
-
-        if (!string.IsNullOrEmpty(result))
+        if (string.IsNullOrEmpty(searialzed))
         {
-            _settings = JsonSerializer.Deserialize<DataGridSettings>(result, new JsonSerializerOptions()) ?? _settings;
+            return;
         }
+
+        _settings = JsonSerializer.Deserialize<DataGridSettings>(searialzed, new JsonSerializerOptions()) ?? _settings;
     }
 
     private async Task SaveStateAsync()
     {
-        string key = GetLocalStorageKey();
+        string key = GetStorageKey();
 
-        await JSRuntime.InvokeVoidAsync("window.localStorage.setItem", key, JsonSerializer.Serialize<DataGridSettings>(Settings));
+        await DistributedCache.SetStringAsync(key, JsonSerializer.Serialize<DataGridSettings>(_settings ?? new ()));
     }
 
     public async Task ReloadAsync()
@@ -380,10 +387,10 @@ else
         return Math.Max(calculated, fallback);
     }
 
-    private string GetLocalStorageKey()
+    private string GetStorageKey()
     {
         var uri = new Uri(NavigationManager.Uri);
-        return $"gridSettings_{uri.AbsolutePath}";
+        return $"gridSettings_{uri.AbsolutePath}_{CurrentUser.GetUserId()}";
     }
 
     private sealed class ButtonColumn
