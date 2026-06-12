@@ -233,6 +233,88 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             await act.Should().ThrowAsync<YouTubeSyncException>();
         }
 
+
+
+        [Fact]
+        public async Task Url_Called_Is_Playlist_Url_When_Setting_Exists()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+            string playlist = "78910";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.Playlist, It.IsAny<Guid>())).ReturnsAsync(playlist);
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(true);
+            _mockPageTypeRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.NewGuid());
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var responseContent = GetTestResponseContent(channelId);
+
+            var serializedContent = JsonSerializer.Serialize(responseContent);
+
+            var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent);
+
+            var httpClient = new HttpClient(handler);
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new FullSyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            await cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            handler.RequestPath.Should().Contain("https://www.googleapis.com/youtube/v3/playlistItems");
+        }
+
+        [Fact]
+        public async Task Url_Called_Is_Channel_Url_When_Playlist_Empty()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(true);
+            _mockPageTypeRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<PageTypeFromSystemKeySpecification>(), It.IsAny<Expression<Func<PageType, Guid>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(Guid.NewGuid());
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var responseContent = GetTestResponseContent(channelId);
+
+            string serializedContent = JsonSerializer.Serialize(responseContent);
+
+            var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent);
+
+            var httpClient = new HttpClient(handler);
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new FullSyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            await cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            handler.RequestPath.Should().Contain("https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=");
+        }
+
         private static GetYouTubeVideosApiResponse GetTestResponseContent(string channelId)
         {
             return new GetYouTubeVideosApiResponse()
@@ -240,10 +322,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
                 Items = new List<YouTubeVideo>
                 {
                     new() {
-                        Id = new Id
-                        {
-                            VideoId = "1"
-                        },
+                        Id = "1",
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,
@@ -254,10 +333,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
                         }
                     },
                     new() {
-                        Id = new Id
-                        {
-                            VideoId = "2"
-                        },
+                        Id = "2",
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,

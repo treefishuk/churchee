@@ -184,10 +184,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
                 Items =
                 [
                     new() {
-                        Id = new Id
-                        {
-                            VideoId = "1"
-                        },
+                        Id = "1",
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,
@@ -198,10 +195,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
                         }
                     },
                     new() {
-                        Id = new Id
-                        {
-                            VideoId = "2"
-                        },
+                        Id = "2",
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,

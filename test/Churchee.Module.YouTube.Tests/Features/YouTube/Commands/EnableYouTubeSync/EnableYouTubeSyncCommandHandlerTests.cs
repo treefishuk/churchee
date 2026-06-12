@@ -38,7 +38,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle", string.Empty);
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -82,7 +82,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle", string.Empty);
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -135,7 +135,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle", string.Empty);
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -194,7 +194,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "UC123");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "UC123", string.Empty);
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -241,7 +241,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "@myawesomechurch");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@myawesomechurch", string.Empty);
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -298,7 +298,7 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var cmd = new EnableYouTubeSyncCommand("apiKey", "@myawesomechurch");
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@myawesomechurch", string.Empty);
 
             var settingStore = new Mock<ISettingStore>();
             settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);

@@ -5,6 +5,7 @@ using Churchee.CQRS.Abstractions;
 using Churchee.Module.UI.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -15,6 +16,7 @@ namespace Churchee.Test.Helpers.Blazor
     public abstract class BasePageTests : BunitContext
     {
         protected Mock<ICurrentUser> MockCurrentUser;
+        protected Mock<IDistributedCache> MockDistributedCache;
         protected CustomNotificationService NotificationService;
         protected TestDialogService DialogService;
         protected Mock<ISender> MockMediator;
@@ -48,6 +50,8 @@ namespace Churchee.Test.Helpers.Blazor
             TenantResolver = new Mock<ITenantResolver>().Object;
             Services.AddSingleton(TenantResolver);
 
+            MockDistributedCache = new Mock<IDistributedCache>();
+            Services.AddSingleton(MockDistributedCache.Object);
         }
 
         protected void SetInitialUrl<TComponent>() where TComponent : IComponent

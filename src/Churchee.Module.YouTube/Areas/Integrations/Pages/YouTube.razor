@@ -124,7 +124,7 @@
             NotificationService.Notify(NotificationSeverity.Error, "Failed to enable Videos");
         }
 
-        var enableYouTubeSyncResult = await Mediator.Send(new EnableYouTubeSyncCommand(InputModel.ApiKey, InputModel.ChannelIdentifier));
+        var enableYouTubeSyncResult = await Mediator.Send(new EnableYouTubeSyncCommand(InputModel.ApiKey, InputModel.ChannelIdentifier, InputModel.PlaylistId));
 
         if (enableYouTubeSyncResult.IsSuccess)
         {

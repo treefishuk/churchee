@@ -2,12 +2,12 @@
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.YouTube.Helpers;
 using Churchee.Module.YouTube.Jobs;
 using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands;
 using Hangfire;
-using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -37,6 +37,8 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
             await _settingStore.AddOrUpdateSetting(SettingKeys.Handle, applicationTenantId, $"YouTubeHandle", request.ChannelIdentifier);
+
+            await _settingStore.AddOrUpdateSetting(SettingKeys.Playlist, applicationTenantId, $"YouTubePlaylist", request.PlaylistId);
 
             var tokenRepo = _dataStore.GetRepository<Token>();
 
