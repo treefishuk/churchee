@@ -2,9 +2,9 @@
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Videos.Entities;
 using Churchee.Module.YouTube.Helpers;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.YouTube.Features.YouTube.Commands
 {
@@ -30,6 +30,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands
 
             await _settingStore.ClearSetting(SettingKeys.Handle, applicationTenantId);
             await _settingStore.ClearSetting(SettingKeys.ChannelId, applicationTenantId);
+            await _settingStore.ClearSetting(SettingKeys.Playlist, applicationTenantId);
 
             _jobService.RemoveScheduledJob($"{applicationTenantId}_YouTubeVideos");
 

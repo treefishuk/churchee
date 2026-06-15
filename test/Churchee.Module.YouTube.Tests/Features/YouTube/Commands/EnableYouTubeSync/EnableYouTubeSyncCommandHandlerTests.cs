@@ -18,18 +18,33 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
 {
     public class EnableYouTubeSyncCommandHandlerTests
     {
+        private readonly JsonSerializerOptions _jsonOptions;
+
+        public EnableYouTubeSyncCommandHandlerTests()
+        {
+            _jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        }
+
         private class TestHandler : DelegatingHandler
         {
-            private readonly HttpResponseMessage _response;
+            private readonly HttpResponseMessage _channelResponse;
+            private readonly HttpResponseMessage _playlistResponse;
 
-            public TestHandler(HttpResponseMessage response)
+
+            public TestHandler(HttpResponseMessage response, HttpResponseMessage playlistResponse)
             {
-                _response = response;
+                _channelResponse = response;
+                _playlistResponse = playlistResponse;
             }
 
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
-                return Task.FromResult(_response);
+                if (request.RequestUri.ToString().Contains("part=contentDetails"))
+                {
+                    return Task.FromResult(_playlistResponse);
+                }
+
+                return Task.FromResult(_channelResponse);
             }
         }
 
@@ -57,7 +72,13 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             var jobService = new Mock<IJobService>();
 
             var badResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            var handler = new TestHandler(badResponse);
+
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(badResponse, goodPlaylistResponse);
             var client = new HttpClient(handler);
 
             var httpFactory = new Mock<IHttpClientFactory>();
@@ -103,14 +124,19 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             jobService.Setup(j => j.QueueJob(It.IsAny<Expression<Func<Task>>>()));
 
             // Prepare a successful channel id response
-            var apiResponse = new { items = new[] { new { id = "UC123" } } };
-            string json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
-            var goodResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(json)
+                Content = new StringContent(channelJson)
             };
 
-            var handler = new TestHandler(goodResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, goodPlaylistResponse);
             var client = new HttpClient(handler);
 
             var httpFactory = new Mock<IHttpClientFactory>();
@@ -156,14 +182,19 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                 .Throws(new Exception("Scheduling error"));
 
             // Prepare a successful channel id response
-            var apiResponse = new { items = new[] { new { id = "UC123" } } };
-            string json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
-            var goodResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(json)
+                Content = new StringContent(channelJson)
             };
 
-            var handler = new TestHandler(goodResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, goodPlaylistResponse);
             var client = new HttpClient(handler);
 
             var httpFactory = new Mock<IHttpClientFactory>();
@@ -212,13 +243,20 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
 
             var jobService = new Mock<IJobService>();
 
-            string json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
-            var goodResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            // Prepare a successful channel id response
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(json)
+                Content = new StringContent(channelJson)
             };
 
-            var handler = new TestHandler(goodResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, goodPlaylistResponse);
 
             var client = new HttpClient(handler);
 
@@ -264,7 +302,13 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                 Content = new StringContent(string.Empty)
             };
 
-            var handler = new TestHandler(badResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(badResponse, goodPlaylistResponse);
 
             var client = new HttpClient(handler);
 
@@ -321,7 +365,13 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                 Content = new StringContent(string.Empty)
             };
 
-            var handler = new TestHandler(badResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(badResponse, goodPlaylistResponse);
 
             var client = new HttpClient(handler);
 
@@ -347,6 +397,143 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                 Times.Once);
 
+        }
+
+
+        [Fact]
+        public async Task Handle_Returns_Error_On_Bad_Plalist_Response_Code()
+        {
+            // Arrange
+            var tenantId = Guid.NewGuid();
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle", string.Empty);
+
+            var settingStore = new Mock<ISettingStore>();
+            settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+            settingStore.Setup(s => s.GetSettingValue(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync("videos");
+
+            var currentUser = new Mock<ICurrentUser>();
+            currentUser.Setup(c => c.GetApplicationTenantId()).ReturnsAsync(tenantId);
+
+            var tokenRepo = new Mock<IRepository<Token>>();
+            tokenRepo.Setup(r => r.Create(It.IsAny<Token>()));
+
+            var dataStore = new Mock<IDataStore>();
+            dataStore.Setup(d => d.GetRepository<Token>()).Returns(tokenRepo.Object);
+            dataStore.Setup(d => d.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+            var jobService = new Mock<IJobService>();
+            jobService.Setup(j => j.ScheduleJob(It.IsAny<string>(), It.IsAny<Expression<Func<Task>>>(), It.IsAny<Func<string>>()));
+            jobService.Setup(j => j.QueueJob(It.IsAny<Expression<Func<Task>>>()));
+
+            // Prepare a successful channel id response
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(channelJson)
+            };
+
+            // Prepare a successful playlist id response
+            var badPlaylistResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, badPlaylistResponse);
+            var client = new HttpClient(handler);
+
+            var httpFactory = new Mock<IHttpClientFactory>();
+            httpFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var logger = new Mock<ILogger<EnableYouTubeSyncCommandHandler>>();
+
+            var handlerInstance = new EnableYouTubeSyncCommandHandler(settingStore.Object, currentUser.Object, dataStore.Object, jobService.Object, httpFactory.Object, logger.Object);
+
+            // Act
+            var result = await handlerInstance.Handle(cmd, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+        }
+
+
+        [Fact]
+        public async Task Handle_Returns_Error_On_Empty_Playlist_Response()
+        {
+            // Arrange
+            var tenantId = Guid.NewGuid();
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle", string.Empty);
+
+            var settingStore = new Mock<ISettingStore>();
+            settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+            settingStore.Setup(s => s.GetSettingValue(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync("videos");
+
+            var currentUser = new Mock<ICurrentUser>();
+            currentUser.Setup(c => c.GetApplicationTenantId()).ReturnsAsync(tenantId);
+
+            var tokenRepo = new Mock<IRepository<Token>>();
+            tokenRepo.Setup(r => r.Create(It.IsAny<Token>()));
+
+            var dataStore = new Mock<IDataStore>();
+            dataStore.Setup(d => d.GetRepository<Token>()).Returns(tokenRepo.Object);
+            dataStore.Setup(d => d.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+            var jobService = new Mock<IJobService>();
+            jobService.Setup(j => j.ScheduleJob(It.IsAny<string>(), It.IsAny<Expression<Func<Task>>>(), It.IsAny<Func<string>>()));
+            jobService.Setup(j => j.QueueJob(It.IsAny<Expression<Func<Task>>>()));
+
+            // Prepare a successful channel id response
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(channelJson)
+            };
+
+            // Prepare a successful playlist id response
+            var badPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(string.Empty)
+            };
+
+            var handler = new TestHandler(goodChanelResponse, badPlaylistResponse);
+            var client = new HttpClient(handler);
+
+            var httpFactory = new Mock<IHttpClientFactory>();
+            httpFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var logger = new Mock<ILogger<EnableYouTubeSyncCommandHandler>>();
+
+            var handlerInstance = new EnableYouTubeSyncCommandHandler(settingStore.Object, currentUser.Object, dataStore.Object, jobService.Object, httpFactory.Object, logger.Object);
+
+            // Act
+            var result = await handlerInstance.Handle(cmd, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+        }
+
+
+        private string GetGoodPlaylistJson()
+        {
+            // Prepare a successful playlist id response
+            string playlistJson = JsonSerializer.Serialize(new
+            {
+                Items = new[]
+                {
+                    new
+                    {
+                        ContentDetails = new
+                        {
+                            RelatedPlaylists = new
+                            {
+                                Uploads = "PL1234"
+                            }
+                        }
+                    }
+                }
+            }
+            , _jsonOptions);
+
+            return playlistJson;
         }
     }
 }

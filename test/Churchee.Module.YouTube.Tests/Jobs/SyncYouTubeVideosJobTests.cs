@@ -34,9 +34,11 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             var mockSettingStore = new Mock<ISettingStore>();
 
             string channelId = "123456";
+            string playlist = "78910";
 
             mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
             mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.Playlist, It.IsAny<Guid>())).ReturnsAsync(playlist);
 
             var mockDataStore = SetupMockDataStore();
 
@@ -62,7 +64,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             await cut.ExecuteAsync(appTenantId, CancellationToken.None);
 
             // Assert
-            messageHandler.RequestPath.Should().Be($"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults=10&key=key");
+            messageHandler.RequestPath.Should().Be($"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlist}&order=date&type=video&maxResults=10&key=key");
         }
 
 
@@ -124,7 +126,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
 
-            var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.Unauthorized, string.Empty);
+            var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.Unauthorized, "{error: 1}");
 
             var httpClient = new HttpClient(messageHandler);
 
@@ -138,7 +140,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             var act = () => cut.ExecuteAsync(appTenantId, CancellationToken.None);
 
             // Assert
-            await act.Should().ThrowAsync<YouTubeSyncException>($"Status code: {HttpStatusCode.Unauthorized}");
+            await act.Should().ThrowAsync<YouTubeSyncException>($"Status code: {HttpStatusCode.Unauthorized}, body: {{error: 1}}");
         }
 
         [Fact]

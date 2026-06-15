@@ -38,27 +38,18 @@ namespace Churchee.Module.YouTube.Jobs
 
             string apiKey = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.ApiKeyToken, applicationTenantId), s => s.Value, cancellationToken);
 
-            string getVideosUrl;
+            string getVideosUrl = $"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlist}&order=date&type=video&maxResults={videoCount}&key={apiKey}";
 
-            if (string.IsNullOrEmpty(playlist))
-            {
-                getVideosUrl = $"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults={videoCount}&key={apiKey}";
-            }
-            else
-            {
-                getVideosUrl = $"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlist}&order=date&type=video&maxResults={videoCount}&key={apiKey}";
-            }
-
-            var httpClient = _httpClientFactory.CreateClient();
+            using var httpClient = _httpClientFactory.CreateClient();
 
             var response = await httpClient.GetAsync(getVideosUrl, cancellationToken);
 
+            string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
             if (!response.IsSuccessStatusCode)
             {
-                throw new YouTubeSyncException($"Status code: {response.StatusCode}");
+                throw new YouTubeSyncException($"Status code: {response.StatusCode}, body: {responseBody}");
             }
-
-            string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
             GetYouTubeVideosApiResponse deserializedResponse;
 
@@ -100,7 +91,7 @@ namespace Churchee.Module.YouTube.Jobs
 
             var entityToAdd = new Video(applicationTenantId: applicationTenantId,
                 videoUri: $"https://youtu.be/{item.Id}",
-                publishedDate: item.Snippet.PublishTime,
+                publishedDate: item.Snippet.PublishedAt,
                 sourceName: "YouTube",
                 sourceId: item.Id,
                 title: WebUtility.HtmlDecode(item.Snippet.Title),
@@ -113,5 +104,9 @@ namespace Churchee.Module.YouTube.Jobs
 
             videoRepo.Create(entityToAdd);
         }
+
+
+
+
     }
 }
