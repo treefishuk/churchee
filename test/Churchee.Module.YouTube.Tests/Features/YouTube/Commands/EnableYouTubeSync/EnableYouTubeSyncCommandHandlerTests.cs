@@ -400,6 +400,118 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
         }
 
 
+        [Fact]
+        public async Task Handle_Returns_Error_On_Bad_Plalist_Response_Code()
+        {
+            // Arrange
+            var tenantId = Guid.NewGuid();
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle", string.Empty);
+
+            var settingStore = new Mock<ISettingStore>();
+            settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+            settingStore.Setup(s => s.GetSettingValue(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync("videos");
+
+            var currentUser = new Mock<ICurrentUser>();
+            currentUser.Setup(c => c.GetApplicationTenantId()).ReturnsAsync(tenantId);
+
+            var tokenRepo = new Mock<IRepository<Token>>();
+            tokenRepo.Setup(r => r.Create(It.IsAny<Token>()));
+
+            var dataStore = new Mock<IDataStore>();
+            dataStore.Setup(d => d.GetRepository<Token>()).Returns(tokenRepo.Object);
+            dataStore.Setup(d => d.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+            var jobService = new Mock<IJobService>();
+            jobService.Setup(j => j.ScheduleJob(It.IsAny<string>(), It.IsAny<Expression<Func<Task>>>(), It.IsAny<Func<string>>()));
+            jobService.Setup(j => j.QueueJob(It.IsAny<Expression<Func<Task>>>()));
+
+            // Prepare a successful channel id response
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(channelJson)
+            };
+
+            // Prepare a successful playlist id response
+            var badPlaylistResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, badPlaylistResponse);
+            var client = new HttpClient(handler);
+
+            var httpFactory = new Mock<IHttpClientFactory>();
+            httpFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var logger = new Mock<ILogger<EnableYouTubeSyncCommandHandler>>();
+
+            var handlerInstance = new EnableYouTubeSyncCommandHandler(settingStore.Object, currentUser.Object, dataStore.Object, jobService.Object, httpFactory.Object, logger.Object);
+
+            // Act
+            var result = await handlerInstance.Handle(cmd, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+        }
+
+
+        [Fact]
+        public async Task Handle_Returns_Error_On_Empty_Playlist_Response()
+        {
+            // Arrange
+            var tenantId = Guid.NewGuid();
+            var cmd = new EnableYouTubeSyncCommand("apiKey", "@handle", string.Empty);
+
+            var settingStore = new Mock<ISettingStore>();
+            settingStore.Setup(s => s.AddOrUpdateSetting(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+            settingStore.Setup(s => s.GetSettingValue(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync("videos");
+
+            var currentUser = new Mock<ICurrentUser>();
+            currentUser.Setup(c => c.GetApplicationTenantId()).ReturnsAsync(tenantId);
+
+            var tokenRepo = new Mock<IRepository<Token>>();
+            tokenRepo.Setup(r => r.Create(It.IsAny<Token>()));
+
+            var dataStore = new Mock<IDataStore>();
+            dataStore.Setup(d => d.GetRepository<Token>()).Returns(tokenRepo.Object);
+            dataStore.Setup(d => d.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+            var jobService = new Mock<IJobService>();
+            jobService.Setup(j => j.ScheduleJob(It.IsAny<string>(), It.IsAny<Expression<Func<Task>>>(), It.IsAny<Func<string>>()));
+            jobService.Setup(j => j.QueueJob(It.IsAny<Expression<Func<Task>>>()));
+
+            // Prepare a successful channel id response
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(channelJson)
+            };
+
+            // Prepare a successful playlist id response
+            var badPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(string.Empty)
+            };
+
+            var handler = new TestHandler(goodChanelResponse, badPlaylistResponse);
+            var client = new HttpClient(handler);
+
+            var httpFactory = new Mock<IHttpClientFactory>();
+            httpFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var logger = new Mock<ILogger<EnableYouTubeSyncCommandHandler>>();
+
+            var handlerInstance = new EnableYouTubeSyncCommandHandler(settingStore.Object, currentUser.Object, dataStore.Object, jobService.Object, httpFactory.Object, logger.Object);
+
+            // Act
+            var result = await handlerInstance.Handle(cmd, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+        }
+
+
         private string GetGoodPlaylistJson()
         {
             // Prepare a successful playlist id response
