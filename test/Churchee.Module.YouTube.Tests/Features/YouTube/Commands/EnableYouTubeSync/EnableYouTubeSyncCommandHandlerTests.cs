@@ -18,18 +18,33 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
 {
     public class EnableYouTubeSyncCommandHandlerTests
     {
+        private readonly JsonSerializerOptions _jsonOptions;
+
+        public EnableYouTubeSyncCommandHandlerTests()
+        {
+            _jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        }
+
         private class TestHandler : DelegatingHandler
         {
-            private readonly HttpResponseMessage _response;
+            private readonly HttpResponseMessage _channelResponse;
+            private readonly HttpResponseMessage _playlistResponse;
 
-            public TestHandler(HttpResponseMessage response)
+
+            public TestHandler(HttpResponseMessage response, HttpResponseMessage playlistResponse)
             {
-                _response = response;
+                _channelResponse = response;
+                _playlistResponse = playlistResponse;
             }
 
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
-                return Task.FromResult(_response);
+                if (request.RequestUri.ToString().Contains("part=contentDetails"))
+                {
+                    return Task.FromResult(_playlistResponse);
+                }
+
+                return Task.FromResult(_channelResponse);
             }
         }
 
@@ -57,7 +72,13 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             var jobService = new Mock<IJobService>();
 
             var badResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            var handler = new TestHandler(badResponse);
+
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(badResponse, goodPlaylistResponse);
             var client = new HttpClient(handler);
 
             var httpFactory = new Mock<IHttpClientFactory>();
@@ -103,14 +124,19 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             jobService.Setup(j => j.QueueJob(It.IsAny<Expression<Func<Task>>>()));
 
             // Prepare a successful channel id response
-            var apiResponse = new { items = new[] { new { id = "UC123" } } };
-            string json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
-            var goodResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(json)
+                Content = new StringContent(channelJson)
             };
 
-            var handler = new TestHandler(goodResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, goodPlaylistResponse);
             var client = new HttpClient(handler);
 
             var httpFactory = new Mock<IHttpClientFactory>();
@@ -156,14 +182,19 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                 .Throws(new Exception("Scheduling error"));
 
             // Prepare a successful channel id response
-            var apiResponse = new { items = new[] { new { id = "UC123" } } };
-            string json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
-            var goodResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(json)
+                Content = new StringContent(channelJson)
             };
 
-            var handler = new TestHandler(goodResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, goodPlaylistResponse);
             var client = new HttpClient(handler);
 
             var httpFactory = new Mock<IHttpClientFactory>();
@@ -212,13 +243,20 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
 
             var jobService = new Mock<IJobService>();
 
-            string json = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
-            var goodResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            // Prepare a successful channel id response
+            string channelJson = JsonSerializer.Serialize(new { channelId = "UC123", Items = new[] { new { id = "UC123" } } });
+            var goodChanelResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(json)
+                Content = new StringContent(channelJson)
             };
 
-            var handler = new TestHandler(goodResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(goodChanelResponse, goodPlaylistResponse);
 
             var client = new HttpClient(handler);
 
@@ -264,7 +302,13 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                 Content = new StringContent(string.Empty)
             };
 
-            var handler = new TestHandler(badResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(badResponse, goodPlaylistResponse);
 
             var client = new HttpClient(handler);
 
@@ -321,7 +365,13 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                 Content = new StringContent(string.Empty)
             };
 
-            var handler = new TestHandler(badResponse);
+            // Prepare a successful playlist id response
+            var goodPlaylistResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(GetGoodPlaylistJson())
+            };
+
+            var handler = new TestHandler(badResponse, goodPlaylistResponse);
 
             var client = new HttpClient(handler);
 
@@ -347,6 +397,31 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                 Times.Once);
 
+        }
+
+
+        private string GetGoodPlaylistJson()
+        {
+            // Prepare a successful playlist id response
+            string playlistJson = JsonSerializer.Serialize(new
+            {
+                Items = new[]
+                {
+                    new
+                    {
+                        ContentDetails = new
+                        {
+                            RelatedPlaylists = new
+                            {
+                                Uploads = "PL1234"
+                            }
+                        }
+                    }
+                }
+            }
+            , _jsonOptions);
+
+            return playlistJson;
         }
     }
 }
