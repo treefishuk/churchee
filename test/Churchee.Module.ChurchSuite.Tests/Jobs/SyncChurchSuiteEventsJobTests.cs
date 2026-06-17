@@ -215,6 +215,7 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
 
             var existingEvent = new Event.Builder()
                 .SetSourceId("9876")
+                .SetApplicationTenantId(tenantId)
                 .SetTitle("Existing Event")
                 .SetDescription("This is an existing event")
                 .SetDates(DateTime.UtcNow, DateTime.UtcNow.AddHours(1))
