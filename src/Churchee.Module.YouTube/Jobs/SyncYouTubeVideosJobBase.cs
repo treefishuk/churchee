@@ -66,7 +66,7 @@ namespace Churchee.Module.YouTube.Jobs
 
             foreach (var item in deserializedResponse.Items.Where(w => w.Snippet.ChannelId == channelId))
             {
-                string videoUri = $"https://youtu.be/{item.Id}";
+                string videoUri = $"https://youtu.be/{item.Snippet.ResourceId.VideoId}";
 
                 bool alreadyExists = videoRepo.AnyWithFiltersDisabled(w => w.VideoUri == videoUri && w.ApplicationTenantId == applicationTenantId);
 
@@ -90,10 +90,10 @@ namespace Churchee.Module.YouTube.Jobs
             }
 
             var entityToAdd = new Video(applicationTenantId: applicationTenantId,
-                videoUri: $"https://youtu.be/{item.Id}",
+                videoUri: $"https://youtu.be/{item.Snippet.ResourceId.VideoId}",
                 publishedDate: item.Snippet.PublishedAt,
                 sourceName: "YouTube",
-                sourceId: item.Id,
+                sourceId: item.Snippet.ResourceId.VideoId,
                 title: WebUtility.HtmlDecode(item.Snippet.Title),
                 description: WebUtility.HtmlDecode(item.Snippet.Description),
                 thumbnailUrl: item.Snippet.Thumbnails.High.Url,

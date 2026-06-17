@@ -285,24 +285,29 @@ namespace Churchee.Module.YouTube.Tests.Jobs
                 Items = new List<YouTubeVideo>
                 {
                     new() {
-                        Id = "1",
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,
                             Title = "Video Title",
                             Description = "Description",
-                            PublishTime = DateTime.Now.AddDays(-1)
+                            PublishTime = DateTime.Now.AddDays(-1),
+                            ResourceId = new ResourceId{
+                                VideoId = "1"
+                            }
+
 
                         }
                     },
                     new() {
-                        Id = "2",
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,
                             Title = "Video Title",
                             Description = "Description",
-                            PublishTime = DateTime.Now.AddDays(-1)
+                            PublishTime = DateTime.Now.AddDays(-1),
+                            ResourceId = new ResourceId{
+                                VideoId = "2"
+                            }
                         }
                     }
                 }
