@@ -134,6 +134,13 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
         private async Task<CommandResponse> StorePlaylist(EnableYouTubeSyncCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
         {
+            if (!string.IsNullOrEmpty(request.PlaylistId))
+            {
+                await _settingStore.AddOrUpdateSetting(SettingKeys.Playlist, applicationTenantId, "YouTube Playlist Id", request.PlaylistId);
+
+                return new CommandResponse();
+            }
+
             var response = new CommandResponse();
 
             string channelId = await _settingStore.GetSettingValue(SettingKeys.ChannelId, applicationTenantId);
