@@ -193,6 +193,39 @@ namespace Churchee.Module.ChurchSuite.Tests.Areas.Integrations.Pages
             NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
         }
 
+
+        [Fact]
+        public void ChurchSuite_Integration_SyncNow_Fails_ShowsError()
+        {
+            // Arrange
+            MockMediator.Setup(s => s.Send(It.IsAny<ChurchSuiteConfiguredQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            SetInitialUrl<ChurchSuiteEventsRazor>();
+
+            // ActivateEventsCommand successful
+            MockMediator.Setup(m => m.Send(It.IsAny<ActivateEventsCommand>(), default))
+                .ReturnsAsync(new CommandResponse());
+
+            var errorResponse = new CommandResponse();
+
+            errorResponse.AddError("Failed to sync", "");
+
+            // SyncChurchSuiteEventsToEventsTableCommand successful
+            MockMediator.Setup(m => m.Send(It.IsAny<SyncChurchSuiteNowCommand>(), default))
+                .ReturnsAsync(errorResponse);
+
+            // Act
+            var cut = Render<ChurchSuiteEventsRazor>();
+
+            var button = cut.Find("#syncNow");
+            button.Click();
+
+            // Assert
+            NotificationService.Notifications.Count.Should().Be(1);
+            NotificationService.Notifications.First().Summary.Should().Be("Failed to sync");
+            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+        }
+
         [Fact]
         public void ChurchSuite_DisableSync_Success_ShowsSuccess()
         {
