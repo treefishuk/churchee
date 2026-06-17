@@ -75,7 +75,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
                 string sourceId = (item.Key.Sequence ?? 0).ToString();
 
-                var dbEvent = await repo.FirstOrDefaultAsync(new GetEventByChurchSuiteSequenceSpecification(sourceId), cancellationToken);
+                var dbEvent = await repo.FirstOrDefaultAsync(new GetEventByChurchSuiteSequenceSpecification(sourceId, applicationTenantId), cancellationToken);
 
                 if (dbEvent == null)
                 {
@@ -91,6 +91,12 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
         private async Task UpdateEvent(IGrouping<Grouping, ApiResponse> item, Event dbEvent, Guid applicationTenantId, CancellationToken cancellationToken)
         {
+
+            if (dbEvent.ApplicationTenantId != applicationTenantId)
+            {
+                return;
+            }
+
             dbEvent.UpdateInformation(item.Key.Name ?? dbEvent.Title, dbEvent.Description, item.Key.Description ?? dbEvent.Description);
             dbEvent.UpdateLocation(item.Key.LocationName ?? dbEvent.LocationName, null, item.Key.LocationAddress ?? dbEvent.Street, string.Empty, string.Empty, item.Key.LocationLatitude, item.Key.LocationLongitude);
 

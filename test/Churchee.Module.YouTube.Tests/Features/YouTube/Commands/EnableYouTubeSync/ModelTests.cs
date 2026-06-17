@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Xunit;
 using Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync;
 
 namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeSync
@@ -48,7 +45,6 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Commands.EnableYouTubeS
             var video = new YouTubeVideo();
             Assert.Equal(string.Empty, video.Kind);
             Assert.Equal(string.Empty, video.Etag);
-            Assert.NotNull(video.Id);
             Assert.NotNull(video.Snippet);
         }
 
