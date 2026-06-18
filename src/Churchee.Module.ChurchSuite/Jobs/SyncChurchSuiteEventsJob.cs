@@ -193,6 +193,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
                 Sequence = x.Sequence,
                 Name = x.Name,
                 Description = x.Description,
+                LocationName = x.Location?.Name,
                 LocationAddress = x.Location?.Address,
                 LocationLatitude = x.Location?.Latitude == null ? null : Convert.ToDecimal(x.Location.Latitude.Value),
                 LocationLongitude = x.Location?.Longitude == null ? null : Convert.ToDecimal(x.Location.Longitude.Value),
