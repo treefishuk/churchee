@@ -52,7 +52,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             Guid? parentId = null;
 
-            var parentPage = await _dataStore.GetRepository<Page>().FirstOrDefaultAsync(new EventListingPageSpecification(), cancellationToken);
+            var parentPage = await _dataStore.GetRepository<Page>().FirstOrDefaultAsync(new EventListingPageSpecification(applicationTenantId), cancellationToken);
 
             if (parentPage != null)
             {
@@ -115,6 +115,8 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             if (datesToAdd.Count == 0 && datesToRemove.Count == 0)
             {
+                await _dataStore.SaveChangesAsync(cancellationToken);
+
                 return;
             }
 
