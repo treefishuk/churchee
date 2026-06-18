@@ -52,7 +52,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             Guid? parentId = null;
 
-            var parentPage = await _dataStore.GetRepository<Page>().FirstOrDefaultAsync(new EventListingPageSpecification(), cancellationToken);
+            var parentPage = await _dataStore.GetRepository<Page>().FirstOrDefaultAsync(new EventListingPageSpecification(applicationTenantId), cancellationToken);
 
             if (parentPage != null)
             {
@@ -115,6 +115,8 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             if (datesToAdd.Count == 0 && datesToRemove.Count == 0)
             {
+                await _dataStore.SaveChangesAsync(cancellationToken);
+
                 return;
             }
 
@@ -193,6 +195,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
                 Sequence = x.Sequence,
                 Name = x.Name,
                 Description = x.Description,
+                LocationName = x.Location?.Name,
                 LocationAddress = x.Location?.Address,
                 LocationLatitude = x.Location?.Latitude == null ? null : Convert.ToDecimal(x.Location.Latitude.Value),
                 LocationLongitude = x.Location?.Longitude == null ? null : Convert.ToDecimal(x.Location.Longitude.Value),
