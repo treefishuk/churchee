@@ -201,12 +201,4 @@
         StateHasChanged();
 
     }
-
-    string FormatVisibleHours(object value)
-    {
-        var dt = (DateTime)value;
-        return dt.Hour % 3 == 0 ? dt.ToString("HH:mm") : "";
-    }
-
-
 }
