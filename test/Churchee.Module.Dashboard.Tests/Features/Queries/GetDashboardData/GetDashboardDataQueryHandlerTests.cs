@@ -68,6 +68,8 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             // Register DI for handler scopes
             var services = new ServiceCollection();
             services.AddDbContext<DashboardDataTestDbContext>(opts => opts.UseSqlServer(_msSqlContainer.GetConnectionString()));
+            // Ensure DbContext (base type) can be resolved by AdminDataStore which expects DbContext in its constructor
+            services.AddScoped<DbContext>(sp => sp.GetRequiredService<DashboardDataTestDbContext>());
             services.AddScoped<IDataStore, AdminDataStore>();
             services.AddSingleton<IHttpContextAccessor>(_mockHttpContextAccessor.Object);
 
@@ -126,6 +128,8 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             // Register DI for handler scopes
             var services = new ServiceCollection();
             services.AddDbContext<DashboardDataTestDbContext>(opts => opts.UseSqlServer(_msSqlContainer.GetConnectionString()));
+            // Ensure DbContext (base type) can be resolved by AdminDataStore which expects DbContext in its constructor
+            services.AddScoped<DbContext>(sp => sp.GetRequiredService<DashboardDataTestDbContext>());
             services.AddScoped<IDataStore, AdminDataStore>();
             services.AddSingleton<IHttpContextAccessor>(_mockHttpContextAccessor.Object);
 
@@ -248,7 +252,8 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 .RuleFor(o => o.ModifiedById, f => userId)
                 .RuleFor(o => o.CreatedByUser, f => "System")
                 .RuleFor(o => o.ModifiedByName, f => "System")
-                .RuleFor(o => o.IpAddress, f => f.Internet.IpAddress().ToString());
+                .RuleFor(o => o.IpAddress, f => f.Internet.IpAddress().ToString())
+                .Ignore(i => i.ViewedAtHour);
 
 
             var repository = efStorage.GetRepository<PageView>();

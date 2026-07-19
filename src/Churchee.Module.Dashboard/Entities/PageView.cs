@@ -27,6 +27,6 @@ namespace Churchee.Module.Dashboard.Entities
 
         public DateTime ViewedAt { get; set; }
 
-        public int ViewedAtHour { get; set; }
+        public int ViewedAtHour { get; private set; }
     }
 }
