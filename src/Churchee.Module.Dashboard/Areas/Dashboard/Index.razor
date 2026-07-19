@@ -109,12 +109,12 @@
                     <RadzenAreaSeries Smooth="true" Data="@data.PagesOverTime" Title="Page Views" CategoryProperty="Name" ValueProperty="Count" RenderingOrder="1" Fill="#6A8DAE" Stroke="#87a3be">
                     <RadzenSeriesDataLabels Visible="false" />
                 </RadzenAreaSeries>
-                <RadzenCategoryAxis Padding="40" LabelAutoRotation="-45" />
+                    <RadzenCategoryAxis Visible="false" Padding="40" LabelAutoRotation="-90" />
                 <RadzenValueAxis>
                     <RadzenGridLines Visible="true" />
                 </RadzenValueAxis>
             </RadzenChart>
-
+            <div class="rz-text-overline rz-text-align-center">Time</div>
         </RadzenCard>
 
     </RadzenColumn>
@@ -201,5 +201,4 @@
         StateHasChanged();
 
     }
-
 }

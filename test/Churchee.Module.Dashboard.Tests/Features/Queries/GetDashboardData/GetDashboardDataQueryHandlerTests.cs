@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Churchee.Common.Storage;
 using Churchee.Data.EntityFramework.Admin;
 using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Features.Queries;
@@ -6,6 +7,7 @@ using Churchee.Module.Dashboard.Features.Queries.GetDashboardData;
 using Churchee.Module.Dashboard.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics;
@@ -63,7 +65,18 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
-            var handler = new GetDashboardDataQueryHandler(efStorage, _mockLogger.Object);
+            // Register DI for handler scopes
+            var services = new ServiceCollection();
+            services.AddDbContext<DashboardDataTestDbContext>(opts => opts.UseSqlServer(_msSqlContainer.GetConnectionString()));
+            // Ensure DbContext (base type) can be resolved by AdminDataStore which expects DbContext in its constructor
+            services.AddScoped<DbContext>(sp => sp.GetRequiredService<DashboardDataTestDbContext>());
+            services.AddScoped<IDataStore, AdminDataStore>();
+            services.AddSingleton<IHttpContextAccessor>(_mockHttpContextAccessor.Object);
+
+            using var serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
+            var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+            var handler = new GetDashboardDataQueryHandler(scopeFactory, _mockLogger.Object);
 
             // Warm up (optional, but helps with JIT and DB caching)
             await handler.Handle(query, cancellationToken);
@@ -112,9 +125,20 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             var efStorage = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
 
-            var newHandler = new GetDashboardDataQueryHandler(efStorage, _mockLogger.Object);
+            // Register DI for handler scopes
+            var services = new ServiceCollection();
+            services.AddDbContext<DashboardDataTestDbContext>(opts => opts.UseSqlServer(_msSqlContainer.GetConnectionString()));
+            // Ensure DbContext (base type) can be resolved by AdminDataStore which expects DbContext in its constructor
+            services.AddScoped<DbContext>(sp => sp.GetRequiredService<DashboardDataTestDbContext>());
+            services.AddScoped<IDataStore, AdminDataStore>();
+            services.AddSingleton<IHttpContextAccessor>(_mockHttpContextAccessor.Object);
 
-            var response = await newHandler.Handle(query, cancellationToken);
+            using var serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
+            var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+            var handler = new GetDashboardDataQueryHandler(scopeFactory, _mockLogger.Object);
+
+            var response = await handler.Handle(query, cancellationToken);
 
             Assert.True(response.UniqueVisitors == 2, $"Expected 2 unique visitors, but got {response.UniqueVisitors}.");
             Assert.True(response.ReturningVisitors == 1, $"Expected 1 returning visitor, but got {response.ReturningVisitors}.");
@@ -228,7 +252,8 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
                 .RuleFor(o => o.ModifiedById, f => userId)
                 .RuleFor(o => o.CreatedByUser, f => "System")
                 .RuleFor(o => o.ModifiedByName, f => "System")
-                .RuleFor(o => o.IpAddress, f => f.Internet.IpAddress().ToString());
+                .RuleFor(o => o.IpAddress, f => f.Internet.IpAddress().ToString())
+                .Ignore(i => i.ViewedAtHour);
 
 
             var repository = efStorage.GetRepository<PageView>();
@@ -248,7 +273,3 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
         }
     }
 }
-
-
-
-
