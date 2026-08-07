@@ -30,24 +30,26 @@ namespace Churchee.Module.YouTube.Jobs
         {
             string channelId = await _settingStore.GetSettingValue(SettingKeys.ChannelId, applicationTenantId);
 
+            string playlist = await _settingStore.GetSettingValue(SettingKeys.Playlist, applicationTenantId);
+
             string videosPath = await _settingStore.GetSettingValue(SettingKeys.VideosPageName, applicationTenantId);
 
             var tokenRepo = _dataStore.GetRepository<Token>();
 
             string apiKey = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.ApiKeyToken, applicationTenantId), s => s.Value, cancellationToken);
 
-            string getVideosUrl = $"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults={videoCount}&key={apiKey}";
+            string getVideosUrl = $"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlist}&order=date&type=video&maxResults={videoCount}&key={apiKey}";
 
-            var httpClient = _httpClientFactory.CreateClient();
+            using var httpClient = _httpClientFactory.CreateClient();
 
             var response = await httpClient.GetAsync(getVideosUrl, cancellationToken);
 
+            string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
             if (!response.IsSuccessStatusCode)
             {
-                throw new YouTubeSyncException();
+                throw new YouTubeSyncException($"Status code: {response.StatusCode}, body: {responseBody}");
             }
-
-            string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
             GetYouTubeVideosApiResponse deserializedResponse;
 
@@ -64,7 +66,7 @@ namespace Churchee.Module.YouTube.Jobs
 
             foreach (var item in deserializedResponse.Items.Where(w => w.Snippet.ChannelId == channelId))
             {
-                string videoUri = $"https://youtu.be/{item.Id.VideoId}";
+                string videoUri = $"https://youtu.be/{item.Snippet.ResourceId.VideoId}";
 
                 bool alreadyExists = videoRepo.AnyWithFiltersDisabled(w => w.VideoUri == videoUri && w.ApplicationTenantId == applicationTenantId);
 
@@ -88,10 +90,10 @@ namespace Churchee.Module.YouTube.Jobs
             }
 
             var entityToAdd = new Video(applicationTenantId: applicationTenantId,
-                videoUri: $"https://youtu.be/{item.Id.VideoId}",
-                publishedDate: item.Snippet.PublishTime,
+                videoUri: $"https://youtu.be/{item.Snippet.ResourceId.VideoId}",
+                publishedDate: item.Snippet.PublishedAt,
                 sourceName: "YouTube",
-                sourceId: item.Id.VideoId,
+                sourceId: item.Snippet.ResourceId.VideoId,
                 title: WebUtility.HtmlDecode(item.Snippet.Title),
                 description: WebUtility.HtmlDecode(item.Snippet.Description),
                 thumbnailUrl: item.Snippet.Thumbnails.High.Url,
@@ -102,5 +104,9 @@ namespace Churchee.Module.YouTube.Jobs
 
             videoRepo.Create(entityToAdd);
         }
+
+
+
+
     }
 }

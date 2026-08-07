@@ -69,7 +69,6 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
         {
             Kind = string.Empty;
             Etag = string.Empty;
-            Id = new Id();
             Snippet = new Snippet();
         }
 
@@ -78,9 +77,6 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
         [JsonPropertyName("etag")]
         public string Etag { get; set; }
-
-        [JsonPropertyName("id")]
-        public Id Id { get; set; }
 
         [JsonPropertyName("snippet")]
         public Snippet Snippet { get; set; }
@@ -114,6 +110,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
             ChannelTitle = string.Empty;
             Thumbnails = new Thumbnails();
             LiveBroadcastContent = string.Empty;
+            ResourceId = new ResourceId();
         }
 
         [JsonPropertyName("publishedAt")]
@@ -139,6 +136,25 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
         [JsonPropertyName("publishTime")]
         public DateTime PublishTime { get; set; }
+
+
+        [JsonPropertyName("resourceId")]
+        public ResourceId ResourceId { get; set; }
+    }
+
+    public class ResourceId
+    {
+        public ResourceId()
+        {
+            Kind = string.Empty;
+            VideoId = string.Empty;
+        }
+
+        [JsonPropertyName("kind")]
+        public string Kind { get; set; }
+
+        [JsonPropertyName("videoId")]
+        public string VideoId { get; set; }
     }
 
     public class Thumbnails

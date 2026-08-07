@@ -52,7 +52,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             Guid? parentId = null;
 
-            var parentPage = await _dataStore.GetRepository<Page>().FirstOrDefaultAsync(new EventListingPageSpecification(), cancellationToken);
+            var parentPage = await _dataStore.GetRepository<Page>().FirstOrDefaultAsync(new EventListingPageSpecification(applicationTenantId), cancellationToken);
 
             if (parentPage != null)
             {
@@ -75,7 +75,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
                 string sourceId = (item.Key.Sequence ?? 0).ToString();
 
-                var dbEvent = await repo.FirstOrDefaultAsync(new GetEventByChurchSuiteSequenceSpecification(sourceId), cancellationToken);
+                var dbEvent = await repo.FirstOrDefaultAsync(new GetEventByChurchSuiteSequenceSpecification(sourceId, applicationTenantId), cancellationToken);
 
                 if (dbEvent == null)
                 {
@@ -91,6 +91,12 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
         private async Task UpdateEvent(IGrouping<Grouping, ApiResponse> item, Event dbEvent, Guid applicationTenantId, CancellationToken cancellationToken)
         {
+
+            if (dbEvent.ApplicationTenantId != applicationTenantId)
+            {
+                return;
+            }
+
             dbEvent.UpdateInformation(item.Key.Name ?? dbEvent.Title, dbEvent.Description, item.Key.Description ?? dbEvent.Description);
             dbEvent.UpdateLocation(item.Key.LocationName ?? dbEvent.LocationName, null, item.Key.LocationAddress ?? dbEvent.Street, string.Empty, string.Empty, item.Key.LocationLatitude, item.Key.LocationLongitude);
 
@@ -109,6 +115,8 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             if (datesToAdd.Count == 0 && datesToRemove.Count == 0)
             {
+                await _dataStore.SaveChangesAsync(cancellationToken);
+
                 return;
             }
 
@@ -187,6 +195,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
                 Sequence = x.Sequence,
                 Name = x.Name,
                 Description = x.Description,
+                LocationName = x.Location?.Name,
                 LocationAddress = x.Location?.Address,
                 LocationLatitude = x.Location?.Latitude == null ? null : Convert.ToDecimal(x.Location.Latitude.Value),
                 LocationLongitude = x.Location?.Longitude == null ? null : Convert.ToDecimal(x.Location.Longitude.Value),

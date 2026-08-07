@@ -34,9 +34,11 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             var mockSettingStore = new Mock<ISettingStore>();
 
             string channelId = "123456";
+            string playlist = "78910";
 
             mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
             mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.Playlist, It.IsAny<Guid>())).ReturnsAsync(playlist);
 
             var mockDataStore = SetupMockDataStore();
 
@@ -62,7 +64,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
             await cut.ExecuteAsync(appTenantId, CancellationToken.None);
 
             // Assert
-            messageHandler.RequestPath.Should().Be($"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&order=date&type=video&maxResults=10&key=key");
+            messageHandler.RequestPath.Should().Be($"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlist}&order=date&type=video&maxResults=10&key=key");
         }
 
 
@@ -102,6 +104,43 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             // Assert
             await act.Should().ThrowAsync<YouTubeSyncException>("Failed to deserialize YouTube API response");
+        }
+
+
+
+
+        [Fact]
+        public async Task Bad_Response_Throws_Exception()
+        {
+            // Arrange
+            var mockSettingStore = new Mock<ISettingStore>();
+
+            string channelId = "123456";
+
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ChannelId, It.IsAny<Guid>())).ReturnsAsync(channelId);
+            mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.VideosPageName, It.IsAny<Guid>())).ReturnsAsync("Watch");
+
+            var mockDataStore = SetupMockDataStore();
+
+            _mockVideoRepo.Setup(s => s.AnyWithFiltersDisabled(It.IsAny<Expression<Func<Video, bool>>>())).Returns(false);
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.Unauthorized, "{error: 1}");
+
+            var httpClient = new HttpClient(messageHandler);
+
+            mockHttpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncYouTubeVideosJob(mockSettingStore.Object, mockDataStore.Object, mockHttpClientFactory.Object);
+
+            var appTenantId = Guid.NewGuid();
+
+            // Act
+            var act = () => cut.ExecuteAsync(appTenantId, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<YouTubeSyncException>($"Status code: {HttpStatusCode.Unauthorized}, body: {{error: 1}}");
         }
 
         [Fact]
@@ -147,30 +186,30 @@ namespace Churchee.Module.YouTube.Tests.Jobs
                 Items =
                 [
                     new() {
-                        Id = new Id
-                        {
-                            VideoId = "1"
-                        },
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,
                             Title = "Video Title",
                             Description = "Description",
-                            PublishTime = DateTime.Now.AddDays(-1)
+                            PublishTime = DateTime.Now.AddDays(-1),
+                            ResourceId = new ResourceId
+                            {
+                                VideoId = "1"
+                            }
 
                         }
                     },
                     new() {
-                        Id = new Id
-                        {
-                            VideoId = "2"
-                        },
                         Snippet = new Snippet
                         {
                             ChannelId = channelId,
                             Title = "Video Title",
                             Description = "Description",
-                            PublishTime = DateTime.Now.AddDays(-1)
+                            PublishTime = DateTime.Now.AddDays(-1),
+                            ResourceId = new ResourceId
+                            {
+                                VideoId = "2"
+                            }
                         }
                     }
                 ]

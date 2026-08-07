@@ -45,6 +45,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Redirects
             // Act
             var cut = Render<Index>();
 
+            cut.WaitForGridRows();
+
             cut.FindAll(".delete-row")[0].Click();
 
             // Assert
@@ -66,6 +68,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Redirects
 
             // Act
             var cut = Render<Index>();
+
+            cut.WaitForGridRows();
 
             cut.FindAll(".delete-row")[0].Click();
 

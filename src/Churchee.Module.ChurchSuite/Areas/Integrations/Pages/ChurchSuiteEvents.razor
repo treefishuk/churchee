@@ -124,6 +124,14 @@
         {
             NotificationService.Notify(NotificationSeverity.Success, "ChurchSuite Sync Queued");
         }
+
+        if (!syncResponse.IsSuccess)
+        {
+            foreach (var item in syncResponse.Errors)
+            {
+                NotificationService.Notify(NotificationSeverity.Error, item.Description);
+            }
+        }
     }
 
 

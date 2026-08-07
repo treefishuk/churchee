@@ -26,5 +26,7 @@ namespace Churchee.Module.Dashboard.Entities
         public string ReferrerFull { get; set; }
 
         public DateTime ViewedAt { get; set; }
+
+        public int ViewedAtHour { get; private set; }
     }
 }

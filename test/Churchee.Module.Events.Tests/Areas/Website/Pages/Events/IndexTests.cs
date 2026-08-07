@@ -44,6 +44,8 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
             //act
             var cut = Render<Index>();
 
+            cut.WaitForGridRows();
+
             cut.FindAll(".delete-row")[0].Click();
 
             //assert
@@ -65,6 +67,8 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 
             //act
             var cut = Render<Index>();
+
+            cut.WaitForGridRows();
 
             cut.FindAll(".delete-row")[0].Click();
 

@@ -14,7 +14,7 @@
 
 <PageName></PageName>
 
-<Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false"></Grid>
+<Grid TItem="GetListingQueryResponseItem" Count="count" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false"></Grid>
 
 @code {
 
@@ -22,6 +22,8 @@
     IEnumerable<GetListingQueryResponseItem> listingData = default!;
 
     bool isLoading = false;
+
+    int count = 0;
 
     async Task LoadData(LoadDataArgs args)
     {
@@ -36,6 +38,8 @@
                 orderBy: orderBy), CancellationToken);
 
         listingData = result.Data;
+
+        count = result.RecordsTotal;
 
         isLoading = false;
     }

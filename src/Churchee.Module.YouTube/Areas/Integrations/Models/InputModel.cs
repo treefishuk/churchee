@@ -7,6 +7,7 @@ namespace Churchee.Module.YouTube.Areas.Integrations.Models
         public InputModel()
         {
             ChannelIdentifier = string.Empty;
+            PlaylistId = string.Empty;
             ApiKey = string.Empty;
             NameForContent = string.Empty;
         }
@@ -22,6 +23,11 @@ namespace Churchee.Module.YouTube.Areas.Integrations.Models
         [Display(Name = "Channel Id/ Handle", GroupName = "Content Source", Description = "@channel or channel ID")]
         [RegularExpression(@"^(?:UC[A-Za-z0-9_-]{22}|@[\p{L}\p{N}_\.-]{2,29})$", ErrorMessage = "Enter a valid channel handle (e.g. @handle) or channel ID (starts with UC...).")]
         public string ChannelIdentifier { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "Playlist Id", GroupName = "Content Source", Description = "charecters after \"playlist?list=\"")]
+        [RegularExpression(@"^(PL|UU|LL|FL)[A-Za-z0-9_-]{32}$", ErrorMessage = "Invalid YouTube playlist ID.")]
+        public string PlaylistId { get; set; }
 
         [Required]
         [DataType(DataType.Text)]

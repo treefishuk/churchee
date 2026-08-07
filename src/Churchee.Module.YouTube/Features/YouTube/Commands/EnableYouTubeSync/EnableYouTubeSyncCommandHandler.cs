@@ -2,12 +2,12 @@
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Tokens.Entities;
 using Churchee.Module.YouTube.Helpers;
 using Churchee.Module.YouTube.Jobs;
 using Churchee.Module.YouTube.Spotify.Features.YouTube.Commands;
 using Hangfire;
-using Churchee.CQRS.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -38,18 +38,25 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
             await _settingStore.AddOrUpdateSetting(SettingKeys.Handle, applicationTenantId, $"YouTubeHandle", request.ChannelIdentifier);
 
-            var tokenRepo = _dataStore.GetRepository<Token>();
-
-            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.ApiKeyToken, request.ApiKey));
-
-            await _dataStore.SaveChangesAsync(cancellationToken);
-
-            var response = await StoreChannelId(request, applicationTenantId, cancellationToken);
+            var response = await StoreChannel(request, applicationTenantId, cancellationToken);
 
             if (!response.IsSuccess)
             {
                 return response;
             }
+
+            response = await StorePlaylist(request, applicationTenantId, cancellationToken);
+
+            if (!response.IsSuccess)
+            {
+                return response;
+            }
+
+            var tokenRepo = _dataStore.GetRepository<Token>();
+
+            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.ApiKeyToken, request.ApiKey));
+
+            await _dataStore.SaveChangesAsync(cancellationToken);
 
             try
             {
@@ -67,8 +74,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
             return response;
         }
 
-
-        private async Task<CommandResponse> StoreChannelId(EnableYouTubeSyncCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
+        private async Task<CommandResponse> StoreChannel(EnableYouTubeSyncCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
         {
             if (!request.ChannelIdentifier.StartsWith('@'))
             {
@@ -122,6 +128,73 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
             string channelId = getUserIdResponseClass.ChannelId;
 
             await _settingStore.AddOrUpdateSetting(SettingKeys.ChannelId, applicationTenantId, "YouTube Channel Id", channelId);
+
+            return response;
+        }
+
+        private async Task<CommandResponse> StorePlaylist(EnableYouTubeSyncCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrEmpty(request.PlaylistId))
+            {
+                await _settingStore.AddOrUpdateSetting(SettingKeys.Playlist, applicationTenantId, "YouTube Playlist Id", request.PlaylistId);
+
+                return new CommandResponse();
+            }
+
+            var response = new CommandResponse();
+
+            string channelId = await _settingStore.GetSettingValue(SettingKeys.ChannelId, applicationTenantId);
+
+            string getPlaylistUrl = $"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channelId}&key={request.ApiKey}";
+
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var getplaylistResponse = await httpClient.GetAsync(getPlaylistUrl, cancellationToken);
+
+            if (!getplaylistResponse.IsSuccessStatusCode)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError("Failed to get Playlst ID from YouTube API: {StatusCode}", getplaylistResponse.StatusCode);
+                }
+
+                response.AddError("Failed to get channel ID from YouTube API", "");
+
+                return response;
+            }
+
+            string json = await getplaylistResponse.Content.ReadAsStringAsync(cancellationToken);
+
+            if (string.IsNullOrEmpty(json))
+            {
+                _logger.LogError("Failed to get playlist ID from YouTube API. Response was empty");
+
+                response.AddError("Failed to get playlist ID from YouTube API", "");
+
+                return response;
+            }
+
+            using var doc = JsonDocument.Parse(json);
+
+            var root = doc.RootElement;
+
+            var playlist = root
+                .GetProperty("items")[0]
+                .GetProperty("contentDetails")
+                .GetProperty("relatedPlaylists")
+                .GetProperty("uploads")
+                .GetString() ?? "unknown";
+
+            if (playlist == "unknown")
+            {
+                _logger.LogError("Failed to get playlist ID from YouTube API. Response was empty");
+
+                response.AddError("Failed to get playlist ID from YouTube API", "");
+
+                return response;
+            }
+
+            await _settingStore.AddOrUpdateSetting(SettingKeys.Playlist, applicationTenantId, "YouTube Playlist Id", playlist);
 
             return response;
         }
