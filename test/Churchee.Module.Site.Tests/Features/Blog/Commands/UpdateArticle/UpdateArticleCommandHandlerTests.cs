@@ -13,8 +13,6 @@ using System.Linq.Expressions;
 
 namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
 {
-
-
     public class UpdateArticleCommandHandlerTests
     {
         private readonly Mock<IRepository<Article>> _repoMock;
@@ -73,13 +71,13 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
             article.LastPublishedDate.Should().Be(request.PublishOnDate);
 
             // No image processing invoked
-            imageProcessorMock.Verify(i => i.ConvertToWebP(It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Never);
+            imageProcessorMock.Verify(i => i.ConvertTempImageToFullImage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
             blobStoreMock.Verify(b => b.SaveAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
             jobServiceMock.Verify(j => j.QueueJob<ImageCropsGenerator>(It.IsAny<Expression<Func<ImageCropsGenerator, Task>>>()), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_WithImage_ProcessImageSavesBlobQueuesJobAndDeletesTempFile()
+        public async Task Handle_WithImage_ProcessImageSetsImageQueuesJob()
         {
             // Arrange
             var tenantId = Guid.NewGuid();
@@ -104,24 +102,19 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
 
             var article = new Article(tenantId, Guid.NewGuid(), Guid.Empty, "Old Title", "/old-url", "old desc");
 
-            var repoMock = new Mock<IRepository<Article>>();
             _repoMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<ISpecification<Article>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(article);
 
             var jobServiceMock = new Mock<IJobService>();
 
             var imageProcessorMock = new Mock<IImageProcessor>();
-            // Return a readable memory stream
+            // Return the final image path (handler will strip .webp when setting article.ImageUrl)
             imageProcessorMock
-                .Setup(i => i.ConvertToWebP(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MemoryStream([1, 2, 3]));
-
-            var blobStoreMock = new Mock<IBlobStore>();
-            string capturedPath = null!;
-            blobStoreMock
-                .Setup(b => b.SaveAsync(tenantId, It.IsAny<string>(), It.IsAny<Stream>(), false, It.IsAny<CancellationToken>()))
-                .Callback<Guid, string, Stream, bool, CancellationToken>((g, path, s, o, ct) => capturedPath = path)
+                .Setup(i => i.ConvertTempImageToFullImage(tempPath, request.ImageFileName, request.ImagePath, tenantId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync("/img/articles/photo.webp");
+
+            // Blob store is no longer used by the handler, but the constructor still requires it
+            var blobStoreMock = new Mock<IBlobStore>();
 
             var currentUserMock = new Mock<ICurrentUser>();
             currentUserMock.Setup(c => c.GetApplicationTenantId()).ReturnsAsync(tenantId);
@@ -140,19 +133,15 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
 
-            // Blob saved and path captured
-            blobStoreMock.Verify(b => b.SaveAsync(tenantId, It.IsAny<string>(), It.IsAny<Stream>(), false, It.IsAny<CancellationToken>()), Times.Once);
-            capturedPath.Should().NotBeNull();
-            capturedPath.Should().NotBeEmpty();
+            // Image processor called and returned the final path
+            imageProcessorMock.Verify(i => i.ConvertTempImageToFullImage(tempPath, request.ImageFileName, request.ImagePath, tenantId, It.IsAny<CancellationToken>()), Times.Once);
+
             // Article image set to saved path without .webp
             article.ImageUrl.Should().Be("/img/articles/photo");
             article.ImageAltTag.Should().Be(request.ImageAltTag);
 
             // Job queued to generate crops
             jobServiceMock.Verify(j => j.QueueJob<ImageCropsGenerator>(It.IsAny<Expression<Func<ImageCropsGenerator, Task>>>()), Times.Once);
-
-            // Temp file deleted
-            File.Exists(tempPath).Should().BeFalse();
         }
 
         private IDataStore GetDataStore()

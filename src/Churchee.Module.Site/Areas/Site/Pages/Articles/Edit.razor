@@ -69,7 +69,7 @@
             Image = new Common.ValueTypes.ChunkedImageUploadType
             {
                 Description = data.ImageAltTag,
-                ThumbnailUrl = data.ImageThumbnail.StartsWith("/_content") ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}",
+                ThumbnailUrl = !string.IsNullOrEmpty(data.ImageThumbnail) && data.ImageThumbnail.StartsWith("/_content") ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}",
                 ShowDescription = true
             }
         };
