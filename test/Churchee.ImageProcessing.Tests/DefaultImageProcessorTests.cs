@@ -1,4 +1,7 @@
+using Churchee.Common.Storage;
 using Churchee.Test.Helpers.Validation;
+using Microsoft.Extensions.Logging;
+using Moq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -6,11 +9,20 @@ namespace Churchee.ImageProcessing.Tests
 {
     public class DefaultImageProcessorTests
     {
+
+        private DefaultImageProcessor GetDefaultImageProcessor()
+        {
+            var mockLogger = new Mock<ILogger<DefaultImageProcessor>>();
+            var mockBlobStore = new Mock<IBlobStore>();
+
+            return new DefaultImageProcessor(mockBlobStore.Object, mockLogger.Object);
+        }
+
         [Fact]
         public async Task CreateCrop_ShouldReturnCroppedImageStream()
         {
             // Arrange
-            var processor = new DefaultImageProcessor();
+            var processor = GetDefaultImageProcessor();
             var image = new Image<Rgba32>(100, 100);
             var stream = new MemoryStream();
             image.SaveAsPng(stream);
@@ -30,7 +42,7 @@ namespace Churchee.ImageProcessing.Tests
         public async Task ResizeImage_ShouldReturnResizedImageStream()
         {
             // Arrange
-            var processor = new DefaultImageProcessor();
+            var processor = GetDefaultImageProcessor();
             var image = new Image<Rgba32>(100, 100);
             var stream = new MemoryStream();
             image.SaveAsPng(stream);
@@ -50,7 +62,7 @@ namespace Churchee.ImageProcessing.Tests
         public async Task Process_ShouldReturnOriginalStream_WhenWidthAndHeightAreZero()
         {
             // Arrange
-            var processor = new DefaultImageProcessor();
+            var processor = GetDefaultImageProcessor();
             var image = new Image<Rgba32>(100, 100);
             var stream = new MemoryStream();
             image.SaveAsPng(stream);
