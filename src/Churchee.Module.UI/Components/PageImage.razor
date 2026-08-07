@@ -55,9 +55,11 @@
 
     private async Task HandleModelChange(ChunkedImageUploadType newValue)
     {
+        var currentUrl = newValue.TempFilePath ?? Model.TempFilePath;
+
         var data = new ImageSimple { AltText = newValue.Description, Url = newValue.TempFilePath };
 
-        if (OnUpload != null)
+        if (newValue.File != null && newValue.TempFilePath != string.Empty && OnUpload != null)
         {
             var upload = new ChunkedUploadRequest
             {
@@ -69,10 +71,22 @@
             var finalPath = await OnUpload.Invoke(upload);
 
             data.Url = finalPath;
+
+            Value = JsonSerializer.Serialize(data);
+
         }
 
-        Value = JsonSerializer.Serialize(data);
+        else
+        {
+            var originalData = JsonSerializer.Deserialize<ImageSimple>(Value!)!;
+
+            originalData.AltText = newValue.Description;
+
+            Value = JsonSerializer.Serialize(data);
+        }
 
         await ValueChanged.InvokeAsync(Value);
     }
+
+
 }

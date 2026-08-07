@@ -1,4 +1,5 @@
-﻿using Churchee.Module.Site.Features.Pages.Queries;
+﻿using Churchee.Common.ValueTypes;
+using Churchee.Module.Site.Features.Pages.Queries;
 using Churchee.Module.UI.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,6 +14,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Parent = new DropdownInput();
             Order = 10;
             ContentItems = [];
+            Image = new Upload();
         }
 
         [MaxLength(100)]
@@ -31,7 +33,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         public List<GetPageDetailsResponseContentItem> ContentItems { get; set; }
 
-        public ImageUploadModel Image { get; set; }
-
+        [DataType(DataTypes.ImageUpload)]
+        public Upload Image { get; set; }
     }
 }

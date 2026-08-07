@@ -176,6 +176,7 @@
             Title = result.Title,
             Description = result.Description,
             Order = result.Order,
+            Image = new Upload(),
             Parent = new DropdownInput
             {
                 Title = result.ParentName,
@@ -231,6 +232,8 @@
             .SetOrder(InputModel.Order)
             .SetContent(content)
             .SetProperties(properties)
+            .SetBase64Image(InputModel.Image.Value)
+            .SetImageFileName(InputModel.Image.FileName)
             .Build();
 
         var result = await Mediator.Send(command, default);

@@ -16,6 +16,8 @@
 
         public int Order { get; set; }
 
+        public string ImageUrl { get; set; }
+
         public IEnumerable<GetPageDetailsResponseContentItem> ContentItems { get; set; }
 
 

@@ -15,9 +15,6 @@ namespace Churchee.Module.UI.Components
         [Inject]
         protected IImageProcessor ImageProcessor { get; set; } = default!;
 
-        [Inject]
-        private IAiToolUtilities AiToolUtilities { get; set; } = default!;
-
         [Parameter]
         public ChunkedImageUploadType Model { get; set; } = default!;
 
@@ -33,11 +30,38 @@ namespace Churchee.Module.UI.Components
 
         private string tempSmallImage = string.Empty;
 
-        private bool generating = false;
-
         private CancellationTokenSource? _descriptionCts;
 
         private bool disposedValue;
+
+
+        private async Task OnDescriptionChanged(string? value)
+        {
+            Model.Description = value;
+
+            // Debounce so we don't call ModelChanged on every keystroke
+            _descriptionCts?.Cancel();
+            _descriptionCts = new CancellationTokenSource();
+            var token = _descriptionCts.Token;
+
+            try
+            {
+                await Task.Delay(400, token); // adjust debounce interval as needed
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+
+            if (Model.File != null)
+            {
+                Model.TempFilePath = string.Empty;
+            }
+
+            await ModelChanged.InvokeAsync(Model);
+        }
+
+
 
         private async Task HandleFileUpload(UploadChangeEventArgs e)
         {
@@ -58,13 +82,7 @@ namespace Churchee.Module.UI.Components
 
             status = $"Uploaded {file.Name}";
 
-            generating = true;
-
             StateHasChanged();
-
-            // Cancel any previous alt text generation
-            _ = (_descriptionCts?.CancelAsync());
-            _descriptionCts = new CancellationTokenSource();
 
             try
             {
@@ -82,7 +100,6 @@ namespace Churchee.Module.UI.Components
 
                 // Reset position and generate alt text
                 resizedStream.Position = 0;
-                Model.Description = await AiToolUtilities.GenerateAltTextAsync(resizedStream, _descriptionCts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -90,7 +107,6 @@ namespace Churchee.Module.UI.Components
             }
             finally
             {
-                generating = false;
                 await ModelChanged.InvokeAsync(Model);
                 Model.ThumbnailUrl = tempSmallImage;
                 StateHasChanged();
@@ -105,13 +121,6 @@ namespace Churchee.Module.UI.Components
             byte[] bytes = ms.ToArray();
 
             return $"data:{contentType};base64,{Convert.ToBase64String(bytes)}";
-        }
-
-        private void OnDescriptionChange()
-        {
-            _descriptionCts?.Cancel();
-            generating = false;
-            StateHasChanged();
         }
 
         private async Task<string> UploadTempFileInChunksAsync(IBrowserFile file, CancellationToken cancellationToken = default)
