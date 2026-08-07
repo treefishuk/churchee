@@ -121,7 +121,17 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
                 _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalUrl, true, CancellationToken.None));
             }
+            else
+            {
+                // If there's no TempUrl, accept the provided Url (if any) as the final URL
+                if (!string.IsNullOrEmpty(newImage.Url))
+                {
+                    imageData.Url = newImage.Url;
+                }
 
+                imageData.TempUrl = string.Empty;
+            }
+            v
             imageData.AltText = newImage.AltText;
 
             pageContent.Value = JsonSerializer.Serialize(imageData);

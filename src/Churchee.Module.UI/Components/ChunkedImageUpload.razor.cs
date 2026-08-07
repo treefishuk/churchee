@@ -110,7 +110,10 @@ namespace Churchee.Module.UI.Components
         private async Task OnDescriptionChange()
         {
             await ModelChanged.InvokeAsync(Model);
-            _descriptionCts?.Cancel();
+            if (_descriptionCts != null)
+            {
+                await _descriptionCts.CancelAsync();
+            }
             generating = false;
             StateHasChanged();
         }

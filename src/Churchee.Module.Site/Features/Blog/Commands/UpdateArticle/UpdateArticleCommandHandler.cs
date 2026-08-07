@@ -15,15 +15,13 @@ namespace Churchee.Module.Site.Features.Blog.Commands
         private readonly IDataStore _dataStore;
         private readonly IJobService _jobService;
         private readonly IImageProcessor _imageProcessor;
-        private readonly IBlobStore _blobStore;
         private readonly ICurrentUser _currentUser;
 
-        public UpdateArticleCommandHandler(IDataStore dataStore, IJobService jobService, IImageProcessor imageProcessor, IBlobStore blobStore, ICurrentUser currentUser)
+        public UpdateArticleCommandHandler(IDataStore dataStore, IJobService jobService, IImageProcessor imageProcessor, ICurrentUser currentUser)
         {
             _dataStore = dataStore;
             _jobService = jobService;
             _imageProcessor = imageProcessor;
-            _blobStore = blobStore;
             _currentUser = currentUser;
         }
 

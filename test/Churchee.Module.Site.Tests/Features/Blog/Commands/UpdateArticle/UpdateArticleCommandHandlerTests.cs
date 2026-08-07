@@ -54,7 +54,6 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
                 GetDataStore(),
                 jobServiceMock.Object,
                 imageProcessorMock.Object,
-                blobStoreMock.Object,
                 currentUserMock.Object);
 
             // Act
@@ -123,7 +122,6 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
                 GetDataStore(),
                 jobServiceMock.Object,
                 imageProcessorMock.Object,
-                blobStoreMock.Object,
                 currentUserMock.Object);
 
             // Act

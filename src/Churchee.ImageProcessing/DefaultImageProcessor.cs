@@ -163,7 +163,7 @@ namespace Churchee.ImageProcessing
                 Quality = 100,
             };
 
-            return await Task.Run(() => Process(stream, width, 0, fullQualityEncoder));
+            return await Task.Run(() => Process(stream, width, 0, fullQualityEncoder), cancellationToken);
         }
 
         public async Task<string> ConvertTempImageToFullImage(string path, string fileName, string folderName, Guid applicationTenantId, CancellationToken cancellationToken)
@@ -174,20 +174,18 @@ namespace Churchee.ImageProcessing
                 return string.Empty;
             }
 
+            FileStream? tempFileStream = null;
+
             try
             {
-
                 // Open the temp file stream (do not rely on await-using to delay disposal until method exit)
-                var tempFileStream = File.OpenRead(path);
+                tempFileStream = File.OpenRead(path);
 
                 using var webPStream = await ConvertToWebP(tempFileStream, cancellationToken);
 
                 string imagePath = Path.Combine(folderName, $"{Path.GetFileNameWithoutExtension(fileName).ToDevName()}.webp");
 
-                string webPPath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
-
-                // Ensure the file handle is released before attempting to delete the temp file
-                await tempFileStream.DisposeAsync();
+                _ = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
 
                 return imagePath;
             }
@@ -197,6 +195,12 @@ namespace Churchee.ImageProcessing
             }
             finally
             {
+                // Ensure the file handle is released before attempting to delete the temp file
+                if (tempFileStream != null)
+                {
+                    await tempFileStream.DisposeAsync();
+                }
+
                 // Delete the temp file if it exists
                 if (File.Exists(path))
                 {
