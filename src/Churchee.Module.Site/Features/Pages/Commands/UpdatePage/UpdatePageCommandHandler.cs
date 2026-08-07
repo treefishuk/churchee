@@ -91,37 +91,40 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
                 if (pageContent != null && pageContent.PageTypeContent.Type == "Image")
                 {
-                    var imageData = string.IsNullOrEmpty(pageContent.Value) ? new ImageSimple() : JsonSerializer.Deserialize<ImageSimple>(pageContent.Value);
-
-                    var newImage = JsonSerializer.Deserialize<ImageSimple>(item.Value);
-
-                    if (!string.IsNullOrEmpty(newImage.TempUrl))
-                    {
-                        string finalUrl = await _imageProcessor.ConvertTempImageToFullImage(newImage.TempUrl, newImage.Url, "/img/pages", applicationTenantId, cancellationToken);
-
-                        imageData.Url = finalUrl.Replace(".webp", "");
-
-                        imageData.TempUrl = string.Empty;
-
-                        _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalUrl, true, CancellationToken.None));
-                    }
-
-                    imageData.AltText = newImage.AltText;
-
-                    pageContent.Value = JsonSerializer.Serialize(imageData);
+                    await CreateFinalImagesForPageContent(applicationTenantId, item, pageContent, cancellationToken);
                 }
 
-                else if (pageContent != null)
+                else
                 {
-                    pageContent.Value = item.Value;
+                    pageContent?.Value = item.Value;
                 }
 
-                pageContent.IncrementVersion();
+                pageContent?.IncrementVersion();
 
             }
 
         }
 
+        private async Task CreateFinalImagesForPageContent(Guid applicationTenantId, KeyValuePair<Guid, string> item, PageContent pageContent, CancellationToken cancellationToken)
+        {
+            var imageData = string.IsNullOrEmpty(pageContent.Value) ? new ImageSimple() : JsonSerializer.Deserialize<ImageSimple>(pageContent.Value);
 
+            var newImage = JsonSerializer.Deserialize<ImageSimple>(item.Value);
+
+            if (!string.IsNullOrEmpty(newImage.TempUrl))
+            {
+                string finalUrl = await _imageProcessor.ConvertTempImageToFullImage(newImage.TempUrl, newImage.Url, "/img/pages", applicationTenantId, cancellationToken);
+
+                imageData.Url = finalUrl.Replace(".webp", "");
+
+                imageData.TempUrl = string.Empty;
+
+                _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalUrl, true, CancellationToken.None));
+            }
+
+            imageData.AltText = newImage.AltText;
+
+            pageContent.Value = JsonSerializer.Serialize(imageData);
+        }
     }
 }
