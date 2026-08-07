@@ -131,7 +131,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
                 imageData.TempUrl = string.Empty;
             }
-            v
+
             imageData.AltText = newImage.AltText;
 
             pageContent.Value = JsonSerializer.Serialize(imageData);
