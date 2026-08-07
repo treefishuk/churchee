@@ -33,12 +33,6 @@ namespace Churchee.Module.Site.Entities
             Content = content;
         }
 
-        public void SetImage(string url, string altTag)
-        {
-            ImageUrl = url;
-            ImageAltTag = altTag;
-        }
-
         public void SetPublishDate(DateTime? publishOn)
         {
             LastPublishedDate = publishOn;

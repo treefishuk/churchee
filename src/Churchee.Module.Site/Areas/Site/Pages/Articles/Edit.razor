@@ -48,8 +48,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         var data = await Mediator.Send(new GetArticleByIdQuery(Id), default);
 
         IsPublished = data.IsPublished;
@@ -71,7 +69,8 @@
             Image = new Common.ValueTypes.ChunkedImageUploadType
             {
                 Description = data.ImageAltTag,
-                ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}"
+                ThumbnailUrl = !string.IsNullOrEmpty(data.ImageThumbnail) && data.ImageThumbnail.StartsWith("/_content") ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}",
+                ShowDescription = true
             }
         };
     }
@@ -89,7 +88,7 @@
             TempImagePath = InputModel.Image.TempFilePath,
             ImageAltTag = InputModel.Image.Description,
             ImageFileName = InputModel.Image.File?.Name ?? string.Empty,
-            ImagePath = InputModel.Image.Path
+            ImagePath = "img/articles",
         };
 
         var result = await Mediator.Send(command, default);

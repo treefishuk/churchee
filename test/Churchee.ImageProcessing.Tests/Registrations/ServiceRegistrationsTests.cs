@@ -1,7 +1,10 @@
 ﻿using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Registrations;
 using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Churchee.ImageProcessing.Tests.Registrations
 {
@@ -22,6 +25,11 @@ namespace Churchee.ImageProcessing.Tests.Registrations
         {
             // Arrange
             var services = new ServiceCollection();
+            var mockBlobStore = new Mock<IBlobStore>();
+            var mockLogger = new Mock<ILogger<DefaultImageProcessor>>();
+            services.AddScoped(sp => mockBlobStore.Object);
+            services.AddScoped(sp => mockLogger.Object);
+
             var serviceProvider = services.BuildServiceProvider();
             var action = new ServiceRegistrations();
 

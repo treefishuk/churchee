@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,5 +35,16 @@ namespace Churchee.Common.Abstractions.Utilities
         /// <param name="cancellationToken">Pass through a cancelation token</param>
         /// <returns>WebP Image Stream</returns>
         Task<Stream> ConvertToWebP(Stream stream, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Takes a Temp file Path and Returns the final Image Path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="fileName"></param>
+        /// <param name="folderName"></param>
+        /// <param name="cancellationToken">Pass through a cancelation token</param>
+        /// <returns></returns>
+        Task<string> ConvertTempImageToFullImage(string path, string fileName, string folderName, Guid applicationTenantId, CancellationToken cancellationToken);
+
     }
 }

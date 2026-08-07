@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Blog.Queries.GetArticleById
 {
@@ -32,7 +32,7 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetArticleById
                     ParentName = s.Parent != null ? s.Parent.Title : string.Empty,
                     ParentId = s.Parent != null ? s.Parent.Id : Guid.Empty,
                     ImageAltTag = s.ImageAltTag,
-                    ImageThumbnail = s.ImageUrl + "_t.webp"
+                    ImageThumbnail = string.IsNullOrEmpty(s.ImageUrl) ? "/_content/Churchee.Module.UI/img/opengraph-placeholder.png" : s.ImageUrl + "_t.webp",
                 },
                 cancellationToken: cancellationToken);
 

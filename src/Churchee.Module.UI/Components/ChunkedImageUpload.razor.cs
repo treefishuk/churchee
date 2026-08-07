@@ -107,9 +107,13 @@ namespace Churchee.Module.UI.Components
             return $"data:{contentType};base64,{Convert.ToBase64String(bytes)}";
         }
 
-        private void OnDescriptionChange()
+        private async Task OnDescriptionChange()
         {
-            _descriptionCts?.Cancel();
+            await ModelChanged.InvokeAsync(Model);
+            if (_descriptionCts != null)
+            {
+                await _descriptionCts.CancelAsync();
+            }
             generating = false;
             StateHasChanged();
         }

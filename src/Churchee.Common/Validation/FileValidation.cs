@@ -79,14 +79,11 @@ namespace Churchee.Common.Validation
                 string base64 = parts.Length > 1 ? parts[1] : parts[0];
                 byte[] bytes = Convert.FromBase64String(base64);
 
-                int len = Math.Min(bytes.Length, 2048);
-
-                for (int i = 0; i < len - 4; i++)
+                // "ftyp" is usually at offset 4
+                if (bytes.Length >= 8)
                 {
-                    if (bytes[i] == (byte)'f' &&
-                        bytes[i + 1] == (byte)'t' &&
-                        bytes[i + 2] == (byte)'y' &&
-                        bytes[i + 3] == (byte)'p')
+                    string ftyp = System.Text.Encoding.ASCII.GetString(bytes, 4, 4);
+                    if (ftyp == "ftyp")
                     {
                         return true;
                     }
@@ -99,7 +96,6 @@ namespace Churchee.Common.Validation
                 return false;
             }
         }
-
 
         public static bool IsImageFile(string filePath)
         {

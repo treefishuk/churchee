@@ -1,16 +1,6 @@
-﻿@using Churchee.Common.Abstractions.Auth
-@using Churchee.Common.Abstractions.Queue
-@using Churchee.Common.Abstractions.Utilities
-@using Churchee.Common.Storage
-@using Churchee.Common.ValueTypes
-@using Microsoft.AspNetCore.Components.Forms
-@using System.Globalization
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.Extensions.Configuration
-@using Microsoft.JSInterop
+﻿@using Microsoft.AspNetCore.Components.Forms
 @using Radzen
 @using Radzen.Blazor
-@using System.ComponentModel.DataAnnotations
 
       <div>
 
@@ -24,33 +14,45 @@
             }
 
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
-                    <img class="rz-m-7" src="@Model.ThumbnailUrl" width="200" />
+                <img class="rz-m-7" src="@(Model.ThumbnailUrl ?? "/_content/Churchee.Module.UI/img/not-found.png")" width="200" />
 
                 <RadzenStack Style="width:100%"> 
 
                         <div class="rz-p-4">
 
-                            <RadzenUpload Change="HandleFileUpload" Auto="false" Multiple="false" />
+                            <div>
 
-                            <small>@status</small>
+                                <RadzenUpload Change="HandleFileUpload" Auto="false" Multiple="false" />
 
-                            <RadzenFormField Text="Description" AllowFloatingLabel="false" Style="width:100%">
+                                <div><small>@status</small></div>
 
-                                <ChildContent>
+                            </div>
 
-                                <div style="display: flex; align-items: center;">
-                                        <RadzenTextBox Style="width: 100%" @bind-Value="@Model.Description" Change="OnDescriptionChange"/>
-                                        <RadzenProgressBarCircular Visible="generating" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Style="margin-right: 1rem">
-                                            <Template>AI</Template> 
-                                        </RadzenProgressBarCircular>
-                                </div>
 
-                                </ChildContent>
-                                <Helper>
-                                    <ValidationMessage For="() => Model.Description" />
-                                </Helper>
 
-                            </RadzenFormField>
+                            @if (Model.ShowDescription)
+                            {
+
+                                <RadzenFormField Text="Description" AllowFloatingLabel="false" Style="width:100%">
+
+                                    <ChildContent>
+
+                                        <div style="display: flex; align-items: center;">
+                                            <RadzenTextBox Style="width: 100%" @bind-Value="@Model.Description" Change="OnDescriptionChange" />
+                                            <RadzenProgressBarCircular Visible="generating" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Style="margin-right: 1rem">
+                                                <Template>AI</Template>
+                                            </RadzenProgressBarCircular>
+                                        </div>
+
+                                    </ChildContent>
+                                    <Helper>
+                                        <ValidationMessage For="() => Model.Description" />
+                                    </Helper>
+
+                                </RadzenFormField>
+
+                                }
+   
                         </div>
 
                 </RadzenStack>

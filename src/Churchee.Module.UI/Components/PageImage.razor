@@ -1,14 +1,13 @@
 ﻿@using Churchee.Common.Abstractions.Auth
 @using Churchee.Common.ValueTypes
-@using Churchee.Module.UI.Models
-@using Radzen
-@using Radzen.Blazor
-@using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components;
 @using System.Text.Json
 
-<ChunkedImageUpload Model="@Model" ModelChanged="HandleModelChange" />
+
+
+
+<ChunkedImageUpload Model="@Model" ModelChanged="HandleModelChange"/>
+
 
 @code {
 
@@ -55,23 +54,19 @@
 
     private async Task HandleModelChange(ChunkedImageUploadType newValue)
     {
-        var data = new ImageSimple { AltText = newValue.Description, Url = newValue.TempFilePath };
 
-        if (OnUpload != null)
+        if(newValue.File != null)
         {
-            var upload = new ChunkedUploadRequest
-            {
-                FileName = newValue.File.Name,
-                TempFilePath = newValue.TempFilePath,
-                FinalFilePath = $"/pages/{PageId}/{Name}/{Path.GetFileNameWithoutExtension(newValue.File.Name)}"
-            };
+            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.TempFilePath, Url = newValue.File.Name };
 
-            var finalPath = await OnUpload.Invoke(upload);
-
-            data.Url = finalPath;
+            Value = JsonSerializer.Serialize(data);
         }
+        else
+        {
+            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.TempFilePath, Url = newValue.ThumbnailUrl };
 
-        Value = JsonSerializer.Serialize(data);
+            Value = JsonSerializer.Serialize(data);
+        }
 
         await ValueChanged.InvokeAsync(Value);
     }

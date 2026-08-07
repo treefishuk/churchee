@@ -5,20 +5,14 @@
 @using Churchee.Module.Site.Features.Pages.Commands.CreatePermenantImageFromTemp
 @using Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 @using Churchee.Module.Site.Features.Pages.Queries
-@using Churchee.Module.Site.Features.Pages.Queries.GetPageContent
-@using Churchee.Module.Site.Features.Templates.Commands.UpdateTemplateContent
-@using Churchee.Module.Site.Features.Templates.Queries.GetTemplateById
 @using Churchee.Module.Site.Helpers
 @using Churchee.Module.UI.Components
 @using Churchee.Module.UI.Models
 @using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Logging
 @using Radzen
 @using Radzen.Blazor
 @using System.ComponentModel.DataAnnotations
-@using System.Reflection
-@using System.Linq.Expressions
 
 <PageName Name="@Title"></PageName>
 
@@ -32,7 +26,7 @@
 
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
                     <RadzenButton Text="Cancel" Click="CancelForm" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
-                    <RadzenButton Disabled="_formInvalid" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Click="@(()=> Submit = " Save")">Save</RadzenButton>
+                    <RadzenButton id="submitFormBtn" Disabled="_formInvalid" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Click="@(() => Submit = " Save")">Save</RadzenButton>
 
                     @if (_isPublished)
                     {
@@ -113,12 +107,7 @@
         </EditForm>
     }
 
-
-
 </RadzenStack>
-
-
-
 
 @code {
     private bool _formInvalid;
@@ -161,8 +150,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         var result = await Mediator.Send(new GetPageDetailsRequest(Id), default);
 
         _isPublished = result.Published;
@@ -182,11 +169,14 @@
                 Value = result.ParentId?.ToString().ToUpperInvariant(),
                 Data = dropdownData ?? new List<DropdownInput>(),
             },
-            ContentItems = result.ContentItems.ToList()
+            ContentItems =  result.ContentItems.ToList(),
+            Image = new Common.ValueTypes.ChunkedImageUploadType
+            {
+                ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{result.ImageThumbnail}",
+                ShowDescription = false
+            }
 
         };
-
-
     }
 
 
@@ -231,6 +221,7 @@
             .SetOrder(InputModel.Order)
             .SetContent(content)
             .SetProperties(properties)
+            .SetImage(InputModel.Image.TempFilePath, InputModel.Image.File?.Name ?? string.Empty)
             .Build();
 
         var result = await Mediator.Send(command, default);

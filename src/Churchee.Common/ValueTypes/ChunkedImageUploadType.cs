@@ -24,6 +24,8 @@ namespace Churchee.Common.ValueTypes
 
         public string SupportedFileTypes { get; set; }
 
+        public bool ShowDescription { get; set; } = true;
+
         [Required]
         public string Description { get; set; }
 

@@ -1,4 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Storage;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -10,6 +12,14 @@ namespace Churchee.ImageProcessing
 {
     public class DefaultImageProcessor : IImageProcessor
     {
+        private readonly IBlobStore _blobStore;
+        private readonly ILogger _logger;
+
+        public DefaultImageProcessor(IBlobStore blobStore, ILogger<DefaultImageProcessor> logger)
+        {
+            _blobStore = blobStore;
+            _logger = logger;
+        }
 
         private static Stream CreateCrop(Stream stream, int width, string extension)
         {
@@ -153,7 +163,52 @@ namespace Churchee.ImageProcessing
                 Quality = 100,
             };
 
-            return await Task.Run(() => Process(stream, width, 0, fullQualityEncoder));
+            return await Task.Run(() => Process(stream, width, 0, fullQualityEncoder), cancellationToken);
+        }
+
+        public async Task<string> ConvertTempImageToFullImage(string path, string fileName, string folderName, Guid applicationTenantId, CancellationToken cancellationToken)
+        {
+
+            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(folderName))
+            {
+                return string.Empty;
+            }
+
+            FileStream? tempFileStream = null;
+
+            try
+            {
+                // Open the temp file stream (do not rely on await-using to delay disposal until method exit)
+                tempFileStream = File.OpenRead(path);
+
+                using var webPStream = await ConvertToWebP(tempFileStream, cancellationToken);
+
+                string imagePath = Path.Combine(folderName, $"{Path.GetFileNameWithoutExtension(fileName).ToDevName()}.webp");
+
+                _ = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
+
+                return imagePath;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error converting temp image to full image for file {FileName} in folder {FolderName}", fileName, folderName);
+            }
+            finally
+            {
+                // Ensure the file handle is released before attempting to delete the temp file
+                if (tempFileStream != null)
+                {
+                    await tempFileStream.DisposeAsync();
+                }
+
+                // Delete the temp file if it exists
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+
+            return string.Empty;
         }
     }
 }
