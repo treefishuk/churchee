@@ -139,16 +139,6 @@ namespace Churchee.ImageProcessing
             return await Task.Run(() => ResizeImage(stream, width, height, extension), cancellationToken);
         }
 
-        public async Task<Stream> ResizeImageAsync(Guid applicationTenantId, string originalImagePath, string newPath, int width, int height, string extension, CancellationToken cancellationToken)
-        {
-            await using var stream = await _blobStore.GetReadStreamAsync(applicationTenantId, originalImagePath, cancellationToken);
-
-            using var imageStream = await ResizeImageAsync(stream, width, 0, extension, cancellationToken);
-
-            await _blobStore.SaveAsync(applicationTenantId, $"{newPath}{extension}", imageStream, true, cancellationToken);
-            return await Task.Run(() => ResizeImage(stream, width, height, extension), cancellationToken);
-        }
-
         public async Task<Stream> CreateCropAsync(Stream stream, int width, string extension, CancellationToken cancellationToken)
         {
             return await Task.Run(() => CreateCrop(stream, width, extension), cancellationToken);
