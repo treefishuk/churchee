@@ -69,7 +69,39 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
             // Arrange
             _settingStore.Setup(x => x.GetSettingValue(It.IsAny<Guid>(), tenantId)).ReturnsAsync("https://demo.churchsuite.com/embed/calendar/json");
 
-            _httpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient());
+            string json = JsonSerializer.Serialize(new List<ApiResponse>() {
+
+                new ApiResponse
+                {
+                    Id = 1,
+                    Name = "Test Event",
+                    Sequence = 1234,
+                    DatetimeStart = DateTime.UtcNow,
+                    DatetimeEnd = DateTime.UtcNow.AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true,
+                },
+                new ApiResponse
+                {
+                    Id = 2,
+                    Name = "Test Event",
+                    Sequence = 1234,
+                    DatetimeStart = DateTime.UtcNow.AddDays(1),
+                    DatetimeEnd = DateTime.UtcNow.AddDays(1).AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true
+                }
+            });
+
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, json))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
 
             var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
 
