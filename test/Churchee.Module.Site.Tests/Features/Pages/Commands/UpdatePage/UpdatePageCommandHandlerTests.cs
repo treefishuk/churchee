@@ -1,4 +1,7 @@
+using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Storage;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
@@ -15,6 +18,9 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
         {
             var storageMock = new Mock<IDataStore>();
             var pageRepoMock = new Mock<IRepository<Page>>();
+            var imageProcessorMock = new Mock<IImageProcessor>();
+            var jobServiceMock = new Mock<IJobService>();
+            var currentUserMock = new Mock<ICurrentUser>();
             var page = new Page(System.Guid.NewGuid(), "title", "/url", "desc", System.Guid.NewGuid(), null, true);
 
             pageRepoMock.Setup(r => r.ApplySpecification(It.IsAny<PageWithContentAndPropertiesSpecification>())).Returns(new[] { page }.AsQueryable());
@@ -22,7 +28,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             storageMock.Setup(s => s.GetRepository<Page>()).Returns(pageRepoMock.Object);
             storageMock.Setup(s => s.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var handler = new UpdatePageCommandHandler(storageMock.Object);
+            var handler = new UpdatePageCommandHandler(storageMock.Object, imageProcessorMock.Object, jobServiceMock.Object, currentUserMock.Object);
 
             var cmd = new UpdatePageCommand.Builder()
                 .SetTitle("new title")

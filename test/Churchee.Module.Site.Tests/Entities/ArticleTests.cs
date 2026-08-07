@@ -68,7 +68,7 @@ namespace Churchee.Module.Site.Tests.Entities
             string alt = "alt text";
 
             // Act
-            article.SetImage(url, alt);
+            article.SetImageInfo(url, alt);
 
             // Assert
             Assert.Equal(url, article.ImageUrl);
