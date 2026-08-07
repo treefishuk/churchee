@@ -3,10 +3,12 @@ using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.Common.ValueTypes;
 using Churchee.CQRS.Abstractions;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
+using System.Text.Json;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 {
@@ -33,12 +35,12 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
                 .First();
 
             page.UpdateInfo(request.Title, request.Description, request.ParentId, request.Order);
-            page.UpdateContent(request.Content);
-
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            await ProcessImage(request, applicationTenantId, page, cancellationToken);
+            await ProcessImages(request, applicationTenantId, page, cancellationToken);
+
+            await UpdateContent(request.Content, page, applicationTenantId, cancellationToken);
 
             await _storage.SaveChangesAsync(cancellationToken);
 
@@ -57,7 +59,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
             return new CommandResponse();
         }
 
-        private async Task ProcessImage(UpdatePageCommand request, Guid applicationTenantId, Page page, CancellationToken cancellationToken)
+        private async Task ProcessImages(UpdatePageCommand request, Guid applicationTenantId, Page page, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.ImageTempPath) || string.IsNullOrEmpty(request.ImageFileName))
             {
@@ -75,5 +77,51 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
             page.SetImageUrl(imagePath.Replace(".webp", ""));
         }
+
+        public async Task UpdateContent(List<KeyValuePair<Guid, string>> content, Page page, Guid applicationTenantId, CancellationToken cancellationToken)
+        {
+            if (content == null || content.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var item in content)
+            {
+                var pageContent = page.PageContent.FirstOrDefault(d => d.PageTypeContentId == item.Key);
+
+                if (pageContent != null && pageContent.PageTypeContent.Type == "Image")
+                {
+                    var imageData = string.IsNullOrEmpty(pageContent.Value) ? new ImageSimple() : JsonSerializer.Deserialize<ImageSimple>(pageContent.Value);
+
+                    var newImage = JsonSerializer.Deserialize<ImageSimple>(item.Value);
+
+                    if (!string.IsNullOrEmpty(newImage.TempUrl))
+                    {
+                        string finalUrl = await _imageProcessor.ConvertTempImageToFullImage(newImage.TempUrl, newImage.Url, "/img/pages", applicationTenantId, cancellationToken);
+
+                        imageData.Url = finalUrl.Replace(".webp", "");
+
+                        imageData.TempUrl = string.Empty;
+
+                        _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalUrl, true, CancellationToken.None));
+                    }
+
+                    imageData.AltText = newImage.AltText;
+
+                    pageContent.Value = JsonSerializer.Serialize(imageData);
+                }
+
+                else if (pageContent != null)
+                {
+                    pageContent.Value = item.Value;
+                }
+
+                pageContent.IncrementVersion();
+
+            }
+
+        }
+
+
     }
 }

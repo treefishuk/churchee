@@ -23,6 +23,7 @@ namespace Churchee.Common.ValueTypes
         public string Path { get; set; }
 
         public string SupportedFileTypes { get; set; }
+
         public bool ShowDescription { get; set; } = true;
 
         [Required]

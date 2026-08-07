@@ -185,7 +185,7 @@
             ContentItems = result.ContentItems.ToList(),
             Image = new Common.ValueTypes.ChunkedImageUploadType
             {
-                ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}/{result.ImageThumbnail}",
+                ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{result.ImageThumbnail}",
                 ShowDescription = false
             }
 
@@ -234,7 +234,7 @@
             .SetOrder(InputModel.Order)
             .SetContent(content)
             .SetProperties(properties)
-            .SetImage(InputModel.Image.TempFilePath, InputModel.Image.File.Name)
+            .SetImage(InputModel.Image.TempFilePath, InputModel.Image.File?.Name ?? string.Empty)
             .Build();
 
         var result = await Mediator.Send(command, default);
