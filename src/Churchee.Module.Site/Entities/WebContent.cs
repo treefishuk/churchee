@@ -81,6 +81,12 @@ namespace Churchee.Module.Site.Entities
             ImageUrl = imageUrl;
         }
 
+        public void SetImageInfo(string imageUrl, string altTag)
+        {
+            ImageUrl = imageUrl;
+            ImageAltTag = altTag;
+        }
+
         public void SetImageCheckHash(string imageCheckHash)
         {
             ImageCheckHash = imageCheckHash;

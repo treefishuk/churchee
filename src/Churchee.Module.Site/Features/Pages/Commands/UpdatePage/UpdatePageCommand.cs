@@ -19,6 +19,10 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
         public int Order { get; set; }
 
+        public string ImageTempPath { get; set; }
+
+        public string ImageFileName { get; set; }
+
         public List<KeyValuePair<Guid, string>> Content { get; set; }
 
         public List<KeyValuePair<Guid, string>> Properties { get; set; }
@@ -42,6 +46,14 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
             public Builder SetParentId(string parentId)
             {
                 _command.ParentId = string.IsNullOrEmpty(parentId) ? null : Guid.Parse(parentId);
+                return this;
+            }
+
+            public Builder SetImage(string imageTempPath, string imageFileName)
+            {
+                _command.ImageTempPath = imageTempPath ?? string.Empty;
+                _command.ImageFileName = imageFileName ?? string.Empty;
+
                 return this;
             }
 

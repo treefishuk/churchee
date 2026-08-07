@@ -85,7 +85,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, webPPath, true, CancellationToken.None));
 
-            newArticle.SetImage(webPPath.Replace(".webp", ""), request.ImageAltTag);
+            newArticle.SetImageInfo(webPPath.Replace(".webp", ""), request.ImageAltTag);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.Storage;
-using Churchee.Module.Site.Entities;
 using Churchee.CQRS.Abstractions;
+using Churchee.Module.Site.Entities;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
@@ -29,6 +29,7 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                     Url = s.Url,
                     Published = s.Published,
                     Order = s.Order,
+                    ImageThumbnail = s.ImageUrl + "_t.webp",
                     ContentItems = s.PageContent
                     .OrderBy(o => o.PageTypeContent.Order)
                     .Select(m => new GetPageDetailsResponseContentItem

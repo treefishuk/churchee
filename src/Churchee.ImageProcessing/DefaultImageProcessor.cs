@@ -1,4 +1,6 @@
 ﻿using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Storage;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -10,6 +12,14 @@ namespace Churchee.ImageProcessing
 {
     public class DefaultImageProcessor : IImageProcessor
     {
+        private readonly IBlobStore _blobStore;
+        private readonly ILogger _logger;
+
+        public DefaultImageProcessor(IBlobStore blobStore, ILogger<DefaultImageProcessor> logger)
+        {
+            _blobStore = blobStore;
+            _logger = logger;
+        }
 
         private static Stream CreateCrop(Stream stream, int width, string extension)
         {
@@ -129,6 +139,16 @@ namespace Churchee.ImageProcessing
             return await Task.Run(() => ResizeImage(stream, width, height, extension), cancellationToken);
         }
 
+        public async Task<Stream> ResizeImageAsync(Guid applicationTenantId, string originalImagePath, string newPath, int width, int height, string extension, CancellationToken cancellationToken)
+        {
+            await using var stream = await _blobStore.GetReadStreamAsync(applicationTenantId, originalImagePath, cancellationToken);
+
+            using var imageStream = await ResizeImageAsync(stream, width, 0, extension, cancellationToken);
+
+            await _blobStore.SaveAsync(applicationTenantId, $"{newPath}{extension}", imageStream, true, cancellationToken);
+            return await Task.Run(() => ResizeImage(stream, width, height, extension), cancellationToken);
+        }
+
         public async Task<Stream> CreateCropAsync(Stream stream, int width, string extension, CancellationToken cancellationToken)
         {
             return await Task.Run(() => CreateCrop(stream, width, extension), cancellationToken);
@@ -154,6 +174,47 @@ namespace Churchee.ImageProcessing
             };
 
             return await Task.Run(() => Process(stream, width, 0, fullQualityEncoder));
+        }
+
+        public async Task<string> ConvertTempImageToFullImage(string path, string fileName, string folderName, Guid applicationTenantId, CancellationToken cancellationToken)
+        {
+
+            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(folderName))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+
+                // Open the temp file stream (do not rely on await-using to delay disposal until method exit)
+                var tempFileStream = File.OpenRead(path);
+
+                using var webPStream = await ConvertToWebP(tempFileStream, cancellationToken);
+
+                string imagePath = Path.Combine(folderName, $"{Path.GetFileNameWithoutExtension(fileName).ToDevName()}.webp");
+
+                string webPPath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
+
+                // Ensure the file handle is released before attempting to delete the temp file
+                await tempFileStream.DisposeAsync();
+
+                return imagePath;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error converting temp image to full image for file {FileName} in folder {FolderName}", fileName, folderName);
+            }
+            finally
+            {
+                // Delete the temp file if it exists
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+
+            return string.Empty;
         }
     }
 }

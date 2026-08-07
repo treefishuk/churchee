@@ -71,7 +71,8 @@
             Image = new Common.ValueTypes.ChunkedImageUploadType
             {
                 Description = data.ImageAltTag,
-                ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}"
+                ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}",
+                ShowDescription = true
             }
         };
     }
@@ -89,7 +90,7 @@
             TempImagePath = InputModel.Image.TempFilePath,
             ImageAltTag = InputModel.Image.Description,
             ImageFileName = InputModel.Image.File?.Name ?? string.Empty,
-            ImagePath = InputModel.Image.Path
+            ImagePath = "img/articles",
         };
 
         var result = await Mediator.Send(command, default);

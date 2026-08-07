@@ -3,10 +3,10 @@ using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Blog.Commands
 {
@@ -54,23 +54,16 @@ namespace Churchee.Module.Site.Features.Blog.Commands
                 return;
             }
 
-            // Open the temp file stream (do not rely on await-using to delay disposal until method exit)
-            var tempFileStream = File.OpenRead(request.TempImagePath);
+            string imagePath = await _imageProcessor.ConvertTempImageToFullImage(request.TempImagePath, request.ImageFileName, request.ImagePath, applicationTenantId, cancellationToken);
 
-            using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
+            if (string.IsNullOrEmpty(imagePath))
+            {
+                return;
+            }
 
-            string imagePath = Path.Combine(request.ImagePath, $"{Path.GetFileNameWithoutExtension(request.ImageFileName).ToDevName()}.webp");
+            _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, imagePath, true, CancellationToken.None));
 
-            string webPPath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
-
-            // Ensure the file handle is released before attempting to delete the temp file
-            await tempFileStream.DisposeAsync();
-
-            File.Delete(request.TempImagePath);
-
-            _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, webPPath, true, CancellationToken.None));
-
-            newArticle.SetImage(webPPath.Replace(".webp", ""), request.ImageAltTag);
+            newArticle.SetImageInfo(imagePath.Replace(".webp", ""), request.ImageAltTag);
         }
     }
 }

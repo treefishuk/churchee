@@ -68,7 +68,9 @@ else if (dataType == DataTypes.ChunkedImageUpload)
     
     if (upload != null)
     {
-        <ChunkedImageUpload @bind-Model=upload></ChunkedImageUpload>
+        <RadzenFormField Text=@Prop.Name.ToSentence() AllowFloatingLabel="false">
+            <ChunkedImageUpload @bind-Model=upload></ChunkedImageUpload>
+        </RadzenFormField>
     }
 }
 else if (dataType == DataTypes.MediaUpload)
