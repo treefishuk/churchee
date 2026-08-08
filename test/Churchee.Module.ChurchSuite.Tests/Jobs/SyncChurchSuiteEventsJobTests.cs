@@ -257,6 +257,35 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
         }
 
 
+        [Fact]
+        public async Task Http_Response_Error_Gets_Logged()
+        {
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.Forbidden, "Epic fail"))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            _logger.Verify(l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, _) => o.ToString()!.Contains("Failed to get feed")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
+        }
+
+
 
     }
+
+
 }
+
