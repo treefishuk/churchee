@@ -48,6 +48,11 @@ namespace Churchee.Module.ChurchSuite.Jobs
         {
             var grouped = await GetGroupedData(applicationTenantId);
 
+            if (grouped == null || !grouped.Any())
+            {
+                return;
+            }
+
             string parentSlug = "/events";
 
             Guid? parentId = null;
@@ -188,6 +193,11 @@ namespace Churchee.Module.ChurchSuite.Jobs
         {
             var result = await GetFeedResult(applicationTenantId);
 
+            if (result == null || !result.Any())
+            {
+                return [];
+            }
+
             var activeEvents = result.Where(x => x.Status == "confirmed");
 
             var grouped = activeEvents.GroupBy(x => new Grouping
@@ -213,11 +223,24 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             string churchSuiteUri = await _settingStore.GetSettingValue(Guid.Parse(SettingKeys.ChurchSuiteEventsUrl), tenantId);
 
-            string feedJsonString = await client.GetStringAsync(churchSuiteUri);
+            HttpResponseMessage responseMessage;
 
-            return string.IsNullOrEmpty(feedJsonString)
-                ? []
-                : JsonSerializer.Deserialize<List<ApiResponse>>(feedJsonString, _jsonSerializerOptions);
+            try
+            {
+                responseMessage = await client.GetAsync(churchSuiteUri, CancellationToken.None);
+
+                responseMessage.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Failed to get feed {ChurchSuiteUri}, response code {StatusCode}", churchSuiteUri, ex.StatusCode);
+
+                return [];
+            }
+
+            string content = await responseMessage.Content.ReadAsStringAsync();
+
+            return string.IsNullOrEmpty(content) ? [] : JsonSerializer.Deserialize<List<ApiResponse>>(content, _jsonSerializerOptions);
         }
 
         private async Task ConvertImageToLocalImage(Event churchSuiteEvent, string churchSuiteImageUrl, Guid applicationTenantId, CancellationToken cancellationToken)
@@ -227,11 +250,22 @@ namespace Churchee.Module.ChurchSuite.Jobs
                 return;
             }
 
-            var response = await _clientFactory.CreateClient().GetAsync(churchSuiteImageUrl, cancellationToken);
+            HttpResponseMessage responseMessage;
 
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                responseMessage = await _clientFactory.CreateClient().GetAsync(churchSuiteImageUrl, cancellationToken);
 
-            await using var tempFileStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                responseMessage.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Error downloading churchSuite Event image for event {EventId}, status code: {StatusCode}", churchSuiteEvent.Id, ex.StatusCode);
+
+                return;
+            }
+
+            await using var tempFileStream = await responseMessage.Content.ReadAsStreamAsync(cancellationToken);
 
             string hash = await Hasher.HashFirst64KbAsync(tempFileStream, cancellationToken);
 
