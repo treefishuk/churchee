@@ -12,6 +12,7 @@ using Churchee.Test.Helpers.Validation;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 
 namespace Churchee.Module.ChurchSuite.Tests.Jobs
@@ -277,6 +278,58 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
                     LogLevel.Error,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((o, _) => o.ToString()!.Contains("Failed to get feed")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task Image_Download_Error_Gets_Logged()
+        {
+
+            // Arrange
+            string json = JsonSerializer.Serialize(new List<ApiResponse>() {
+                new() {
+                    Id = 1,
+                    Name = "Test Event",
+                    Sequence = 9876,
+                    DatetimeStart = DateTime.UtcNow.AddDays(1),
+                    DatetimeEnd = DateTime.UtcNow.AddDays(1).AddHours(1),
+                    Description = "This is a test event",
+                    Status = "confirmed",
+                    PublicVisible = true,
+                    Images = new Images
+                    {
+                       Large = new Image { Url = "http://localhost/images/large.jpg" }
+                    }
+                }
+            });
+
+
+            var jsonResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            var imageResponse = new HttpResponseMessage(HttpStatusCode.Forbidden);
+
+            var httpClient = new HttpClient(new FakeHttpMessageHandler(jsonResponse, imageResponse))
+            {
+                BaseAddress = new Uri("http://localhost/")
+            };
+
+            _httpClientFactory.Setup(f => f.CreateClient(string.Empty)).Returns(httpClient);
+
+            var cut = new SyncChurchSuiteEventsJob(_httpClientFactory.Object, _settingStore.Object, _dataStore.Object, _blobStore.Object, _jobService.Object, _imageProcessor.Object, _logger.Object);
+
+            // Act
+            await cut.ExecuteAsync(tenantId, CancellationToken.None);
+
+            // Assert
+            _logger.Verify(l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, _) => o.ToString()!.Contains("Error downloading churchSuite Event image")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
