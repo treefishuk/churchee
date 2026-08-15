@@ -1,4 +1,6 @@
-﻿namespace Churchee.Module.Site.Features.Blog.Responses
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Churchee.Module.Site.Features.Blog.Responses
 {
     public class GetListBlogItemsResponseItem
     {
@@ -10,6 +12,10 @@
 
         public bool Published { get; set; }
 
+        [DataType(DataTypes.Date)]
+        public DateTime? PublishDate { get; set; }
+
+        [DataType(DataTypes.Date)]
         public DateTime? Modified { get; set; }
     }
 }

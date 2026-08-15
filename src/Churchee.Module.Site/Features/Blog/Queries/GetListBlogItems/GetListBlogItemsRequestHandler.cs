@@ -1,9 +1,9 @@
 ﻿using Churchee.Common.Abstractions;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Blog.Responses;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
 {
@@ -26,7 +26,8 @@ namespace Churchee.Module.Site.Features.Blog.Queries.GetListBlogItems
                 Title = s.Title,
                 Modified = s.ModifiedDate,
                 Url = s.Url,
-                Published = s.Published
+                Published = s.Published,
+                PublishDate = s.LastPublishedDate
             }, cancellationToken);
         }
     }
