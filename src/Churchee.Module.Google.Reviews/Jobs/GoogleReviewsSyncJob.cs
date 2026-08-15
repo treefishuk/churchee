@@ -155,9 +155,22 @@ namespace Churchee.Module.Google.Reviews.Jobs
         {
             string url = $"{_mybusinessUri}accounts/{accountId}/locations/{locationId}/reviews";
 
-            var response = await client.GetAsync(url, cancellationToken);
+            HttpResponseMessage responseMessage;
 
-            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            try
+            {
+                responseMessage = await client.GetAsync(url, cancellationToken);
+
+                responseMessage.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Failed to get feed {Url}, response code {StatusCode}", url, ex.StatusCode);
+
+                return new GoogleReviewsResponse();
+            }
+
+            string json = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
             var result = JsonSerializer.Deserialize<GoogleReviewsResponse>(json);
 
