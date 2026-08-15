@@ -12,7 +12,7 @@ namespace Churchee.Module.Reviews.Registrations
             {
                 etb.ToTable("Reviews");
                 etb.Property(e => e.Id);
-                etb.Property(e => e.Comment).HasColumnType("nvarchar(4000)");
+                etb.Property(e => e.Comment).HasMaxLength(4000).IsUnicode();
             });
 
         }
