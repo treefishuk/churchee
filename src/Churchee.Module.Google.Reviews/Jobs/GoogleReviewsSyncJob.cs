@@ -165,7 +165,7 @@ namespace Churchee.Module.Google.Reviews.Jobs
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Failed to get feed {Url}, response code {StatusCode}", url, ex.StatusCode);
+                _logger.LogError(ex, "Failed to get Google reviews feed, response code {StatusCode}", ex.StatusCode);
 
                 return new GoogleReviewsResponse();
             }
