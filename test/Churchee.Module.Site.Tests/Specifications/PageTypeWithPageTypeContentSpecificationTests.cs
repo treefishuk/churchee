@@ -10,7 +10,7 @@ namespace Churchee.Module.Site.Tests.Specifications
         {
             var pageTypeId = Guid.NewGuid();
             var pt = new PageType(pageTypeId, Guid.NewGuid(), Guid.NewGuid(), true, "PT", false);
-            pt.AddPageTypeContent(Guid.NewGuid(), "Name", "text", false, 1);
+            pt.AddPageTypeContent(Guid.NewGuid(), "Name", "text", false, 1, null);
 
             var list = new[] { pt };
 

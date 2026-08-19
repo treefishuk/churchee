@@ -66,10 +66,24 @@ namespace Churchee.Test.Helpers.Blazor
 
         public class CustomNotificationService : NotificationService
         {
+            private readonly object _lock = new();
+
             public List<NotificationMessage> Notifications { get; } = [];
 
             public CustomNotificationService()
             {
+                // Make sure any leftover messages from other tests are cleared
+                try
+                {
+                    Messages.Clear();
+                }
+                catch
+                {
+                    // defensive: if Messages is null or shared in a way that throws, don't fail tests here
+                }
+
+                Notifications.Clear();
+
                 Messages.CollectionChanged += OnMessagesChanged;
             }
 
@@ -77,9 +91,12 @@ namespace Churchee.Test.Helpers.Blazor
             {
                 if (e.NewItems != null)
                 {
-                    foreach (NotificationMessage newItem in e.NewItems)
+                    lock (_lock)
                     {
-                        Notifications.Add(newItem);
+                        foreach (NotificationMessage newItem in e.NewItems)
+                        {
+                            Notifications.Add(newItem);
+                        }
                     }
                 }
             }

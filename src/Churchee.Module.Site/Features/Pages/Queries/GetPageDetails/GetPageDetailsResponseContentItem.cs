@@ -12,5 +12,7 @@
 
         public string Value { get; set; }
 
+        public long? MaxLength { get; set; }
+
     }
 }

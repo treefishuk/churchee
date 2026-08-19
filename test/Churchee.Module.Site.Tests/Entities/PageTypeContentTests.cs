@@ -23,7 +23,7 @@ namespace Churchee.Module.Site.Tests.Entities
             var order = 2;
 
             // Act
-            var content = new PageTypeContent(_ContentId, _TenantId, type, isRequired, name, order);
+            var content = new PageTypeContent(_ContentId, _TenantId, type, isRequired, name, order, null);
 
             // Assert
             Assert.Equal(_ContentId, content.Id);
@@ -39,14 +39,14 @@ namespace Churchee.Module.Site.Tests.Entities
         public void UpdateDetails_UpdatesAllFields()
         {
             // Arrange
-            var content = new PageTypeContent(_ContentId, _TenantId, "text", false, "Old Name", 1);
+            var content = new PageTypeContent(_ContentId, _TenantId, "text", false, "Old Name", 1, null);
             var newIsRequired = true;
             var newName = "New Name";
             var newType = "html";
             var newOrder = 5;
 
             // Act
-            content.UpdateDetails(newIsRequired, newName, newType, newOrder);
+            content.UpdateDetails(newIsRequired, newName, newType, newOrder, null);
 
             // Assert
             Assert.Equal(newIsRequired, content.IsRequired);

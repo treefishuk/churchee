@@ -1,8 +1,8 @@
 ﻿using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
 {
@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
         {
             var pageType = await _storage.GetRepository<PageType>().FirstOrDefaultAsync(new GetPageTypeByIdAndIncludePageTypeContentSpecification(request.PageTypeId), cancellationToken);
 
-            pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required, request.Order);
+            pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required, request.Order, request.MaxLength);
 
             await _storage.SaveChangesAsync(cancellationToken);
 

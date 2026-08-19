@@ -9,13 +9,14 @@ namespace Churchee.Module.Site.Entities
 
         }
 
-        public PageTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name, int order) : base(pageTypeContentId, applicationTenantId)
+        public PageTypeContent(Guid pageTypeContentId, Guid applicationTenantId, string type, bool isRequired, string name, int order, long? maxLength) : base(pageTypeContentId, applicationTenantId)
         {
             Type = type;
             IsRequired = isRequired;
             Name = name;
             DevName = name.ToDevName();
             Order = order;
+            MaxLength = maxLength;
         }
 
         public string Name { get; private set; }
@@ -28,15 +29,18 @@ namespace Churchee.Module.Site.Entities
 
         public bool IsRequired { get; private set; }
 
+        public long? MaxLength { get; private set; }
+
         public int Order { get; set; }
 
-        public void UpdateDetails(bool isRequired, string name, string type, int order)
+        public void UpdateDetails(bool isRequired, string name, string type, int order, long? maxLength)
         {
 
             IsRequired = isRequired;
             Name = name;
             Type = type;
             Order = order;
+            MaxLength = maxLength;
         }
 
     }

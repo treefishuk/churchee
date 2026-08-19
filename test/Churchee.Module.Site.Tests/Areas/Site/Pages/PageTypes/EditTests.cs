@@ -2,6 +2,8 @@
 using Bunit.TestDoubles;
 using Churchee.Common.ResponseTypes;
 using Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent;
+using Churchee.Module.Site.Features.PageTypes.Queries;
+using Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent;
 using Churchee.Module.UI.Components;
 using Churchee.Test.Helpers.Blazor;
 using Churchee.Test.Helpers.Validation;
@@ -76,6 +78,24 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.PageTypes
             // Assert
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/pagetypes");
+        }
+
+        [Fact]
+        public void PageType_Add_Adds_Item()
+        {
+            // Arrange
+            var cut = Render<Edit>();
+
+            var response = new List<GetContentTypesForPageTypeResponse>();
+
+            MockMediator.Setup(s => s.Send(It.IsAny<GetContentTypesForPageTypeQuery>(), default)).ReturnsAsync(response);
+
+            // Act
+            var button = cut.Find("#addContentBtn");
+            button.Click();
+
+            // Assert
+            cut.Instance.Content.Count.Should().Be(1);
         }
     }
 }

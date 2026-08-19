@@ -38,6 +38,8 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
         {
             //arrange
             SetupGetListingQueryResponse();
+            NotificationService.Messages.Clear();
+            NotificationService.Notifications.Clear();
 
             MockMediator.Setup(s => s.Send(It.IsAny<DeleteEventCommand>(), default)).ReturnsAsync(new CommandResponse());
 

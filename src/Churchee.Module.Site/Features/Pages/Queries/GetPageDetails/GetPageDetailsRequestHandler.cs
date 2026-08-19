@@ -1,6 +1,7 @@
 ﻿using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Specifications;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
@@ -17,20 +18,17 @@ namespace Churchee.Module.Site.Features.Pages.Queries
         public async Task<GetPageDetailsResponse> Handle(GetPageDetailsRequest request, CancellationToken cancellationToken)
         {
 
-            var result = _storage.GetRepository<Page>().GetQueryable()
-
-                .Where(w => w.Id == request.PageId)
-                .Select(s => new GetPageDetailsResponse
-                {
-                    Title = s.Title,
-                    ParentId = s.ParentId,
-                    ParentName = s.Parent.Title,
-                    Description = s.Description,
-                    Url = s.Url,
-                    Published = s.Published,
-                    Order = s.Order,
-                    ImageThumbnail = string.IsNullOrEmpty(s.ImageUrl) ? "/_content/Churchee.Module.UI/img/opengraph-placeholder.png" : s.ImageUrl + "_t.webp",
-                    ContentItems = s.PageContent
+            var result = await _storage.GetRepository<Page>().FirstOrDefaultAsync(new PageWithContentAndPropertiesSpecification(request.PageId), s => new GetPageDetailsResponse
+            {
+                Title = s.Title,
+                ParentId = s.ParentId,
+                ParentName = s.Parent.Title,
+                Description = s.Description,
+                Url = s.Url,
+                Published = s.Published,
+                Order = s.Order,
+                ImageThumbnail = string.IsNullOrEmpty(s.ImageUrl) ? "/_content/Churchee.Module.UI/img/opengraph-placeholder.png" : s.ImageUrl + "_t.webp",
+                ContentItems = s.PageContent
                     .OrderBy(o => o.PageTypeContent.Order)
                     .Select(m => new GetPageDetailsResponseContentItem
                     {
@@ -38,12 +36,13 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                         Title = m.PageTypeContent.Name,
                         Type = m.PageTypeContent.Type,
                         Value = m.Value,
-                        DevName = m.PageTypeContent.DevName
+                        DevName = m.PageTypeContent.DevName,
+                        MaxLength = m.PageTypeContent.MaxLength,
                     })
-                }).FirstOrDefault();
+            }, cancellationToken);
 
 
-            return await Task.FromResult(result);
+            return result;
         }
     }
 }

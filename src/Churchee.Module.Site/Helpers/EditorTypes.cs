@@ -15,5 +15,13 @@
                 RichTextEditor, Number, SimpleText, MultilineText, Image
             ];
         }
+
+        public static List<string> SupportMaxLength()
+        {
+            return
+            [
+                RichTextEditor, SimpleText, MultilineText
+            ];
+        }
     }
 }
