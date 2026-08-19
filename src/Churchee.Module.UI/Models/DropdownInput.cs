@@ -8,6 +8,7 @@
             Title = string.Empty;
             Value = string.Empty;
             Data = [];
+            Enabled = true;
         }
 
         public string Title { get; set; }
@@ -15,5 +16,7 @@
         public string Value { get; set; }
 
         public IEnumerable<DropdownInput> Data { get; set; }
+
+        public bool Enabled { get; set; }
     }
 }

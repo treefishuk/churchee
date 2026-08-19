@@ -17,6 +17,7 @@
     string dataType = Prop.PropertyType.Name;
     var dataTypeAttribute = Prop.GetCustomAttribute<DataTypeAttribute>();
     var displayAttribute = Prop.GetCustomAttribute<DisplayAttribute>();
+    var requiredAttribute = Prop.GetCustomAttribute<RequiredAttribute>();
     var propertyValue = Prop.GetValue(InputModel);
     string propertyName = displayAttribute?.Name ?? Prop.Name.ToSentence();
     string propertyStringValue = propertyValue?.ToString() ?? string.Empty;
@@ -251,8 +252,10 @@ else
 
                 if (dataType == typeof(DropdownInput).Name)
                 {
+                    bool allowClear = requiredAttribute == null;
                     var dropdown = Prop.GetValue(InputModel) as DropdownInput ?? new DropdownInput();
-                    <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" Value="dropdown.Value" Change=@((value) => OnDropdownFieldChange(Prop, value)) />
+
+                    <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" Value="dropdown.Value" Change=@((value) => OnDropdownFieldChange(Prop, value)) AllowClear="allowClear" Disabled="!dropdown.Enabled" />
                 }
             }
         </ChildContent>
