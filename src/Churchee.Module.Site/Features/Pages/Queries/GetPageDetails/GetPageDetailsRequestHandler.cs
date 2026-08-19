@@ -38,7 +38,8 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                         Title = m.PageTypeContent.Name,
                         Type = m.PageTypeContent.Type,
                         Value = m.Value,
-                        DevName = m.PageTypeContent.DevName
+                        DevName = m.PageTypeContent.DevName,
+                        MaxLength = m.PageTypeContent.MaxLength,
                     })
                 }).FirstOrDefault();
 

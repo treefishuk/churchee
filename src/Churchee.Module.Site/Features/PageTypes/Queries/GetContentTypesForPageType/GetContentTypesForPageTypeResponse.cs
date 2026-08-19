@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Churchee.Module.Site.Features.PageTypes.Queries
+﻿namespace Churchee.Module.Site.Features.PageTypes.Queries
 {
     public class GetContentTypesForPageTypeResponse
     {
@@ -19,5 +13,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries
         public bool Required { get; set; }
 
         public int Order { get; set; }
+
+        public long? MaxLength { get; set; }
     }
 }

@@ -41,7 +41,7 @@
                             <RadzenTextBox @bind-Value="@item.Name" />
                         </RadzenFormField>
 
-                        <RadzenFormField Text="Order">
+                        <RadzenFormField Text="Order" Style="width: 100px">
                             <RadzenNumeric @bind-Value="@item.Order" />
                         </RadzenFormField>
 
@@ -50,6 +50,13 @@
                             <RadzenCheckBox @bind-Value=@item.Required Name="Required" Style="margin-left:5px;" />
                             <RadzenLabel Text="Required" Component="CheckBox1" Style="margin: 0 18px; vertical-align: middle; padding:0.5rem" />
                         </RadzenFormField>
+
+                        @if (EditorType.SupportMaxLength().Contains(item.Type.Value))
+                        {
+                            <RadzenFormField Text="Max Length">
+                                <RadzenNumeric @bind-Value="@item.MaxLength" />
+                            </RadzenFormField>
+                        }
 
                         <RadzenFormField Text="Type">
                             <RadzenDropDown Data=EditorTypes @bind-Value=@item.Type.Value TextProperty="Title" ValueProperty="Value" />
@@ -107,6 +114,7 @@
             Name = m.Name,
             Order = m.Order,
             Required = m.Required,
+            MaxLength = m.MaxLength,
             Type = new DropdownInput
             {
                 Title = m.Type,

@@ -29,6 +29,8 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         public DropdownInput Type { get; set; }
 
+        public long? MaxLength { get; set; }
+
         public bool Required { get; set; }
 
         public int Order { get; set; }

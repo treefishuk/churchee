@@ -81,12 +81,13 @@
 
                                         @if (item.Type == EditorType.MultilineText)
                                         {
-                                            <RadzenTextArea @bind-Value=@item.Value />
+                                            <RadzenTextArea @bind-Value=@item.Value MaxLength="@item.MaxLength" Immediate="true" />
                                         }
 
                                         @if (item.Type == EditorType.SimpleText)
                                         {
-                                            <RadzenTextBox @bind-Value=@item.Value />
+                                            <RadzenTextBox @bind-Value=@item.Value MaxLength="@item.MaxLength" Immediate="true" />
+
                                         }
 
                                         @if (item.Type == EditorType.Image)
@@ -94,9 +95,21 @@
                                             <PageImage @bind-Value=@item.Value PageId="@Id" Name="@item.DevName" OnUpload="OnImageUpload" />
                                         }
 
+
+
                                     </ChildContent>
+                                    <Helper>
+                                        @if (item.MaxLength > 0)
+                                        {
+                                            <small class="rz-m-2">
+                                                @($"{item.MaxLength - (item.Value?.Length ?? 0)} characters remaining")
+                                            </small>
+                                        }
+                                    </Helper>
                                 </RadzenFormField>
                             }
+
+
 
                          </RadzenStack>
 

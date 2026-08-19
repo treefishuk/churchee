@@ -1,9 +1,9 @@
 ﻿using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Areas.Site.Models;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
@@ -59,7 +59,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
 
         private static void UpdateExistingItem(PageTypeContent existing, PageTypeContentItemModel item)
         {
-            existing.UpdateDetails(item.Required, item.Name, item.Type.Value, item.Order);
+            existing.UpdateDetails(item.Required, item.Name, item.Type.Value, item.Order, item.MaxLength);
         }
 
         private void AddNewItem(Guid pageTypeId, PageTypeContentItemModel item)
@@ -74,7 +74,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
                 return;
             }
 
-            pageType.AddPageTypeContent(item.Id, item.Name, item.Type.Value, item.Required, item.Order);
+            pageType.AddPageTypeContent(item.Id, item.Name, item.Type.Value, item.Required, item.Order, item.MaxLength);
         }
 
         private void DeleteItem(Guid itemId)

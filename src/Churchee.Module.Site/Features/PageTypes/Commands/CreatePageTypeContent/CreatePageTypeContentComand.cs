@@ -24,5 +24,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
 
         public int Order { get; set; }
 
+        public long? MaxLength { get; set; }
+
     }
 }

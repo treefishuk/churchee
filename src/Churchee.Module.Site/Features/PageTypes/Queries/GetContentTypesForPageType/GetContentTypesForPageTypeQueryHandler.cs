@@ -1,7 +1,7 @@
 ﻿using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeContent
 {
@@ -24,7 +24,8 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeConte
                     Name = s.Name,
                     Required = s.IsRequired,
                     Type = s.Type,
-                    Order = s.Order
+                    Order = s.Order,
+                    MaxLength = s.MaxLength
                 }, cancellationToken);
         }
     }
