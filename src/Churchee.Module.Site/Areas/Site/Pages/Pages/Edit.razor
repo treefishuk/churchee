@@ -101,8 +101,14 @@
                                     <Helper>
                                         @if (item.MaxLength > 0)
                                         {
-                                            <small class="rz-m-2">
-                                                @($"{item.MaxLength - (item.Value?.Length ?? 0)} characters remaining")
+                                            var currentValue = (item.Value?.Length ?? 0);
+
+                                            var remaining = item.MaxLength - currentValue;
+
+                                            <small class="rz-m-2" style="font-size: 70%; color: #636363;">
+                                                @(currentValue == 0
+                                                    ? $"Max length {item.MaxLength}"
+                                                    : $"{remaining} characters remaining")
                                             </small>
                                         }
                                     </Helper>
