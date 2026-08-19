@@ -18,7 +18,8 @@ namespace Churchee.Module.Site.Tests.Features.PageTypes.Queries.GetContentTypesF
                 DevName = "DevName",
                 Type = "string",
                 Required = true,
-                Order = 1
+                Order = 1,
+                MaxLength = 100,
             };
 
             // Assert
@@ -28,6 +29,7 @@ namespace Churchee.Module.Site.Tests.Features.PageTypes.Queries.GetContentTypesF
             Assert.Equal("string", response.Type);
             Assert.True(response.Required);
             Assert.Equal(1, response.Order);
+            Assert.Equal(100, response.MaxLength);
         }
     }
 }
