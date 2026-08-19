@@ -55,7 +55,7 @@
 
                 var dataTypeAttribute = prop.GetCustomAttribute<DataTypeAttribute>();
 
-                string title = prop.Name;
+                string title = prop.Name.ToSentence();
 
                 if (dataTypeAttribute != null)
                 {
@@ -71,7 +71,7 @@
 
                 if (displayAttribute != null)
                 {
-                    title = displayAttribute.Name ?? title.ToSentence();
+                    title = displayAttribute.Name ?? title;
                 }
 
                 if (dataType == DataTypes.Text)

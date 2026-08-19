@@ -168,6 +168,7 @@
                 Title = result.ParentName,
                 Value = result.ParentId?.ToString().ToUpperInvariant(),
                 Data = dropdownData ?? new List<DropdownInput>(),
+                Enabled = result.Url == "/" ? false : true
             },
             ContentItems =  result.ContentItems.ToList(),
             Image = new Common.ValueTypes.ChunkedImageUploadType
