@@ -22,7 +22,7 @@
 
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
 
-            <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@AddContentType">Add New</RadzenButton>
+            <RadzenButton id="addContentBtn" ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Button" Click="@AddContentType">Add New</RadzenButton>
             <RadzenButton id="submitFormBtn" Text="Save" ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" />
             <RadzenButton id="cancelFormBtn" Text="Cancel" Click="@(() => NavigationManager.NavigateTo("/management/pagetypes"))" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" />
         </RadzenStack>
@@ -62,7 +62,7 @@
                             <RadzenDropDown Data=EditorTypes @bind-Value=@item.Type.Value TextProperty="Title" ValueProperty="Value" />
                         </RadzenFormField>
 
-                        <RadzenButton ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" Click="@(() => DeleteContentType(item))" Icon="delete" class="rz-mt-1" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" Click="@(() => DeleteContentType(item))" Icon="delete" class="rz-mt-1 delete-item" />
 
                     </RadzenStack>
 
@@ -79,7 +79,7 @@
 
 @code {
 
-    private List<PageTypeContentItemModel> Content = null;
+    public List<PageTypeContentItemModel> Content = null;
 
     [Parameter]
     public Guid Id { get; set; }
