@@ -9,8 +9,8 @@ namespace Churchee.Module.Site.Tests.Specifications
         public void Constructor_Applies_Search_Ordering_And_Paging()
         {
             var pageType = new PageType(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), true, "PT", false);
-            pageType.AddPageTypeContent(Guid.NewGuid(), "Alpha", "text", false, 1);
-            pageType.AddPageTypeContent(Guid.NewGuid(), "Beta", "text", false, 2);
+            pageType.AddPageTypeContent(Guid.NewGuid(), "Alpha", "text", false, 1, null);
+            pageType.AddPageTypeContent(Guid.NewGuid(), "Beta", "text", false, 2, null);
 
             var list = pageType.PageTypeContent.ToArray();
 

@@ -11,8 +11,8 @@ namespace Churchee.Module.Site.Tests.Specifications
             var pageTypeId = Guid.NewGuid();
 
             var pt = new PageType(pageTypeId, Guid.NewGuid(), Guid.NewGuid(), true, "PT", false);
-            pt.AddPageTypeContent(Guid.NewGuid(), "C1", "text", false, 2);
-            pt.AddPageTypeContent(Guid.NewGuid(), "C2", "text", false, 1);
+            pt.AddPageTypeContent(Guid.NewGuid(), "C1", "text", false, 2, null);
+            pt.AddPageTypeContent(Guid.NewGuid(), "C2", "text", false, 1, null);
 
             var list = pt.PageTypeContent.ToArray();
 
