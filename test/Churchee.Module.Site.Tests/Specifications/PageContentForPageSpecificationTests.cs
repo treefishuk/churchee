@@ -12,16 +12,16 @@ namespace Churchee.Module.Site.Tests.Specifications
 
             var content1 = new PageContent(Guid.NewGuid(), pageId, "v1", 0)
             {
-                PageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "t", false, "A", 2, null)
+                PageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "t", false, "A", 2, null, "Help Text 1")
             };
             var content2 = new PageContent(Guid.NewGuid(), pageId, "v2", 0)
             {
-                PageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "t", false, "B", 1, null)
+                PageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "t", false, "B", 1, null, "Help Text 2")
             };
 
             var other = new PageContent(Guid.NewGuid(), Guid.NewGuid(), "x", 0)
             {
-                PageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "t", false, "C", 3, null)
+                PageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "t", false, "C", 3, null, "Help Text 3")
             };
 
             var list = new[] { content1, content2, other };

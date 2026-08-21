@@ -59,7 +59,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
 
         private static void UpdateExistingItem(PageTypeContent existing, PageTypeContentItemModel item)
         {
-            existing.UpdateDetails(item.Required, item.Name, item.Type.Value, item.Order, item.MaxLength);
+            existing.UpdateDetails(item.Required, item.Name, item.Type.Value, item.Order, item.MaxLength, item.HelpText);
         }
 
         private void AddNewItem(Guid pageTypeId, PageTypeContentItemModel item)
@@ -74,7 +74,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.UpdatePageTypeContent
                 return;
             }
 
-            pageType.AddPageTypeContent(item.Id, item.Name, item.Type.Value, item.Required, item.Order, item.MaxLength);
+            pageType.AddPageTypeContent(item.Id, item.Name, item.Type.Value, item.Required, item.Order, item.MaxLength, item.HelpText);
         }
 
         private void DeleteItem(Guid itemId)

@@ -26,5 +26,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
 
         public long? MaxLength { get; set; }
 
+        public string HelpText { get; set; }
+
     }
 }

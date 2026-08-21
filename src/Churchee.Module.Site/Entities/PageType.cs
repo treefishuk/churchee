@@ -46,9 +46,9 @@ namespace Churchee.Module.Site.Entities
         public ICollection<PageTypeContent> PageTypeContent { get; set; }
 
 
-        public void AddPageTypeContent(Guid id, string name, string type, bool required, int order, long? maxLength)
+        public void AddPageTypeContent(Guid id, string name, string type, bool required, int order, long? maxLength, string helpText)
         {
-            var newPageTypeContent = new PageTypeContent(id, ApplicationTenantId, type, required, name, order, maxLength)
+            var newPageTypeContent = new PageTypeContent(id, ApplicationTenantId, type, required, name, order, maxLength, helpText)
             {
                 PageType = this
             };

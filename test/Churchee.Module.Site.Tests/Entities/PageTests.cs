@@ -110,7 +110,7 @@ namespace Churchee.Module.Site.Tests.Entities
             // Add PageContent with PageTypeContent.DevName
             var pageContent = new PageContent(contentId, PageId, value, version)
             {
-                PageTypeContent = new PageTypeContent(contentId, TenantId, "type", true, devName, 0, null)
+                PageTypeContent = new PageTypeContent(contentId, TenantId, "type", true, devName, 0, null, "Help Text")
             };
             page.PageContent.Add(pageContent);
 

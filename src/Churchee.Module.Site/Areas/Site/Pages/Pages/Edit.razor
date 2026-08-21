@@ -53,6 +53,7 @@
 
                             @foreach (var item in InputModel.ContentItems)
                             {
+
                                 <RadzenFormField Text="@($"{item.Title} ({item.DevName})")" AllowFloatingLabel="false">
                                     <ChildContent>
                                         @if (item.Type == EditorType.RichTextEditor)
@@ -99,6 +100,8 @@
 
                                     </ChildContent>
                                     <Helper>
+                                        <small style="color: #777;">@item.HelpText</small>
+
                                         @if (item.MaxLength > 0)
                                         {
                                             var currentValue = (item.Value?.Length ?? 0);
@@ -109,6 +112,7 @@
                                                 @(currentValue == 0
                                                     ? $"Max length {item.MaxLength}"
                                                     : $"{remaining} characters remaining")
+
                                             </small>
                                         }
                                     </Helper>

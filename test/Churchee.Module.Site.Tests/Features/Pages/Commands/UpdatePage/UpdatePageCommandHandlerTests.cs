@@ -88,7 +88,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             page.AddContent(contentId, Guid.NewGuid(), "old-value", 2);
 
             // set a non-image PageTypeContent
-            var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Text", true, "Name", 0, null);
+            var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Text", true, "Name", 0, null, "Help Text");
             page.PageContent.First().PageTypeContent = pct;
 
             var updates = new List<KeyValuePair<Guid, string>>
@@ -116,7 +116,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             // existing image data (empty)
             page.AddContent(contentId, Guid.NewGuid(), string.Empty, 1);
 
-            var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Image", true, "ImageName", 0, null);
+            var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Image", true, "ImageName", 0, null, "Help Text");
             var pageContent = page.PageContent.First();
             pageContent.PageTypeContent = pct;
 
@@ -154,7 +154,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var contentId = Guid.NewGuid();
             page.AddContent(contentId, Guid.NewGuid(), string.Empty, 5);
 
-            var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Image", true, "ImageName", 0, null);
+            var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Image", true, "ImageName", 0, null, "Help Text");
             var pageContent = page.PageContent.First();
             pageContent.PageTypeContent = pct;
 

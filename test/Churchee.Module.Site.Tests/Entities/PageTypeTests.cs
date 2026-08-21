@@ -61,7 +61,7 @@ namespace Churchee.Module.Site.Tests.Entities
             var order = 1;
 
             // Act
-            pageType.AddPageTypeContent(contentId, name, type, required, order, null);
+            pageType.AddPageTypeContent(contentId, name, type, required, order, null, "Help Text");
 
             // Assert
             Assert.Single(pageType.PageTypeContent);

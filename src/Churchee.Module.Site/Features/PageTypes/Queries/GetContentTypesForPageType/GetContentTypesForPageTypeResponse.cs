@@ -15,5 +15,7 @@
         public int Order { get; set; }
 
         public long? MaxLength { get; set; }
+
+        public string HelpText { get; set; }
     }
 }

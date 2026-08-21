@@ -35,5 +35,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         public int Order { get; set; }
 
+        public string HelpText { get; set; }
+
     }
 }

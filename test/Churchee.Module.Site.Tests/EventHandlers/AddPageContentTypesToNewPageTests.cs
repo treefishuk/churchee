@@ -41,8 +41,8 @@ namespace Churchee.Module.Site.Tests.EventHandlers
             var pageCreatedEvent = new PageCreatedEvent(pageId, pageTypeId);
 
             var pageType = new PageType(pageTypeId, Guid.NewGuid(), Guid.NewGuid(), false, "Test");
-            pageType.AddPageTypeContent(Guid.NewGuid(), "Test", "type", false, 1, null);
-            pageType.AddPageTypeContent(Guid.NewGuid(), "Test2 ", "type", false, 1, null);
+            pageType.AddPageTypeContent(Guid.NewGuid(), "Test", "type", false, 1, null, "Help Text 1");
+            pageType.AddPageTypeContent(Guid.NewGuid(), "Test2 ", "type", false, 1, null, "Help Text 2");
 
             _mockPageTypeRepositoryMock
                 .Setup(repo => repo.FirstOrDefaultAsync(It.IsAny<PageTypeWithPageTypeContentSpecification>(), It.IsAny<CancellationToken>()))
@@ -68,7 +68,7 @@ namespace Churchee.Module.Site.Tests.EventHandlers
             var pageCreatedEvent = new PageCreatedEvent(pageId, pageTypeId);
 
             var pageType = new PageType(pageTypeId, Guid.NewGuid(), Guid.NewGuid(), false, "Test");
-            pageType.AddPageTypeContent(Guid.NewGuid(), "Test", "type", false, 1, null);
+            pageType.AddPageTypeContent(Guid.NewGuid(), "Test", "type", false, 1, null, "Help Text 1");
 
             _mockPageTypeRepositoryMock
                 .Setup(repo => repo.FirstOrDefaultAsync(It.IsAny<PageTypeWithPageTypeContentSpecification>(), It.IsAny<CancellationToken>()))

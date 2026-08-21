@@ -25,7 +25,8 @@ namespace Churchee.Module.Site.Features.PageTypes.Queries.GetPageOfPageTypeConte
                     Required = s.IsRequired,
                     Type = s.Type,
                     Order = s.Order,
-                    MaxLength = s.MaxLength
+                    MaxLength = s.MaxLength,
+                    HelpText = s.HelpText
                 }, cancellationToken);
         }
     }
