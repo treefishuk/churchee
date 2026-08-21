@@ -1,0 +1,17 @@
+﻿namespace Churchee.Infrastructure.DatabaseCaching.Entities
+{
+    public class Caching
+    {
+        public Caching()
+        {
+            Id = string.Empty;
+            Value = Array.Empty<byte>();
+        }
+
+        public string Id { get; set; }
+        public byte[] Value { get; set; }
+        public DateTimeOffset ExpiresAtTime { get; set; }
+        public long? SlidingExpirationInSeconds { get; set; }
+        public DateTimeOffset? AbsoluteExpiration { get; set; }
+    }
+}
