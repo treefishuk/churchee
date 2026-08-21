@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Features.PageTypes.Commands.CreatePageTypeContent
         {
             var pageType = await _storage.GetRepository<PageType>().FirstOrDefaultAsync(new GetPageTypeByIdAndIncludePageTypeContentSpecification(request.PageTypeId), cancellationToken);
 
-            pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required, request.Order, request.MaxLength);
+            pageType.AddPageTypeContent(Guid.NewGuid(), request.Name, request.Type, request.Required, request.Order, request.MaxLength, request.HelpText);
 
             await _storage.SaveChangesAsync(cancellationToken);
 

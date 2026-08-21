@@ -1,4 +1,6 @@
-﻿namespace Churchee.Module.Site.Features.Pages.Queries
+﻿using Microsoft.AspNetCore.Components;
+
+namespace Churchee.Module.Site.Features.Pages.Queries
 {
     public class GetPageDetailsResponseContentItem
     {
@@ -13,6 +15,8 @@
         public string Value { get; set; }
 
         public long? MaxLength { get; set; }
+
+        public MarkupString HelpText { get; set; }
 
     }
 }

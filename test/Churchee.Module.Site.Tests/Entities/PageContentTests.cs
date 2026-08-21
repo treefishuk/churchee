@@ -65,7 +65,7 @@ namespace Churchee.Module.Site.Tests.Entities
             // Arrange
             var content = new PageContent();
             var page = new Page(Guid.NewGuid(), "t", "u", "m", Guid.NewGuid(), null, false);
-            var pageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "type", true, "dev", 1, null);
+            var pageTypeContent = new PageTypeContent(Guid.NewGuid(), Guid.NewGuid(), "type", true, "dev", 1, null, "Help Text");
 
             // Act
             content.Page = page;

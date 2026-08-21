@@ -37,34 +37,63 @@
 
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap" JustifyContent="JustifyContent.Stretch">
 
-                        <RadzenFormField Text="Name">
-                            <RadzenTextBox @bind-Value="@item.Name" />
-                        </RadzenFormField>
+                            <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap" JustifyContent="JustifyContent.Stretch">
 
-                        <RadzenFormField Text="Order" Style="width: 100px">
-                            <RadzenNumeric @bind-Value="@item.Order" />
-                        </RadzenFormField>
+                                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap" JustifyContent="JustifyContent.Stretch">
 
+                                    <RadzenFormField Text="Name">
+                                        <RadzenTextBox @bind-Value="@item.Name" />
+                                    </RadzenFormField>
 
-                        <RadzenFormField Text="Required">
-                            <RadzenCheckBox @bind-Value=@item.Required Name="Required" Style="margin-left:5px;" />
-                            <RadzenLabel Text="Required" Component="CheckBox1" Style="margin: 0 18px; vertical-align: middle; padding:0.5rem" />
-                        </RadzenFormField>
+                                    <RadzenFormField Text="Order" Style="width: 100px">
+                                        <RadzenNumeric @bind-Value="@item.Order" />
+                                    </RadzenFormField>
 
-                        @if (EditorType.SupportMaxLength().Contains(item.Type.Value))
-                        {
-                            <RadzenFormField Text="Max Length">
-                                <RadzenNumeric @bind-Value="@item.MaxLength" />
+                                    <RadzenFormField Text="Required">
+                                        <RadzenCheckBox @bind-Value=@item.Required Name="Required" Style="margin-left:5px;" />
+                                        <RadzenLabel Text="Required" Component="CheckBox1" Style="margin: 0 18px; vertical-align: middle; padding:0.5rem" />
+                                    </RadzenFormField>
+
+                                    @if (EditorType.SupportMaxLength().Contains(item.Type.Value))
+                                    {
+                                        <RadzenFormField Text="Max Length">
+                                            <RadzenNumeric @bind-Value="@item.MaxLength" />
+                                        </RadzenFormField>
+                                    }
+
+                                    <RadzenFormField Text="Type">
+                                        <RadzenDropDown Data=EditorTypes @bind-Value=@item.Type.Value TextProperty="Title" ValueProperty="Value" />
+                                    </RadzenFormField>
+
+                                </RadzenStack>
+
+                            <RadzenFormField Text="Help Text" Style="width:100%" >
+
+                                <RadzenHtmlEditor @bind-Value=@item.HelpText style="height: 300px;">
+                                    <RadzenHtmlEditorFormatBlock />
+                                    <RadzenHtmlEditorUndo />
+                                    <RadzenHtmlEditorRedo />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorBold />
+                                    <RadzenHtmlEditorItalic />
+                                    <RadzenHtmlEditorUnderline />
+                                    <RadzenHtmlEditorStrikeThrough />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorRemoveFormat />
+                                    <RadzenHtmlEditorSource />
+                                    <RadzenHtmlEditorUnorderedList />
+                                    <RadzenHtmlEditorOrderedList />
+                                    <RadzenHtmlEditorLink />
+                                </RadzenHtmlEditor>
+
                             </RadzenFormField>
-                        }
-
-                        <RadzenFormField Text="Type">
-                            <RadzenDropDown Data=EditorTypes @bind-Value=@item.Type.Value TextProperty="Title" ValueProperty="Value" />
-                        </RadzenFormField>
+                                
+                            </RadzenStack>
 
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Button" Click="@(() => DeleteContentType(item))" Icon="delete" class="rz-mt-1 delete-item" />
 
                     </RadzenStack>
+
 
 
             </RadzenCard>
@@ -120,7 +149,8 @@
                 Title = m.Type,
                 Value = m.Type,
                 Data = EditorTypes
-            }
+            },
+            HelpText = m.HelpText
         }).ToList();
     }
 

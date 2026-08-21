@@ -2,6 +2,7 @@
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
+using Microsoft.AspNetCore.Components;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
@@ -38,6 +39,7 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                         Value = m.Value,
                         DevName = m.PageTypeContent.DevName,
                         MaxLength = m.PageTypeContent.MaxLength,
+                        HelpText = new MarkupString(m.PageTypeContent.HelpText)
                     })
             }, cancellationToken);
 
