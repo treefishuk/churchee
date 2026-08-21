@@ -61,14 +61,6 @@ namespace Churchee.Presentation.Admin
                 options.Level = System.IO.Compression.CompressionLevel.Fastest; // Set the compression level
             });
 
-
-            builder.Services.AddDistributedSqlServerCache(options =>
-            {
-                options.ConnectionString = builder.Configuration.GetConnectionString("Default");
-                options.SchemaName = "dbo";
-                options.TableName = "Caching";
-            });
-
             builder.Services.RegisterSeedActions();
             builder.Services.AddHttpClient();
 
