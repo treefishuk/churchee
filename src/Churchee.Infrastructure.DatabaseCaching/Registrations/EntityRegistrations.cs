@@ -1,0 +1,20 @@
+﻿using Churchee.Common.Abstractions.Storage;
+using Churchee.Infrastructure.DatabaseCaching.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Churchee.Infrastructure.DatabaseCaching.Registrations
+{
+    public class EntityRegistrations : IEntityRegistration
+    {
+        public void RegisterEntities(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Caching>(etb =>
+            {
+                etb.ToTable("Caching");
+                etb.HasKey(e => e.Id);
+                etb.Property(e => e.Id).HasMaxLength(449);
+            });
+
+        }
+    }
+}

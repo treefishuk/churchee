@@ -255,7 +255,15 @@ else
                     bool allowClear = requiredAttribute == null;
                     var dropdown = Prop.GetValue(InputModel) as DropdownInput ?? new DropdownInput();
 
-                    <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" Value="dropdown.Value" Change=@((value) => OnDropdownFieldChange(Prop, value)) AllowClear="allowClear" Disabled="!dropdown.Enabled" />
+                    if(dropdown.LoadData != null)
+                    {
+                        <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" Value="dropdown.Value" Change=@((value) => OnDropdownFieldChange(Prop, value)) AllowClear="allowClear" Disabled="!dropdown.Enabled" LoadData="dropdown.LoadData" AllowFiltering="true" />
+                    }
+                    else
+                    {
+                        <RadzenDropDown Data=dropdown.Data TextProperty="Title" ValueProperty="Value" Value="dropdown.Value" Change=@((value) => OnDropdownFieldChange(Prop, value)) AllowClear="allowClear" Disabled="!dropdown.Enabled"/>
+                    }
+
                 }
             }
         </ChildContent>
