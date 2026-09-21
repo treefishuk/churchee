@@ -1,4 +1,6 @@
-﻿namespace Churchee.Module.UI.Models
+﻿using Radzen;
+
+namespace Churchee.Module.UI.Models
 {
     public class DropdownInput
     {
@@ -18,5 +20,7 @@
         public IEnumerable<DropdownInput> Data { get; set; }
 
         public bool Enabled { get; set; }
+
+        public Func<LoadDataArgs, Task>? LoadData { get; set; }
     }
 }

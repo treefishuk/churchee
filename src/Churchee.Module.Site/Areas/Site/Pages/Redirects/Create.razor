@@ -24,12 +24,24 @@
 
         var dropdownData = await GetDropdownOptions();
 
+        var pageDropdown = new DropdownInput
+        {
+            Data = dropdownData ?? new List<DropdownInput>()
+        };
+
+        pageDropdown.LoadData = async args =>
+        {
+            var result = await Mediator.Send(
+                new GetAllPagesDropdownDataQuery(args.Filter),
+                default
+            );
+
+            pageDropdown.Data = result;   // now legal
+        };
+
         InputModel = new CreateRedirectModel()
         {
-            Page = new DropdownInput
-            {
-                Data = dropdownData ?? new List<DropdownInput>()
-            }
+            Page = pageDropdown
         };
 
     }
