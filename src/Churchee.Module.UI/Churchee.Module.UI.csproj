@@ -22,6 +22,10 @@
   <ItemGroup> 
     <None Include="compilerconfig.json" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />

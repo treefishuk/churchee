@@ -11,6 +11,10 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
     <ProjectReference Include="..\Churchee.Module.UI\Churchee.Module.UI.csproj" />
