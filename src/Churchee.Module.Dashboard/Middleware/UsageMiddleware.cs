@@ -49,7 +49,7 @@ namespace Churchee.Module.Dashboard.Middleware
                 }
 
                 // Exit early for requests with no user agent, this is to avoid logging requests from bots or crawlers
-                if (string.IsNullOrEmpty(userAgent))
+                if (string.IsNullOrEmpty(userAgent) || userAgent.Contains("bot") || userAgent.Contains("crawler"))
                 {
                     return;
                 }

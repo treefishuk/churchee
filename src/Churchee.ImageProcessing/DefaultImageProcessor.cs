@@ -103,7 +103,7 @@ namespace Churchee.ImageProcessing
                 CompressionLevel = PngCompressionLevel.BestCompression,
                 BitDepth = PngBitDepth.Bit8,
                 FilterMethod = PngFilterMethod.Adaptive,
-                TransparentColorMode = PngTransparentColorMode.Preserve
+                TransparentColorMode = TransparentColorMode.Preserve
             };
         }
 
