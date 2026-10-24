@@ -5,11 +5,11 @@ namespace Churchee.Module.Dashboard.Specifications
 {
     internal class HourlyPageViewsAfterDateSpecification : Specification<AnalyticsHourly>
     {
-        public HourlyPageViewsAfterDateSpecification(DateTime startDate)
+        public HourlyPageViewsAfterDateSpecification(DateOnly startDate)
         {
             Query
                 .AsNoTracking()
-                .Where(x => x.Date > startDate);
+                .Where(x => x.Date >= startDate);
         }
 
     }

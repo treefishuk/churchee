@@ -5,11 +5,11 @@ namespace Churchee.Module.Dashboard.Specifications
 {
     internal class DailyAnalyticsSpecification : Specification<AnalyticsDaily>
     {
-        public DailyAnalyticsSpecification(DateTime startDate)
+        public DailyAnalyticsSpecification(DateOnly startDate)
         {
             Query
                 .AsNoTracking()
-                .Where(x => x.Date > startDate);
+                .Where(x => x.Date >= startDate);
         }
 
     }

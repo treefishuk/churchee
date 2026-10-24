@@ -5,14 +5,13 @@ using System.Linq.Expressions;
 
 namespace Churchee.Module.Dashboard.Tests.Specifications
 {
-
     public class PageViewsAfterDateSpecificationTests
     {
         [Fact]
-        public void GetPageViewDataForRange_Constructor_ShouldSetCorrectCriteria_ForValidPageView()
+        public void PageViewsAfterDateSpecification_Constructor_HasWhereStatement()
         {
             // Arrange
-            var startDate = new DateTime(2023, 10, 1);
+            var startDate = new DateOnly(2023, 10, 1);
 
             // Act
             var spec = new PageViewsAfterDateSpecification(startDate);
@@ -21,38 +20,56 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             var criteria = spec.WhereExpressions.FirstOrDefault();
             criteria.Should().NotBeNull();
             criteria?.Filter.Should().NotBeNull();
-            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
+            criteria?.Filter.Should().BeAssignableTo<Expression<Func<AnalyticsDailyPages, bool>>>();
+        }
 
+        [Fact]
+        public void PageViewsAfterDateSpecification_ReturnsTrue_WhenDateIsAfterStartDate()
+        {
+            // Arrange
+            var startDate = new DateOnly(2023, 10, 1);
+
+            // Act
+            var spec = new PageViewsAfterDateSpecification(startDate);
+
+            // Assert
+            var criteria = spec.WhereExpressions.FirstOrDefault();
             var compiledCriteria = criteria!.Filter.Compile();
-            var validPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 10, 2), Device = "Device1", UserAgent = "UserAgent1" };
+
+            var validPageView = new AnalyticsDailyPages(Guid.NewGuid())
+            {
+                Date = new DateOnly(2023, 10, 2)
+            };
+
             compiledCriteria(validPageView).Should().BeTrue();
         }
 
         [Fact]
-        public void GetPageViewDataForRange_Constructor_ShouldSetCorrectCriteria_ForInvalidPageView_BeforeStartDate()
+        public void PageViewsAfterDateSpecification_ReturnsFalse_WhenDateIsEqualToStartDate()
         {
             // Arrange
-            var startDate = new DateTime(2023, 10, 1);
+            var startDate = new DateOnly(2023, 10, 1);
 
             // Act
             var spec = new PageViewsAfterDateSpecification(startDate);
 
             // Assert
             var criteria = spec.WhereExpressions.FirstOrDefault();
-            criteria.Should().NotBeNull();
-            criteria?.Filter.Should().NotBeNull();
-            criteria?.Filter.Should().BeAssignableTo<Expression<Func<PageView, bool>>>();
-
             var compiledCriteria = criteria!.Filter.Compile();
-            var invalidPageView = new PageView(Guid.NewGuid()) { ViewedAt = new DateTime(2023, 9, 30), Device = "Device1", UserAgent = "UserAgent1" };
+
+            var invalidPageView = new AnalyticsDailyPages(Guid.NewGuid())
+            {
+                Date = new DateOnly(2023, 10, 1)
+            };
+
             compiledCriteria(invalidPageView).Should().BeFalse();
         }
 
         [Fact]
-        public void GetPageViewDataForRange_Constructor_ShouldSetAsNoTracking()
+        public void PageViewsAfterDateSpecification_Constructor_ShouldSetAsNoTracking()
         {
             // Arrange
-            var startDate = new DateTime(2023, 10, 1);
+            var startDate = new DateOnly(2023, 10, 1);
 
             // Act
             var spec = new PageViewsAfterDateSpecification(startDate);
@@ -61,5 +78,4 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
             spec.AsNoTracking.Should().BeTrue();
         }
     }
-
 }

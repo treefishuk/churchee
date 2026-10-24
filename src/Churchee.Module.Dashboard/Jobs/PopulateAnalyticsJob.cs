@@ -2,6 +2,7 @@
 using Churchee.Common.Storage;
 
 using Churchee.Module.Dashboard.Entities;
+using Churchee.Module.Dashboard.Specifications;
 
 namespace Churchee.Module.Dashboard.Jobs
 {
@@ -16,17 +17,16 @@ namespace Churchee.Module.Dashboard.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            var lastProcessedDate = GetLastProcessedDate();
+            var lastProcessedDate = await GetLastProcessedDate(cancellationToken);
+
+            var lastProcessedDateTime = lastProcessedDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
 
             var pageViewRepository = _dataStore.GetRepository<PageView>();
 
-            var dates = pageViewRepository
-                .GetQueryable()
-                .Where(x => !x.Deleted && x.ViewedAt >= lastProcessedDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc))
-                .Select(x => x.ViewedAt.Date)
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
+            var dates = await pageViewRepository
+                .GetListAsync(new PageViewsAfterDateSpecification(lastProcessedDateTime),
+                s => s.ViewedAt.Date,
+                cancellationToken);
 
             if (dates.Count == 0)
             {
@@ -37,20 +37,19 @@ namespace Churchee.Module.Dashboard.Jobs
 
             foreach (var date in dates)
             {
-                var datePageViews = pageViewRepository
-                    .GetQueryable()
-                    .Where(x => !x.Deleted && x.ViewedAt.Date == date)
-                    .Select(x => new PageViewAggregate
-                    {
-                        ApplicationTenantId = x.ApplicationTenantId,
-                        Date = DateOnly.FromDateTime(x.ViewedAt.Date),
-                        IpAddress = string.IsNullOrWhiteSpace(x.IpAddress) ? string.Empty : x.IpAddress.Trim(),
-                        Device = NormalizeDevice(x.Device),
-                        Url = NormalizeUrl(x.Url),
-                        Referrer = NormalizeReferrer(x.Referrer),
-                        HourOfDay = x.ViewedAt.Hour
-                    })
-                    .ToList();
+                var datePageViews = await pageViewRepository
+                    .GetListAsync(new PageViewsAfterDateSpecification(lastProcessedDateTime),
+                       x => new PageViewAggregate
+                       {
+                           ApplicationTenantId = x.ApplicationTenantId,
+                           Date = DateOnly.FromDateTime(x.ViewedAt.Date),
+                           IpAddress = string.IsNullOrWhiteSpace(x.IpAddress) ? string.Empty : x.IpAddress.Trim(),
+                           Device = NormalizeDevice(x.Device),
+                           Url = NormalizeUrl(x.Url),
+                           Referrer = NormalizeReferrer(x.Referrer),
+                           HourOfDay = x.ViewedAt.Hour
+                       },
+                    cancellationToken);
 
                 if (datePageViews.Count == 0)
                 {
@@ -72,11 +71,11 @@ namespace Churchee.Module.Dashboard.Jobs
                     int returningVisitors = currentIps.Intersect(previousIps).Count();
                     int uniqueVisitors = currentIps.Count;
 
-                    UpdateDailyAnalytics(tenantId, date, tenantGroup.Count(), uniqueVisitors, returningVisitors);
-                    UpdateDailyDevices(tenantId, date, tenantGroup);
-                    UpdateDailyPages(tenantId, date, tenantGroup);
-                    UpdateDailyReferrers(tenantId, date, tenantGroup);
-                    UpdateHourlyAnalytics(tenantId, date, tenantGroup);
+                    await UpdateDailyAnalytics(tenantId, date, tenantGroup.Count(), uniqueVisitors, returningVisitors);
+                    await UpdateDailyDevices(tenantId, date, tenantGroup);
+                    await UpdateDailyPages(tenantId, date, tenantGroup);
+                    await UpdateDailyReferrers(tenantId, date, tenantGroup);
+                    await UpdateHourlyAnalytics(tenantId, date, tenantGroup);
 
                     previousIps.UnionWith(currentIps);
                     previousIpsByTenant[tenantId] = previousIps;
@@ -86,25 +85,22 @@ namespace Churchee.Module.Dashboard.Jobs
             await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
-        private DateOnly GetLastProcessedDate()
+        private async Task<DateOnly> GetLastProcessedDate(CancellationToken cancellationToken)
         {
             var repository = _dataStore.GetRepository<AnalyticsDaily>();
-            var latestDate = repository.GetQueryable()
-                .Where(x => !x.Deleted)
-                .OrderByDescending(x => x.Date)
-                .Select(x => x.Date)
-                .FirstOrDefault();
+
+            var latestDate = await repository.FirstOrDefaultAsync(new LastAnalyticsDateSpecification(), s => s.Date, cancellationToken);
 
             return latestDate == default ? DateOnly.MinValue : latestDate;
         }
 
-        private void UpdateDailyAnalytics(Guid tenantId, DateTime date, int pageViews, int uniqueVisitors, int returningVisitors)
+        private async Task UpdateDailyAnalytics(Guid tenantId, DateTime date, int pageViews, int uniqueVisitors, int returningVisitors)
         {
             var repository = _dataStore.GetRepository<AnalyticsDaily>();
+
             var entityDate = DateOnly.FromDateTime(date);
 
-            var entity = repository.GetQueryable()
-                .FirstOrDefault(x => x.ApplicationTenantId == tenantId && x.Date == entityDate);
+            var entity = await repository.FirstOrDefaultAsync(new AnalyticsDailyDateEntrySpecification(entityDate, tenantId), CancellationToken.None);
 
             if (entity == null)
             {
@@ -120,15 +116,16 @@ namespace Churchee.Module.Dashboard.Jobs
             entity.ReturningVisitors = returningVisitors;
         }
 
-        private void UpdateDailyDevices(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateDailyDevices(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
         {
             var repository = _dataStore.GetRepository<AnalyticsDailyDevices>();
+
             var entityDate = DateOnly.FromDateTime(date);
 
             foreach (var deviceGroup in tenantGroup.GroupBy(x => x.Device))
             {
-                var entity = repository.GetQueryable()
-                    .FirstOrDefault(x => x.ApplicationTenantId == tenantId && x.Date == entityDate && x.Device == deviceGroup.Key);
+                var entity = await repository
+                    .FirstOrDefaultAsync(new DailyDevicesForDateSpecification(tenantId, entityDate, deviceGroup.Key), CancellationToken.None);
 
                 if (entity == null)
                 {
@@ -144,7 +141,7 @@ namespace Churchee.Module.Dashboard.Jobs
             }
         }
 
-        private void UpdateDailyPages(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateDailyPages(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
         {
             var repository = _dataStore.GetRepository<AnalyticsDailyPages>();
             var entityDate = DateOnly.FromDateTime(date);
@@ -168,7 +165,7 @@ namespace Churchee.Module.Dashboard.Jobs
             }
         }
 
-        private void UpdateDailyReferrers(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateDailyReferrers(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
         {
             var repository = _dataStore.GetRepository<AnalyticsDailyReferrers>();
             var entityDate = DateOnly.FromDateTime(date);
@@ -192,7 +189,7 @@ namespace Churchee.Module.Dashboard.Jobs
             }
         }
 
-        private void UpdateHourlyAnalytics(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateHourlyAnalytics(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
         {
             var repository = _dataStore.GetRepository<AnalyticsHourly>();
             var entityDate = DateOnly.FromDateTime(date);
@@ -216,17 +213,17 @@ namespace Churchee.Module.Dashboard.Jobs
             }
         }
 
-        private static string NormalizeDevice(string? value)
+        private static string NormalizeDevice(string value)
         {
             return string.IsNullOrWhiteSpace(value) ? "Unknown" : value.Trim();
         }
 
-        private static string NormalizeUrl(string? value)
+        private static string NormalizeUrl(string value)
         {
             return string.IsNullOrWhiteSpace(value) ? "/" : value.Trim();
         }
 
-        private static string NormalizeReferrer(string? value)
+        private static string NormalizeReferrer(string value)
         {
             return string.IsNullOrWhiteSpace(value) ? "(direct)" : value.Trim();
         }

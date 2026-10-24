@@ -6,13 +6,13 @@ namespace Churchee.Module.Dashboard.Specifications
     internal class ReferralSourcesSpecification : Specification<AnalyticsDailyReferrers>
     {
 
-        public ReferralSourcesSpecification(DateTime startDate)
+        public ReferralSourcesSpecification(DateOnly startDate)
         {
             Query
                 .AsNoTracking()
                 .Where(x => !string.IsNullOrEmpty(x.Referrer)
-                   && !x.Referrer.StartsWith("/.")
-                   && x.Date > startDate);
+                    && !x.Referrer.StartsWith("/.")
+                    && x.Date >= startDate);
         }
 
     }
