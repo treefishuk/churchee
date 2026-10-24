@@ -3,7 +3,7 @@ using Churchee.Module.Dashboard.Entities;
 
 namespace Churchee.Module.Dashboard.Specifications
 {
-    internal class ReferralSourcesSpecification : Specification<PageView>
+    internal class ReferralSourcesSpecification : Specification<AnalyticsDailyReferrers>
     {
 
         public ReferralSourcesSpecification(DateTime startDate)
@@ -12,7 +12,7 @@ namespace Churchee.Module.Dashboard.Specifications
                 .AsNoTracking()
                 .Where(x => !string.IsNullOrEmpty(x.Referrer)
                    && !x.Referrer.StartsWith("/.")
-                   && x.ViewedAt > startDate);
+                   && x.Date > startDate);
         }
 
     }

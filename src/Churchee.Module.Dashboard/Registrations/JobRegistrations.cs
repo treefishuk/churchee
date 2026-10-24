@@ -13,10 +13,12 @@ namespace Churchee.Module.Dashboard.Registrations
         public void Execute(IServiceCollection serviceCollection, IServiceProvider serviceProvider)
         {
             serviceCollection.AddScoped<ClearOldPageViews>();
+            serviceCollection.AddScoped<PopulateAnalyticsJob>();
 
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
             jobService.ScheduleJob<ClearOldPageViews>($"ClearOldPageViews", x => x.ExecuteAsync(CancellationToken.None), Cron.Daily);
+            jobService.ScheduleJob<PopulateAnalyticsJob>($"PopulateAnalyticsJob", x => x.ExecuteAsync(CancellationToken.None), Cron.Hourly);
         }
     }
 }
