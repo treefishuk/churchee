@@ -2,11 +2,11 @@
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
 using Hangfire;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Events.Features.Commands
 {

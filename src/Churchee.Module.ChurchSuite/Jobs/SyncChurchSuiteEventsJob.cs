@@ -103,6 +103,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
             }
 
             dbEvent.UpdateInformation(item.Key.Name ?? dbEvent.Title, dbEvent.Description, item.Key.Description ?? dbEvent.Description);
+
             dbEvent.UpdateLocation(item.Key.LocationName ?? dbEvent.LocationName, null, item.Key.LocationAddress ?? dbEvent.Street, string.Empty, string.Empty, item.Key.LocationLatitude, item.Key.LocationLongitude);
 
             string imageUrl = item.Key.ImageLargeUrl;
@@ -169,7 +170,7 @@ namespace Churchee.Module.ChurchSuite.Jobs
 
             foreach (var date in item)
             {
-                newEvent.AddDate(Guid.NewGuid(), date.DatetimeStart, date.DatetimeEnd);
+                newEvent.AddDate(Guid.NewGuid(), date.DatetimeStart, date.DatetimeEnd, date.SignupOptions?.SignupEnabled == "1" ? date.SignupOptions?.Tickets?.Url : null);
             }
 
             await ConvertImageToLocalImage(newEvent, newEvent.ImageUrl, applicationTenantId, cancellationToken);
