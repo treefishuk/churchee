@@ -10,7 +10,7 @@ namespace Churchee.Module.Dashboard.Specifications
         {
             Query
                 .IgnoreQueryFilters()
-                .Where(x => x.Date == date && x.ApplicationTenantId == applicationTenantId && x.Referrer == referer);
+                .Where(x => x.Date == date && x.ApplicationTenantId == applicationTenantId && x.Referrer == referer && !string.IsNullOrEmpty(x.Referrer));
         }
     }
 }

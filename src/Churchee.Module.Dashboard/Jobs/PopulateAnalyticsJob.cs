@@ -23,40 +23,34 @@ namespace Churchee.Module.Dashboard.Jobs
 
             var pageViewRepository = _dataStore.GetRepository<PageView>();
 
-            var dates = await pageViewRepository
+            var datePageViews = await pageViewRepository
                 .GetListAsync(new PageViewsAfterDateSpecification(lastProcessedDateTime),
-                s => s.ViewedAt.Date,
-                cancellationToken);
+                    x => new PageViewAggregate
+                    {
+                        ApplicationTenantId = x.ApplicationTenantId,
+                        Date = DateOnly.FromDateTime(x.ViewedAt.Date),
+                        IpAddress = string.IsNullOrWhiteSpace(x.IpAddress) ? string.Empty : x.IpAddress.Trim(),
+                        Device = NormalizeDevice(x.Device),
+                        Url = NormalizeUrl(x.Url),
+                        Referrer = NormalizeReferrer(x.Referrer),
+                        HourOfDay = x.ViewedAt.Hour
+                    },
+                    cancellationToken);
 
-            if (dates.Count == 0)
+            if (datePageViews.Count == 0)
             {
                 return;
             }
 
             var previousIpsByTenant = new Dictionary<Guid, HashSet<string>>();
 
-            foreach (var date in dates)
+            foreach (var dateGroup in datePageViews
+                .GroupBy(x => x.Date)
+                .OrderBy(x => x.Key))
             {
-                var datePageViews = await pageViewRepository
-                    .GetListAsync(new PageViewsAfterDateSpecification(lastProcessedDateTime),
-                       x => new PageViewAggregate
-                       {
-                           ApplicationTenantId = x.ApplicationTenantId,
-                           Date = DateOnly.FromDateTime(x.ViewedAt.Date),
-                           IpAddress = string.IsNullOrWhiteSpace(x.IpAddress) ? string.Empty : x.IpAddress.Trim(),
-                           Device = NormalizeDevice(x.Device),
-                           Url = NormalizeUrl(x.Url),
-                           Referrer = NormalizeReferrer(x.Referrer),
-                           HourOfDay = x.ViewedAt.Hour
-                       },
-                    cancellationToken);
+                var date = dateGroup.Key.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
 
-                if (datePageViews.Count == 0)
-                {
-                    continue;
-                }
-
-                foreach (var tenantGroup in datePageViews.GroupBy(x => x.ApplicationTenantId))
+                foreach (var tenantGroup in dateGroup.GroupBy(x => x.ApplicationTenantId))
                 {
                     var tenantId = tenantGroup.Key;
                     var currentIps = tenantGroup

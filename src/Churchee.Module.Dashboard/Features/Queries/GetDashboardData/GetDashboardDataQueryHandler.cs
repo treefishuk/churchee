@@ -101,17 +101,16 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
 
-            var totals = await dataStore
+            var entries = await dataStore
                 .GetRepository<AnalyticsDaily>()
-                .FirstOrDefaultAsync(new DailyAnalyticsSpecification(start),
-                s => new Totals
-                {
-                    PageViews = s.PageViews,
-                    UniqueVisitors = s.UniqueVisitors,
-                    ReturningVisitors = s.ReturningVisitors
-                }, cancellationToken);
+                .GetListAsync(new DailyAnalyticsSpecification(start), cancellationToken: cancellationToken);
 
-            return totals ?? new Totals();
+            return new Totals
+            {
+                PageViews = entries.Sum(x => x.PageViews),
+                UniqueVisitors = entries.Sum(x => x.UniqueVisitors),
+                ReturningVisitors = entries.Sum(x => x.ReturningVisitors)
+            };
         }
 
         private async Task<GetDashboardDataResponseItem[]> GetTopPages(DateOnly start, CancellationToken cancellationToken)
