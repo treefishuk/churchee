@@ -288,6 +288,49 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
 
             repository.AddRange([recurringYesterday, recurringVisitorToday, uniqueVisitor, uniqueVisitor2]);
 
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            var analyticsDailyRepository = efStorage.GetRepository<AnalyticsDaily>();
+            var dailyPagesRepository = efStorage.GetRepository<AnalyticsDailyPages>();
+            var dailyDevicesRepository = efStorage.GetRepository<AnalyticsDailyDevices>();
+            var dailyReferrersRepository = efStorage.GetRepository<AnalyticsDailyReferrers>();
+            var hourlyRepository = efStorage.GetRepository<AnalyticsHourly>();
+
+            analyticsDailyRepository.Create(new AnalyticsDaily(appTenantId)
+            {
+                Date = today,
+                PageViews = 4,
+                UniqueVisitors = 2,
+                ReturningVisitors = 1
+            });
+
+            dailyPagesRepository.Create(new AnalyticsDailyPages(appTenantId)
+            {
+                Date = today,
+                Url = "/",
+                Views = 4
+            });
+
+            dailyDevicesRepository.Create(new AnalyticsDailyDevices(appTenantId)
+            {
+                Date = today,
+                Device = "desktop",
+                Views = 4
+            });
+
+            dailyReferrersRepository.Create(new AnalyticsDailyReferrers(appTenantId)
+            {
+                Date = today,
+                Referrer = "(direct)",
+                Views = 4
+            });
+
+            hourlyRepository.Create(new AnalyticsHourly(appTenantId)
+            {
+                Date = today,
+                HourOfDay = DateTime.Now.Hour,
+                Views = 4
+            });
+
             await efStorage.SaveChangesAsync(cancellationToken);
         }
 

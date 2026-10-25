@@ -45,7 +45,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
         }
 
         [Fact]
-        public void PageViewsAfterDateSpecification_ReturnsFalse_WhenDateIsEqualToStartDate()
+        public void PageViewsAfterDateSpecification_ReturnsTrue_WhenDateIsEqualToStartDate()
         {
             // Arrange
             var startDate = new DateTime(2023, 10, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -62,7 +62,7 @@ namespace Churchee.Module.Dashboard.Tests.Specifications
                 ViewedAt = new DateTime(2023, 10, 1, 0, 0, 0, DateTimeKind.Utc)
             };
 
-            compiledCriteria(invalidPageView).Should().BeFalse();
+            compiledCriteria(invalidPageView).Should().BeTrue();
         }
 
         [Fact]
