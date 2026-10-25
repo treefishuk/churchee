@@ -187,7 +187,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 .Take(5)];
         }
 
-        private class Totals
+        private sealed class Totals
         {
             public int PageViews { get; set; }
             public int UniqueVisitors { get; set; }
