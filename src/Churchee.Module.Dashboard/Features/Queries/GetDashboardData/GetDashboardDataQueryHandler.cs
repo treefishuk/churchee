@@ -117,17 +117,20 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
         {
             using var scope = _scopeFactory.CreateScope();
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
-            var data = await dataStore.GetRepository<AnalyticsDailyPages>().GetListAsync(new AnalyticsDailyAfterDateSpecification(start),
-                groupBy: g => g.Url,
-                selector: s => new { s.Key, Count = s.Count() },
-                take: 5,
-                cancellationToken: cancellationToken);
 
-            return [.. data.Select(x => new GetDashboardDataResponseItem
-            {
-                Name = x.Key,
-                Count = x.Count
-            })];
+            var pageViews = await dataStore
+                .GetRepository<AnalyticsDailyPages>()
+                .GetListAsync(new AnalyticsDailyAfterDateSpecification(start), cancellationToken: cancellationToken);
+
+            return [.. pageViews
+                .GroupBy(x => x.Url)
+                .Select(x => new GetDashboardDataResponseItem
+                {
+                    Name = x.Key,
+                    Count = x.Sum(v => v.Views)
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)];
         }
 
         private async Task<GetDashboardDataResponseItem[]> GetDevices(DateOnly start, CancellationToken cancellationToken)
@@ -135,25 +138,26 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             using var scope = _scopeFactory.CreateScope();
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
 
-            int total = await dataStore.GetRepository<AnalyticsDailyDevices>().CountAsync(new DailyDevicesSpecification(start), cancellationToken);
+            var dailyDevices = await dataStore
+                .GetRepository<AnalyticsDailyDevices>()
+                .GetListAsync(new DailyDevicesSpecification(start), cancellationToken: cancellationToken);
 
-            if (total == 0)
+            if (dailyDevices.Count == 0)
             {
                 return [];
             }
 
-            var data = await dataStore.GetRepository<AnalyticsDailyDevices>().GetListAsync(new DailyDevicesSpecification(start),
-                groupBy: g => g.Device,
-                selector: s => new { s.Key, Count = s.Count() },
-                take: 5,
-                cancellationToken: cancellationToken);
+            var total = dailyDevices.Sum(x => x.Views);
 
-            return [.. data.Select(x => new GetDashboardDataResponseItem
-            {
-                Name = x.Key,
-                Count = Math.Round((double)x.Count / total * 100, 2)
-            })];
-
+            return [.. dailyDevices
+                .GroupBy(x => x.Device)
+                .Select(x => new GetDashboardDataResponseItem
+                {
+                    Name = x.Key,
+                    Count = Math.Round((double)x.Sum(v => v.Views) / total * 100, 2)
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)];
         }
 
         private async Task<GetDashboardDataResponseItem[]> GetReferralSources(DateOnly start, CancellationToken cancellationToken)
@@ -162,24 +166,26 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
 
-            var data = await dataStore.GetRepository<AnalyticsDailyReferrers>().GetListAsync(new ReferralSourcesSpecification(start),
-                groupBy: g => g.Referrer,
-                selector: s => new { s.Key, Count = s.Count() },
-                take: 5,
-                cancellationToken: cancellationToken);
+            var referrers = await dataStore
+                .GetRepository<AnalyticsDailyReferrers>()
+                .GetListAsync(new ReferralSourcesSpecification(start), cancellationToken: cancellationToken);
 
-            int total = await dataStore.GetRepository<AnalyticsDailyReferrers>().CountAsync(new ReferralSourcesSpecification(start), cancellationToken);
-
-            if (total == 0)
+            if (referrers.Count == 0)
             {
                 return [];
             }
 
-            return [.. data.Select(x => new GetDashboardDataResponseItem
-            {
-                Name = x.Key,
-                Count = Math.Round((double)x.Count / total * 100, 2)
-            })];
+            var total = referrers.Sum(x => x.Views);
+
+            return [.. referrers
+                .GroupBy(x => x.Referrer)
+                .Select(x => new GetDashboardDataResponseItem
+                {
+                    Name = x.Key,
+                    Count = Math.Round((double)x.Sum(v => v.Views) / total * 100, 2)
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)];
         }
 
         private class Totals
