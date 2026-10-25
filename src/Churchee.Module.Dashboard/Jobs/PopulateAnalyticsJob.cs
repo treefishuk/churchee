@@ -23,60 +23,70 @@ namespace Churchee.Module.Dashboard.Jobs
 
             var pageViewRepository = _dataStore.GetRepository<PageView>();
 
-            var datePageViews = await pageViewRepository
-                .GetListAsync(new PageViewsAfterDateSpecification(lastProcessedDateTime),
-                    x => new PageViewAggregate
-                    {
-                        ApplicationTenantId = x.ApplicationTenantId,
-                        Date = DateOnly.FromDateTime(x.ViewedAt.Date),
-                        IpAddress = string.IsNullOrWhiteSpace(x.IpAddress) ? string.Empty : x.IpAddress.Trim(),
-                        Device = NormalizeDevice(x.Device),
-                        Url = NormalizeUrl(x.Url),
-                        Referrer = NormalizeReferrer(x.Referrer),
-                        HourOfDay = x.ViewedAt.Hour
-                    },
-                    cancellationToken);
+            const int batchSize = 100;
+            var skip = 0;
 
-            if (datePageViews.Count == 0)
+            while (true)
             {
-                return;
-            }
+                var datePageViews = await pageViewRepository
+                    .GetListAsync(new PageViewsAfterDateBatchSpecification(lastProcessedDateTime, batchSize, skip),
+                        x => new PageViewAggregate
+                        {
+                            ApplicationTenantId = x.ApplicationTenantId,
+                            Date = DateOnly.FromDateTime(x.ViewedAt.Date),
+                            IpAddress = string.IsNullOrWhiteSpace(x.IpAddress) ? string.Empty : x.IpAddress.Trim(),
+                            Device = NormalizeDevice(x.Device),
+                            Url = NormalizeUrl(x.Url),
+                            Referrer = NormalizeReferrer(x.Referrer),
+                            HourOfDay = x.ViewedAt.Hour
+                        },
+                        cancellationToken);
 
-            var previousIpsByTenant = new Dictionary<Guid, HashSet<string>>();
-
-            foreach (var dateGroup in datePageViews
-                .GroupBy(x => x.Date)
-                .OrderBy(x => x.Key))
-            {
-                var date = dateGroup.Key.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
-
-                foreach (var tenantGroup in dateGroup.GroupBy(x => x.ApplicationTenantId))
+                if (datePageViews.Count == 0)
                 {
-                    var tenantId = tenantGroup.Key;
-                    var currentIps = tenantGroup
-                        .Select(x => x.IpAddress)
-                        .Where(x => !string.IsNullOrWhiteSpace(x))
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                    previousIpsByTenant.TryGetValue(tenantId, out var previousIps);
-                    previousIps ??= new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                    int returningVisitors = currentIps.Intersect(previousIps).Count();
-                    int uniqueVisitors = currentIps.Count;
-
-                    await UpdateDailyAnalytics(tenantId, date, tenantGroup.Count(), uniqueVisitors, returningVisitors, cancellationToken);
-                    await UpdateDailyDevices(tenantId, date, tenantGroup, cancellationToken);
-                    await UpdateDailyPages(tenantId, date, tenantGroup, cancellationToken);
-                    await UpdateDailyReferrers(tenantId, date, tenantGroup, cancellationToken);
-                    await UpdateHourlyAnalytics(tenantId, date, tenantGroup, cancellationToken);
-
-                    previousIps.UnionWith(currentIps);
-                    previousIpsByTenant[tenantId] = previousIps;
+                    break;
                 }
+
+                skip += datePageViews.Count;
+
+                var previousIpsByTenant = new Dictionary<Guid, HashSet<string>>();
+
+                foreach (var dateGroup in datePageViews
+                    .GroupBy(x => x.Date)
+                    .OrderBy(x => x.Key))
+                {
+                    var date = dateGroup.Key.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+
+                    foreach (var tenantGroup in dateGroup.GroupBy(x => x.ApplicationTenantId))
+                    {
+                        var tenantId = tenantGroup.Key;
+                        var currentIps = tenantGroup
+                            .Select(x => x.IpAddress)
+                            .Where(x => !string.IsNullOrWhiteSpace(x))
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                        previousIpsByTenant.TryGetValue(tenantId, out var previousIps);
+                        previousIps ??= new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                        int returningVisitors = currentIps.Intersect(previousIps).Count();
+                        int uniqueVisitors = currentIps.Count;
+
+                        await UpdateDailyAnalytics(tenantId, date, tenantGroup.Count(), uniqueVisitors, returningVisitors, cancellationToken);
+                        await UpdateDailyDevices(tenantId, date, tenantGroup, cancellationToken);
+                        await UpdateDailyPages(tenantId, date, tenantGroup, cancellationToken);
+                        await UpdateDailyReferrers(tenantId, date, tenantGroup, cancellationToken);
+                        await UpdateHourlyAnalytics(tenantId, date, tenantGroup, cancellationToken);
+
+                        previousIps.UnionWith(currentIps);
+                        previousIpsByTenant[tenantId] = previousIps;
+                    }
+                }
+
+                await _dataStore.SaveChangesAsync(cancellationToken);
+
             }
 
-            await _dataStore.SaveChangesAsync(cancellationToken);
         }
 
         private async Task<DateOnly> GetLastProcessedDate(CancellationToken cancellationToken)
@@ -105,9 +115,9 @@ namespace Churchee.Module.Dashboard.Jobs
                 repository.Create(entity);
             }
 
-            entity.PageViews = pageViews;
-            entity.UniqueVisitors = uniqueVisitors;
-            entity.ReturningVisitors = returningVisitors;
+            entity.PageViews += pageViews;
+            entity.UniqueVisitors += uniqueVisitors;
+            entity.ReturningVisitors += returningVisitors;
         }
 
         private async Task UpdateDailyDevices(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
@@ -131,10 +141,18 @@ namespace Churchee.Module.Dashboard.Jobs
                     repository.Create(entity);
                 }
 
-                entity.Views = deviceGroup.Count();
+                entity.Views += deviceGroup.Count();
             }
         }
 
+        /// <summary>
+        /// THis ones problematic
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="date"></param>
+        /// <param name="tenantGroup"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private async Task UpdateDailyPages(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
         {
             var repository = _dataStore.GetRepository<AnalyticsDailyPages>();
@@ -155,7 +173,7 @@ namespace Churchee.Module.Dashboard.Jobs
                     repository.Create(entity);
                 }
 
-                entity.Views = pageGroup.Count();
+                entity.Views += pageGroup.Count();
             }
         }
 
@@ -178,7 +196,7 @@ namespace Churchee.Module.Dashboard.Jobs
                     repository.Create(entity);
                 }
 
-                entity.Views = referrerGroup.Count();
+                entity.Views += referrerGroup.Count();
             }
         }
 
@@ -201,7 +219,7 @@ namespace Churchee.Module.Dashboard.Jobs
                     repository.Create(entity);
                 }
 
-                entity.Views = hourlyGroup.Count();
+                entity.Views += hourlyGroup.Count();
             }
         }
 
@@ -212,7 +230,7 @@ namespace Churchee.Module.Dashboard.Jobs
 
         private static string NormalizeUrl(string value)
         {
-            return string.IsNullOrWhiteSpace(value) ? "/" : value.Trim();
+            return string.IsNullOrWhiteSpace(value) ? "/" : value.Trim().ToLower();
         }
 
         private static string NormalizeReferrer(string value)
