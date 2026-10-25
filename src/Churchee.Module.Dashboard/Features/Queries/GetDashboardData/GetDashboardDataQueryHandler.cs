@@ -2,7 +2,6 @@
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Specifications;
-using DeviceDetectorNET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
@@ -34,22 +33,26 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 var devicesTask = GetDevices(start, cts.Token); //32ms
                 var pagesOverTimeTask = GetPagesOverTime(start, cts.Token);
                 var topPagesTask = GetTopPages(start, cts.Token);
-                var uniqueVisitorsTask = GetUniqueVisitors(start, cts.Token);
-                var returningVisitorsTask = GetReturnVisitors(start, cts.Token);
-                var totalPageViewsTask = GetTotalViews(start, cts.Token);
 
-                await Task.WhenAll(referralTask, devicesTask, pagesOverTimeTask, topPagesTask,
-                   uniqueVisitorsTask, returningVisitorsTask, totalPageViewsTask);
+                var countsTask = GetCounts(start, cts.Token);
+
+                await Task.WhenAll(referralTask, devicesTask, pagesOverTimeTask, topPagesTask, countsTask);
+
+                var referral = await referralTask;
+                var devices = await devicesTask;
+                var pagesOverTime = await pagesOverTimeTask;
+                var topPages = await topPagesTask;
+                var totals = await countsTask;
 
                 var response = new GetDashboardDataResponse()
                 {
-                    ReferralSource = referralTask.Result,
-                    Devices = devicesTask.Result,
-                    PagesOverTime = pagesOverTimeTask.Result,
-                    TopPages = topPagesTask.Result,
-                    UniqueVisitors = uniqueVisitorsTask.Result,
-                    ReturningVisitors = returningVisitorsTask.Result,
-                    TotalPageViews = totalPageViewsTask.Result
+                    ReferralSource = referral ?? [],
+                    Devices = devices ?? [],
+                    PagesOverTime = pagesOverTime ?? [],
+                    TopPages = topPages ?? [],
+                    UniqueVisitors = totals?.UniqueVisitors ?? 0,
+                    ReturningVisitors = totals?.ReturningVisitors ?? 0,
+                    TotalPageViews = totals?.PageViews ?? 0
                 };
 
                 return response;
@@ -66,27 +69,21 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             }
         }
 
-        private static DateTime GetStartDate(GetDashboardDataQuery request)
+        private static DateOnly GetStartDate(GetDashboardDataQuery request)
         {
-            var startOfTheDay = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, DateTime.UtcNow.Day, 0, 0, 0, DateTimeKind.Utc);
-
-            int negativeNumber = request.Days * -1;
-
-            var start = startOfTheDay.AddDays(negativeNumber);
-
-            return start;
+            return DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-request.Days);
         }
 
-        private async Task<GetDashboardDataResponseItem[]> GetPagesOverTime(DateTime start, CancellationToken cancellationToken)
+        private async Task<GetDashboardDataResponseItem[]> GetPagesOverTime(DateOnly start, CancellationToken cancellationToken)
         {
             using var scope = _scopeFactory.CreateScope();
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
-            var data = await dataStore.GetRepository<PageView>().GetListAsync(new PageViewsAfterDateSpecification(start),
-            groupBy: g => g.ViewedAtHour,
+            var data = await dataStore.GetRepository<AnalyticsHourly>().GetListAsync(new HourlyPageViewsAfterDateSpecification(start),
+            groupBy: g => g.HourOfDay,
             selector: s => new
             {
                 s.Key,
-                Count = s.Count()
+                Count = s.Sum(x => x.Views)
             },
             cancellationToken: cancellationToken);
 
@@ -97,96 +94,104 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             })];
         }
 
-        private async Task<int> GetTotalViews(DateTime start, CancellationToken cancellationToken)
+        private async Task<Totals> GetCounts(DateOnly start, CancellationToken cancellationToken)
         {
             using var scope = _scopeFactory.CreateScope();
-            var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
-            return await dataStore.GetRepository<PageView>().CountAsync(new PageViewsAfterDateSpecification(start), cancellationToken);
-        }
 
-        private async Task<int> GetReturnVisitors(DateTime start, CancellationToken cancellationToken)
-        {
-            using var scope = _scopeFactory.CreateScope();
-            var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
-            var inQuery = dataStore.GetRepository<PageView>().ApplySpecification(new PageViewsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
-
-            int returnVisitors = await dataStore.GetRepository<PageView>().GetDistinctCountAsync(new ReturnVisitorsSpecification(start, inQuery),
-                selector: s => s.IpAddress,
-                cancellationToken: cancellationToken);
-
-            return returnVisitors;
-        }
-
-        private async Task<int> GetUniqueVisitors(DateTime start, CancellationToken cancellationToken)
-        {
-            using var scope = _scopeFactory.CreateScope();
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
 
-            var notInQuery = dataStore.GetRepository<PageView>().ApplySpecification(new PageViewsBeforeDateSpecification(start)).Select(s => s.IpAddress).Distinct();
+            var entries = await dataStore
+                .GetRepository<AnalyticsDaily>()
+                .GetListAsync(new DailyAnalyticsSpecification(start), cancellationToken: cancellationToken);
 
-            int returnVisitors = await dataStore.GetRepository<PageView>().GetDistinctCountAsync(new UniqueVisitorsSpecification(start, notInQuery),
-                selector: s => s.IpAddress,
-                cancellationToken: cancellationToken);
-
-            return returnVisitors;
-        }
-
-        private async Task<GetDashboardDataResponseItem[]> GetTopPages(DateTime start, CancellationToken cancellationToken)
-        {
-            using var scope = _scopeFactory.CreateScope();
-            var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
-            var data = await dataStore.GetRepository<PageView>().GetListAsync(new PageViewsAfterDateSpecification(start),
-                groupBy: g => g.Url,
-                selector: s => new { s.Key, Count = s.Count() },
-                take: 5,
-                cancellationToken: cancellationToken);
-
-            return [.. data.Select(x => new GetDashboardDataResponseItem
+            return new Totals
             {
-                Name = x.Key,
-                Count = x.Count
-            })];
+                PageViews = entries.Sum(x => x.PageViews),
+                UniqueVisitors = entries.Sum(x => x.UniqueVisitors),
+                ReturningVisitors = entries.Sum(x => x.ReturningVisitors)
+            };
         }
 
-        private async Task<GetDashboardDataResponseItem[]> GetDevices(DateTime start, CancellationToken cancellationToken)
+        private async Task<GetDashboardDataResponseItem[]> GetTopPages(DateOnly start, CancellationToken cancellationToken)
         {
             using var scope = _scopeFactory.CreateScope();
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
 
-            int total = await dataStore.GetRepository<PageView>().CountAsync(new PageViewsAfterDateSpecification(start), cancellationToken);
+            var pageViews = await dataStore
+                .GetRepository<AnalyticsDailyPages>()
+                .GetListAsync(new AnalyticsDailyAfterDateSpecification(start), cancellationToken: cancellationToken);
 
-            var data = await dataStore.GetRepository<PageView>().GetListAsync(new PageViewsAfterDateSpecification(start),
-                groupBy: g => g.Device,
-                selector: s => new { s.Key, Count = s.Count() },
-                take: 5,
-                cancellationToken: cancellationToken);
-
-            return [.. data.Select(x => new GetDashboardDataResponseItem
-            {
-                Name = x.Key,
-                Count = Math.Round((double)x.Count / total * 100, 2)
-            })];
-
+            return [.. pageViews
+                .GroupBy(x => x.Url)
+                .Select(x => new GetDashboardDataResponseItem
+                {
+                    Name = x.Key,
+                    Count = x.Sum(v => v.Views)
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)];
         }
 
-        private async Task<GetDashboardDataResponseItem[]> GetReferralSources(DateTime start, CancellationToken cancellationToken)
+        private async Task<GetDashboardDataResponseItem[]> GetDevices(DateOnly start, CancellationToken cancellationToken)
         {
             using var scope = _scopeFactory.CreateScope();
             var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
 
-            int total = await dataStore.GetRepository<PageView>().CountAsync(new ReferralSourcesSpecification(start), cancellationToken);
+            var dailyDevices = await dataStore
+                .GetRepository<AnalyticsDailyDevices>()
+                .GetListAsync(new DailyDevicesSpecification(start), cancellationToken: cancellationToken);
 
-            var data = await dataStore.GetRepository<PageView>().GetListAsync(new ReferralSourcesSpecification(start),
-                groupBy: g => g.Referrer,
-                selector: s => new { s.Key, Count = s.Count() },
-                take: 5,
-                cancellationToken: cancellationToken);
-
-            return [.. data.Select(x => new GetDashboardDataResponseItem
+            if (dailyDevices.Count == 0)
             {
-                Name = x.Key,
-                Count = Math.Round((double)x.Count / total * 100, 2)
-            })];
+                return [];
+            }
+
+            var total = dailyDevices.Sum(x => x.Views);
+
+            return [.. dailyDevices
+                .GroupBy(x => x.Device)
+                .Select(x => new GetDashboardDataResponseItem
+                {
+                    Name = x.Key,
+                    Count = Math.Round((double)x.Sum(v => v.Views) / total * 100, 2)
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)];
+        }
+
+        private async Task<GetDashboardDataResponseItem[]> GetReferralSources(DateOnly start, CancellationToken cancellationToken)
+        {
+            using var scope = _scopeFactory.CreateScope();
+
+            var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
+
+            var referrers = await dataStore
+                .GetRepository<AnalyticsDailyReferrers>()
+                .GetListAsync(new ReferralSourcesSpecification(start), cancellationToken: cancellationToken);
+
+            if (referrers.Count == 0)
+            {
+                return [];
+            }
+
+            var total = referrers.Sum(x => x.Views);
+
+            return [.. referrers
+                .GroupBy(x => x.Referrer)
+                .Select(x => new GetDashboardDataResponseItem
+                {
+                    Name = x.Key,
+                    Count = Math.Round((double)x.Sum(v => v.Views) / total * 100, 2)
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)];
+        }
+
+        private sealed class Totals
+        {
+            public int PageViews { get; set; }
+            public int UniqueVisitors { get; set; }
+            public int ReturningVisitors { get; set; }
         }
     }
 }

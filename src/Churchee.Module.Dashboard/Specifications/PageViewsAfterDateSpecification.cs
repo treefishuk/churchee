@@ -9,9 +9,9 @@ namespace Churchee.Module.Dashboard.Specifications
         public PageViewsAfterDateSpecification(DateTime startDate)
         {
             Query
+                .IgnoreQueryFilters()
                 .AsNoTracking()
-                .Where(x => x.ViewedAt > startDate);
+                .Where(x => x.ViewedAt >= startDate);
         }
-
     }
 }

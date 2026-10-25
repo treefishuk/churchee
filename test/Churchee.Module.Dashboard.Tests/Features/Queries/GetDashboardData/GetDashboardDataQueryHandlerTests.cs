@@ -4,6 +4,8 @@ using Churchee.Data.EntityFramework.Admin;
 using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Features.Queries;
 using Churchee.Module.Dashboard.Features.Queries.GetDashboardData;
+using Churchee.Module.Dashboard.Jobs;
+using Churchee.Module.Dashboard.Specifications;
 using Churchee.Module.Dashboard.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -144,6 +146,89 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             Assert.True(response.ReturningVisitors == 1, $"Expected 1 returning visitor, but got {response.ReturningVisitors}.");
         }
 
+        [Fact]
+        public async Task PopulateAnalyticsJob_Tracks_Returning_Visitors_Across_Multiple_Days()
+        {
+            var tenantId = Ids.TenantId;
+            var now = DateTime.UtcNow.Date;
+
+            var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
+            optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
+
+            var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
+            var dataStore = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
+
+            var pageViews = new[]
+            {
+                new PageView(tenantId)
+                {
+                    Url = "/",
+                    UserAgent = "Mozilla/5.0",
+                    IpAddress = "192.168.0.1",
+                    ViewedAt = now.AddDays(-2),
+                    Device = "desktop",
+                    Deleted = false
+                },
+                new PageView(tenantId)
+                {
+                    Url = "/",
+                    UserAgent = "Mozilla/5.0",
+                    IpAddress = "192.168.0.1",
+                    ViewedAt = now.AddDays(-1),
+                    Device = "desktop",
+                    Deleted = false
+                },
+                new PageView(tenantId)
+                {
+                    Url = "/",
+                    UserAgent = "Mozilla/5.0",
+                    IpAddress = "192.168.0.2",
+                    ViewedAt = now.AddDays(-1),
+                    Device = "desktop",
+                    Deleted = false
+                },
+                new PageView(tenantId)
+                {
+                    Url = "/",
+                    UserAgent = "Mozilla/5.0",
+                    IpAddress = "192.168.0.2",
+                    ViewedAt = now,
+                    Device = "desktop",
+                    Deleted = false
+                },
+                new PageView(tenantId)
+                {
+                    Url = "/",
+                    UserAgent = "Mozilla/5.0",
+                    IpAddress = "192.168.0.3",
+                    ViewedAt = now,
+                    Device = "desktop",
+                    Deleted = false
+                }
+            };
+
+            dataStore.GetRepository<PageView>().AddRange(pageViews);
+            await dataStore.SaveChangesAsync(CancellationToken.None);
+
+            var job = new PopulateAnalyticsJob(dataStore);
+            await job.ExecuteAsync(CancellationToken.None);
+
+            var analytics = await dataStore.GetRepository<AnalyticsDaily>().GetListAsync(new DailyAnalyticsSpecification(DateOnly.FromDateTime(now.AddDays(-2))), cancellationToken: CancellationToken.None);
+
+            var dayMinusTwo = analytics.Single(x => x.Date == DateOnly.FromDateTime(now.AddDays(-2)));
+            var dayMinusOne = analytics.Single(x => x.Date == DateOnly.FromDateTime(now.AddDays(-1)));
+            var today = analytics.Single(x => x.Date == DateOnly.FromDateTime(now));
+
+            Assert.Equal(1, dayMinusTwo.UniqueVisitors);
+            Assert.Equal(0, dayMinusTwo.ReturningVisitors);
+
+            Assert.Equal(2, dayMinusOne.UniqueVisitors);
+            Assert.Equal(1, dayMinusOne.ReturningVisitors);
+
+            Assert.Equal(2, today.UniqueVisitors);
+            Assert.Equal(1, today.ReturningVisitors);
+        }
+
 
         private async Task SetupCountsDataSet(Guid appTenantId, CancellationToken cancellationToken)
         {
@@ -202,6 +287,49 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             var repository = efStorage.GetRepository<PageView>();
 
             repository.AddRange([recurringYesterday, recurringVisitorToday, uniqueVisitor, uniqueVisitor2]);
+
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            var analyticsDailyRepository = efStorage.GetRepository<AnalyticsDaily>();
+            var dailyPagesRepository = efStorage.GetRepository<AnalyticsDailyPages>();
+            var dailyDevicesRepository = efStorage.GetRepository<AnalyticsDailyDevices>();
+            var dailyReferrersRepository = efStorage.GetRepository<AnalyticsDailyReferrers>();
+            var hourlyRepository = efStorage.GetRepository<AnalyticsHourly>();
+
+            analyticsDailyRepository.Create(new AnalyticsDaily(appTenantId)
+            {
+                Date = today,
+                PageViews = 4,
+                UniqueVisitors = 2,
+                ReturningVisitors = 1
+            });
+
+            dailyPagesRepository.Create(new AnalyticsDailyPages(appTenantId)
+            {
+                Date = today,
+                Url = "/",
+                Views = 4
+            });
+
+            dailyDevicesRepository.Create(new AnalyticsDailyDevices(appTenantId)
+            {
+                Date = today,
+                Device = "desktop",
+                Views = 4
+            });
+
+            dailyReferrersRepository.Create(new AnalyticsDailyReferrers(appTenantId)
+            {
+                Date = today,
+                Referrer = "(direct)",
+                Views = 4
+            });
+
+            hourlyRepository.Create(new AnalyticsHourly(appTenantId)
+            {
+                Date = today,
+                HourOfDay = DateTime.Now.Hour,
+                Views = 4
+            });
 
             await efStorage.SaveChangesAsync(cancellationToken);
         }

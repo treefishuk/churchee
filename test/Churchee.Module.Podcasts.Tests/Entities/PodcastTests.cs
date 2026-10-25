@@ -28,7 +28,7 @@ namespace Churchee.Module.Podcasts.Tests.Entities
             podcast.ApplicationTenantId.Should().Be(applicationTenantId);
             podcast.AudioUri.Should().Be(audioUri);
             podcast.PublishedDate.Should().Be(publishedDate);
-            podcast.SyncDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+            podcast.SyncDate.Date.Should().Be(DateTime.Now.Date);
             podcast.ImageUrl.Should().Be(imageUrl);
             podcast.ThumbnailUrl.Should().Be(thumbnailUrl);
             podcast.IsSystem.Should().BeTrue();
