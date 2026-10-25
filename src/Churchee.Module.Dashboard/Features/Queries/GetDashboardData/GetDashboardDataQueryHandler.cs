@@ -2,7 +2,6 @@
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Dashboard.Entities;
 using Churchee.Module.Dashboard.Specifications;
-using DeviceDetectorNET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
@@ -84,7 +83,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
             selector: s => new
             {
                 s.Key,
-                Count = s.Count()
+                Count = s.Sum(x => x.Views)
             },
             cancellationToken: cancellationToken);
 
