@@ -71,11 +71,11 @@ namespace Churchee.Module.Dashboard.Jobs
                     int returningVisitors = currentIps.Intersect(previousIps).Count();
                     int uniqueVisitors = currentIps.Count;
 
-                    await UpdateDailyAnalytics(tenantId, date, tenantGroup.Count(), uniqueVisitors, returningVisitors);
-                    await UpdateDailyDevices(tenantId, date, tenantGroup);
-                    await UpdateDailyPages(tenantId, date, tenantGroup);
-                    await UpdateDailyReferrers(tenantId, date, tenantGroup);
-                    await UpdateHourlyAnalytics(tenantId, date, tenantGroup);
+                    await UpdateDailyAnalytics(tenantId, date, tenantGroup.Count(), uniqueVisitors, returningVisitors, cancellationToken);
+                    await UpdateDailyDevices(tenantId, date, tenantGroup, cancellationToken);
+                    await UpdateDailyPages(tenantId, date, tenantGroup, cancellationToken);
+                    await UpdateDailyReferrers(tenantId, date, tenantGroup, cancellationToken);
+                    await UpdateHourlyAnalytics(tenantId, date, tenantGroup, cancellationToken);
 
                     previousIps.UnionWith(currentIps);
                     previousIpsByTenant[tenantId] = previousIps;
@@ -94,13 +94,13 @@ namespace Churchee.Module.Dashboard.Jobs
             return latestDate == default ? DateOnly.MinValue : latestDate;
         }
 
-        private async Task UpdateDailyAnalytics(Guid tenantId, DateTime date, int pageViews, int uniqueVisitors, int returningVisitors)
+        private async Task UpdateDailyAnalytics(Guid tenantId, DateTime date, int pageViews, int uniqueVisitors, int returningVisitors, CancellationToken cancellationToken)
         {
             var repository = _dataStore.GetRepository<AnalyticsDaily>();
 
             var entityDate = DateOnly.FromDateTime(date);
 
-            var entity = await repository.FirstOrDefaultAsync(new AnalyticsDailyDateEntrySpecification(entityDate, tenantId), CancellationToken.None);
+            var entity = await repository.FirstOrDefaultAsync(new AnalyticsDailyDateEntrySpecification(entityDate, tenantId), cancellationToken);
 
             if (entity == null)
             {
@@ -116,7 +116,7 @@ namespace Churchee.Module.Dashboard.Jobs
             entity.ReturningVisitors = returningVisitors;
         }
 
-        private async Task UpdateDailyDevices(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateDailyDevices(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
         {
             var repository = _dataStore.GetRepository<AnalyticsDailyDevices>();
 
@@ -125,7 +125,7 @@ namespace Churchee.Module.Dashboard.Jobs
             foreach (var deviceGroup in tenantGroup.GroupBy(x => x.Device))
             {
                 var entity = await repository
-                    .FirstOrDefaultAsync(new DailyDevicesForDateSpecification(tenantId, entityDate, deviceGroup.Key), CancellationToken.None);
+                    .FirstOrDefaultAsync(new DailyDevicesForDateSpecification(tenantId, entityDate, deviceGroup.Key), cancellationToken);
 
                 if (entity == null)
                 {
@@ -141,15 +141,15 @@ namespace Churchee.Module.Dashboard.Jobs
             }
         }
 
-        private async Task UpdateDailyPages(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateDailyPages(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
         {
             var repository = _dataStore.GetRepository<AnalyticsDailyPages>();
+
             var entityDate = DateOnly.FromDateTime(date);
 
             foreach (var pageGroup in tenantGroup.GroupBy(x => x.Url))
             {
-                var entity = repository.GetQueryable()
-                    .FirstOrDefault(x => x.ApplicationTenantId == tenantId && x.Date == entityDate && x.Url == pageGroup.Key);
+                var entity = await repository.FirstOrDefaultAsync(new DailyPagesForTenantSpecification(tenantId, entityDate, pageGroup.Key), cancellationToken);
 
                 if (entity == null)
                 {
@@ -165,15 +165,14 @@ namespace Churchee.Module.Dashboard.Jobs
             }
         }
 
-        private async Task UpdateDailyReferrers(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateDailyReferrers(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
         {
             var repository = _dataStore.GetRepository<AnalyticsDailyReferrers>();
             var entityDate = DateOnly.FromDateTime(date);
 
             foreach (var referrerGroup in tenantGroup.GroupBy(x => x.Referrer))
             {
-                var entity = repository.GetQueryable()
-                    .FirstOrDefault(x => x.ApplicationTenantId == tenantId && x.Date == entityDate && x.Referrer == referrerGroup.Key);
+                var entity = await repository.FirstOrDefaultAsync(new DailyRererersForTenantSpecification(tenantId, entityDate, referrerGroup.Key), cancellationToken);
 
                 if (entity == null)
                 {
@@ -189,15 +188,14 @@ namespace Churchee.Module.Dashboard.Jobs
             }
         }
 
-        private async Task UpdateHourlyAnalytics(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup)
+        private async Task UpdateHourlyAnalytics(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
         {
             var repository = _dataStore.GetRepository<AnalyticsHourly>();
             var entityDate = DateOnly.FromDateTime(date);
 
             foreach (var hourlyGroup in tenantGroup.GroupBy(x => x.HourOfDay))
             {
-                var entity = repository.GetQueryable()
-                    .FirstOrDefault(x => x.ApplicationTenantId == tenantId && x.Date == entityDate && x.HourOfDay == hourlyGroup.Key);
+                var entity = await repository.FirstOrDefaultAsync(new HourlyAnalyticsForTenantSpecification(tenantId, entityDate, hourlyGroup.Key), cancellationToken);
 
                 if (entity == null)
                 {

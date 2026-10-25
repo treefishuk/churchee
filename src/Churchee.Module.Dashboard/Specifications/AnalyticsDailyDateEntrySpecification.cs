@@ -6,11 +6,11 @@ namespace Churchee.Module.Dashboard.Specifications
     internal class AnalyticsDailyDateEntrySpecification : Specification<AnalyticsDaily>
     {
 
-        public AnalyticsDailyDateEntrySpecification(DateOnly startDate, Guid applicationTenantId)
+        public AnalyticsDailyDateEntrySpecification(DateOnly date, Guid applicationTenantId)
         {
             Query
-                .AsNoTracking()
-                .Where(x => x.Date == startDate && x.ApplicationTenantId == applicationTenantId);
+                .IgnoreQueryFilters()
+                .Where(x => x.Date == date && x.ApplicationTenantId == applicationTenantId);
         }
     }
 }
