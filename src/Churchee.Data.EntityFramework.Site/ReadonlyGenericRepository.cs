@@ -50,6 +50,7 @@ namespace Churchee.Data.EntityFramework.Site
 
         public override async Task BulkInsertOrUpdateAsync(
             IList<T> entities,
+            IList<string> updateByProperties,
             CancellationToken cancellationToken)
         {
 

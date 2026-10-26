@@ -344,5 +344,10 @@ namespace Churchee.Module.Settings.Tests.Store
         {
             throw new NotImplementedException();
         }
+
+        public Task BulkInsertOrUpdateAsync(IList<T> entities, IList<string> updateByProperties, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Churchee.Module.Dashboard.Specifications
             Query
                 .IgnoreQueryFilters()
                 .AsNoTracking()
-                .Where(x => x.ViewedAt > startDate)
+                .Where(x => x.ViewedAt >= startDate)
                 .OrderBy(x => x.ViewedAt)
                 .ThenBy(x => x.Id)
                 .Skip(skip)

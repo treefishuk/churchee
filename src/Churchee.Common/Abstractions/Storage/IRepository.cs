@@ -76,6 +76,6 @@ namespace Churchee.Common.Abstractions.Storage
 
         Task<DataTableResponse<TResult>> GetDataTableResponseAsync<TResult>(ISpecification<T> specification, string orderBy, string orderByDir, int skip, int take, Expression<Func<T, TResult>> selector, CancellationToken cancellationToken);
 
-        Task BulkInsertOrUpdateAsync(IList<T> entities, CancellationToken cancellationToken);
+        Task BulkInsertOrUpdateAsync(IList<T> entities, IList<string> updateByProperties, CancellationToken cancellationToken);
     }
 }

@@ -193,6 +193,7 @@ namespace Churchee.Data.EntityFramework.Shared
 
         public virtual async Task BulkInsertOrUpdateAsync(
             IList<T> entities,
+            IList<string> updateByProperties,
             CancellationToken cancellationToken)
         {
 
@@ -201,8 +202,14 @@ namespace Churchee.Data.EntityFramework.Shared
                 return;
             }
 
+            var config = new BulkConfig
+            {
+                UpdateByProperties = updateByProperties.ToList()
+            };
+
             await _dbContext.BulkInsertOrUpdateAsync(
                 entities,
+                config,
                 cancellationToken: cancellationToken);
         }
     }

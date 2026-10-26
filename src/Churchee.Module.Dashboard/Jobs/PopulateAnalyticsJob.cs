@@ -21,18 +21,13 @@ namespace Churchee.Module.Dashboard.Jobs
 
             var pageViewStartDate = lastProcessedDate == DateOnly.MinValue
                 ? DateTime.MinValue
-                : lastProcessedDate.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+                : lastProcessedDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
 
             var pageViewRepository = _dataStore.GetRepository<PageView>();
 
             const int batchSize = 1000;
 
             var skip = 0;
-            var processedDailyAnalytics = new HashSet<(Guid ApplicationTenantId, DateOnly Date)>();
-            var processedDailyDevices = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Device)>();
-            var processedDailyPages = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Url)>();
-            var processedDailyReferrers = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Referrer)>();
-            var processedHourlyAnalytics = new HashSet<(Guid ApplicationTenantId, DateOnly Date, int HourOfDay)>();
 
             while (true)
             {
@@ -63,6 +58,11 @@ namespace Churchee.Module.Dashboard.Jobs
                 var dailyPages = new List<AnalyticsDailyPages>();
                 var dailyReferrers = new List<AnalyticsDailyReferrers>();
                 var hourlyAnalytics = new List<AnalyticsHourly>();
+                var dailyAnalyticsKeys = new HashSet<(Guid ApplicationTenantId, DateOnly Date)>();
+                var dailyDevicesKeys = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Device)>();
+                var dailyPagesKeys = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Url)>();
+                var dailyReferrerKeys = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Referrer)>();
+                var hourlyAnalyticsKeys = new HashSet<(Guid ApplicationTenantId, DateOnly Date, int HourOfDay)>();
 
                 foreach (var dateGroup in datePageViews
                     .GroupBy(x => x.Date)
@@ -87,7 +87,7 @@ namespace Churchee.Module.Dashboard.Jobs
 
                         var entityDate = DateOnly.FromDateTime(date);
                         var dailyAnalyticsKey = (tenantId, entityDate);
-                        if (!processedDailyAnalytics.Add(dailyAnalyticsKey))
+                        if (!dailyAnalyticsKeys.Add(dailyAnalyticsKey))
                         {
                             continue;
                         }
@@ -103,7 +103,7 @@ namespace Churchee.Module.Dashboard.Jobs
                         foreach (var deviceGroup in tenantGroup.GroupBy(x => x.Device))
                         {
                             var deviceKey = (tenantId, entityDate, deviceGroup.Key);
-                            if (!processedDailyDevices.Add(deviceKey))
+                            if (!dailyDevicesKeys.Add(deviceKey))
                             {
                                 continue;
                             }
@@ -119,7 +119,7 @@ namespace Churchee.Module.Dashboard.Jobs
                         foreach (var pageGroup in tenantGroup.GroupBy(x => x.Url))
                         {
                             var pageKey = (tenantId, entityDate, pageGroup.Key);
-                            if (!processedDailyPages.Add(pageKey))
+                            if (!dailyPagesKeys.Add(pageKey))
                             {
                                 continue;
                             }
@@ -135,7 +135,7 @@ namespace Churchee.Module.Dashboard.Jobs
                         foreach (var referrerGroup in tenantGroup.GroupBy(x => x.Referrer))
                         {
                             var referrerKey = (tenantId, entityDate, referrerGroup.Key);
-                            if (!processedDailyReferrers.Add(referrerKey))
+                            if (!dailyReferrerKeys.Add(referrerKey))
                             {
                                 continue;
                             }
@@ -150,8 +150,8 @@ namespace Churchee.Module.Dashboard.Jobs
 
                         foreach (var hourlyGroup in tenantGroup.GroupBy(x => x.HourOfDay))
                         {
-                            var hourlyKey = (tenantId, entityDate, hourlyGroup.Key);
-                            if (!processedHourlyAnalytics.Add(hourlyKey))
+                            var hourlyAnalyticsKey = (tenantId, entityDate, hourlyGroup.Key);
+                            if (!hourlyAnalyticsKeys.Add(hourlyAnalyticsKey))
                             {
                                 continue;
                             }
@@ -194,27 +194,63 @@ namespace Churchee.Module.Dashboard.Jobs
         {
             if (dailyAnalytics.Count > 0)
             {
-                await _dataStore.GetRepository<AnalyticsDaily>().BulkInsertOrUpdateAsync(dailyAnalytics, cancellationToken);
+
+                var updateByProperties = new List<string>
+                {
+                    nameof(AnalyticsDaily.ApplicationTenantId),
+                    nameof(AnalyticsDaily.Date),
+                };
+
+                await _dataStore.GetRepository<AnalyticsDaily>().BulkInsertOrUpdateAsync(dailyAnalytics, updateByProperties, cancellationToken);
             }
 
             if (dailyDevices.Count > 0)
             {
-                await _dataStore.GetRepository<AnalyticsDailyDevices>().BulkInsertOrUpdateAsync(dailyDevices, cancellationToken);
+                var updateByProperties = new List<string>
+                {
+                    nameof(AnalyticsDailyDevices.ApplicationTenantId),
+                    nameof(AnalyticsDailyDevices.Date),
+                    nameof(AnalyticsDailyDevices.Device)
+                };
+
+                await _dataStore.GetRepository<AnalyticsDailyDevices>().BulkInsertOrUpdateAsync(dailyDevices, updateByProperties, cancellationToken);
             }
 
             if (dailyPages.Count > 0)
             {
-                await _dataStore.GetRepository<AnalyticsDailyPages>().BulkInsertOrUpdateAsync(dailyPages, cancellationToken);
+
+                var updateByProperties = new List<string>
+                {
+                    nameof(AnalyticsDailyPages.ApplicationTenantId),
+                    nameof(AnalyticsDailyPages.Date),
+                    nameof(AnalyticsDailyPages.Url)
+                };
+
+                await _dataStore.GetRepository<AnalyticsDailyPages>().BulkInsertOrUpdateAsync(dailyPages, updateByProperties, cancellationToken);
             }
 
             if (dailyReferrers.Count > 0)
             {
-                await _dataStore.GetRepository<AnalyticsDailyReferrers>().BulkInsertOrUpdateAsync(dailyReferrers, cancellationToken);
+                var updateByProperties = new List<string>
+                {
+                    nameof(AnalyticsDailyReferrers.ApplicationTenantId),
+                    nameof(AnalyticsDailyPages.Date),
+                    nameof(AnalyticsDailyReferrers.Referrer)
+                };
+
+                await _dataStore.GetRepository<AnalyticsDailyReferrers>().BulkInsertOrUpdateAsync(dailyReferrers, updateByProperties, cancellationToken);
             }
 
             if (hourlyAnalytics.Count > 0)
             {
-                await _dataStore.GetRepository<AnalyticsHourly>().BulkInsertOrUpdateAsync(hourlyAnalytics, cancellationToken);
+                var updateByProperties = new List<string>
+                {
+                    nameof(AnalyticsHourly.ApplicationTenantId),
+                    nameof(AnalyticsHourly.Date),
+                    nameof(AnalyticsHourly.HourOfDay)
+                };
+
+                await _dataStore.GetRepository<AnalyticsHourly>().BulkInsertOrUpdateAsync(hourlyAnalytics, updateByProperties, cancellationToken);
             }
         }
 
