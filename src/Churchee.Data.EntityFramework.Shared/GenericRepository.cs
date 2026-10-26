@@ -3,6 +3,7 @@ using Ardalis.Specification.EntityFrameworkCore;
 using Churchee.Common.Abstractions;
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Common.Abstractions.Storage;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
@@ -187,6 +188,29 @@ namespace Churchee.Data.EntityFramework.Shared
         public async Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         {
             return await _specificationEvaluator.GetQuery(GetQueryable(), specification).AnyAsync(cancellationToken);
+        }
+
+
+        public virtual async Task BulkInsertOrUpdateAsync(
+            IList<T> entities,
+            IList<string> updateByProperties,
+            CancellationToken cancellationToken)
+        {
+
+            if (entities == null || entities.Count == 0)
+            {
+                return;
+            }
+
+            var config = new BulkConfig
+            {
+                UpdateByProperties = updateByProperties.ToList()
+            };
+
+            await _dbContext.BulkInsertOrUpdateAsync(
+                entities,
+                config,
+                cancellationToken: cancellationToken);
         }
     }
 }
