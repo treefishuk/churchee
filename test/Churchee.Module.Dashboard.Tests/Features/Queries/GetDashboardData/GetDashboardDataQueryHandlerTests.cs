@@ -229,6 +229,57 @@ namespace Churchee.Module.Dashboard.Tests.Features.Queries
             Assert.Equal(1, today.ReturningVisitors);
         }
 
+        [Fact]
+        public async Task PopulateAnalyticsJob_Does_Not_Reprocess_Already_Processed_Date()
+        {
+            var tenantId = Ids.TenantId;
+            var now = DateTime.UtcNow.Date;
+
+            var optionsBuilder = new DbContextOptionsBuilder<DashboardDataTestDbContext>();
+            optionsBuilder.UseSqlServer(_msSqlContainer.GetConnectionString());
+
+            var dbContext = new DashboardDataTestDbContext(optionsBuilder.Options);
+            var dataStore = new AdminDataStore(dbContext, _mockHttpContextAccessor.Object);
+
+            var pageViews = new[]
+            {
+                new PageView(tenantId)
+                {
+                    Url = "/",
+                    UserAgent = "Mozilla/5.0",
+                    IpAddress = "192.168.0.1",
+                    ViewedAt = now,
+                    Device = "desktop",
+                    Deleted = false
+                },
+                new PageView(tenantId)
+                {
+                    Url = "/",
+                    UserAgent = "Mozilla/5.0",
+                    IpAddress = "192.168.0.2",
+                    ViewedAt = now.AddHours(1),
+                    Device = "desktop",
+                    Deleted = false
+                }
+            };
+
+            dataStore.GetRepository<PageView>().AddRange(pageViews);
+            await dataStore.SaveChangesAsync(CancellationToken.None);
+
+            var job = new PopulateAnalyticsJob(dataStore);
+
+            await job.ExecuteAsync(CancellationToken.None);
+            await job.ExecuteAsync(CancellationToken.None);
+
+            var analytics = await dataStore.GetRepository<AnalyticsDaily>().GetListAsync(
+                new DailyAnalyticsSpecification(DateOnly.FromDateTime(now)),
+                cancellationToken: CancellationToken.None);
+
+            var day = analytics.Single(x => x.Date == DateOnly.FromDateTime(now));
+            Assert.Equal(2, day.PageViews);
+            Assert.Equal(2, day.UniqueVisitors);
+            Assert.Equal(0, day.ReturningVisitors);
+        }
 
         private async Task SetupCountsDataSet(Guid appTenantId, CancellationToken cancellationToken)
         {

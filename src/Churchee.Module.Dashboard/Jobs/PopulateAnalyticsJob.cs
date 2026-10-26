@@ -19,17 +19,25 @@ namespace Churchee.Module.Dashboard.Jobs
         {
             var lastProcessedDate = await GetLastProcessedDate(cancellationToken);
 
-            var lastProcessedDateTime = lastProcessedDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+            var pageViewStartDate = lastProcessedDate == DateOnly.MinValue
+                ? DateTime.MinValue
+                : lastProcessedDate.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
 
             var pageViewRepository = _dataStore.GetRepository<PageView>();
 
-            const int batchSize = 100;
+            const int batchSize = 1000;
+
             var skip = 0;
+            var processedDailyAnalytics = new HashSet<(Guid ApplicationTenantId, DateOnly Date)>();
+            var processedDailyDevices = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Device)>();
+            var processedDailyPages = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Url)>();
+            var processedDailyReferrers = new HashSet<(Guid ApplicationTenantId, DateOnly Date, string Referrer)>();
+            var processedHourlyAnalytics = new HashSet<(Guid ApplicationTenantId, DateOnly Date, int HourOfDay)>();
 
             while (true)
             {
                 var datePageViews = await pageViewRepository
-                    .GetListAsync(new PageViewsAfterDateBatchSpecification(lastProcessedDateTime, batchSize, skip),
+                    .GetListAsync(new PageViewsAfterDateBatchSpecification(pageViewStartDate, batchSize, skip),
                         x => new PageViewAggregate
                         {
                             ApplicationTenantId = x.ApplicationTenantId,
@@ -50,6 +58,11 @@ namespace Churchee.Module.Dashboard.Jobs
                 skip += datePageViews.Count;
 
                 var previousIpsByTenant = new Dictionary<Guid, HashSet<string>>();
+                var dailyAnalytics = new List<AnalyticsDaily>();
+                var dailyDevices = new List<AnalyticsDailyDevices>();
+                var dailyPages = new List<AnalyticsDailyPages>();
+                var dailyReferrers = new List<AnalyticsDailyReferrers>();
+                var hourlyAnalytics = new List<AnalyticsHourly>();
 
                 foreach (var dateGroup in datePageViews
                     .GroupBy(x => x.Date)
@@ -72,18 +85,91 @@ namespace Churchee.Module.Dashboard.Jobs
                         int returningVisitors = currentIps.Intersect(previousIps).Count();
                         int uniqueVisitors = currentIps.Count;
 
-                        await UpdateDailyAnalytics(tenantId, date, tenantGroup.Count(), uniqueVisitors, returningVisitors, cancellationToken);
-                        await UpdateDailyDevices(tenantId, date, tenantGroup, cancellationToken);
-                        await UpdateDailyPages(tenantId, date, tenantGroup, cancellationToken);
-                        await UpdateDailyReferrers(tenantId, date, tenantGroup, cancellationToken);
-                        await UpdateHourlyAnalytics(tenantId, date, tenantGroup, cancellationToken);
+                        var entityDate = DateOnly.FromDateTime(date);
+                        var dailyAnalyticsKey = (tenantId, entityDate);
+                        if (!processedDailyAnalytics.Add(dailyAnalyticsKey))
+                        {
+                            continue;
+                        }
+
+                        dailyAnalytics.Add(new AnalyticsDaily(tenantId)
+                        {
+                            Date = entityDate,
+                            PageViews = tenantGroup.Count(),
+                            UniqueVisitors = uniqueVisitors,
+                            ReturningVisitors = returningVisitors
+                        });
+
+                        foreach (var deviceGroup in tenantGroup.GroupBy(x => x.Device))
+                        {
+                            var deviceKey = (tenantId, entityDate, deviceGroup.Key);
+                            if (!processedDailyDevices.Add(deviceKey))
+                            {
+                                continue;
+                            }
+
+                            dailyDevices.Add(new AnalyticsDailyDevices(tenantId)
+                            {
+                                Date = entityDate,
+                                Device = deviceGroup.Key,
+                                Views = deviceGroup.Count()
+                            });
+                        }
+
+                        foreach (var pageGroup in tenantGroup.GroupBy(x => x.Url))
+                        {
+                            var pageKey = (tenantId, entityDate, pageGroup.Key);
+                            if (!processedDailyPages.Add(pageKey))
+                            {
+                                continue;
+                            }
+
+                            dailyPages.Add(new AnalyticsDailyPages(tenantId)
+                            {
+                                Date = entityDate,
+                                Url = pageGroup.Key,
+                                Views = pageGroup.Count()
+                            });
+                        }
+
+                        foreach (var referrerGroup in tenantGroup.GroupBy(x => x.Referrer))
+                        {
+                            var referrerKey = (tenantId, entityDate, referrerGroup.Key);
+                            if (!processedDailyReferrers.Add(referrerKey))
+                            {
+                                continue;
+                            }
+
+                            dailyReferrers.Add(new AnalyticsDailyReferrers(tenantId)
+                            {
+                                Date = entityDate,
+                                Referrer = referrerGroup.Key,
+                                Views = referrerGroup.Count()
+                            });
+                        }
+
+                        foreach (var hourlyGroup in tenantGroup.GroupBy(x => x.HourOfDay))
+                        {
+                            var hourlyKey = (tenantId, entityDate, hourlyGroup.Key);
+                            if (!processedHourlyAnalytics.Add(hourlyKey))
+                            {
+                                continue;
+                            }
+
+                            hourlyAnalytics.Add(new AnalyticsHourly(tenantId)
+                            {
+                                Date = entityDate,
+                                HourOfDay = hourlyGroup.Key,
+                                Views = hourlyGroup.Count()
+                            });
+                        }
 
                         previousIps.UnionWith(currentIps);
                         previousIpsByTenant[tenantId] = previousIps;
                     }
                 }
 
-                await _dataStore.SaveChangesAsync(cancellationToken);
+                await BulkInsertOrUpdateAnalyticsAsync(dailyAnalytics, dailyDevices, dailyPages, dailyReferrers, hourlyAnalytics, cancellationToken);
 
             }
 
@@ -98,128 +184,37 @@ namespace Churchee.Module.Dashboard.Jobs
             return latestDate == default ? DateOnly.MinValue : latestDate;
         }
 
-        private async Task UpdateDailyAnalytics(Guid tenantId, DateTime date, int pageViews, int uniqueVisitors, int returningVisitors, CancellationToken cancellationToken)
+        private async Task BulkInsertOrUpdateAnalyticsAsync(
+            IList<AnalyticsDaily> dailyAnalytics,
+            IList<AnalyticsDailyDevices> dailyDevices,
+            IList<AnalyticsDailyPages> dailyPages,
+            IList<AnalyticsDailyReferrers> dailyReferrers,
+            IList<AnalyticsHourly> hourlyAnalytics,
+            CancellationToken cancellationToken)
         {
-            var repository = _dataStore.GetRepository<AnalyticsDaily>();
-
-            var entityDate = DateOnly.FromDateTime(date);
-
-            var entity = await repository.FirstOrDefaultAsync(new AnalyticsDailyDateEntrySpecification(entityDate, tenantId), cancellationToken);
-
-            if (entity == null)
+            if (dailyAnalytics.Count > 0)
             {
-                entity = new AnalyticsDaily(tenantId)
-                {
-                    Date = entityDate
-                };
-                repository.Create(entity);
+                await _dataStore.GetRepository<AnalyticsDaily>().BulkInsertOrUpdateAsync(dailyAnalytics, cancellationToken);
             }
 
-            entity.PageViews += pageViews;
-            entity.UniqueVisitors += uniqueVisitors;
-            entity.ReturningVisitors += returningVisitors;
-        }
-
-        private async Task UpdateDailyDevices(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
-        {
-            var repository = _dataStore.GetRepository<AnalyticsDailyDevices>();
-
-            var entityDate = DateOnly.FromDateTime(date);
-
-            foreach (var deviceGroup in tenantGroup.GroupBy(x => x.Device))
+            if (dailyDevices.Count > 0)
             {
-                var entity = await repository
-                    .FirstOrDefaultAsync(new DailyDevicesForDateSpecification(tenantId, entityDate, deviceGroup.Key), cancellationToken);
-
-                if (entity == null)
-                {
-                    entity = new AnalyticsDailyDevices(tenantId)
-                    {
-                        Date = entityDate,
-                        Device = deviceGroup.Key
-                    };
-                    repository.Create(entity);
-                }
-
-                entity.Views += deviceGroup.Count();
+                await _dataStore.GetRepository<AnalyticsDailyDevices>().BulkInsertOrUpdateAsync(dailyDevices, cancellationToken);
             }
-        }
 
-        /// <summary>
-        /// THis ones problematic
-        /// </summary>
-        /// <param name="tenantId"></param>
-        /// <param name="date"></param>
-        /// <param name="tenantGroup"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        private async Task UpdateDailyPages(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
-        {
-            var repository = _dataStore.GetRepository<AnalyticsDailyPages>();
-
-            var entityDate = DateOnly.FromDateTime(date);
-
-            foreach (var pageGroup in tenantGroup.GroupBy(x => x.Url))
+            if (dailyPages.Count > 0)
             {
-                var entity = await repository.FirstOrDefaultAsync(new DailyPagesForTenantSpecification(tenantId, entityDate, pageGroup.Key), cancellationToken);
-
-                if (entity == null)
-                {
-                    entity = new AnalyticsDailyPages(tenantId)
-                    {
-                        Date = entityDate,
-                        Url = pageGroup.Key
-                    };
-                    repository.Create(entity);
-                }
-
-                entity.Views += pageGroup.Count();
+                await _dataStore.GetRepository<AnalyticsDailyPages>().BulkInsertOrUpdateAsync(dailyPages, cancellationToken);
             }
-        }
 
-        private async Task UpdateDailyReferrers(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
-        {
-            var repository = _dataStore.GetRepository<AnalyticsDailyReferrers>();
-            var entityDate = DateOnly.FromDateTime(date);
-
-            foreach (var referrerGroup in tenantGroup.GroupBy(x => x.Referrer))
+            if (dailyReferrers.Count > 0)
             {
-                var entity = await repository.FirstOrDefaultAsync(new DailyRererersForTenantSpecification(tenantId, entityDate, referrerGroup.Key), cancellationToken);
-
-                if (entity == null)
-                {
-                    entity = new AnalyticsDailyReferrers(tenantId)
-                    {
-                        Date = entityDate,
-                        Referrer = referrerGroup.Key
-                    };
-                    repository.Create(entity);
-                }
-
-                entity.Views += referrerGroup.Count();
+                await _dataStore.GetRepository<AnalyticsDailyReferrers>().BulkInsertOrUpdateAsync(dailyReferrers, cancellationToken);
             }
-        }
 
-        private async Task UpdateHourlyAnalytics(Guid tenantId, DateTime date, IGrouping<Guid, PageViewAggregate> tenantGroup, CancellationToken cancellationToken)
-        {
-            var repository = _dataStore.GetRepository<AnalyticsHourly>();
-            var entityDate = DateOnly.FromDateTime(date);
-
-            foreach (var hourlyGroup in tenantGroup.GroupBy(x => x.HourOfDay))
+            if (hourlyAnalytics.Count > 0)
             {
-                var entity = await repository.FirstOrDefaultAsync(new HourlyAnalyticsForTenantSpecification(tenantId, entityDate, hourlyGroup.Key), cancellationToken);
-
-                if (entity == null)
-                {
-                    entity = new AnalyticsHourly(tenantId)
-                    {
-                        Date = entityDate,
-                        HourOfDay = hourlyGroup.Key
-                    };
-                    repository.Create(entity);
-                }
-
-                entity.Views += hourlyGroup.Count();
+                await _dataStore.GetRepository<AnalyticsHourly>().BulkInsertOrUpdateAsync(hourlyAnalytics, cancellationToken);
             }
         }
 

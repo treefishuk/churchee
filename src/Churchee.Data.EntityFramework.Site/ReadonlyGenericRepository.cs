@@ -47,5 +47,13 @@ namespace Churchee.Data.EntityFramework.Site
         {
             throw new InvalidOperationException(NotSupportedMessage);
         }
+
+        public override async Task BulkInsertOrUpdateAsync(
+            IList<T> entities,
+            CancellationToken cancellationToken)
+        {
+
+            throw new InvalidOperationException(NotSupportedMessage);
+        }
     }
 }
