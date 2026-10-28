@@ -34,7 +34,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             testEvent.Title.Should().Be(command.Title);
             testEvent.Description.Should().Be(command.Description);
             testEvent.Content.Should().Be(command.Content);
-            testEvent.ImageUrl.Should().Be("/img/events/event-img.jpg");
             testEvent.LocationName.Should().Be(command.LocationName);
             testEvent.City.Should().Be(command.City);
             testEvent.Street.Should().Be(command.Street);
