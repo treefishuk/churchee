@@ -58,9 +58,18 @@ else if (dataType == DataTypes.ImageUpload)
     var upload = Prop.GetValue(InputModel) as Upload;
     if (upload != null)
     {
-        var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select image" } };
+        <RadzenUpload Name="@Prop.Name"
+                      class="w-100"
+                      Multiple="false"
+                      Auto="false"
+                      Accept="image/*"
+                      Change="@(args => OnImageUploadChangeAsync(upload, args))"
+                      Error="@(args => OnFileError(args, "Upload"))" />
 
-        <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) Error=@(args => OnFileError(args, "FileInput")) Accept="image/*" InputAttributes="inputAttributes" />
+        @if (!string.IsNullOrWhiteSpace(upload.FileName))
+        {
+            <div class="rz-mt-2 rz-text-secondary">@upload.FileName</div>
+        }
     }
 }
 else if (dataType == DataTypes.ChunkedImageUpload)
@@ -348,6 +357,29 @@ else
         info.SetValue(InputModel, dropdown);
 
         await OnValueChanged.InvokeAsync(null);
+    }
+
+    async Task OnImageUploadChangeAsync(Upload upload, UploadChangeEventArgs args)
+    {
+        var file = args.Files?.FirstOrDefault();
+
+        if (file == null)
+        {
+            return;
+        }
+
+        upload.File = file;
+        upload.FileName = file.Name;
+        upload.Size = file.Size;
+        upload.ContentType = file.ContentType;
+        upload.Value = string.Empty;
+
+        using var stream = file.OpenReadStream(file.Size);
+        using var ms = new MemoryStream();
+        await stream.CopyToAsync(ms);
+        upload.FileBytes = ms.ToArray();
+
+        await OnFileChangeAsync(upload);
     }
 
     async Task OnFileChangeAsync(Upload upload)

@@ -53,6 +53,16 @@ namespace Churchee.Module.Events.Entities
             Content = content;
         }
 
+        public void Publish()
+        {
+            Published = true;
+        }
+
+        public void Unpublish()
+        {
+            Published = false;
+        }
+
         public void AddDate(Guid id, DateTime? start, DateTime? end)
         {
             AddDate(id, start, end, string.Empty);

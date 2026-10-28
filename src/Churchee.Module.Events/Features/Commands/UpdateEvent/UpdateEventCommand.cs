@@ -16,7 +16,7 @@ namespace Churchee.Module.Events.Features.Commands
 
         public string ImageFileName { get; private set; }
 
-        public string Base64Image { get; private set; }
+        public byte[] ImageData { get; private set; } = Array.Empty<byte>();
 
         public string LocationName { get; private set; }
 
@@ -68,9 +68,9 @@ namespace Churchee.Module.Events.Features.Commands
                 return this;
             }
 
-            public Builder SetBase64Image(string base64Image)
+            public Builder SetImageData(byte[] imageData)
             {
-                _command.Base64Image = base64Image ?? string.Empty;
+                _command.ImageData = imageData ?? Array.Empty<byte>();
                 return this;
             }
 

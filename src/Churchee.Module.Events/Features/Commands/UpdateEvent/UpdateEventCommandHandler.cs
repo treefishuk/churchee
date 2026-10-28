@@ -89,13 +89,11 @@ namespace Churchee.Module.Events.Features.Commands
         {
             string imagePath = string.Empty;
 
-            if (!string.IsNullOrEmpty(request.ImageFileName))
+            if (!string.IsNullOrEmpty(request.ImageFileName) && request.ImageData.Length > 0)
             {
                 string fileName = Path.GetFileNameWithoutExtension(request.ImageFileName);
 
-                byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
-
-                using var ms = new MemoryStream(data);
+                using var ms = new MemoryStream(request.ImageData);
 
                 using var webpStream = await _imageProcessor.ConvertToWebP(ms, cancellationToken);
 
