@@ -90,8 +90,8 @@ namespace Churchee.ImageProcessing
             {
                 return new WebpEncoder()
                 {
-                    FileFormat = WebpFileFormatType.Lossy,
-                    Quality = 75,
+                    FileFormat = WebpFileFormatType.Lossless,
+                    Quality = 100,
                     Method = WebpEncodingMethod.BestQuality,
                     FilterStrength = 60,
                     NearLossless = false,
@@ -146,24 +146,34 @@ namespace Churchee.ImageProcessing
 
         public async Task<Stream> ConvertToWebP(Stream stream, CancellationToken cancellationToken)
         {
-            var imageInfo = await Image.IdentifyAsync(stream, cancellationToken);
-
-            int width = imageInfo.Width;
-
-            if (width > 1920)
+            if (stream.CanSeek)
             {
-                width = 1920;
+                stream.Position = 0;
             }
 
-            stream.Position = 0;
+            using var image = await Image.LoadAsync(stream, cancellationToken);
 
-            var fullQualityEncoder = new WebpEncoder()
+            if (image.Width > 1920 || image.Height > 1920)
             {
-                FileFormat = WebpFileFormatType.Lossless,
-                Quality = 100,
+                image.Mutate(x => x.Resize(new ResizeOptions
+                {
+                    Size = new Size(1920, 1920),
+                    Mode = ResizeMode.Max,
+                }));
+            }
+
+            var output = new MemoryStream();
+            var encoder = new WebpEncoder
+            {
+                FileFormat = WebpFileFormatType.Lossy,
+                Quality = 70,
+                Method = WebpEncodingMethod.Fastest,
+                NearLossless = false,
             };
 
-            return await Task.Run(() => Process(stream, width, 0, fullQualityEncoder), cancellationToken);
+            await image.SaveAsync(output, encoder, cancellationToken);
+            output.Position = 0;
+            return output;
         }
 
         public async Task<string> ConvertTempImageToFullImage(string path, string fileName, string folderName, Guid applicationTenantId, CancellationToken cancellationToken)

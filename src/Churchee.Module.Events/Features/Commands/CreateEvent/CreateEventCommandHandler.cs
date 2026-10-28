@@ -4,6 +4,7 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
+using Churchee.Module.Events.Jobs;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
@@ -34,8 +35,6 @@ namespace Churchee.Module.Events.Features.Commands
         public async Task<CommandResponse> Handle(CreateEventCommand request, CancellationToken cancellationToken)
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
-
-            string imagePath = await CreateImageAndReturnPath(request, applicationTenantId, cancellationToken);
 
             var pageTypeId = _dataStore.GetRepository<PageType>()
                 .ApplySpecification(new PageTypeFromSystemKeySpecification(PageTypes.EventDetailPageTypeId, applicationTenantId))
@@ -75,8 +74,7 @@ namespace Churchee.Module.Events.Features.Commands
                 .SetLatitude(request.Latitude)
                 .SetLongitude(request.Longitude)
                 .SetDates(request.Start, request.End)
-                .SetImageUrl(imagePath)
-                .SetPublished(true)
+                .SetPublished(string.IsNullOrEmpty(request.ImageFileName))
                 .Build();
 
             SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore.GetRepository<Event>());
@@ -85,34 +83,12 @@ namespace Churchee.Module.Events.Features.Commands
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
-            return new CommandResponse();
-        }
-
-        private async Task<string> CreateImageAndReturnPath(CreateEventCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
-        {
-
-            string imagePath = string.Empty;
-
-            if (!string.IsNullOrEmpty(request.ImageFileName))
+            if (!string.IsNullOrEmpty(request.ImageFileName) && request.ImageData.Length > 0)
             {
-                string fileName = Path.GetFileNameWithoutExtension(request.ImageFileName);
-
-                byte[] bytes = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
-
-                using var ms = new MemoryStream(bytes);
-
-                using var webpStream = await _imageProcessor.ConvertToWebP(ms, cancellationToken);
-
-                imagePath = $"/img/events/{fileName.ToDevName()}.webp";
-
-                string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webpStream, false, cancellationToken);
-
-                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, true, CancellationToken.None));
-
-                return finalImagePath;
+                _backgroundJobClient.Enqueue<EventImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, newEvent.Id, request.ImageFileName, request.ImageData, CancellationToken.None));
             }
 
-            return imagePath;
+            return new CommandResponse();
         }
     }
 }

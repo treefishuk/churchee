@@ -34,7 +34,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             testEvent.Title.Should().Be(command.Title);
             testEvent.Description.Should().Be(command.Description);
             testEvent.Content.Should().Be(command.Content);
-            testEvent.ImageUrl.Should().Be("/img/events/event-img.jpg");
             testEvent.LocationName.Should().Be(command.LocationName);
             testEvent.City.Should().Be(command.City);
             testEvent.Street.Should().Be(command.Street);
@@ -86,7 +85,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             string description = "Longer more descriptive text";
             string content = "Some meaningful content";
             string imageFileName = "event-img.jpg";
-            string base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAANSURBVBhXY2BgYPgPAAEEAQBwIGULAAAAAElFTkSuQmCC";
             string locationName = "Somewhere";
             string city = "Emerald City";
             string street = "Yellow Brick Road";
@@ -105,7 +103,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
                 .SetDescription(description)
                 .SetContent(content)
                 .SetImageFileName(imageFileName)
-                .SetBase64Image(base64Image)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)

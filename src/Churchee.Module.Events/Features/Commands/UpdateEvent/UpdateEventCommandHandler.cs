@@ -3,8 +3,8 @@ using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
-using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
+using Churchee.Module.Events.Jobs;
 using Churchee.Module.Events.Specifications;
 using Hangfire;
 
@@ -48,11 +48,9 @@ namespace Churchee.Module.Events.Features.Commands
 
             UpdateEventDates(request, entity);
 
-            string imagePath = await UpdateImageAndReturnPath(request, applicationTenantId, cancellationToken);
-
-            if (!string.IsNullOrEmpty(imagePath))
+            if (!string.IsNullOrEmpty(request.ImageFileName) && request.ImageData.Length > 0)
             {
-                entity.SetImageUrl(imagePath);
+                _backgroundJobClient.Enqueue<EventImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, entity.Id, request.ImageFileName, request.ImageData, CancellationToken.None));
             }
 
             await _dataStore.SaveChangesAsync(cancellationToken);
@@ -83,32 +81,6 @@ namespace Churchee.Module.Events.Features.Commands
             {
                 Event.RemoveDate(date);
             }
-        }
-
-        private async Task<string> UpdateImageAndReturnPath(UpdateEventCommand request, Guid applicationTenantId, CancellationToken cancellationToken)
-        {
-            string imagePath = string.Empty;
-
-            if (!string.IsNullOrEmpty(request.ImageFileName))
-            {
-                string fileName = Path.GetFileNameWithoutExtension(request.ImageFileName);
-
-                byte[] data = Convert.FromBase64String(request.Base64Image.Split(',')[1]);
-
-                using var ms = new MemoryStream(data);
-
-                using var webpStream = await _imageProcessor.ConvertToWebP(ms, cancellationToken);
-
-                imagePath = $"/img/events/{fileName.ToDevName()}.webp";
-
-                string finalImagePath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webpStream, false, cancellationToken);
-
-                _backgroundJobClient.Enqueue<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalImagePath, true, CancellationToken.None));
-
-                return finalImagePath;
-            }
-
-            return imagePath;
         }
     }
 }

@@ -15,7 +15,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             DateTime endDate = DateTime.Now.AddDays(3);
             string content = "Some meaningful content";
             string imageFileName = "event-img.jpg";
-            string base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAANSURBVBhXY2BgYPgPAAEEAQBwIGULAAAAAElFTkSuQmCC";
             string locationName = "Somewhere";
             string city = "Emerald City";
             string street = "Yellow Brick Road";
@@ -32,7 +31,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetEnd(endDate)
                 .SetContent(content)
                 .SetImageFileName(imageFileName)
-                .SetBase64Image(base64Image)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)
@@ -49,7 +47,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             cut.End.Should().Be(endDate);
             cut.Content.Should().Be(content);
             cut.ImageFileName.Should().Be(imageFileName);
-            cut.Base64Image.Should().Be(base64Image);
             cut.LocationName.Should().Be(locationName);
             cut.City.Should().Be(city);
             cut.Street.Should().Be(street);

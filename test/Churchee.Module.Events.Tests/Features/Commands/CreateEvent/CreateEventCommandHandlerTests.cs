@@ -40,7 +40,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             var endDate = DateTime.Now.AddDays(3);
             string content = "Some meaningful content";
             string imageFileName = "event-img.jpg";
-            string base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAANSURBVBhXY2BgYPgPAAEEAQBwIGULAAAAAElFTkSuQmCC";
             string locationName = "Somewhere";
             string city = "Emerald City";
             string street = "Yellow Brick Road";
@@ -56,7 +55,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetEnd(endDate)
                 .SetContent(content)
                 .SetImageFileName(imageFileName)
-                .SetBase64Image(base64Image)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)
@@ -75,6 +73,34 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             result.IsSuccess.Should().BeTrue();
         }
 
+
+        [Fact]
+        public async Task Handle_WhenImageProvided_SetsEventUnpublishedUntilImageProcessingCompletes()
+        {
+            _mockCurrentUser.Setup(s => s.GetApplicationTenantId()).ReturnsAsync(Guid.NewGuid());
+
+            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object, _mockImageProcessor.Object);
+
+            var command = new CreateEventCommand.Builder()
+                .SetTitle("My event")
+                .SetDescription("Description")
+                .SetStart(DateTime.Now.AddDays(2))
+                .SetEnd(DateTime.Now.AddDays(3))
+                .SetContent("Content")
+                .SetImageFileName("event-img.jpg")
+                .SetLocationName("Somewhere")
+                .SetCity("Emerald City")
+                .SetStreet("Yellow Brick Road")
+                .SetPostCode("WW0 0ZZ")
+                .SetCountry("Oz")
+                .SetLatitude(39.105092049099866m)
+                .SetLongitude(-94.62311716634233m)
+                .Build();
+
+            await cut.Handle(command, CancellationToken.None);
+
+            _mockEventRepository.Verify(r => r.Create(It.Is<Event>(e => e.Published == false)), Times.Once);
+        }
 
         [Fact]
         public async Task Handle_WhenUrlExists_AppendsSuffix()
@@ -99,7 +125,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             var endDate = DateTime.Now.AddDays(3);
             string content = "Some meaningful content";
             string imageFileName = "event-img.jpg";
-            string base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAANSURBVBhXY2BgYPgPAAEEAQBwIGULAAAAAElFTkSuQmCC";
             string locationName = "Somewhere";
             string city = "Emerald City";
             string street = "Yellow Brick Road";
@@ -115,7 +140,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetEnd(endDate)
                 .SetContent(content)
                 .SetImageFileName(imageFileName)
-                .SetBase64Image(base64Image)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)
@@ -155,7 +179,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             var endDate = DateTime.Now.AddDays(3);
             string content = "Some meaningful content";
             string imageFileName = "event-img.jpg";
-            string base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAANSURBVBhXY2BgYPgPAAEEAQBwIGULAAAAAElFTkSuQmCC";
             string locationName = "Somewhere";
             string city = "Emerald City";
             string street = "Yellow Brick Road";
@@ -171,7 +194,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetEnd(endDate)
                 .SetContent(content)
                 .SetImageFileName(imageFileName)
-                .SetBase64Image(base64Image)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)

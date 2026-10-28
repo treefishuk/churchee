@@ -1,8 +1,8 @@
 ﻿using Churchee.Common.Abstractions;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
-using Churchee.CQRS.Abstractions;
 using System.Linq.Dynamic.Core;
 
 namespace Churchee.Module.Events.Features.Queries
@@ -32,7 +32,7 @@ namespace Churchee.Module.Events.Features.Queries
                 selector: s => new GetListingQueryResponseItem
                 {
                     Id = s.Id,
-                    Active = true,
+                    Active = s.Published,
                     ImageUri = s.ImageUrl,
                     Title = s.Title,
                     CreatedDate = s.CreatedDate ?? DateTime.Now,

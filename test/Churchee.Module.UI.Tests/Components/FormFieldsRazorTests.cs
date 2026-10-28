@@ -115,11 +115,8 @@ namespace Churchee.Module.UI.Tests.Components
 
             var cut = GenrateClassUnderTest(inputModel);
 
-            cut.FindComponents<RadzenFileInput<string>>().Count.Should().Be(1);
-
-            var input = cut.FindComponent<RadzenFileInput<string>>();
-
-            input.Instance.Name.Should().Be(nameof(inputModel.Upload));
+            cut.FindAll("input[type='file']").Count.Should().Be(1);
+            cut.Markup.Contains("accept=\"image/*\"").Should().BeTrue();
         }
 
         [Fact]

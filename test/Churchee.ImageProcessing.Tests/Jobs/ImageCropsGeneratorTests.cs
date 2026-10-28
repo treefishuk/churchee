@@ -2,6 +2,8 @@
 using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Moq;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Churchee.ImageProcessing.Tests.Jobs
 {
@@ -19,73 +21,60 @@ namespace Churchee.ImageProcessing.Tests.Jobs
         }
 
         [Fact]
-        public async Task CreateCropsAsync_ShouldCallCreateImageSizeAndCreateImageCrop()
+        public async Task CreateCropsAsync_ShouldCreateAllResizeAndCropVariants()
         {
             // Arrange
             var applicationTenantId = Guid.NewGuid();
             string originalImagePath = "path/to/image.jpg";
             bool overrideExisting = true;
-
-            _imageProcessorMock.Setup(p => p.ResizeImageAsync(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MemoryStream());
-            _imageProcessorMock.Setup(p => p.CreateCropAsync(It.IsAny<Stream>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MemoryStream());
-
             var token = CancellationToken.None;
+
+            _blobStoreMock.Setup(b => b.GetReadStreamAsync(applicationTenantId, originalImagePath, token))
+                .ReturnsAsync(CreateImageStream());
 
             // Act
             await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, originalImagePath, overrideExisting, token);
 
             // Assert
-            _imageProcessorMock.Verify(p => p.ResizeImageAsync(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>(), token), Times.Exactly(7));
-            _imageProcessorMock.Verify(p => p.CreateCropAsync(It.IsAny<Stream>(), It.IsAny<int>(), It.IsAny<string>(), token), Times.Exactly(7));
+            _imageProcessorMock.Verify(p => p.ResizeImageAsync(It.IsAny<Stream>(), It.IsAny<int>(), 0, It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+            _imageProcessorMock.Verify(p => p.CreateCropAsync(It.IsAny<Stream>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
             _blobStoreMock.Verify(b => b.SaveAsync(applicationTenantId, It.IsAny<string>(), It.IsAny<Stream>(), overrideExisting, token), Times.Exactly(14));
         }
 
         [Fact]
-        public async Task CreateImageSize_ShouldCallResizeImageAndSaveAsync()
+        public async Task CreateCropsAsync_ShouldGenerateWebpOutputsForEachConfiguredVariant()
         {
             // Arrange
             var applicationTenantId = Guid.NewGuid();
             string fileName = "image";
             string folderPath = "path/to/";
             string extension = ".jpg";
-            int width = 200;
             bool overrideExisting = true;
-
-            _imageProcessorMock.Setup(p => p.ResizeImageAsync(It.IsAny<Stream>(), width, 0, extension, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MemoryStream());
-
             var token = CancellationToken.None;
+
+            _blobStoreMock.Setup(b => b.GetReadStreamAsync(applicationTenantId, $"{folderPath}{fileName}{extension}", token))
+                .ReturnsAsync(CreateImageStream());
 
             // Act
             await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, $"{folderPath}{fileName}{extension}", overrideExisting, token);
 
             // Assert
-            _imageProcessorMock.Verify(p => p.ResizeImageAsync(It.IsAny<Stream>(), width, 0, ".webp", token), Times.AtLeastOnce);
-            _blobStoreMock.Verify(b => b.SaveAsync(applicationTenantId, It.IsAny<string>(), It.IsAny<Stream>(), overrideExisting, token), Times.AtLeastOnce);
+            _blobStoreMock.Verify(b => b.SaveAsync(
+                applicationTenantId,
+                It.Is<string>(path => path.Contains("_t.webp") || path.Contains("_ct.webp") || path.Contains("_hd.webp") || path.Contains("_chd.webp")),
+                It.IsAny<Stream>(),
+                overrideExisting,
+                token), Times.AtLeast(1));
+            _blobStoreMock.Verify(b => b.SaveAsync(applicationTenantId, It.IsAny<string>(), It.IsAny<Stream>(), overrideExisting, token), Times.Exactly(14));
         }
 
-        [Fact]
-        public async Task CreateImageCrop_ShouldCallCreateCropAndSaveAsync()
+        private static MemoryStream CreateImageStream()
         {
-            // Arrange
-            var applicationTenantId = Guid.NewGuid();
-            string fileName = "image";
-            string folderPath = "path/to/";
-            string extension = ".jpg";
-            int width = 200;
-            bool overrideExisting = true;
-
-            _imageProcessorMock.Setup(p => p.CreateCropAsync(It.IsAny<Stream>(), width, extension, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MemoryStream());
-
-            // Act
-            await _imageCropsGenerator.CreateCropsAsync(applicationTenantId, $"{folderPath}{fileName}{extension}", overrideExisting, CancellationToken.None);
-
-            // Assert
-            _imageProcessorMock.Verify(p => p.CreateCropAsync(It.IsAny<Stream>(), width, ".webp", It.IsAny<CancellationToken>()), Times.AtLeastOnce);
-            _blobStoreMock.Verify(b => b.SaveAsync(applicationTenantId, It.IsAny<string>(), It.IsAny<Stream>(), overrideExisting, default), Times.AtLeastOnce);
+            var image = new Image<Rgba32>(1200, 800);
+            var stream = new MemoryStream();
+            image.SaveAsJpeg(stream);
+            stream.Position = 0;
+            return stream;
         }
     }
 }
