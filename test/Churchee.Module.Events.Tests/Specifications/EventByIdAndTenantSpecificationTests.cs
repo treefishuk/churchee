@@ -32,7 +32,7 @@ namespace Churchee.Module.Events.Tests.Specifications
 
             var events = new List<Event> { testEvent, testEvent2 };
 
-            var specification = new EventByIdAndTenantSpecification(testEvent.Id, tenant1Id);
+            var specification = new EventByIdAndTenantSpecification(tenant1Id, testEvent.Id);
 
             var results = specification.Evaluate(events).ToList();
 
