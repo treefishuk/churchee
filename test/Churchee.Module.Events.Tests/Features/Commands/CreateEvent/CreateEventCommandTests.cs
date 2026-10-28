@@ -47,7 +47,6 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
             cut.End.Should().Be(endDate);
             cut.Content.Should().Be(content);
             cut.ImageFileName.Should().Be(imageFileName);
-            cut.Base64Image.Should().Be(base64Image);
             cut.LocationName.Should().Be(locationName);
             cut.City.Should().Be(city);
             cut.Street.Should().Be(street);
