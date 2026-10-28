@@ -13,6 +13,7 @@ namespace Churchee.Common.ValueTypes
         public string SupportedFileTypes { get; set; } = string.Empty;
         public byte[] FileBytes { get; set; } = [];
         public string ContentType { get; set; } = string.Empty;
+        public string PreviewUrl { get; set; } = string.Empty;
         public IBrowserFile File { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

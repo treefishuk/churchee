@@ -12,6 +12,10 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Radzen.Blazor.Rendering
 @using System.Linq
+@using SixLaborsImage = SixLabors.ImageSharp.Image
+@using SixLaborsSize = SixLabors.ImageSharp.Size
+@using SixLabors.ImageSharp.Formats.Webp
+@using SixLabors.ImageSharp.Processing
 
 @{
     string dataType = Prop.PropertyType.Name;
@@ -58,18 +62,41 @@ else if (dataType == DataTypes.ImageUpload)
     var upload = Prop.GetValue(InputModel) as Upload;
     if (upload != null)
     {
-        <RadzenUpload Name="@Prop.Name"
-                      class="w-100"
-                      Multiple="false"
-                      Auto="false"
-                      Accept="image/*"
-                      Change="@(args => OnImageUploadChangeAsync(upload, args))"
-                      Error="@(args => OnFileError(args, "Upload"))" />
+        var inputId = $"file-input-{Prop.Name}";
 
-        @if (!string.IsNullOrWhiteSpace(upload.FileName))
-        {
-            <div class="rz-mt-2 rz-text-secondary">@upload.FileName</div>
-        }
+        <div class="rz-fileupload">
+
+            <div class="rz-fileupload-buttonbar rz-display-flex rz-align-items-center">
+
+            <div>
+
+                <span class="rz-fileupload-choose rz-button rz-secondary rz-mr-2">
+
+                    <InputFile id="@inputId"
+                               accept="image/*"
+                               OnChange="@(async args => await OnImageUploadInputChangeAsync(upload, args))" />
+
+                    <span class="rz-button-text">Choose Image</span>
+
+                </span>
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(upload.FileName))
+            {
+                <div class="rz-display-flex rz-align-items-center">
+                    @if (!string.IsNullOrWhiteSpace(upload.PreviewUrl))
+                    {
+                        <img src="@upload.PreviewUrl" alt="Selected upload preview" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #d9d9d9; flex-shrink: 0;" />
+                    }
+
+                        <div class="rz-mx-2" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#666; min-width:0;">@upload.FileName</div>
+                </div>
+            }
+
+        </div>
+
+        </div>
     }
 }
 else if (dataType == DataTypes.ChunkedImageUpload)
@@ -359,9 +386,9 @@ else
         await OnValueChanged.InvokeAsync(null);
     }
 
-    async Task OnImageUploadChangeAsync(Upload upload, UploadChangeEventArgs args)
+    async Task OnImageUploadInputChangeAsync(Upload upload, InputFileChangeEventArgs args)
     {
-        var file = args.Files?.FirstOrDefault();
+        var file = args.File;
 
         if (file == null)
         {
@@ -373,13 +400,51 @@ else
         upload.Size = file.Size;
         upload.ContentType = file.ContentType;
         upload.Value = string.Empty;
+        upload.PreviewUrl = string.Empty;
 
         using var stream = file.OpenReadStream(file.Size);
         using var ms = new MemoryStream();
         await stream.CopyToAsync(ms);
         upload.FileBytes = ms.ToArray();
 
+        upload.PreviewUrl = await GenerateThumbnailPreviewAsync(upload.FileBytes, 50);
+
         await OnFileChangeAsync(upload);
+    }
+
+    private static async Task<string> GenerateThumbnailPreviewAsync(byte[] imageBytes, int maxDimension)
+    {
+        if (imageBytes == null || imageBytes.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            using var input = new MemoryStream(imageBytes);
+            using var image = SixLaborsImage.Load(input);
+
+            using var resized = image.Clone(x => x.Resize(new ResizeOptions
+            {
+                Size = new SixLaborsSize(maxDimension, maxDimension),
+                Mode = ResizeMode.Max,
+            }));
+
+            await using var output = new MemoryStream();
+            await resized.SaveAsync(output, new WebpEncoder
+            {
+                FileFormat = WebpFileFormatType.Lossy,
+                Quality = 60,
+                Method = WebpEncodingMethod.Fastest,
+                NearLossless = false,
+            });
+
+            return $"data:image/webp;base64,{Convert.ToBase64String(output.ToArray())}";
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     async Task OnFileChangeAsync(Upload upload)
