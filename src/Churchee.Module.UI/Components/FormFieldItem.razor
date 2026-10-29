@@ -1,21 +1,16 @@
-@using Churchee.Common.ValueTypes
-@using Radzen
-@using Churchee.Module.UI.Models
-@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components
-@using System.Reflection
-@using Microsoft.Extensions.Logging
-@using Radzen.Blazor
 @using System.ComponentModel.DataAnnotations
-@using System.Linq.Expressions
-@using Microsoft.AspNetCore.Mvc.Rendering
-@using Radzen.Blazor.Rendering
 @using System.Linq
-@using SixLaborsImage = SixLabors.ImageSharp.Image
-@using SixLaborsSize = SixLabors.ImageSharp.Size
-@using SixLabors.ImageSharp.Formats.Webp
-@using SixLabors.ImageSharp.Processing
+@using System.Linq.Expressions
+@using System.Reflection
+@using Churchee.Common.Abstractions.Utilities
+@using Churchee.Common.ValueTypes
+@using Churchee.Module.UI.Models
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging
+@using Radzen
+@using Radzen.Blazor
+@using Radzen.Blazor.Rendering
 
 @{
     string dataType = Prop.PropertyType.Name;
@@ -340,6 +335,9 @@ else
     public NotificationService NotificationService { get; set; } = default!;
 
     [Inject]
+    protected IImageProcessor ImageProcessor { get; set; } = default!;
+
+    [Inject]
     protected ILogger<FormFieldItem> Logger { get; set; } = default!;
 
     [Inject]
@@ -412,7 +410,7 @@ else
         await OnFileChangeAsync(upload);
     }
 
-    private static async Task<string> GenerateThumbnailPreviewAsync(byte[] imageBytes, int maxDimension)
+    private async Task<string> GenerateThumbnailPreviewAsync(byte[] imageBytes, int maxDimension)
     {
         if (imageBytes == null || imageBytes.Length == 0)
         {
@@ -421,23 +419,12 @@ else
 
         try
         {
-            using var input = new MemoryStream(imageBytes);
-            using var image = SixLaborsImage.Load(input);
+            await using var input = new MemoryStream(imageBytes);
+            await using var resized = await ImageProcessor.ResizeImageAsync(input, maxDimension, 0, ".webp", CancellationToken.None);
+            resized.Position = 0;
 
-            using var resized = image.Clone(x => x.Resize(new ResizeOptions
-            {
-                Size = new SixLaborsSize(maxDimension, maxDimension),
-                Mode = ResizeMode.Max,
-            }));
-
-            await using var output = new MemoryStream();
-            await resized.SaveAsync(output, new WebpEncoder
-            {
-                FileFormat = WebpFileFormatType.Lossy,
-                Quality = 60,
-                Method = WebpEncodingMethod.Fastest,
-                NearLossless = false,
-            });
+            using var output = new MemoryStream();
+            await resized.CopyToAsync(output);
 
             return $"data:image/webp;base64,{Convert.ToBase64String(output.ToArray())}";
         }

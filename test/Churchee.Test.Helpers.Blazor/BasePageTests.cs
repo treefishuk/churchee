@@ -1,6 +1,7 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Utilities;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.UI.Models;
 using Microsoft.AspNetCore.Components;
@@ -23,6 +24,8 @@ namespace Churchee.Test.Helpers.Blazor
         protected Mock<IConfiguration> MockConfiguration;
         protected CurrentPage CurrentPage;
         protected ITenantResolver TenantResolver;
+
+        protected Mock<IImageProcessor> MockImageProcessor;
 
         protected BasePageTests()
         {
@@ -52,6 +55,9 @@ namespace Churchee.Test.Helpers.Blazor
 
             MockDistributedCache = new Mock<IDistributedCache>();
             Services.AddSingleton(MockDistributedCache.Object);
+
+            MockImageProcessor = new Mock<IImageProcessor>();
+            Services.AddSingleton(MockImageProcessor.Object);
         }
 
         protected void SetInitialUrl<TComponent>() where TComponent : IComponent
