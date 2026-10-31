@@ -16,5 +16,10 @@ namespace Churchee.Module.Tokens.Entities
         [EncryptProperty]
         public string Value { get; private set; }
 
+        public void UpdateValue(string value)
+        {
+            Value = value;
+        }
+
     }
 }

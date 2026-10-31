@@ -6,6 +6,7 @@ using Churchee.Common.Storage;
 using Churchee.Module.Google.Reviews.Helpers;
 using Churchee.Module.Google.Reviews.Jobs;
 using Churchee.Module.Tokens.Entities;
+using Churchee.Module.Tokens.Specifications;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
@@ -54,8 +55,7 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
                         ClientId = clientId,
                         ClientSecret = clientSecret
                     },
-                    Scopes = ["https://www.googleapis.com/auth/business.manage"],
-                    Prompt = "consent"
+                    Scopes = ["https://www.googleapis.com/auth/business.manage"]
                 });
             }
 
@@ -67,9 +67,9 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
 
             var tokenRepo = _dataStore.GetRepository<Token>();
 
-            StoreAccessToken(tokenRepo, applicationTenantId, tokenResponse);
+            await StoreToken(tokenRepo, applicationTenantId, SettingKeys.GoogleReviewsAccessTokenKey.ToString(), tokenResponse.AccessToken, cancellationToken);
 
-            StoreRefreshToken(tokenRepo, applicationTenantId, tokenResponse);
+            await StoreToken(tokenRepo, applicationTenantId, SettingKeys.GoogleReviewsRefreshTokenKey.ToString(), tokenResponse.RefreshToken, cancellationToken);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
@@ -80,14 +80,23 @@ namespace Churchee.Module.Google.Reviews.Features.Commands
             return new CommandResponse();
         }
 
-        private static void StoreAccessToken(IRepository<Token> tokenRepo, Guid applicationTenantId, TokenResponse accessToken)
+        private static async Task StoreToken(IRepository<Token> tokenRepo, Guid applicationTenantId, string key, string value, CancellationToken cancellationToken)
         {
-            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.GoogleReviewsAccessTokenKey.ToString(), accessToken.AccessToken));
-        }
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
 
-        private static void StoreRefreshToken(IRepository<Token> tokenRepo, Guid applicationTenantId, TokenResponse accessToken)
-        {
-            tokenRepo.Create(new Token(applicationTenantId, SettingKeys.GoogleReviewsRefreshTokenKey.ToString(), accessToken.RefreshToken));
+            var existingToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(key, applicationTenantId), cancellationToken);
+
+            if (existingToken != null)
+            {
+                existingToken.UpdateValue(value);
+                tokenRepo.Update(existingToken);
+                return;
+            }
+
+            tokenRepo.Create(new Token(applicationTenantId, key, value));
         }
     }
 }
