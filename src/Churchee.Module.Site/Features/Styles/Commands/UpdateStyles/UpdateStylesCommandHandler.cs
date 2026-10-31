@@ -2,8 +2,8 @@
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
-using Churchee.Module.Site.Entities;
 using Churchee.CQRS.Abstractions;
+using Churchee.Module.Site.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace Churchee.Module.Site.Features.Styles.Commands
@@ -52,10 +52,8 @@ namespace Churchee.Module.Site.Features.Styles.Commands
 
                 return new CommandResponse();
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, "Failed to compile SCSS");
-
                 response.AddError("Failed to compile SCSS", "Css");
 
                 return response;
