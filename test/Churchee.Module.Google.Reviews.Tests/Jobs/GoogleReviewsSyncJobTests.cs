@@ -235,6 +235,56 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
 
 
         [Fact]
+        public async Task ExecuteAsync_Throws_When_AccessToken_Is_Missing()
+        {
+            // Arrange
+            var applicationTenantId = Guid.NewGuid();
+            var mockTokenRepo = new Mock<IRepository<Token>>();
+            mockTokenRepo.Setup(s => s.FirstOrDefaultAsync(It.IsAny<GetTokenByKeySpecification>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Token)null!);
+
+            _mockDataStore.Setup(s => s.GetRepository<Token>()).Returns(mockTokenRepo.Object);
+
+            var job = CreateJob();
+
+            // Act
+            var exception = await Assert.ThrowsAsync<GoogleReviewSyncException>(() => job.ExecuteAsync(applicationTenantId, CancellationToken.None));
+
+            // Assert
+            exception.Message.Should().Contain("access token is missing");
+        }
+
+        [Fact]
+        public async Task RefreshAccessToken_Throws_When_RefreshToken_Is_Missing()
+        {
+            // Arrange
+            var applicationTenantId = Guid.NewGuid();
+            var accessToken = new Token(applicationTenantId, SettingKeys.GoogleReviewsAccessTokenKey.ToString(), "expired-access-token");
+            accessToken.CreatedDate = DateTime.UtcNow.AddHours(-2);
+
+            var tokenRepo = new Mock<IRepository<Token>>();
+            tokenRepo.Setup(s => s.FirstOrDefaultAsync(It.Is<GetTokenByKeySpecification>(spec => spec.Key == SettingKeys.GoogleReviewsRefreshTokenKey.ToString()), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Token)null!);
+
+            _mockDataStore.Setup(s => s.GetRepository<Token>()).Returns(tokenRepo.Object);
+            _mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ClientId, applicationTenantId)).ReturnsAsync("client-id");
+            _mockSettingStore.Setup(s => s.GetSettingValue(SettingKeys.ClientSecret, applicationTenantId)).ReturnsAsync("client-secret");
+
+            var job = CreateJob();
+            var method = typeof(GoogleReviewsSyncJob).GetMethod("RefreshAccessToken", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<GoogleReviewSyncException>(async () =>
+            {
+                var task = (Task<Token>)method!.Invoke(job, [accessToken, applicationTenantId, CancellationToken.None])!;
+                await task;
+            });
+
+            // Assert
+            exception.Message.Should().Contain("refresh token is missing");
+        }
+
+        [Fact]
         public async Task ConvertImageToLocalImage_UpdatesReviewerImageUrl_OnSuccess()
         {
             // Arrange

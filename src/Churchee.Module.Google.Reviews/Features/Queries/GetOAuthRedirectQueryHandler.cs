@@ -39,8 +39,7 @@ namespace Churchee.Module.Google.Reviews.Features.Queries
                     Scopes =
                     [
                         "https://www.googleapis.com/auth/business.manage"
-                    ],
-                    Prompt = "consent"
+                    ]
                 });
 
             return flow.CreateAuthorizationCodeRequest(redirectUri).Build().ToString();

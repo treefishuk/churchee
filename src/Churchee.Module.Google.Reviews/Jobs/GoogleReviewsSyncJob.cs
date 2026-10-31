@@ -54,6 +54,11 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             var accessToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.GoogleReviewsAccessTokenKey.ToString(), applicationTenantId), cancellationToken);
 
+            if (accessToken == null)
+            {
+                throw new GoogleReviewSyncException("Google Reviews access token is missing. Reconnect the Google integration.");
+            }
+
             if (accessToken.CreatedDate < DateTime.Now.AddHours(-1))
             {
                 accessToken = await RefreshAccessToken(accessToken, applicationTenantId, cancellationToken);
@@ -81,7 +86,12 @@ namespace Churchee.Module.Google.Reviews.Jobs
         {
             var tokenRepo = _dataStore.GetRepository<Token>();
 
-            var refreshToken = await tokenRepo.ApplySpecification(new GetTokenByKeySpecification(SettingKeys.GoogleReviewsRefreshTokenKey.ToString(), applicationTenantId)).FirstOrDefaultAsync(cancellationToken);
+            var refreshToken = await tokenRepo.FirstOrDefaultAsync(new GetTokenByKeySpecification(SettingKeys.GoogleReviewsRefreshTokenKey.ToString(), applicationTenantId), cancellationToken);
+
+            if (refreshToken == null || string.IsNullOrWhiteSpace(refreshToken.Value))
+            {
+                throw new GoogleReviewSyncException("Google Reviews refresh token is missing. Reconnect the Google integration.");
+            }
 
             string clientId = await _settingStore.GetSettingValue(SettingKeys.ClientId, applicationTenantId);
             string clientSecret = await _settingStore.GetSettingValue(SettingKeys.ClientSecret, applicationTenantId);
@@ -104,20 +114,29 @@ namespace Churchee.Module.Google.Reviews.Jobs
 
             var credential = new UserCredential(flow, userId, token);
 
-            bool success = await credential.RefreshTokenAsync(CancellationToken.None);
+            bool success;
+
+            try
+            {
+                success = await credential.RefreshTokenAsync(CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                throw new GoogleReviewSyncException("Failed to refresh Google access token. The stored Google refresh token is invalid or has been revoked.", ex);
+            }
 
             if (!success)
             {
-                throw new GoogleReviewSyncException("Failed to refresh Google access token.");
+                throw new GoogleReviewSyncException("Failed to refresh Google access token. The stored Google refresh token is invalid or has been revoked.");
             }
 
-            var updatedToken = new Token(applicationTenantId, SettingKeys.GoogleReviewsAccessTokenKey.ToString(), credential.Token.AccessToken);
+            accessToken.UpdateValue(credential.Token.AccessToken);
 
-            tokenRepo.Update(updatedToken);
+            tokenRepo.Update(accessToken);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
-            return updatedToken;
+            return accessToken;
         }
 
         private async Task ProcessReviews(Guid applicationTenantId, GoogleReviewsResponse result, CancellationToken cancellationToken)

@@ -28,6 +28,18 @@ namespace Churchee.Module.Tokens.Tests.Entities
             token.Key.Should().Be(_key);
             token.Value.Should().Be(_value);
         }
+
+        [Fact]
+        public void UpdateValue_ShouldUpdateValueProperty()
+        {
+            // Arrange
+            var token = new Token(_applicationTenantId, _key, _value);
+            string newValue = "NewTestValue";
+            // Act
+            token.UpdateValue(newValue);
+            // Assert
+            token.Value.Should().Be(newValue);
+        }
     }
 }
 
