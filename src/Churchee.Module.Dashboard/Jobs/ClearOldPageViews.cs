@@ -16,8 +16,6 @@ namespace Churchee.Module.Dashboard.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            const int batchSize = 500;
-
             var repository = _dataStore.GetRepository<PageView>();
 
             using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -26,26 +24,7 @@ namespace Churchee.Module.Dashboard.Jobs
 
             var token = timeoutCts.Token;
 
-            int count = await repository.CountAsync(new OldPageViewSpecification(), token);
-
-            while (count > 0)
-            {
-                var oldPageViews = await repository.GetListAsync(new OldPageViewSpecification(), token);
-
-                var batch = oldPageViews?.Take(batchSize).ToList() ?? [];
-
-                foreach (var pageView in batch)
-                {
-                    repository.PermanentDelete(pageView);
-                }
-
-                if (batch.Count > 0)
-                {
-                    await _dataStore.SaveChangesAsync(token);
-                }
-
-                count -= batch.Count;
-            }
+            await repository.PermanentDelete(new OldPageViewSpecification(), token);
         }
     }
 }
