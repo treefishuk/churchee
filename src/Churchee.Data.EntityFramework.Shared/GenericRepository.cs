@@ -182,6 +182,8 @@ namespace Churchee.Data.EntityFramework.Shared
 
         public virtual async Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
         {
+            _dbContext.Database.SetCommandTimeout(300);
+
             await _specificationEvaluator.GetQuery(GetQueryable(), specification).ExecuteDeleteAsync(cancellationToken);
         }
 

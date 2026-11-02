@@ -17,7 +17,7 @@ namespace Churchee.Module.Dashboard.Registrations
 
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
-            jobService.ScheduleJob<ClearOldPageViews>($"ClearOldPageViews", x => x.ExecuteAsync(CancellationToken.None), Cron.Daily);
+            jobService.ScheduleJob<ClearOldPageViews>($"ClearOldPageViews", x => x.ExecuteAsync(CancellationToken.None), () => Cron.Daily(23, 45));
             jobService.ScheduleJob<PopulateAnalyticsJob>($"PopulateAnalyticsJob", x => x.ExecuteAsync(CancellationToken.None), Cron.Hourly);
         }
     }
