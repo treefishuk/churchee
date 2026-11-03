@@ -24,7 +24,17 @@ namespace Churchee.Module.Dashboard.Jobs
 
             var token = timeoutCts.Token;
 
-            await repository.PermanentDelete(new OldPageViewSpecification(), token);
+            const int batchSize = 2000;
+
+            while (!token.IsCancellationRequested)
+            {
+                var deleted = await repository.PermanentDeleteBatchAsync(new OldPageViewSpecification(), batchSize, token);
+
+                if (deleted == 0)
+                {
+                    break;
+                }
+            }
         }
     }
 }
