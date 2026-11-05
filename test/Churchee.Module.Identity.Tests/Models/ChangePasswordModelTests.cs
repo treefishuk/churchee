@@ -35,7 +35,7 @@ namespace Churchee.Module.Identity.Tests.Models
 
             // Assert
             isValid.Should().BeFalse();
-            validationResults.Should().ContainSingle(vr => vr.ErrorMessage == "The New password must be at least 6 and at max 100 characters long.");
+            validationResults.Should().ContainSingle(vr => vr.ErrorMessage == "The New password must be at least 15 and at max 100 characters long.");
         }
 
         [Fact]
