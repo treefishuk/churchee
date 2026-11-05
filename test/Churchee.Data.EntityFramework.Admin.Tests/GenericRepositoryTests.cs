@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using Churchee.Common.Abstractions.Entities;
 using Churchee.Data.EntityFramework.Shared;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -514,6 +515,64 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
 
             // Assert
             Assert.Null(exception);
+        }
+
+        [Fact]
+        public async Task PermanentDelete_WithSpecification_ShouldDeleteMatchingRows()
+        {
+            using var connection = new SqliteConnection("DataSource=:memory:");
+            await connection.OpenAsync();
+
+            var options = new DbContextOptionsBuilder<TestDbContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            await using var sqliteContext = new TestDbContext(options);
+            await sqliteContext.Database.EnsureCreatedAsync();
+
+            sqliteContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Other" });
+            await sqliteContext.SaveChangesAsync();
+
+            var repository = new GenericRepository<TestEntity>(sqliteContext);
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            await repository.PermanentDelete(specification, CancellationToken.None);
+
+            Assert.Equal(1, await sqliteContext.TestEntities.CountAsync());
+            Assert.Equal("Other", (await sqliteContext.TestEntities.SingleAsync()).Name);
+        }
+
+        [Fact]
+        public async Task PermanentDeleteBatchAsync_WithSpecification_ShouldDeleteOnlyMatchingBatch()
+        {
+            using var connection = new SqliteConnection("DataSource=:memory:");
+            await connection.OpenAsync();
+
+            var options = new DbContextOptionsBuilder<TestDbContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            await using var sqliteContext = new TestDbContext(options);
+            await sqliteContext.Database.EnsureCreatedAsync();
+
+            sqliteContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 3" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Other" });
+            await sqliteContext.SaveChangesAsync();
+
+            var repository = new GenericRepository<TestEntity>(sqliteContext);
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            var deletedCount = await repository.PermanentDeleteBatchAsync(specification, 2, CancellationToken.None);
+
+            Assert.Equal(2, deletedCount);
+            Assert.Equal(2, await sqliteContext.TestEntities.CountAsync());
+            Assert.Contains(await sqliteContext.TestEntities.ToListAsync(), x => x.Name == "Other");
         }
 
         // Mock Specification
