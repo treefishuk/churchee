@@ -328,6 +328,194 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             Assert.Equal(2, result.Count());
         }
 
+        [Fact]
+        public void AddRange_ShouldAddMultipleEntities()
+        {
+            // Arrange
+            var entities = new[]
+            {
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" }
+            };
+
+            // Act
+            _repository.AddRange(entities);
+            _dbContext.SaveChanges();
+
+            // Assert
+            Assert.Equal(2, _dbContext.TestEntities.Count());
+        }
+
+        [Fact]
+        public void GetById_ShouldReturnEntity_WhenItExists()
+        {
+            // Arrange
+            var entity = new TestEntity { Id = Guid.NewGuid(), Name = "Test Entity" };
+            _dbContext.TestEntities.Add(entity);
+            _dbContext.SaveChanges();
+
+            // Act
+            var result = _repository.GetById(entity.Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(entity.Id, result.Id);
+        }
+
+        [Fact]
+        public void GetQueryable_ShouldReturnAllEntities()
+        {
+            // Arrange
+            _dbContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" });
+            _dbContext.SaveChanges();
+
+            // Act
+            var result = _repository.GetQueryable();
+
+            // Assert
+            Assert.Equal(2, result.Count());
+        }
+
+        [Fact]
+        public async Task CountAsync_WithSpecification_ShouldReturnMatches()
+        {
+            // Arrange
+            _dbContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Other" });
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            // Act
+            var count = await _repository.CountAsync(specification, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(2, count);
+        }
+
+        [Fact]
+        public async Task GetDistinctCountAsync_ShouldReturnDistinctProjectedCount()
+        {
+            // Arrange
+            _dbContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" });
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            // Act
+            var count = await _repository.GetDistinctCountAsync(specification, e => e.Name, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(2, count);
+        }
+
+        [Fact]
+        public async Task GetListAsync_WithGroupBySelector_ShouldReturnGroupedResults()
+        {
+            // Arrange
+            _dbContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" });
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            // Act
+            var result = await _repository.GetListAsync(
+                specification,
+                e => e.Name,
+                g => new { Key = g.Key, Count = g.Count() },
+                CancellationToken.None);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, x => x.Key == "Entity 1" && x.Count == 2);
+            Assert.Contains(result, x => x.Key == "Entity 2" && x.Count == 1);
+        }
+
+        [Fact]
+        public async Task GetListAsync_WithGroupBySelectorAndTake_ShouldReturnLimitedGroupedResults()
+        {
+            // Arrange
+            _dbContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 3" });
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            // Act
+            var result = await _repository.GetListAsync(
+                specification,
+                e => e.Name,
+                g => new { Key = g.Key, Count = g.Count() },
+                1,
+                CancellationToken.None);
+
+            // Assert
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task GetDistinctListAsync_ShouldReturnDistinctNames()
+        {
+            // Arrange
+            _dbContext.TestEntities.AddRange(
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" },
+                new TestEntity { Id = Guid.NewGuid(), Name = "Entity 2" });
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
+
+            // Act
+            var result = await _repository.GetDistinctListAsync(specification, e => e.Name, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains("Entity 1", result);
+            Assert.Contains("Entity 2", result);
+        }
+
+        [Fact]
+        public async Task AnyAsync_ShouldReturnTrue_WhenSpecificationMatches()
+        {
+            // Arrange
+            _dbContext.TestEntities.Add(new TestEntity { Id = Guid.NewGuid(), Name = "Entity 1" });
+            await _dbContext.SaveChangesAsync();
+
+            var specification = new MockSpecification<TestEntity>(e => e.Name == "Entity 1");
+
+            // Act
+            var result = await _repository.AnyAsync(specification, CancellationToken.None);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task BulkInsertOrUpdateAsync_WithEmptyCollection_ShouldReturnWithoutThrowing()
+        {
+            // Act
+            var exception = await Record.ExceptionAsync(() => _repository.BulkInsertOrUpdateAsync(
+                new List<TestEntity>(),
+                new List<string> { nameof(TestEntity.Name) },
+                CancellationToken.None));
+
+            // Assert
+            Assert.Null(exception);
+        }
+
         // Mock Specification
         private class MockSpecification<T> : Specification<T>
         {
