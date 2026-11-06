@@ -3,7 +3,6 @@ using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Hangfire;
 
 namespace Churchee.Module.Site.Jobs
 {
@@ -15,7 +14,7 @@ namespace Churchee.Module.Site.Jobs
         private readonly string _area;
         private readonly ImageCropsGenerator _imageCropsGenerator;
 
-        public ImageProcessingJobBase(IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, IBackgroundJobClient backgroundJobClient, string area)
+        public ImageProcessingJobBase(IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, string area)
         {
             _dataStore = dataStore;
             _blobStore = blobStore;

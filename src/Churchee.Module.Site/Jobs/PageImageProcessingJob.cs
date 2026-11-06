@@ -7,7 +7,7 @@ namespace Churchee.Module.Site.Jobs
     public class PageImageProcessingJob : ImageProcessingJobBase
     {
         public PageImageProcessingJob(IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, IBackgroundJobClient backgroundJobClient)
-            : base(dataStore, blobStore, imageProcessor, backgroundJobClient, "pages")
+            : base(dataStore, blobStore, imageProcessor, "pages")
         {
         }
     }
