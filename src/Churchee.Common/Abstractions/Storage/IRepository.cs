@@ -35,6 +35,8 @@ namespace Churchee.Common.Abstractions.Storage
 
         Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken);
 
+        Task<int> PermanentDeleteBatchAsync(ISpecification<T> specification, int batchSize, CancellationToken cancellationToken);
+
         Task SoftDelete<TId>(TId id);
 
         void Update(T entity);

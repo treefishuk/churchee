@@ -257,6 +257,11 @@ namespace Churchee.Module.Settings.Tests.Store
             throw new NotImplementedException();
         }
 
+        public Task<int> PermanentDeleteBatchAsync(ISpecification<T> specification, int batchSize, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SoftDelete<TId>(TId id)
         {
             throw new NotImplementedException();

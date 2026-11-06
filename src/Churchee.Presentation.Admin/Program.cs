@@ -104,10 +104,18 @@ namespace Churchee.Presentation.Admin
                 builder.Services.RunSeedActions();
             }
 
-            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddSignInManager<ChurcheeSignInManager>()
-                .AddDefaultTokenProviders();
+            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequiredLength = 15;
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager<ChurcheeSignInManager>()
+            .AddDefaultTokenProviders();
 
 
             builder.Services.AddAntiforgery(options =>

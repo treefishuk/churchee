@@ -182,7 +182,31 @@ namespace Churchee.Data.EntityFramework.Shared
 
         public virtual async Task PermanentDelete(ISpecification<T> specification, CancellationToken cancellationToken)
         {
+            _dbContext.Database.SetCommandTimeout(300);
+
             await _specificationEvaluator.GetQuery(GetQueryable(), specification).ExecuteDeleteAsync(cancellationToken);
+        }
+
+        public virtual async Task<int> PermanentDeleteBatchAsync(ISpecification<T> specification, int batchSize, CancellationToken cancellationToken)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(batchSize);
+
+            var ids = await _specificationEvaluator.GetQuery(GetQueryable(), specification)
+                .OrderBy(x => EF.Property<Guid>(x, "Id"))
+                .Select(x => EF.Property<Guid>(x, "Id"))
+                .Take(batchSize)
+                .ToListAsync(cancellationToken);
+
+            if (ids.Count == 0)
+            {
+                return 0;
+            }
+
+            _dbContext.Database.SetCommandTimeout(300);
+
+            return await _dbSet
+                .Where(x => ids.Contains(EF.Property<Guid>(x, "Id")))
+                .ExecuteDeleteAsync(cancellationToken);
         }
 
         public async Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken)
