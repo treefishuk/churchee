@@ -1,8 +1,8 @@
 ﻿using Churchee.Common.Abstractions;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Pages.Queries
 {
@@ -29,7 +29,7 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                 selector: s => new GetListingQueryResponseItem
                 {
                     Id = s.Id,
-                    HasChildren = s.Children.Any(a => !a.IsSystem),
+                    HasChildren = s.Children.Any(a => !a.IsSystem && a is Page),
                     Title = s.Title,
                     Url = s.Url,
                     Modified = s.ModifiedDate,
