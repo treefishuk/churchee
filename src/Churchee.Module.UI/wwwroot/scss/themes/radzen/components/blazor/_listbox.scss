@@ -53,6 +53,10 @@ $listbox-header-icon-margin: 0 !default;
 .rz-listbox-list {
   margin: 0;
   padding: 0;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .rz-listbox-item {
@@ -75,6 +79,16 @@ $listbox-header-icon-margin: 0 !default;
   flex: auto;
   overflow: auto;
   padding: var(--rz-listbox-padding);
+}
+
+.rz-listbox-empty-message {
+  padding: var(--rz-listbox-item-padding);
+  text-align: center;
+  color: var(--rz-text-disabled-color);
+
+  p {
+    margin: 0;
+  }
 }
 
 %filter-container {

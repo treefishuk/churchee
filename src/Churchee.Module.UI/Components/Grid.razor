@@ -9,7 +9,7 @@
 @using System.Reflection
 @using System.Text
 @using System.Text.Json
-@typeparam TItem
+@typeparam TItem where TItem : class
 @inject IConfiguration Config
 
 <CascadingValue Value="(Action<string, RenderFragment<TItem>, string>)RegisterButtonColumn">

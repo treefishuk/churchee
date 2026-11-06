@@ -1,3 +1,4 @@
+@use 'sass:map';
 // Flex-direction
 // Example .rz-flex-row
 $flex: row, row-reverse, column, column-reverse;
@@ -13,7 +14,7 @@ $rz-gap: 1rem !default;
 $rz-row-gap: $rz-gap !default;
 
 $rz-col-map: () !default;
-$rz-col-map: map-merge(
+$rz-col-map: map.merge(
   (
     1: calc((100% - 11 * var(--rz-gap)) / 12),
     2: calc(2 * ((100% - 11 * var(--rz-gap)) / 12) + 1 * var(--rz-gap)),
@@ -32,7 +33,7 @@ $rz-col-map: map-merge(
 );
 
 $rz-offset-map: () !default;
-$rz-offset-map: map-merge(
+$rz-offset-map: map.merge(
   (
     0: 0,
     1: calc(1 * ((100% - 11 * var(--rz-gap)) / 12) + 1 * var(--rz-gap)),
@@ -74,6 +75,25 @@ $rz-offset-map: map-merge(
   width: 100%;
 }
 
+@mixin rz-row-cols($prefix) {
+  @for $cols from 1 through 12 {
+    .#{$prefix}-#{$cols} > .rz-col {
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: calc((100% - #{$cols - 1} * var(--rz-gap)) / #{$cols});
+      flex-basis: calc((100% - #{$cols - 1} * var(--rz-gap)) / #{$cols});
+    }
+  }
+}
+
+@include rz-row-cols('rz-row-cols');
+
+@each $breakpoint, $breakpoint-value in $rz-breakpoints-map {
+  @media (min-width: #{$breakpoint-value}) {
+    @include rz-row-cols('rz-row-cols-#{$breakpoint}');
+  }
+}
+
 @each $col, $col-width in $rz-col-map {
   .rz-row > .rz-col-#{$col} {
     max-width: #{$col-width};
@@ -81,33 +101,10 @@ $rz-offset-map: map-merge(
   }
 }
 
-// Columns with breakpoints
-@each $breakpoint, $breakpoint-value in $rz-breakpoints-map {
-  @media (min-width: #{$breakpoint-value}) {
-    @each $col, $col-width in $rz-col-map {
-      .rz-row > .rz-col-#{$breakpoint}-#{$col} {
-        max-width: #{$col-width};
-        flex-basis: #{$col-width};
-      }
-    }
-  }
-}
-
 // Offsets
 @each $offset, $offset-margin in $rz-offset-map {
   .rz-offset-#{$offset} {
     margin-inline-start: #{$offset-margin};
-  }
-}
-
-// Offsets with breakpoints
-@each $breakpoint, $breakpoint-value in $rz-breakpoints-map {
-  @media (min-width: #{$breakpoint-value}) {
-    @each $offset, $offset-margin in $rz-offset-map {
-      .rz-offset-#{$breakpoint}-#{$offset} {
-        margin-inline-start: #{$offset-margin};
-      }
-    }
   }
 }
 
@@ -124,9 +121,21 @@ $rz-offset-map: map-merge(
   }
 }
 
-// Order with breakpoints
+// Columns, offsets and order with breakpoints (consolidated: one @media block per breakpoint)
+// e.g. .rz-col-xs-6, .rz-offset-md-3, .rz-order-lg-first
 @each $breakpoint, $breakpoint-value in $rz-breakpoints-map {
   @media (min-width: #{$breakpoint-value}) {
+    @each $col, $col-width in $rz-col-map {
+      .rz-row > .rz-col-#{$breakpoint}-#{$col} {
+        max-width: #{$col-width};
+        flex-basis: #{$col-width};
+      }
+    }
+    @each $offset, $offset-margin in $rz-offset-map {
+      .rz-offset-#{$breakpoint}-#{$offset} {
+        margin-inline-start: #{$offset-margin};
+      }
+    }
     .rz-order-#{$breakpoint}-first {
       order: -1 !important;
     }
@@ -134,7 +143,7 @@ $rz-offset-map: map-merge(
       order: 13 !important;
     }
     @for $order from 0 through 12 {
-      .rz-order-#{$breakpoint}-#{$order} { 
+      .rz-order-#{$breakpoint}-#{$order} {
         order: $order !important;
       }
     }

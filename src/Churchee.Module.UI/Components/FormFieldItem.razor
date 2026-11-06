@@ -222,63 +222,29 @@ else
 
                 if (dataType == DataTypes.Html)
                 {
-                    <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
-                        <RadzenHtmlEditorFormatBlock />
-                        <RadzenHtmlEditorUndo />
-                        <RadzenHtmlEditorRedo />
-                        <RadzenHtmlEditorSeparator />
-                        <RadzenHtmlEditorBold />
-                        <RadzenHtmlEditorItalic />
-                        <RadzenHtmlEditorUnderline />
-                        <RadzenHtmlEditorStrikeThrough />
-                        <RadzenHtmlEditorSeparator />
-                        <RadzenHtmlEditorRemoveFormat />
+                    <HtmlEditor Change="(value) => OnFieldChange(Prop, value)" Value="@propertyStringValue">
                         <RadzenHtmlEditorLink />
-                        <RadzenHtmlEditorUnorderedList />
-                        <RadzenHtmlEditorOrderedList />
-                        <RadzenHtmlEditorSource />
-                    </RadzenHtmlEditor>
+                    </HtmlEditor>
                 }
 
                 if (dataType == DataTypes.HtmlNoLinks)
                 {
-                    <RadzenHtmlEditor Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 250px">
-                        <RadzenHtmlEditorFormatBlock />
-                        <RadzenHtmlEditorUndo />
-                        <RadzenHtmlEditorRedo />
-                        <RadzenHtmlEditorSeparator />
-                        <RadzenHtmlEditorBold />
-                        <RadzenHtmlEditorItalic />
-                        <RadzenHtmlEditorUnderline />
-                        <RadzenHtmlEditorStrikeThrough />
-                        <RadzenHtmlEditorSeparator />
-                        <RadzenHtmlEditorRemoveFormat />
-                        <RadzenHtmlEditorUnorderedList />
-                        <RadzenHtmlEditorOrderedList />
-                        <RadzenHtmlEditorSource />
-                    </RadzenHtmlEditor>
+                    <HtmlEditor Change="(value) => OnFieldChange(Prop, value)" Value="@propertyStringValue">
+                    </HtmlEditor>
                 }
 
                 if (dataType == DataTypes.HtmlTall)
                 {
-                    <RadzenHtmlEditor Execute="OnEditorExecute" Value="@propertyStringValue" Change=@((value) => OnFieldChange(Prop, value)) Style="height: 420px">
-                        <RadzenHtmlEditorFormatBlock />
-                        <RadzenHtmlEditorUndo />
-                        <RadzenHtmlEditorRedo />
-                        <RadzenHtmlEditorSeparator />
-                        <RadzenHtmlEditorBold />
-                        <RadzenHtmlEditorItalic />
-                        <RadzenHtmlEditorUnderline />
-                        <RadzenHtmlEditorStrikeThrough />
-                        <RadzenHtmlEditorSeparator />
-                        <RadzenHtmlEditorRemoveFormat />
-                        <RadzenHtmlEditorLink />
-                        <RadzenHtmlEditorUnorderedList />
-                        <RadzenHtmlEditorOrderedList />
-                        <EditorButton Title="Insert Image" Click=@OpenImageUploadEditor Icon="image"/>
+
+                    <HtmlEditor 
+                        Execute="OnEditorExecute"
+                        Height=420
+                        Change="(value) => OnFieldChange(Prop, value)" 
+                        Value="@propertyStringValue">
+                        <EditorButton Title="Insert Image" Click=@OpenImageUploadEditor Icon="image" />
                         <RadzenHtmlEditorCustomTool CommandName="code" Icon="code_blocks" />
-                        <RadzenHtmlEditorSource />
-                    </RadzenHtmlEditor>
+                    </HtmlEditor>
+
                 }
 
                 if (dataType == typeof(DropdownInput).Name)

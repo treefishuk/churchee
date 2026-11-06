@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,7 +33,7 @@ namespace Churchee.Common.Helpers
 
             stream.Position = 0; // Reset stream position after hashing
 
-            return Convert.ToHexString(sha.Hash!);
+            return Convert.ToHexString(sha.Hash);
         }
     }
 }

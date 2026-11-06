@@ -26,23 +26,30 @@ ul.rz-profile-menu {
   position: relative;
   z-index: 3;
 
-  &:focus {
+  > .rz-navigation-item > [role="button"]:focus {
     outline: var(--rz-outline-normal);
   }
 
-  &:focus-visible {
+  > .rz-navigation-item > [role="button"]:focus-visible {
     outline: var(--rz-menu-item-focus-outline);
+  }
+
+  &:focus-within {
 
     .rz-navigation-item {
 
       &.rz-state-focused {
-  
+
         > .rz-navigation-item-wrapper {
           outline: var(--rz-profile-menu-item-focus-outline);
           outline-offset: var(--rz-profile-menu-item-focus-outline-offset);
         }
       }
     }
+  }
+
+  .rz-navigation-menu:focus {
+    outline: none;
   }
 
   .rz-navigation-item-icon-children {
@@ -109,4 +116,24 @@ ul.rz-profile-menu {
       margin-inline: var(--rz-profile-menu-item-icon-margin-inline);
     }
   }
+}
+
+.rz-profile-menu .rz-navigation-item-form {
+  margin: 0;
+}
+
+.rz-profile-menu button.rz-navigation-item-link {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: start;
+  color: inherit;
+  cursor: pointer;
 }

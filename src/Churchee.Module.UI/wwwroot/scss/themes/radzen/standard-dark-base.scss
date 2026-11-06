@@ -1,3 +1,5 @@
+@use 'sass:color';
+@use 'sass:map';
 @import 'variables';
 @import 'mixins';
 $base: true;
@@ -59,35 +61,35 @@ $rz-base-dark: #3b3c3f !default;
 $rz-base-darker: #000000 !default;
 
 
-$rz-primary-light: mix($rz-white, $rz-primary, 40%) !default;
+$rz-primary-light: color.mix($rz-white, $rz-primary, 40%) !default;
 $rz-primary-lighter: rgba($rz-primary, .20) !default;
-$rz-primary-dark: mix($rz-black, $rz-primary, 16%) !default;
-$rz-primary-darker: mix($rz-black, $rz-primary, 24%) !default;
+$rz-primary-dark: color.mix($rz-black, $rz-primary, 16%) !default;
+$rz-primary-darker: color.mix($rz-black, $rz-primary, 24%) !default;
 
-$rz-secondary-light: mix($rz-white, $rz-secondary, 16%) !default;
+$rz-secondary-light: color.mix($rz-white, $rz-secondary, 16%) !default;
 $rz-secondary-lighter: rgba($rz-secondary, .20) !default;
-$rz-secondary-dark: mix($rz-black, $rz-secondary, 16%) !default;
-$rz-secondary-darker: mix($rz-black, $rz-secondary, 24%) !default;
+$rz-secondary-dark: color.mix($rz-black, $rz-secondary, 16%) !default;
+$rz-secondary-darker: color.mix($rz-black, $rz-secondary, 24%) !default;
 
-$rz-info-light: mix($rz-white, $rz-info, 16%) !default;
+$rz-info-light: color.mix($rz-white, $rz-info, 16%) !default;
 $rz-info-lighter: rgba($rz-info, .20) !default;
-$rz-info-dark: mix($rz-black, $rz-info, 16%) !default;
-$rz-info-darker: mix($rz-black, $rz-info, 24%) !default;
+$rz-info-dark: color.mix($rz-black, $rz-info, 16%) !default;
+$rz-info-darker: color.mix($rz-black, $rz-info, 24%) !default;
 
-$rz-success-light: mix($rz-white, $rz-success, 16%) !default;
+$rz-success-light: color.mix($rz-white, $rz-success, 16%) !default;
 $rz-success-lighter: rgba($rz-success, .20) !default;
-$rz-success-dark: mix($rz-black, $rz-success, 16%) !default;
-$rz-success-darker: mix($rz-black, $rz-success, 24%) !default;
+$rz-success-dark: color.mix($rz-black, $rz-success, 16%) !default;
+$rz-success-darker: color.mix($rz-black, $rz-success, 24%) !default;
 
-$rz-warning-light: mix($rz-white, $rz-warning, 16%) !default;
+$rz-warning-light: color.mix($rz-white, $rz-warning, 16%) !default;
 $rz-warning-lighter: rgba($rz-warning, .20) !default;
-$rz-warning-dark: mix($rz-black, $rz-warning, 16%) !default;
-$rz-warning-darker: mix($rz-black, $rz-warning, 24%) !default;
+$rz-warning-dark: color.mix($rz-black, $rz-warning, 16%) !default;
+$rz-warning-darker: color.mix($rz-black, $rz-warning, 24%) !default;
 
-$rz-danger-light: mix($rz-white, $rz-danger, 16%) !default;
+$rz-danger-light: color.mix($rz-white, $rz-danger, 16%) !default;
 $rz-danger-lighter: rgba($rz-danger, .20) !default;
-$rz-danger-dark: mix($rz-black, $rz-danger, 16%) !default;
-$rz-danger-darker: mix($rz-black, $rz-danger, 24%) !default;
+$rz-danger-dark: color.mix($rz-black, $rz-danger, 16%) !default;
+$rz-danger-darker: color.mix($rz-black, $rz-danger, 24%) !default;
 
 // Theme Constants
 
@@ -109,7 +111,7 @@ $rz-outline-color: var(--rz-primary-light) !default;
 // Theme Colors
 
 $rz-theme-colors-map: () !default;
-$rz-theme-colors-map: map-merge(
+$rz-theme-colors-map: map.merge(
   (
     "white": $rz-white,
     "black": $rz-black,
@@ -252,7 +254,7 @@ $rz-link-hover-decoration: underline !default;
 // Base/Light/Dark Styles Map 
 
 $base-styles-map: () !default;
-$base-styles-map: map-merge(
+$base-styles-map: map.merge(
   (
     base: (
       background-color: var(--rz-base),
@@ -307,6 +309,7 @@ $button-active-gradient: $button-hover-gradient !default;
 $button-border-radius: $rz-border-radius !default;
 $button-shadow: none !default;
 $button-disabled-opacity: 0.5 !default;
+$button-base-outlined-border-color: var(--rz-base-600) !default;
 $button-line-height: 1.25rem !default;
 $button-vertical-align: top !default;
 $button-background-size: 100% 0%, 100% 0% !default;
@@ -316,11 +319,12 @@ $button-active-background-size: 100% 0%, 100% 200%  !default;
 
 // Chip
 $chip-background-color: var(--rz-base-600) !default;
+$chip-disabled-opacity: 0.5 !default;
 
 // SelectButton
 $selectbar-background-color: transparent !default;
 $selectbar-selected-background-color: var(--rz-primary-lighter) !default;
-$selectbar-selected-color: var(--rz-primary-light) !default;
+$selectbar-selected-color: var(--rz-on-primary-lighter) !default;
 $selectbar-selected-border: var(--rz-border-normal) !default;
 
 
@@ -426,6 +430,7 @@ $grid-column-resizer-helper-background-color: var(--rz-primary) !default;
 $grid-detail-template-background-color: var(--rz-base-900) !default;
 $grid-loading-indicator-color: var(--rz-on-primary-lighter) !default;
 $grid-loading-indicator-background-color: var(--rz-primary-lighter) !default;
+$grid-loading-indicator-background-opacity: 1 !default;
 $column-drag-handle-color: var(--rz-text-disabled-color) !default;
 $column-drag-handle-hover-color: var(--rz-text-title-color) !default;
 
@@ -581,6 +586,8 @@ $datepicker-calendar-selected-color: var(--rz-on-primary) !default;
 $datepicker-calendar-selected-background-color: var(--rz-primary) !default;
 $datepicker-calendar-selected-hover-color: var(--rz-on-primary-dark) !default;
 $datepicker-calendar-selected-hover-background-color: var(--rz-primary-dark) !default;
+$datepicker-calendar-range-color: var(--rz-on-primary-lighter) !default;
+$datepicker-calendar-range-background-color: var(--rz-primary-lighter) !default;
 $datepicker-calendar-border: none !default;
 $datepicker-calendar-border-radius: var(--rz-border-radius) !default;
 $datepicker-calendar-today-color: var(--rz-primary) !default;
@@ -615,6 +622,11 @@ $slider-handle-border: 0.25rem solid var(--rz-primary);
 $slider-handle-border-radius: calc(4 * var(--rz-border-radius)) !default;
 $slider-handle-hover-background-color: var(--rz-primary) !default;
 $slider-handle-hover-shadow: none !default;
+$range-navigator-handle-width: 1.25rem !default;
+$range-navigator-handle-border-radius: calc(4 * var(--rz-border-radius)) !default;
+$range-navigator-handle-background-color: var(--rz-base-600) !default;
+$range-navigator-handle-height: 1.25rem !default;
+$range-navigator-handle-hover-background-color: var(--rz-primary) !default;
 $slider-disabled-range-background-color: var(--rz-base-600) !default;
 $slider-disabled-range-border: var(--rz-border-base-600) !default;
 $slider-disabled-handle-background-color: var(--rz-base-800) !default;
@@ -697,6 +709,15 @@ $colorpicker-input-labels-color: var(--rz-text-tertiary-color) !default;
 // ListBox
 $listbox-filter-border: var(--rz-border-base-700) !default;
 
+// Range Navigator
+$range-nav-compact-border-radius: calc(2 * var(--rz-border-radius)) !default;
+$range-nav-compact-window-background-color: var(--rz-primary-lighter) !default;
+$range-nav-handle-width: 1.25rem !default;
+$range-nav-handle-border-radius: calc(4 * var(--rz-border-radius)) !default;
+$range-nav-handle-background-color: var(--rz-base-600) !default;
+$range-nav-handle-height: 1.25rem !default;
+$range-nav-handle-hover-background-color: var(--rz-primary) !default;
+
 // Rating
 $rating-color: var(--rz-text-tertiary-color) !default;
 $rating-focus-color: var(--rz-primary-light) !default;
@@ -730,10 +751,6 @@ $login-register-background-color: var(--rz-base-900) !default;
 
 // Editor
 $editor-toolbar-background-color: var(--rz-base-700) !default;
-$editor-button-background-color: var(--rz-base-700) !default;
-$editor-button-selected-background-color: var(--rz-primary) !default;
-$editor-button-selected-color: var(--rz-on-primary) !default;
-$editor-separator-background-color: var(--rz-base-600) !default;
 
 // Splitter
 $splitter-bar-color: var(--rz-text-secondary-color) !default;
@@ -772,6 +789,45 @@ $rz-toc-link-hover-color: var(--rz-primary) !default;
 $rz-toc-link-selected-color: var(--rz-primary-light) !default;
 $rz-toc-link-selected-indicator-color: var(--rz-primary-light) !default;
 $rz-toc-horizontal-link-selected-color: var(--rz-primary-light) !default;
+
+// Chat
+$rz-chat-background-color: var(--rz-base-background-color) !default;
+$rz-chat-border: var(--rz-border-normal) !default;
+$rz-chat-border-radius: var(--rz-border-radius) !default;
+$rz-chat-header-padding-block: 0.5rem !default;
+$rz-chat-header-padding-inline: 1rem 0.5rem !default;
+$rz-chat-header-background-color: $rz-chat-background-color !default;
+$rz-chat-header-bottom-border: var(--rz-border-normal) !default;
+$rz-chat-header-shadow: none !default;
+$rz-chat-header-title-font-size: 1rem !default;
+$rz-chat-header-title-font-weight: 600 !default;
+$rz-chat-message-user-color: var(--rz-on-primary-lighter) !default;
+$rz-chat-message-user-background-color: var(--rz-primary-lighter) !default;
+$rz-chat-message-assistant-color: var(--rz-on-base-dark) !default;
+$rz-chat-message-assistant-background-color: var(--rz-base-dark) !default;
+$rz-chat-message-text-padding: 0.5rem 0.75rem !default;
+$rz-chat-message-text-border-radius: var(--rz-border-radius) !default;
+$rz-chat-avatar-size: 2rem !default;
+$rz-chat-avatar-border-radius: var(--rz-border-radius) !default;
+$rz-chat-avatar-font-size: 1rem !default;
+$rz-chat-avatar-font-weight: 700 !default;
+$rz-chat-message-callout-radius: calc(var(--rz-border-radius) / 4) !default;
+
+// Skeleton
+$skeleton-background-color: var(--rz-base-600) !default;
+$skeleton-animation-color: var(--rz-base-500) !default;
+
+// Spreadsheet
+$spreadsheet-cell-border: var(--rz-border-base-700) !default;
+$spreadsheet-header-background-color: var(--rz-base-800) !default;
+$spreadsheet-header-active-background-color: var(--rz-primary-lighter) !default;
+$spreadsheet-splitter-background-color: var(--rz-base-700) !default;
+
+$rz-virtual-keyboard-panel-background-color: var(--rz-base-900) !default;
+$rz-virtual-keyboard-key-background-color: var(--rz-base-600) !default;
+$rz-virtual-keyboard-key-hover-background-color: var(--rz-base-500) !default;
+$rz-virtual-keyboard-key-active-background-color: var(--rz-base-700) !default;
+$rz-virtual-keyboard-key-action-background-color: var(--rz-base-700) !default;
 
 @import 'fonts';
 @import 'components';
