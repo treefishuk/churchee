@@ -19,7 +19,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
         public int Order { get; set; }
 
-        public string ImageTempPath { get; set; }
+        public byte[] ImageBytes { get; set; }
 
         public string ImageFileName { get; set; }
 
@@ -49,9 +49,13 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
                 return this;
             }
 
-            public Builder SetImage(string imageTempPath, string imageFileName)
+            public Builder SetImage(byte[] imageBytes, string imageFileName)
             {
-                _command.ImageTempPath = imageTempPath ?? string.Empty;
+                if (imageBytes != null)
+                {
+                    _command.ImageBytes = imageBytes;
+                }
+
                 _command.ImageFileName = imageFileName ?? string.Empty;
 
                 return this;

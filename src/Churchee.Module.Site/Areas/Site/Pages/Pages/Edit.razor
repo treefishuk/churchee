@@ -176,13 +176,12 @@
                 Title = result.ParentName,
                 Value = result.ParentId?.ToString().ToUpperInvariant(),
                 Data = dropdownData ?? new List<DropdownInput>(),
-                Enabled = result.Url == "/" ? false : true
+                Enabled = result.Url == "/" ? false : true  
             },
             ContentItems =  result.ContentItems.ToList(),
-            Image = new Common.ValueTypes.ChunkedImageUploadType
+            Image = new Common.ValueTypes.Upload
             {
-                ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{result.ImageThumbnail}",
-                ShowDescription = false
+                PreviewUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{result.ImageThumbnail}",
             }
 
         };
@@ -230,7 +229,7 @@
             .SetOrder(InputModel.Order)
             .SetContent(content)
             .SetProperties(properties)
-            .SetImage(InputModel.Image.TempFilePath, InputModel.Image.File?.Name ?? string.Empty)
+            .SetImage(InputModel.Image.FileBytes, InputModel.Image.File?.Name ?? string.Empty)
             .Build();
 
         var result = await Mediator.Send(command, default);

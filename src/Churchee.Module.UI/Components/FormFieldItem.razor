@@ -59,39 +59,49 @@ else if (dataType == DataTypes.ImageUpload)
     {
         var inputId = $"file-input-{Prop.Name}";
 
-        <div class="rz-fileupload">
+        <RadzenFormField Text=@Prop.Name.ToSentence() AllowFloatingLabel="false">
 
-            <div class="rz-fileupload-buttonbar rz-display-flex rz-align-items-center">
+            <div class="rz-fileupload">
 
-            <div>
+                <div class="rz-fileupload-buttonbar rz-display-flex rz-align-items-center">
 
-                <span class="rz-fileupload-choose rz-button rz-secondary rz-mr-2">
+                <div>
 
-                    <InputFile id="@inputId"
-                               accept="image/*"
-                               OnChange="@(async args => await OnImageUploadInputChangeAsync(upload, args))" />
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                            <img class="rz-m-7" src="@(upload.PreviewUrl ?? "/_content/Churchee.Module.UI/img/not-found.png")" width="200" />
 
-                    <span class="rz-button-text">Choose Image</span>
+        @*                 @if (!string.IsNullOrWhiteSpace(upload.PreviewUrl))
+                        {
+                            <img src="@upload.PreviewUrl" alt="Selected upload preview" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #d9d9d9; flex-shrink: 0;" />
+                        } *@
 
-                </span>
+                        <span class="rz-fileupload-choose rz-button rz-secondary rz-mr-2">
+
+                            <InputFile id="@inputId"
+                                       accept="image/*"
+                                       OnChange="@(async args => await OnImageUploadInputChangeAsync(upload, args))" />
+
+                            <span class="rz-button-text">Choose Image</span>
+
+                        </span>
+
+                    </RadzenStack>
+            
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(upload.FileName))
+                {
+                    <div class="rz-display-flex rz-align-items-center">
+
+
+                            <div class="rz-mx-2" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#666; min-width:0;">@upload.FileName</div>
+                    </div>
+                }
 
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(upload.FileName))
-            {
-                <div class="rz-display-flex rz-align-items-center">
-                    @if (!string.IsNullOrWhiteSpace(upload.PreviewUrl))
-                    {
-                        <img src="@upload.PreviewUrl" alt="Selected upload preview" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #d9d9d9; flex-shrink: 0;" />
-                    }
-
-                        <div class="rz-mx-2" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#666; min-width:0;">@upload.FileName</div>
-                </div>
-            }
-
-        </div>
-
-        </div>
+            </div>
+        </RadzenFormField>
     }
 }
 else if (dataType == DataTypes.ChunkedImageUpload)
@@ -364,14 +374,13 @@ else
         upload.Size = file.Size;
         upload.ContentType = file.ContentType;
         upload.Value = string.Empty;
-        upload.PreviewUrl = string.Empty;
 
         using var stream = file.OpenReadStream(file.Size);
         using var ms = new MemoryStream();
         await stream.CopyToAsync(ms);
         upload.FileBytes = ms.ToArray();
 
-        upload.PreviewUrl = await GenerateThumbnailPreviewAsync(upload.FileBytes, 50);
+        upload.PreviewUrl = await GenerateThumbnailPreviewAsync(upload.FileBytes, 200);
 
         await OnFileChangeAsync(upload);
     }

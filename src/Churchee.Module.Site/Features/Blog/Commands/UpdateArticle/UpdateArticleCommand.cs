@@ -17,7 +17,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
         public Guid ParentPageId { get; set; }
 
-        public string TempImagePath { get; set; }
+        public byte[] ImageBytes { get; set; }
 
         public string ImagePath { get; set; }
 

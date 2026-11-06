@@ -66,11 +66,9 @@
             Title = data.Title ?? string.Empty,
             Description = data.Description ?? string.Empty,
             PublishOnDate = data.PublishOnDate,
-            Image = new Common.ValueTypes.ChunkedImageUploadType
+            Image = new Common.ValueTypes.Upload
             {
-                Description = data.ImageAltTag,
-                ThumbnailUrl = !string.IsNullOrEmpty(data.ImageThumbnail) && data.ImageThumbnail.StartsWith("/_content") ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{data.ImageThumbnail}",
-                ShowDescription = true
+                PreviewUrl = data.ImageThumbnail.StartsWith("/_content") ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{data.ImageThumbnail}",
             }
         };
     }
@@ -85,8 +83,8 @@
             PublishOnDate = InputModel.PublishOnDate,
             Content = InputModel.Content,
             ParentPageId = Guid.Parse(InputModel.Parent?.Value),
-            TempImagePath = InputModel.Image.TempFilePath,
-            ImageAltTag = InputModel.Image.Description,
+            ImageBytes = InputModel.Image.FileBytes,
+            //ImageAltTag = InputModel.Image.Description,
             ImageFileName = InputModel.Image.File?.Name ?? string.Empty,
             ImagePath = "img/articles",
         };

@@ -4,9 +4,10 @@ using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
-using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
+using Churchee.Module.Site.Jobs;
 using Churchee.Module.Site.Specifications;
+using Hangfire;
 
 namespace Churchee.Module.Site.Features.Blog.Commands
 {
@@ -16,13 +17,15 @@ namespace Churchee.Module.Site.Features.Blog.Commands
         private readonly IJobService _jobService;
         private readonly IImageProcessor _imageProcessor;
         private readonly ICurrentUser _currentUser;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public UpdateArticleCommandHandler(IDataStore dataStore, IJobService jobService, IImageProcessor imageProcessor, ICurrentUser currentUser)
+        public UpdateArticleCommandHandler(IDataStore dataStore, IJobService jobService, IImageProcessor imageProcessor, ICurrentUser currentUser, IBackgroundJobClient backgroundJobClient)
         {
             _dataStore = dataStore;
             _jobService = jobService;
             _imageProcessor = imageProcessor;
             _currentUser = currentUser;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<CommandResponse> Handle(UpdateArticleCommand request, CancellationToken cancellationToken)
@@ -37,7 +40,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
             entity.SetContent(request.Content);
             entity.SetPublishDate(request.PublishOnDate);
 
-            await ProcessImage(request, applicationTenantId, entity, cancellationToken);
+            await ProcessImages(request, applicationTenantId, entity, cancellationToken);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
@@ -45,23 +48,14 @@ namespace Churchee.Module.Site.Features.Blog.Commands
         }
 
 
-        private async Task ProcessImage(UpdateArticleCommand request, Guid applicationTenantId, Article newArticle, CancellationToken cancellationToken)
+        private async Task ProcessImages(UpdateArticleCommand request, Guid applicationTenantId, Article page, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.TempImagePath) || string.IsNullOrEmpty(request.ImageFileName))
+            if (request.ImageBytes == null || string.IsNullOrEmpty(request.ImageFileName))
             {
                 return;
             }
 
-            string imagePath = await _imageProcessor.ConvertTempImageToFullImage(request.TempImagePath, request.ImageFileName, request.ImagePath, applicationTenantId, cancellationToken);
-
-            if (string.IsNullOrEmpty(imagePath))
-            {
-                return;
-            }
-
-            _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, imagePath, true, CancellationToken.None));
-
-            newArticle.SetImageInfo(imagePath.Replace(".webp", ""), request.ImageAltTag);
+            _backgroundJobClient.Enqueue<ArticleImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, page.Id, request.ImageFileName, request.ImageBytes, CancellationToken.None));
         }
     }
 }
