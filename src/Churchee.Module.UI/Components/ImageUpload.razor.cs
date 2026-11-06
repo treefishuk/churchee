@@ -1,4 +1,5 @@
 using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ValueTypes;
 using Microsoft.AspNetCore.Components;
@@ -19,6 +20,9 @@ namespace Churchee.Module.UI.Components
 
         [Parameter]
         public ImageUploadType Model { get; set; } = default!;
+
+        [Parameter]
+        public IJobService JobService { get; set; } = default!;
 
         [Parameter]
         public EventCallback<ImageUploadType> ModelChanged { get; set; }

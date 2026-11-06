@@ -182,6 +182,7 @@
             Image = new Common.ValueTypes.ImageUploadType
             {
                 ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{result.ImageThumbnail}",
+                ShowDescription = false
             }
 
         };
