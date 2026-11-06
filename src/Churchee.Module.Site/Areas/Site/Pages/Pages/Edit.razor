@@ -179,9 +179,9 @@
                 Enabled = result.Url == "/" ? false : true  
             },
             ContentItems =  result.ContentItems.ToList(),
-            Image = new Common.ValueTypes.Upload
+            Image = new Common.ValueTypes.ImageUploadType
             {
-                PreviewUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{result.ImageThumbnail}",
+                ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{result.ImageThumbnail}",
             }
 
         };

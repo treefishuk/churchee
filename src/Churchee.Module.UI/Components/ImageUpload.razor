@@ -14,6 +14,7 @@
             }
 
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                
                 <img class="rz-m-7" src="@(Model.ThumbnailUrl ?? "/_content/Churchee.Module.UI/img/not-found.png")" width="200" />
 
                 <RadzenStack Style="width:100%"> 
@@ -22,13 +23,11 @@
 
                             <div>
 
-                                <RadzenUpload Change="HandleFileUpload" Auto="false" Multiple="false" />
+                                <RadzenUpload Change="@(async args => await OnImageUploadInputChangeAsync(Model, args))" Auto="false" Multiple="false" />
 
                                 <div><small>@status</small></div>
 
                             </div>
-
-
 
                             @if (Model.ShowDescription)
                             {

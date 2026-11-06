@@ -12,7 +12,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Title = string.Empty;
             Description = string.Empty;
             Content = "<p></p>";
-            Image = new Upload() { SupportedFileTypes = ".jpg,.jpeg,.png,.gif", PreviewUrl = string.Empty, Path = "articles/" };
+            Image = new ImageUploadType() { ThumbnailUrl = string.Empty, Path = "articles/" };
         }
 
         [Required]
@@ -31,7 +31,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         public DateTime? PublishOnDate { get; set; }
 
         [DataType(DataTypes.ImageUpload)]
-        public Upload Image { get; set; }
+        public ImageUploadType Image { get; set; }
 
         [Required]
         [DataType(DataTypes.HtmlTall)]

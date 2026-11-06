@@ -14,7 +14,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Parent = new DropdownInput();
             Order = 10;
             ContentItems = new List<GetPageDetailsResponseContentItem>();
-            Image = new Upload() { SupportedFileTypes = ".jpg,.jpeg,.png,.gif", PreviewUrl = "/_content/Churchee.Module.UI/img/opengraph-placeholder.png" };
+            Image = new ImageUploadType() { ThumbnailUrl = "/_content/Churchee.Module.UI/img/opengraph-placeholder.png" };
         }
 
         [MaxLength(100)]
@@ -34,7 +34,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         public List<GetPageDetailsResponseContentItem> ContentItems { get; set; }
 
         [DataType(DataTypes.ImageUpload)]
-        public Upload Image { get; set; }
+        public ImageUploadType Image { get; set; }
 
     }
 }

@@ -98,9 +98,9 @@
         InputModel.Country = response.Country;
         InputModel.Latitude = response.Latitude;
         InputModel.Longitude = response.Longitude;
-        InputModel.ImageUpload = new Upload
+        InputModel.ImageUpload = new ImageUploadType
         {
-            PreviewUrl = response.ImageUrl.StartsWith("/_content") ? response.ImageUrl : $"{TenantResolver.GetCDNPrefix()}{response.ImageUrl.Replace(".webp", "_t.webp")}",
+            ThumbnailUrl = response.ImageUrl.StartsWith("/_content") ? response.ImageUrl : $"{TenantResolver.GetCDNPrefix()}{response.ImageUrl.Replace(".webp", "_t.webp")}",
         };
         InputModel.Dates = response.Dates;
     }

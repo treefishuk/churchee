@@ -6,7 +6,7 @@
 
 
 
-<ChunkedImageUpload Model="@Model" ModelChanged="HandleModelChange"/>
+<ImageUpload Model="@Model" ModelChanged="HandleModelChange"/>
 
 
 @code {
@@ -16,7 +16,7 @@
 
         if (string.IsNullOrEmpty(Value))
         {
-            Model = new ChunkedImageUploadType { SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+            Model = new ImageUploadType { SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
 
             return;
         }
@@ -25,11 +25,11 @@
 
         if(deconstructed != null)
         {
-            Model = new ChunkedImageUploadType { Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+            Model = new ImageUploadType { Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
         }
     }
 
-    public ChunkedImageUploadType Model { get; set; } = new();
+    public ImageUploadType Model { get; set; } = new();
 
     [Inject]
     protected ITenantResolver TenantResolver { get; set; } = default!;
@@ -52,7 +52,7 @@
     [Parameter] 
     public EventCallback<string?> OnChanged { get; set; }
 
-    private async Task HandleModelChange(ChunkedImageUploadType newValue)
+    private async Task HandleModelChange(ImageUploadType newValue)
     {
 
         if(newValue.File != null)

@@ -35,17 +35,17 @@ namespace Churchee.Module.UI.Tests.Components
         public async Task Upload_sets_thumbnail_and_description()
         {
             // Arrange
-            var model = new ChunkedImageUploadType();
+            var model = new ImageUploadType();
 
             var editContext = new EditContext(model);
 
             // Render the component with a cascading EditContext
             var wrap = Render<CascadingValue<EditContext>>(parameters => parameters
                 .Add(p => p.Value, editContext)
-                .AddChildContent<ChunkedImageUpload>(parameters => parameters.Add(p => p.Model, model))
+                .AddChildContent<ImageUpload>(parameters => parameters.Add(p => p.Model, model))
             );
 
-            var cut = wrap.FindComponent<ChunkedImageUpload>();
+            var cut = wrap.FindComponent<ImageUpload>();
 
             byte[] fileBytes = [0x1, 0x2];
 
@@ -71,17 +71,17 @@ namespace Churchee.Module.UI.Tests.Components
         public async Task Upload_progress_initially_0()
         {
             // Arrange
-            var model = new ChunkedImageUploadType();
+            var model = new ImageUploadType();
 
             var editContext = new EditContext(model);
 
             // Render the component with a cascading EditContext
             var wrap = Render<CascadingValue<EditContext>>(parameters => parameters
                 .Add(p => p.Value, editContext)
-                .AddChildContent<ChunkedImageUpload>(parameters => parameters.Add(p => p.Model, model))
+                .AddChildContent<ImageUpload>(parameters => parameters.Add(p => p.Model, model))
             );
 
-            var cut = wrap.FindComponent<ChunkedImageUpload>();
+            var cut = wrap.FindComponent<ImageUpload>();
 
             // Act
             var progressBar = cut.FindComponent<RadzenProgressBar>();
@@ -95,17 +95,17 @@ namespace Churchee.Module.UI.Tests.Components
         public async Task Upload_sets_progress()
         {
             // Arrange
-            var model = new ChunkedImageUploadType();
+            var model = new ImageUploadType();
 
             var editContext = new EditContext(model);
 
             // Render the component with a cascading EditContext
             var wrap = Render<CascadingValue<EditContext>>(parameters => parameters
                 .Add(p => p.Value, editContext)
-                .AddChildContent<ChunkedImageUpload>(parameters => parameters.Add(p => p.Model, model))
+                .AddChildContent<ImageUpload>(parameters => parameters.Add(p => p.Model, model))
             );
 
-            var cut = wrap.FindComponent<ChunkedImageUpload>();
+            var cut = wrap.FindComponent<ImageUpload>();
 
             byte[] fileBytes = [0x1, 0x2];
 

@@ -88,7 +88,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             instance.InputModel.Description = "Desc";
             instance.InputModel.Content = "Content";
             instance.InputModel.Parent = new DropdownInput { Value = Guid.NewGuid().ToString() };
-            instance.InputModel.Image = new ChunkedImageUploadType { };
+            instance.InputModel.Image = new ImageUploadType { };
 
 
             // Setup Mediator to return success

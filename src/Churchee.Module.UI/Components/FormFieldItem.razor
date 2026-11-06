@@ -43,8 +43,6 @@ else if (dataType == DataTypes.Upload)
 {
     var upload = Prop.GetValue(InputModel) as Upload;
 
-
-
     if (upload != null)
     {
         var inputAttributes = new Dictionary<string, object>() { { "aria-label", "select file" } };
@@ -52,66 +50,15 @@ else if (dataType == DataTypes.Upload)
         <RadzenFileInput Name="@Prop.Name" TValue="string" class="w-100" @bind-Value=@upload.Value @bind-FileName=@upload.FileName @bind-FileSize=@upload.Size Change=@(async args => await OnFileChangeAsync(upload)) InputAttributes="inputAttributes" />
     }
 }
-else if (dataType == DataTypes.ImageUpload)
+
+else if (dataType == DataTypes.ChunkedImageUpload || dataType == DataTypes.ImageUpload)
 {
-    var upload = Prop.GetValue(InputModel) as Upload;
-    if (upload != null)
-    {
-        var inputId = $"file-input-{Prop.Name}";
-
-        <RadzenFormField Text=@Prop.Name.ToSentence() AllowFloatingLabel="false">
-
-            <div class="rz-fileupload">
-
-                <div class="rz-fileupload-buttonbar rz-display-flex rz-align-items-center">
-
-                <div>
-
-                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
-                            <img class="rz-m-7" src="@(upload.PreviewUrl ?? "/_content/Churchee.Module.UI/img/not-found.png")" width="200" />
-
-        @*                 @if (!string.IsNullOrWhiteSpace(upload.PreviewUrl))
-                        {
-                            <img src="@upload.PreviewUrl" alt="Selected upload preview" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #d9d9d9; flex-shrink: 0;" />
-                        } *@
-
-                        <span class="rz-fileupload-choose rz-button rz-secondary rz-mr-2">
-
-                            <InputFile id="@inputId"
-                                       accept="image/*"
-                                       OnChange="@(async args => await OnImageUploadInputChangeAsync(upload, args))" />
-
-                            <span class="rz-button-text">Choose Image</span>
-
-                        </span>
-
-                    </RadzenStack>
-            
-                </div>
-
-                @if (!string.IsNullOrWhiteSpace(upload.FileName))
-                {
-                    <div class="rz-display-flex rz-align-items-center">
-
-
-                            <div class="rz-mx-2" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#666; min-width:0;">@upload.FileName</div>
-                    </div>
-                }
-
-            </div>
-
-            </div>
-        </RadzenFormField>
-    }
-}
-else if (dataType == DataTypes.ChunkedImageUpload)
-{
-    var upload = Prop.GetValue(InputModel) as ChunkedImageUploadType;
+    var upload = Prop.GetValue(InputModel) as ImageUploadType;
     
     if (upload != null)
     {
         <RadzenFormField Text=@Prop.Name.ToSentence() AllowFloatingLabel="false">
-            <ChunkedImageUpload @bind-Model=upload></ChunkedImageUpload>
+            <ImageUpload @bind-Model=upload></ImageUpload>
         </RadzenFormField>
     }
 }
@@ -360,54 +307,7 @@ else
         await OnValueChanged.InvokeAsync(null);
     }
 
-    async Task OnImageUploadInputChangeAsync(Upload upload, InputFileChangeEventArgs args)
-    {
-        var file = args.File;
 
-        if (file == null)
-        {
-            return;
-        }
-
-        upload.File = file;
-        upload.FileName = file.Name;
-        upload.Size = file.Size;
-        upload.ContentType = file.ContentType;
-        upload.Value = string.Empty;
-
-        using var stream = file.OpenReadStream(file.Size);
-        using var ms = new MemoryStream();
-        await stream.CopyToAsync(ms);
-        upload.FileBytes = ms.ToArray();
-
-        upload.PreviewUrl = await GenerateThumbnailPreviewAsync(upload.FileBytes, 200);
-
-        await OnFileChangeAsync(upload);
-    }
-
-    private async Task<string> GenerateThumbnailPreviewAsync(byte[] imageBytes, int maxDimension)
-    {
-        if (imageBytes == null || imageBytes.Length == 0)
-        {
-            return string.Empty;
-        }
-
-        try
-        {
-            await using var input = new MemoryStream(imageBytes);
-            await using var resized = await ImageProcessor.ResizeImageAsync(input, maxDimension, 0, ".webp", CancellationToken.None);
-            resized.Position = 0;
-
-            using var output = new MemoryStream();
-            await resized.CopyToAsync(output);
-
-            return $"data:image/webp;base64,{Convert.ToBase64String(output.ToArray())}";
-        }
-        catch
-        {
-            return string.Empty;
-        }
-    }
 
     async Task OnFileChangeAsync(Upload upload)
     {
