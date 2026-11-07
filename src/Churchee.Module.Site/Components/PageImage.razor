@@ -22,7 +22,7 @@
 
         if(deconstructed != null)
         {
-            Model = new ImageUploadType { Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+            Model = new ImageUploadType { Path = "/img/pages",  Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.ThumbnailPath}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
         }
     }
 
@@ -52,18 +52,9 @@
     private async Task HandleModelChange(ImageUploadType newValue)
     {
 
-        if(newValue.File != null)
-        {
-            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.Value, Url = newValue.File.Name };
+        var data = new ImageSimple { AltText = newValue.Description, Url = newValue.FileName, ThumbnailPath = newValue.ThumbnailUrl };
 
-            Value = JsonSerializer.Serialize(data);
-        }
-        else
-        {
-            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.Value, Url = newValue.ThumbnailUrl };
-
-            Value = JsonSerializer.Serialize(data);
-        }
+        Value = JsonSerializer.Serialize(data);
 
         await ValueChanged.InvokeAsync(Value);
     }

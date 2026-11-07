@@ -119,6 +119,7 @@ namespace Churchee.Module.UI.Components
 
             UpdateProgress(100);
 
+            await ModelChanged.InvokeAsync(Model);
         }
 
         private void UpdateProgress(int value)

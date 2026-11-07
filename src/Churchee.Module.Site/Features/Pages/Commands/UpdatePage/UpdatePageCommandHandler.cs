@@ -5,7 +5,6 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Common.ValueTypes;
 using Churchee.CQRS.Abstractions;
-using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
 using Hangfire;
@@ -95,26 +94,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
             var newImage = JsonSerializer.Deserialize<ImageSimple>(item.Value);
 
-            if (!string.IsNullOrEmpty(newImage.TempUrl))
-            {
-                string finalUrl = await _imageProcessor.ConvertTempImageToFullImage(newImage.TempUrl, newImage.Url, "/img/pages", applicationTenantId, cancellationToken);
-
-                imageData.Url = finalUrl.Replace(".webp", "");
-
-                imageData.TempUrl = string.Empty;
-
-                _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, finalUrl, true, CancellationToken.None));
-            }
-            else
-            {
-                // If there's no TempUrl, accept the provided Url (if any) as the final URL
-                if (!string.IsNullOrEmpty(newImage.Url))
-                {
-                    imageData.Url = newImage.Url;
-                }
-
-                imageData.TempUrl = string.Empty;
-            }
+            imageData.Url = newImage.Url.GetFullPathWithoutExtension();
 
             imageData.AltText = newImage.AltText;
 

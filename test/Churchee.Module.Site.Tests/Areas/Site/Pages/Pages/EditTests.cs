@@ -167,7 +167,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Pages
                     Type = EditorType.Image,
                     Title = "Image",
                     DevName = "imageDev",
-                    Value = JsonSerializer.Serialize(new ImageSimple{ Url = "/tmp/image.png" }),
+                    Value = JsonSerializer.Serialize(new ImageSimple{ ThumbnailPath = "/tmp/image.png" }),
                     MaxLength = 0
                 }
             };

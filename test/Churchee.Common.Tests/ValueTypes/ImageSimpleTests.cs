@@ -12,8 +12,8 @@ namespace Churchee.Common.Tests.ValueTypes
             var model = new ImageSimple();
 
             // Assert
+            model.ThumbnailPath.Should().BeNull();
             model.Url.Should().BeNull();
-            model.TempUrl.Should().BeNull();
             model.AltText.Should().BeNull();
 
         }

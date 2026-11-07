@@ -120,7 +120,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var pageContent = page.PageContent.First();
             pageContent.PageTypeContent = pct;
 
-            var newImage = new ImageSimple { Url = "/img/original", TempUrl = string.Empty, AltText = "alt-text" };
+            var newImage = new ImageSimple { ThumbnailPath = "/img/original", Url = string.Empty, AltText = "alt-text" };
             var updates = new List<KeyValuePair<Guid, string>>
             {
                 new KeyValuePair<Guid, string>(contentId, JsonSerializer.Serialize(newImage))
@@ -133,8 +133,8 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var pc = page.PageContent.First();
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
-            Assert.Equal("/img/original", deserialized.Url);
-            Assert.Equal(string.Empty, deserialized.TempUrl);
+            Assert.Equal("/img/original", deserialized.ThumbnailPath);
+            Assert.Equal(string.Empty, deserialized.Url);
             Assert.Equal("alt-text", deserialized.AltText);
             Assert.Equal(2, pc.Version); // incremented
         }
@@ -158,7 +158,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var pageContent = page.PageContent.First();
             pageContent.PageTypeContent = pct;
 
-            var newImage = new ImageSimple { Url = "file.png", TempUrl = "/temp/path.png", AltText = "alt" };
+            var newImage = new ImageSimple { ThumbnailPath = "file.png", Url = "/temp/path.png", AltText = "alt" };
             var updates = new List<KeyValuePair<Guid, string>>
             {
                 new KeyValuePair<Guid, string>(contentId, JsonSerializer.Serialize(newImage))
@@ -166,7 +166,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
 
             var returnedFinalUrl = "/img/pages/final.webp";
             imageProcessorMock
-                .Setup(x => x.ConvertTempImageToFullImage(newImage.TempUrl, newImage.Url, It.IsAny<string>(), applicationTenantId, It.IsAny<CancellationToken>()))
+                .Setup(x => x.ConvertTempImageToFullImage(newImage.Url, newImage.ThumbnailPath, It.IsAny<string>(), applicationTenantId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(returnedFinalUrl);
 
             // Act
@@ -174,8 +174,8 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
 
             // Assert
             imageProcessorMock.Verify(x => x.ConvertTempImageToFullImage(
-                It.Is<string>(p => p == newImage.TempUrl),
-                It.Is<string>(f => f == newImage.Url),
+                It.Is<string>(p => p == newImage.Url),
+                It.Is<string>(f => f == newImage.ThumbnailPath),
                 It.IsAny<string>(),
                 It.Is<Guid>(g => g == applicationTenantId),
                 It.IsAny<CancellationToken>()),
@@ -186,8 +186,8 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var pc = page.PageContent.First();
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
-            Assert.Equal(returnedFinalUrl.Replace(".webp", ""), deserialized.Url);
-            Assert.Equal(string.Empty, deserialized.TempUrl);
+            Assert.Equal(returnedFinalUrl.Replace(".webp", ""), deserialized.ThumbnailPath);
+            Assert.Equal(string.Empty, deserialized.Url);
             Assert.Equal("alt", deserialized.AltText);
             Assert.Equal(6, pc.Version); // incremented
         }
