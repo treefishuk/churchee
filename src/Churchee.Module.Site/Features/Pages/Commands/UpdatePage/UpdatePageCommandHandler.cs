@@ -7,7 +7,6 @@ using Churchee.Common.ValueTypes;
 using Churchee.CQRS.Abstractions;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Jobs;
 using Churchee.Module.Site.Specifications;
 using Hangfire;
 using System.Text.Json;
@@ -40,9 +39,9 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
             page.UpdateInfo(request.Title, request.Description, request.ParentId, request.Order);
 
-            var applicationTenantId = await _currentUser.GetApplicationTenantId();
+            page.SetImageInfo(request.ImageFileName, string.Empty);
 
-            await ProcessImages(request, applicationTenantId, page, cancellationToken);
+            var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
             await UpdateContent(request.Content, page, applicationTenantId, cancellationToken);
 
@@ -61,16 +60,6 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
             await _storage.SaveChangesAsync(cancellationToken);
 
             return new CommandResponse();
-        }
-
-        private async Task ProcessImages(UpdatePageCommand request, Guid applicationTenantId, Page page, CancellationToken cancellationToken)
-        {
-            if (request.ImageBytes == null || string.IsNullOrEmpty(request.ImageFileName))
-            {
-                return;
-            }
-
-            _backgroundJobClient.Enqueue<PageImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, page.Id, request.ImageFileName, request.ImageBytes, CancellationToken.None));
         }
 
         public async Task UpdateContent(List<KeyValuePair<Guid, string>> content, Page page, Guid applicationTenantId, CancellationToken cancellationToken)

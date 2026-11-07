@@ -23,7 +23,9 @@
 
                             <div>
 
-                                <RadzenUpload Change="@(async args => await OnImageUploadInputChangeAsync(Model, args))" Auto="false" Multiple="false" />
+                                <RadzenUpload Change="@(async args => await OnImageUploadInputChangeAsync(Model, args))"
+                                             Auto="false"
+                                             Multiple="false" />
 
                                 <div><small>@status</small></div>
 

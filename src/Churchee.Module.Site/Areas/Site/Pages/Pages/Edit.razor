@@ -2,6 +2,7 @@
 @inherits BasePage
 @using Churchee.Common.ValueTypes
 @using Churchee.Module.Site.Areas.Site.Models
+@using Churchee.Module.Site.Components
 @using Churchee.Module.Site.Features.Pages.Commands.CreatePermenantImageFromTemp
 @using Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 @using Churchee.Module.Site.Features.Pages.Queries
@@ -182,7 +183,8 @@
             Image = new Common.ValueTypes.ImageUploadType
             {
                 ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{result.ImageThumbnail}",
-                ShowDescription = false
+                ShowDescription = false,
+                Path = "/img/pages"
             }
 
         };
@@ -230,7 +232,7 @@
             .SetOrder(InputModel.Order)
             .SetContent(content)
             .SetProperties(properties)
-            .SetImage(InputModel.Image.FileBytes, InputModel.Image.File?.Name ?? string.Empty)
+            .SetImage(InputModel.Image.FileName ?? string.Empty)
             .Build();
 
         var result = await Mediator.Send(command, default);

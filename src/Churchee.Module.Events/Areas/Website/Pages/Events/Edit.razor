@@ -4,9 +4,7 @@
 @using Churchee.Common.ValueTypes
 @using Churchee.Module.Events.Areas.Website.Models
 @using Churchee.Module.Events.Components
-@using Churchee.Module.Events.Models
 @using Churchee.Module.UI.Components
-@using Churchee.Module.UI.Models
 @using Churchee.Module.Events.Features.Queries
 @using Churchee.Module.Events.Features.Commands
 @using Microsoft.AspNetCore.Components.Forms
@@ -101,6 +99,8 @@
         InputModel.ImageUpload = new ImageUploadType
         {
             ThumbnailUrl = response.ImageUrl.StartsWith("/_content") ? response.ImageUrl : $"{TenantResolver.GetCDNPrefix()}{response.ImageUrl.Replace(".webp", "_t.webp")}",
+            Path = "/img/events",
+            ShowDescription = false
         };
         InputModel.Dates = response.Dates;
     }

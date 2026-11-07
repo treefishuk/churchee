@@ -1,6 +1,6 @@
 ﻿using Churchee.Common.ResponseTypes;
-using Churchee.Module.Events.Models;
 using Churchee.CQRS.Abstractions;
+using Churchee.Module.Events.Models;
 
 namespace Churchee.Module.Events.Features.Commands
 {
@@ -64,7 +64,13 @@ namespace Churchee.Module.Events.Features.Commands
 
             public Builder SetImageFileName(string imageFileName)
             {
-                _command.ImageFileName = imageFileName ?? string.Empty;
+                if (string.IsNullOrEmpty(imageFileName))
+                {
+                    return this;
+                }
+
+                _command.ImageFileName = imageFileName;
+
                 return this;
             }
 

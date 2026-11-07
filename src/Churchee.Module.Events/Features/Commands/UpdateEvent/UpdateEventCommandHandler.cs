@@ -4,7 +4,6 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Events.Entities;
-using Churchee.Module.Events.Jobs;
 using Churchee.Module.Events.Specifications;
 using Hangfire;
 
@@ -34,6 +33,8 @@ namespace Churchee.Module.Events.Features.Commands
 
             var entity = await _dataStore.GetRepository<Event>().FirstOrDefaultAsync(new EventByIdIncludingDatesSpecification(request.Id), cancellationToken);
 
+            entity.SetImageInfo(request.ImageFileName, string.Empty);
+
             entity.UpdateInformation(title: request.Title,
                                    description: request.Description,
                                    content: request.Content);
@@ -47,11 +48,6 @@ namespace Churchee.Module.Events.Features.Commands
                                    longitude: request.Longitude);
 
             UpdateEventDates(request, entity);
-
-            if (!string.IsNullOrEmpty(request.ImageFileName) && request.ImageData.Length > 0)
-            {
-                _backgroundJobClient.Enqueue<EventImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, entity.Id, request.ImageFileName, request.ImageData, CancellationToken.None));
-            }
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 

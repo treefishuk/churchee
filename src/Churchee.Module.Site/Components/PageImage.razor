@@ -1,13 +1,10 @@
 ﻿@using Churchee.Common.Abstractions.Auth
 @using Churchee.Common.ValueTypes
+@using Churchee.Module.UI.Components
 @using Microsoft.AspNetCore.Components;
 @using System.Text.Json
 
-
-
-
 <ImageUpload Model="@Model" ModelChanged="HandleModelChange"/>
-
 
 @code {
 
@@ -16,7 +13,7 @@
 
         if (string.IsNullOrEmpty(Value))
         {
-            Model = new ImageUploadType { SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+            Model = new ImageUploadType() { Path = "/img/pages", ApplicationTenantId = TenantResolver.GetTenantId() };
 
             return;
         }
@@ -35,35 +32,35 @@
     protected ITenantResolver TenantResolver { get; set; } = default!;
 
     [Parameter] 
-    public string? Value { get; set; }
+    public string Value { get; set; }
 
     [Parameter] 
-    public EventCallback<string?> ValueChanged { get; set; }
+    public EventCallback<string> ValueChanged { get; set; }
 
     [Parameter]
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     [Parameter]
     public Guid? PageId { get; set; }
 
     [Parameter] 
-    public Func<ChunkedUploadRequest, Task<string?>>? OnUpload { get; set; }
+    public Func<ChunkedUploadRequest, Task<string>> OnUpload { get; set; }
 
     [Parameter] 
-    public EventCallback<string?> OnChanged { get; set; }
+    public EventCallback<string> OnChanged { get; set; }
 
     private async Task HandleModelChange(ImageUploadType newValue)
     {
 
         if(newValue.File != null)
         {
-            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.TempFilePath, Url = newValue.File.Name };
+            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.Value, Url = newValue.File.Name };
 
             Value = JsonSerializer.Serialize(data);
         }
         else
         {
-            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.TempFilePath, Url = newValue.ThumbnailUrl };
+            var data = new ImageSimple { AltText = newValue.Description, TempUrl = newValue.Value, Url = newValue.ThumbnailUrl };
 
             Value = JsonSerializer.Serialize(data);
         }

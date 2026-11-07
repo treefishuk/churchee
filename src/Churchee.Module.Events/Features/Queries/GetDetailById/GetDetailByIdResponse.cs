@@ -53,7 +53,15 @@ namespace Churchee.Module.Events.Features.Queries
 
             public Builder SetImageUrl(string imageUrl)
             {
+                if (string.IsNullOrEmpty(imageUrl))
+                {
+                    _response.ImageUrl = "/_content/Churchee.Module.UI/img/opengraph-placeholder.png";
+
+                    return this;
+                }
+
                 _response.ImageUrl = imageUrl;
+
                 return this;
             }
 

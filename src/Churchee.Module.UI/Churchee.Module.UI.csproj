@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Churchee.Common\Churchee.Common.csproj" />
+    <ProjectReference Include="..\Churchee.ImageProcessing\Churchee.ImageProcessing.csproj" />
   </ItemGroup>
 	
 </Project>

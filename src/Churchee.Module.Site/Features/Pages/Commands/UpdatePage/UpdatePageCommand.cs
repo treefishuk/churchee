@@ -49,14 +49,14 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
                 return this;
             }
 
-            public Builder SetImage(byte[] imageBytes, string imageFileName)
+            public Builder SetImage(string imageFileName)
             {
-                if (imageBytes != null)
+                if (string.IsNullOrEmpty(imageFileName))
                 {
-                    _command.ImageBytes = imageBytes;
+                    return this;
                 }
 
-                _command.ImageFileName = imageFileName ?? string.Empty;
+                _command.ImageFileName = imageFileName.GetFullPathWithoutExtension();
 
                 return this;
             }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
@@ -103,6 +104,13 @@ namespace System
             var index = array.Length - 1;
 
             return array[index];
+        }
+
+        public static string GetFullPathWithoutExtension(this string filePath)
+        {
+            return Path.Combine(
+            Path.GetDirectoryName(filePath),
+            Path.GetFileNameWithoutExtension(filePath));
         }
     }
 }

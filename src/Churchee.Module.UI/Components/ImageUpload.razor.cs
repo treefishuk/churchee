@@ -1,7 +1,9 @@
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Storage;
 using Churchee.Common.ValueTypes;
+using Churchee.ImageProcessing.Jobs;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
@@ -16,13 +18,13 @@ namespace Churchee.Module.UI.Components
         protected IImageProcessor ImageProcessor { get; set; } = default!;
 
         [Inject]
-        private IAiToolUtilities AiToolUtilities { get; set; } = default!;
+        protected IBlobStore BlobStore { get; set; } = default!;
+
+        [Inject]
+        public IJobService JobService { get; set; } = default!;
 
         [Parameter]
         public ImageUploadType Model { get; set; } = default!;
-
-        [Parameter]
-        public IJobService JobService { get; set; } = default!;
 
         [Parameter]
         public EventCallback<ImageUploadType> ModelChanged { get; set; }
@@ -62,6 +64,11 @@ namespace Churchee.Module.UI.Components
 
         async Task OnImageUploadInputChangeAsync(ImageUploadType upload, UploadChangeEventArgs args)
         {
+            if (upload.ApplicationTenantId == Guid.Empty)
+            {
+                upload.ApplicationTenantId = TenantResolver.GetTenantId();
+            }
+
             // Cancel any previous alt text generation
             _ = (_descriptionCts?.CancelAsync());
             _descriptionCts = new CancellationTokenSource();
@@ -78,48 +85,40 @@ namespace Churchee.Module.UI.Components
             upload.Size = file.Size;
             upload.ContentType = file.ContentType;
             upload.Value = string.Empty;
+            uploadProgress = 0;
 
-            using var stream = file.OpenReadStream(file.Size);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            upload.FileBytes = ms.ToArray();
+            string fileName = Path.GetFileNameWithoutExtension(upload.FileName);
 
-            upload.ThumbnailUrl = await GenerateThumbnailPreviewAsync(upload.FileBytes, 200);
-        }
+            await using var inputStream = file.OpenReadStream(long.MaxValue);
 
-        private async Task<string> GenerateThumbnailPreviewAsync(byte[] imageBytes, int maxDimension)
-        {
-            if (imageBytes == null || imageBytes.Length == 0)
-            {
-                return string.Empty;
-            }
+            await using var originalImageStream = new MemoryStream();
 
-            try
-            {
-                UpdateProgress(20);
+            UpdateProgress(20);
 
-                await using var input = new MemoryStream(imageBytes);
-                await using var resized = await ImageProcessor.ResizeImageAsync(input, maxDimension, 0, ".webp", CancellationToken.None);
+            await inputStream.CopyToAsync(originalImageStream, CancellationToken.None);
 
-                UpdateProgress(70);
+            originalImageStream.Position = 0;
 
-                resized.Position = 0;
+            UpdateProgress(20);
 
-                using var output = new MemoryStream();
-                await resized.CopyToAsync(output);
+            await using var webpStream = await ImageProcessor.ConvertToWebP(originalImageStream, CancellationToken.None);
 
-                UpdateProgress(90);
+            UpdateProgress(30);
 
-                string result = Convert.ToBase64String(output.ToArray());
+            string imagePath = $"{upload.Path}/{fileName.ToDevName()}.webp";
 
-                UpdateProgress(100);
+            upload.FileName = await BlobStore.SaveAsync(upload.ApplicationTenantId, imagePath, webpStream, false, CancellationToken.None);
 
-                return $"data:image/webp;base64,{result}";
-            }
-            catch
-            {
-                return string.Empty;
-            }
+            UpdateProgress(80);
+
+            JobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(upload.ApplicationTenantId, upload.FileName, true, CancellationToken.None));
+
+            originalImageStream.Position = 0;
+
+            upload.ThumbnailUrl = await GenerateThumbnailPreviewAsync(originalImageStream, 200, CancellationToken.None);
+
+            UpdateProgress(100);
+
         }
 
         private void UpdateProgress(int value)
@@ -127,6 +126,44 @@ namespace Churchee.Module.UI.Components
             uploadProgress = value;
 
             StateHasChanged();
+        }
+
+
+        private async Task<string> GenerateThumbnailPreviewAsync(Stream imageStream, int maxDimension, CancellationToken cancellationToken)
+        {
+            if (imageStream == null)
+            {
+                return string.Empty;
+            }
+
+            if (imageStream.CanSeek && imageStream.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                if (imageStream.CanSeek)
+                {
+                    imageStream.Position = 0;
+                }
+
+                await using var resized = await ImageProcessor.ResizeImageAsync(imageStream, maxDimension, 0, ".webp", cancellationToken);
+
+                await using var output = new MemoryStream();
+                await resized.CopyToAsync(output, 64 * 1024, cancellationToken);
+                var bytes = output.ToArray();
+
+                return $"data:image/webp;base64,{Convert.ToBase64String(bytes)}";
+            }
+            catch (OperationCanceledException)
+            {
+                return string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         protected virtual void Dispose(bool disposing)

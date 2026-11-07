@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Common.ValueTypes
 {
@@ -10,6 +11,8 @@ namespace Churchee.Common.ValueTypes
             ThumbnailUrl = string.Empty;
             SupportedFileTypes = ".jpg,.jpeg,.png,.gif";
         }
+
+        public Guid ApplicationTenantId { get; set; }
 
         public string TempFilePath { get; set; }
 
