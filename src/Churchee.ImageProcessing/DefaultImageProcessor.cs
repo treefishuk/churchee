@@ -92,7 +92,7 @@ namespace Churchee.ImageProcessing
                 {
                     FileFormat = WebpFileFormatType.Lossless,
                     Quality = 100,
-                    Method = WebpEncodingMethod.BestQuality,
+                    Method = WebpEncodingMethod.Fastest,
                     FilterStrength = 60,
                     NearLossless = false,
                     NearLosslessQuality = 60

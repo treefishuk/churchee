@@ -14,8 +14,6 @@ namespace Churchee.Common.ValueTypes
 
         public Guid ApplicationTenantId { get; set; }
 
-        public string TempFilePath { get; set; }
-
         public string ThumbnailUrl { get; set; }
 
         public bool ShowDescription { get; set; } = true;

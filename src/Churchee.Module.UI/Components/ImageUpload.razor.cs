@@ -62,8 +62,16 @@ namespace Churchee.Module.UI.Components
             StateHasChanged();
         }
 
+        private CancellationTokenSource? _uploadCts;
+
         async Task OnImageUploadInputChangeAsync(ImageUploadType upload, UploadChangeEventArgs args)
         {
+            _uploadCts?.Cancel();
+            _uploadCts?.Dispose();
+            _uploadCts = new CancellationTokenSource();
+
+            var token = _uploadCts.Token;
+
             if (upload.ApplicationTenantId == Guid.Empty)
             {
                 upload.ApplicationTenantId = TenantResolver.GetTenantId();
@@ -93,45 +101,59 @@ namespace Churchee.Module.UI.Components
 
             await using var originalImageStream = new MemoryStream();
 
-            UpdateProgress(20);
+            await UpdateProgressAsync(20, CancellationToken.None);
 
-            await inputStream.CopyToAsync(originalImageStream, CancellationToken.None);
+            await inputStream.CopyToAsync(originalImageStream, token);
 
             originalImageStream.Position = 0;
 
-            UpdateProgress(20);
+            await UpdateProgressAsync(20, token);
 
-            await using var webpStream = await ImageProcessor.ConvertToWebP(originalImageStream, CancellationToken.None);
+            await using var webpStream = await ImageProcessor.ConvertToWebP(originalImageStream, token);
 
-            UpdateProgress(30);
+            await UpdateProgressAsync(30, token);
 
             string imagePath = $"{upload.Path}/{fileName.ToDevName()}.webp";
 
-            upload.FileName = await BlobStore.SaveAsync(upload.ApplicationTenantId, imagePath, webpStream, false, CancellationToken.None);
+            upload.FileName = await BlobStore.SaveAsync(upload.ApplicationTenantId, imagePath, webpStream, false, token);
 
-            UpdateProgress(80);
+            await UpdateProgressAsync(80, token);
 
-            JobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(upload.ApplicationTenantId, upload.FileName, true, CancellationToken.None));
+            webpStream.Position = 0;
 
-            originalImageStream.Position = 0;
+            upload.ThumbnailUrl = await GenerateThumbnailPreviewAsync(webpStream, 180, token);
 
-            upload.ThumbnailUrl = await GenerateThumbnailPreviewAsync(originalImageStream, 200, CancellationToken.None);
+            await UpdateProgressAsync(100, token);
 
-            UpdateProgress(100);
+            JobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(upload.ApplicationTenantId, upload.FileName, true, token));
 
             await ModelChanged.InvokeAsync(Model);
         }
 
-        private void UpdateProgress(int value)
+        private async Task UpdateProgressAsync(int value, CancellationToken ct)
         {
-            uploadProgress = value;
+            var current = uploadProgress;
+            var target = Math.Clamp(value, 0, 100);
 
-            StateHasChanged();
+            if (target <= current)
+            {
+                uploadProgress = target;
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+
+            for (var i = (int)Math.Ceiling(current); i <= target; i++)
+            {
+                uploadProgress = i;
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(20, ct);
+            }
         }
 
 
         private async Task<string> GenerateThumbnailPreviewAsync(Stream imageStream, int maxDimension, CancellationToken cancellationToken)
         {
+
             if (imageStream == null)
             {
                 return string.Empty;
@@ -151,9 +173,14 @@ namespace Churchee.Module.UI.Components
 
                 await using var resized = await ImageProcessor.ResizeImageAsync(imageStream, maxDimension, 0, ".webp", cancellationToken);
 
+                if (resized is MemoryStream memoryStream)
+                {
+                    return $"data:image/webp;base64,{Convert.ToBase64String(memoryStream.ToArray())}";
+                }
+
                 await using var output = new MemoryStream();
-                await resized.CopyToAsync(output, 64 * 1024, cancellationToken);
-                var bytes = output.ToArray();
+                await resized.CopyToAsync(output, cancellationToken);
+                byte[] bytes = output.ToArray();
 
                 return $"data:image/webp;base64,{Convert.ToBase64String(bytes)}";
             }
@@ -171,6 +198,8 @@ namespace Churchee.Module.UI.Components
         {
             if (!disposedValue)
             {
+                _uploadCts?.Cancel();
+                _uploadCts?.Dispose();
                 _descriptionCts?.Dispose();
                 disposedValue = true;
             }

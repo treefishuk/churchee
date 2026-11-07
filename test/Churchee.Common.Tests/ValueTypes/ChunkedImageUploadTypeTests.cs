@@ -15,7 +15,6 @@ namespace Churchee.Common.Tests.ValueTypes
             var model = new ImageUploadType();
 
             // Assert
-            model.TempFilePath.Should().BeEmpty();
             model.Path.Should().BeEmpty();
         }
 

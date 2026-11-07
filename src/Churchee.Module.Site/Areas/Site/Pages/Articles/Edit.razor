@@ -32,6 +32,7 @@
 @code {
     public EditArticleModel InputModel { get; set; } = new();
 
+
     public ImageUploadModel ImageUploadModel { get; set; } = new();
 
     [Parameter]
@@ -65,7 +66,7 @@
             Image = new Common.ValueTypes.ImageUploadType
             {
                 ThumbnailUrl = data.ImageThumbnail.StartsWith("/_content") ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{data.ImageThumbnail}",
-                Path = "articles/"
+                Path = "/img/articles/"
             }
         };
     }

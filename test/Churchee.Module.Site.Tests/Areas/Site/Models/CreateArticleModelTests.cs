@@ -20,7 +20,6 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             Assert.Equal("<p></p>", model.Content);
             Assert.NotNull(model.Image);
             Assert.Equal(".jpg,.jpeg,.png,.gif", model.Image.SupportedFileTypes);
-            Assert.Equal(string.Empty, model.Image.TempFilePath);
             Assert.Equal(string.Empty, model.Image.ThumbnailUrl);
             Assert.Equal("articles/", model.Image.Path);
             Assert.Null(model.Parent);
