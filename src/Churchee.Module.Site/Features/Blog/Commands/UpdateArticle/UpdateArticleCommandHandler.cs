@@ -5,7 +5,6 @@ using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
-using Churchee.Module.Site.Jobs;
 using Churchee.Module.Site.Specifications;
 using Hangfire;
 
@@ -40,7 +39,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
             entity.SetContent(request.Content);
             entity.SetPublishDate(request.PublishOnDate);
 
-            await ProcessImages(request, applicationTenantId, entity, cancellationToken);
+            entity.SetImageInfo(request.ImagePath, string.Empty);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 
@@ -48,14 +47,6 @@ namespace Churchee.Module.Site.Features.Blog.Commands
         }
 
 
-        private async Task ProcessImages(UpdateArticleCommand request, Guid applicationTenantId, Article page, CancellationToken cancellationToken)
-        {
-            if (request.ImageBytes == null || string.IsNullOrEmpty(request.ImageFileName))
-            {
-                return;
-            }
 
-            _backgroundJobClient.Enqueue<ArticleImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, page.Id, request.ImageFileName, request.ImageBytes, CancellationToken.None));
-        }
     }
 }

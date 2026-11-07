@@ -81,10 +81,8 @@
             PublishOnDate = InputModel.PublishOnDate,
             Content = InputModel.Content,
             ParentPageId = Guid.Parse(InputModel.Parent?.Value),
-            ImageBytes = InputModel.Image.FileBytes,
             ImageAltTag = InputModel.Image.Description,
-            ImageFileName = InputModel.Image.File?.Name ?? string.Empty,
-            ImagePath = "img/articles",
+            ImagePath = InputModel.Image.FileName,
         };
 
         var result = await Mediator.Send(command, default);
