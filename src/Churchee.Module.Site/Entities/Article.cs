@@ -25,7 +25,7 @@ namespace Churchee.Module.Site.Entities
             ParentId = parentId;
             ImageAltTag = imageAltTag;
 
-            AddDomainEvent(new PageInfoUpdatedEvent(Id));
+            AddDomainEvent(new PageInfoUpdatedEvent(ApplicationTenantId, Id));
         }
 
         public void SetContent(string content)

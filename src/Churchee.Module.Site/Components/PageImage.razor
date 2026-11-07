@@ -22,7 +22,7 @@
 
         if(deconstructed != null)
         {
-            Model = new ImageUploadType { Path = "/img/pages",  Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.ThumbnailPath}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+            Model = new ImageUploadType { Path = "/img/pages",  Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
         }
     }
 

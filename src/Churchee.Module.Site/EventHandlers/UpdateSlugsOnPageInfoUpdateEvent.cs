@@ -1,7 +1,8 @@
 ﻿using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Events;
-using Churchee.CQRS.Abstractions;
+using Churchee.Module.Site.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace Churchee.Module.Site.EventHandlers
@@ -18,7 +19,7 @@ namespace Churchee.Module.Site.EventHandlers
 
         public async Task Handle(PageInfoUpdatedEvent notification, CancellationToken cancellationToken)
         {
-            string slug = await UpdatePageUrl(notification);
+            string slug = await UpdatePageUrl(notification, cancellationToken);
 
             await UpdateChildPageUrls(slug, notification.PageId);
 
@@ -40,11 +41,11 @@ namespace Churchee.Module.Site.EventHandlers
             }
         }
 
-        private async Task<string> UpdatePageUrl(PageInfoUpdatedEvent notification)
+        private async Task<string> UpdatePageUrl(PageInfoUpdatedEvent notification, CancellationToken cancellationToken)
         {
             var repo = _storage.GetRepository<WebContent>();
 
-            var page = await repo.GetByIdAsync(notification.PageId);
+            var page = await repo.FirstOrDefaultAsync(new WebContentFromIdAndTenantSpecification(notification.ApplicationTenantId, notification.PageId), cancellationToken);
 
             if (page.Url == "/")
             {
