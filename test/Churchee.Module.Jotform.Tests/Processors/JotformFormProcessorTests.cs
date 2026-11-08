@@ -5,7 +5,6 @@ using Churchee.Module.Tokens.Entities;
 using Churchee.Module.Tokens.Specifications;
 using Churchee.Test.Helpers;
 using Churchee.Test.Helpers.Validation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -183,7 +182,7 @@ namespace Churchee.Module.Jotform.Tests.Processors
             _mockLogger.Verify(l => l.Log(
                     LogLevel.Warning,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, _) => o.ToString()!.Contains("Jotform submission failed")),
+                    It.Is<It.IsAnyType>((o, _) => o!.ToString()!.Contains("Jotform submission failed")),
                     null,
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

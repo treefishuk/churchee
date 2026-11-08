@@ -24,7 +24,7 @@ namespace Churchee.Module.UI.Tests.Components
             // Assert
             var child = cut.FindComponent<RadzenTextBox>();
 
-            child.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+            child?.Instance?.Name?.Should().Be(nameof(inputModel.MyProperty));
 
             cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
@@ -42,9 +42,9 @@ namespace Churchee.Module.UI.Tests.Components
             var formField = cut.FindComponent<RadzenFormField>();
             var input = cut.FindComponent<RadzenTextBox>();
 
-            input.Instance.Name.Should().Be(nameof(inputModel.MyProperty));
+            input?.Instance?.Name?.Should().Be(nameof(inputModel.MyProperty));
 
-            formField.Instance.Text.Should().Be("Custom Name");
+            formField?.Instance?.Text?.Should().Be("Custom Name");
 
             cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }

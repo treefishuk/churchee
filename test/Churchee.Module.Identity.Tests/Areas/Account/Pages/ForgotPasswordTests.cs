@@ -160,7 +160,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Account.Pages
             logger.Verify(l => l.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, _) => o.ToString()!.Contains("Callback URL is null")),
+                    It.Is<It.IsAnyType>((o, _) => o!.ToString()!.Contains("Callback URL is null")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

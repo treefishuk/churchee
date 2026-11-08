@@ -16,7 +16,7 @@ namespace Churchee.Module.Events.Features.Commands
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
 
-        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore)
+        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;

@@ -35,7 +35,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
                 .SetTitle(title)
                 .SetDescription(description)
                 .SetContent(content)
-                .SetImageFileName(imageFileName)
+                .SetImageInfo(imageFileName, string.Empty)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)

@@ -54,7 +54,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetStart(startDate)
                 .SetEnd(endDate)
                 .SetContent(content)
-                .SetImageFileName(imageFileName)
+                .SetImageInfo(imageFileName, string.Empty)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)
@@ -65,7 +65,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .Build();
 
             //act
-            var cut = new CreateEventCommandHandler(GetDataStore(), mockCurrentUser.Object, mockBlobStore.Object, mockBackgroundJobClient.Object, _mockImageProcessor.Object);
+            var cut = new CreateEventCommandHandler(GetDataStore(), mockCurrentUser.Object);
 
             var result = await cut.Handle(command, default);
 
@@ -79,7 +79,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
         {
             _mockCurrentUser.Setup(s => s.GetApplicationTenantId()).ReturnsAsync(Guid.NewGuid());
 
-            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object, _mockImageProcessor.Object);
+            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object);
 
             var command = new CreateEventCommand.Builder()
                 .SetTitle("My event")
@@ -87,7 +87,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetStart(DateTime.Now.AddDays(2))
                 .SetEnd(DateTime.Now.AddDays(3))
                 .SetContent("Content")
-                .SetImageFileName("event-img.jpg")
+                .SetImageInfo("event-img.jpg", string.Empty)
                 .SetLocationName("Somewhere")
                 .SetCity("Emerald City")
                 .SetStreet("Yellow Brick Road")
@@ -117,7 +117,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
 
             _mockCurrentUser.Setup(s => s.GetApplicationTenantId()).ReturnsAsync(Guid.NewGuid());
 
-            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object, _mockImageProcessor.Object);
+            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object);
 
             string title = "/my-event";
             string description = "Lomger more descriptive text";
@@ -139,7 +139,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetStart(startDate)
                 .SetEnd(endDate)
                 .SetContent(content)
-                .SetImageFileName(imageFileName)
+                .SetImageInfo(imageFileName, string.Empty)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)
@@ -171,7 +171,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
 
             _mockCurrentUser.Setup(s => s.GetApplicationTenantId()).ReturnsAsync(Guid.NewGuid());
 
-            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object, _mockBlobStore.Object, _mockBackgroundJobClient.Object, _mockImageProcessor.Object);
+            var cut = new CreateEventCommandHandler(GetDataStore(), _mockCurrentUser.Object);
 
             string title = "/my-event-1";
             string description = "Lomger more descriptive text";
@@ -193,7 +193,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetStart(startDate)
                 .SetEnd(endDate)
                 .SetContent(content)
-                .SetImageFileName(imageFileName)
+                .SetImageInfo(imageFileName, string.Empty)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)

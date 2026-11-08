@@ -36,8 +36,6 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
                 Content = "<p>content</p>",
                 PublishOnDate = DateTime.UtcNow,
                 ParentPageId = Guid.NewGuid(),
-                TempImagePath = string.Empty, // no image
-                ImageFileName = string.Empty
             };
 
             var article = new Article(tenantId, Guid.NewGuid(), Guid.Empty, "Old Title", "/old-url", "old desc");
@@ -52,8 +50,6 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
 
             var sut = new UpdateArticleCommandHandler(
                 GetDataStore(),
-                jobServiceMock.Object,
-                imageProcessorMock.Object,
                 currentUserMock.Object);
 
             // Act
@@ -93,9 +89,7 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
                 Content = "<p>content</p>",
                 PublishOnDate = DateTime.UtcNow,
                 ParentPageId = Guid.NewGuid(),
-                TempImagePath = tempPath,
-                ImageFileName = "photo.JPG",
-                ImagePath = "/img/articles",
+                ImagePath = "/img/articles/photo.JPG",
                 ImageAltTag = "alt text"
             };
 
@@ -107,10 +101,6 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
             var jobServiceMock = new Mock<IJobService>();
 
             var imageProcessorMock = new Mock<IImageProcessor>();
-            // Return the final image path (handler will strip .webp when setting article.ImageUrl)
-            imageProcessorMock
-                .Setup(i => i.ConvertTempImageToFullImage(tempPath, request.ImageFileName, request.ImagePath, tenantId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync("/img/articles/photo.webp");
 
             // Blob store is no longer used by the handler, but the constructor still requires it
             var blobStoreMock = new Mock<IBlobStore>();
@@ -120,8 +110,6 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
 
             var sut = new UpdateArticleCommandHandler(
                 GetDataStore(),
-                jobServiceMock.Object,
-                imageProcessorMock.Object,
                 currentUserMock.Object);
 
             // Act
@@ -130,9 +118,6 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.UpdateArticle
             // Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
-
-            // Image processor called and returned the final path
-            imageProcessorMock.Verify(i => i.ConvertTempImageToFullImage(tempPath, request.ImageFileName, request.ImagePath, tenantId, It.IsAny<CancellationToken>()), Times.Once);
 
             // Article image set to saved path without .webp
             article.ImageUrl.Should().Be("/img/articles/photo");

@@ -26,7 +26,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
             var command = GetCommand();
 
             //act
-            var cut = new UpdateEventCommandHandler(GetDataStore(testEvent), mockCurrentUser.Object, GetBlobStore(), mockBackgroundJobClient.Object, _mockImageProcessor.Object);
+            var cut = new UpdateEventCommandHandler(GetDataStore(testEvent), mockCurrentUser.Object);
 
             var result = await cut.Handle(command, default);
 
@@ -102,7 +102,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
                 .SetTitle(title)
                 .SetDescription(description)
                 .SetContent(content)
-                .SetImageFileName(imageFileName)
+                .SetImageInfo(imageFileName, string.Empty)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)

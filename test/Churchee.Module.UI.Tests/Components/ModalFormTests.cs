@@ -101,7 +101,7 @@ namespace Churchee.Module.UI.Tests
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => (v.ToString() ?? string.Empty).Contains("Error Submitting form")),
+                    It.Is<It.IsAnyType>((v, t) => (v!.ToString() ?? string.Empty).Contains("Error Submitting form")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.AtLeastOnce);

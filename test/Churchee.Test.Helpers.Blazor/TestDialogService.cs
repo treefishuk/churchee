@@ -23,7 +23,7 @@ namespace Churchee.Test.Helpers.Blazor
         }
 
         // Overload that accepts a component type and parameters
-        public override Task<dynamic> OpenAsync<TComponent>(string title, Dictionary<string, object?>? parameters = null, DialogOptions? options = null)
+        public override Task<dynamic?> OpenAsync<TComponent>(string title, Dictionary<string, object?>? parameters = null, DialogOptions? options = null)
         {
             LastTitle = title;
             OpenCalls++;
@@ -31,9 +31,9 @@ namespace Churchee.Test.Helpers.Blazor
             return base.OpenAsync<TComponent>(title, parameters, options);
         }
 
-        public List<object> Dialogs => dialogs;
+        public List<DialogOptions> Dialogs => dialogs;
 
-        public override Task<dynamic> OpenAsync(string title, Type componentType, Dictionary<string, object?>? parameters = null, DialogOptions? options = null)
+        public override Task<dynamic?> OpenAsync(string title, Type componentType, Dictionary<string, object?>? parameters = null, DialogOptions? options = null)
         {
             LastTitle = title;
             OpenCalls++;
@@ -42,7 +42,7 @@ namespace Churchee.Test.Helpers.Blazor
         }
 
 
-        public override Task<dynamic> OpenAsync(string title, RenderFragment<DialogService> childContent, DialogOptions? options = null, CancellationToken? cancellationToken = null)
+        public override Task<dynamic?> OpenAsync(string title, RenderFragment<DialogService> childContent, DialogOptions? options = null, CancellationToken? cancellationToken = null)
         {
             LastTitle = title;
             OpenCalls++;
@@ -50,7 +50,7 @@ namespace Churchee.Test.Helpers.Blazor
             return base.OpenAsync(title, childContent, options, cancellationToken);
         }
 
-        public override Task<dynamic> OpenAsync(RenderFragment<DialogService> titleContent, RenderFragment<DialogService> childContent, DialogOptions? options = null, CancellationToken? cancellationToken = null)
+        public override Task<dynamic?> OpenAsync(RenderFragment<DialogService> titleContent, RenderFragment<DialogService> childContent, DialogOptions? options = null, CancellationToken? cancellationToken = null)
         {
             OpenCalls++;
             Closed = false;

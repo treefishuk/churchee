@@ -24,7 +24,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var js = jobService ?? new Mock<IJobService>();
             var currentUser = new Mock<ICurrentUser>();
 
-            return new UpdatePageCommandHandler(storage.Object, ip.Object, js.Object, currentUser.Object);
+            return new UpdatePageCommandHandler(storage.Object, currentUser.Object);
         }
 
 
@@ -43,7 +43,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             storageMock.Setup(s => s.GetRepository<Page>()).Returns(pageRepoMock.Object);
             storageMock.Setup(s => s.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var handler = new UpdatePageCommandHandler(storageMock.Object, imageProcessorMock.Object, jobServiceMock.Object, currentUserMock.Object);
+            var handler = new UpdatePageCommandHandler(storageMock.Object, currentUserMock.Object);
 
             var cmd = new UpdatePageCommand.Builder()
                 .SetTitle("new title")

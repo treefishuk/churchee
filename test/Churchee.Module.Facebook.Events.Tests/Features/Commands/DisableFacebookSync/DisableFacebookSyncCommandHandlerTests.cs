@@ -85,7 +85,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => o.ToString() == "Failed to disable Facebook Sync" && t.Name == "FormattedLogValues"),
+                    It.Is<It.IsAnyType>((o, t) => o!.ToString() == "Failed to disable Facebook Sync" && t.Name == "FormattedLogValues"),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
