@@ -15,15 +15,10 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
 {
     public class UpdatePageCommandHandlerUpdateContentTests
     {
-        private UpdatePageCommandHandler CreateHandler(
-            Mock<IImageProcessor>? imageProcessor = null,
-            Mock<IJobService>? jobService = null)
+        private UpdatePageCommandHandler CreateHandler()
         {
             var storage = new Mock<Churchee.Common.Storage.IDataStore>();
-            var ip = imageProcessor ?? new Mock<IImageProcessor>();
-            var js = jobService ?? new Mock<IJobService>();
             var currentUser = new Mock<ICurrentUser>();
-
             return new UpdatePageCommandHandler(storage.Object, currentUser.Object);
         }
 
@@ -106,21 +101,20 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
         }
 
         [Fact]
-        public async Task UpdateContent_ImageType_WithNoTempUrl_OnlyUpdatesAltTextAndSerializes()
+        public async Task UpdateContent_ImageType_WithUploadedImage_UpdatesUrlAndAltText()
         {
             // Arrange
             var handler = CreateHandler();
             var page = new Page(Guid.NewGuid(), "t", "u", "m", Guid.NewGuid(), null, false);
 
             var contentId = Guid.NewGuid();
-            // existing image data (empty)
             page.AddContent(contentId, Guid.NewGuid(), string.Empty, 1);
 
             var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Image", true, "ImageName", 0, null, "Help Text");
             var pageContent = page.PageContent.First();
             pageContent.PageTypeContent = pct;
 
-            var newImage = new ImageSimple { ThumbnailPath = "/img/original", Url = string.Empty, AltText = "alt-text" };
+            var newImage = new ImageSimple { ThumbnailPath = "/img/original", Url = "/temp/path.png", AltText = "alt-text" };
             var updates = new List<KeyValuePair<Guid, string>>
             {
                 new KeyValuePair<Guid, string>(contentId, JsonSerializer.Serialize(newImage))
@@ -133,20 +127,17 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var pc = page.PageContent.First();
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
-            Assert.Equal("/img/original", deserialized.ThumbnailPath);
-            Assert.Equal(string.Empty, deserialized.Url);
+            Assert.Null(deserialized.ThumbnailPath);
+            Assert.Equal("\\temp\\path", deserialized.Url);
             Assert.Equal("alt-text", deserialized.AltText);
-            Assert.Equal(2, pc.Version); // incremented
+            Assert.Equal(2, pc.Version);
         }
 
         [Fact]
-        public async Task UpdateContent_ImageType_WithTempUrl_CallsImageProcessorAndQueuesJob()
+        public async Task UpdateContent_ImageType_UpdatesValueAndIncrementsVersion()
         {
             // Arrange
-            var imageProcessorMock = new Mock<IImageProcessor>();
-            var jobServiceMock = new Mock<IJobService>();
-
-            var handler = CreateHandler(imageProcessorMock, jobServiceMock);
+            var handler = CreateHandler();
             var applicationTenantId = Guid.NewGuid();
 
             var page = new Page(applicationTenantId, "t", "u", "m", Guid.NewGuid(), null, false);
@@ -164,32 +155,17 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
                 new KeyValuePair<Guid, string>(contentId, JsonSerializer.Serialize(newImage))
             };
 
-            var returnedFinalUrl = "/img/pages/final.webp";
-            imageProcessorMock
-                .Setup(x => x.ConvertTempImageToFullImage(newImage.Url, newImage.ThumbnailPath, It.IsAny<string>(), applicationTenantId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(returnedFinalUrl);
-
             // Act
             await handler.UpdateContent(updates, page, applicationTenantId, CancellationToken.None);
 
             // Assert
-            imageProcessorMock.Verify(x => x.ConvertTempImageToFullImage(
-                It.Is<string>(p => p == newImage.Url),
-                It.Is<string>(f => f == newImage.ThumbnailPath),
-                It.IsAny<string>(),
-                It.Is<Guid>(g => g == applicationTenantId),
-                It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            jobServiceMock.Verify(x => x.QueueJob<Churchee.ImageProcessing.Jobs.ImageCropsGenerator>(It.IsAny<System.Linq.Expressions.Expression<Func<Churchee.ImageProcessing.Jobs.ImageCropsGenerator, Task>>>()), Times.Once);
-
             var pc = page.PageContent.First();
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
-            Assert.Equal(returnedFinalUrl.Replace(".webp", ""), deserialized.ThumbnailPath);
-            Assert.Equal(string.Empty, deserialized.Url);
+            Assert.Null(deserialized.ThumbnailPath);
+            Assert.Equal("\\temp\\path", deserialized.Url);
             Assert.Equal("alt", deserialized.AltText);
-            Assert.Equal(6, pc.Version); // incremented
+            Assert.Equal(6, pc.Version);
         }
     }
 }

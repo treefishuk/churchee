@@ -40,12 +40,15 @@ namespace Churchee.Module.UI.Tests.Components
             var prop = typeof(TestModel).GetProperty(nameof(TestModel.Photo))!;
 
             // Act
-            var cut = Render<FormFieldItem>(parameters => parameters
-                .Add(p => p.Prop, prop)
-                .Add(p => p.InputModel, model)
-                .Add(p => p.EditContext, editContext)
-                .Add(p => p.OnValueChanged, EventCallback.Factory.Create<object>(this, (_) => { }))
-            );
+            var cut = Render<CascadingValue<EditContext>>(parameters => parameters
+                .Add(p => p.Value, editContext)
+                .AddChildContent<FormFieldItem>(child => child
+                    .Add(p => p.Prop, prop)
+                    .Add(p => p.InputModel, model)
+                    .Add(p => p.EditContext, editContext)
+                    .Add(p => p.OnValueChanged,
+                        EventCallback.Factory.Create<object>(this, _ => { }))
+                ));
 
             // Assert: RadzenFileInput should render an <input type="file"> element
             var fileInput = cut.FindAll("input[type='file']");
