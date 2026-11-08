@@ -11,13 +11,19 @@ namespace Churchee.Module.Events.Areas.Website.Models
         {
             Title = string.Empty;
             Description = string.Empty;
-            ImageUpload = new Upload();
             LocationName = string.Empty;
             City = string.Empty;
             Street = string.Empty;
             PostCode = string.Empty;
             Country = string.Empty;
             Content = string.Empty;
+            ImageUpload = new ImageUploadType()
+            {
+                SupportedFileTypes = ".jpg,.jpeg,.png,.gif",
+                Path = "/img/events",
+                ThumbnailUrl = "/_content/Churchee.Module.UI/img/opengraph-placeholder.png"
+            };
+
         }
 
         [Required]
@@ -41,7 +47,7 @@ namespace Churchee.Module.Events.Areas.Website.Models
         public string Content { get; set; }
 
         [DataType(DataTypes.ImageUpload)]
-        public Upload ImageUpload { get; set; }
+        public ImageUploadType ImageUpload { get; set; }
 
         public string LocationName { get; set; }
 

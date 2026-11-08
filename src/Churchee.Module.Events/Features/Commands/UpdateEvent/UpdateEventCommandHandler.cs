@@ -1,11 +1,9 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
-using Hangfire;
 
 namespace Churchee.Module.Events.Features.Commands
 {
@@ -14,17 +12,11 @@ namespace Churchee.Module.Events.Features.Commands
 
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
-        private readonly IBlobStore _blobStore;
-        private readonly IBackgroundJobClient _backgroundJobClient;
-        private readonly IImageProcessor _imageProcessor;
 
-        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient, IImageProcessor imageProcessor)
+        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
-            _blobStore = blobStore;
-            _backgroundJobClient = backgroundJobClient;
-            _imageProcessor = imageProcessor;
         }
 
         public async Task<CommandResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
@@ -33,7 +25,7 @@ namespace Churchee.Module.Events.Features.Commands
 
             var entity = await _dataStore.GetRepository<Event>().FirstOrDefaultAsync(new EventByIdIncludingDatesSpecification(request.Id), cancellationToken);
 
-            entity.SetImageInfo(request.ImageFileName, string.Empty);
+            entity.SetImageInfo(string.IsNullOrEmpty(request.ImageFileName) ? entity.ImageUrl : request.ImageFileName, request.ImageAltTag);
 
             entity.UpdateInformation(title: request.Title,
                                    description: request.Description,

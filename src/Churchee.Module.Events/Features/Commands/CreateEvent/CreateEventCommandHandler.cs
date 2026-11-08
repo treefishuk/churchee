@@ -1,16 +1,12 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
-using Churchee.ImageProcessing.Jobs;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Events.Entities;
-using Churchee.Module.Events.Jobs;
 using Churchee.Module.Events.Specifications;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Site.Specifications;
-using Hangfire;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Events.Features.Commands
 {
@@ -19,17 +15,11 @@ namespace Churchee.Module.Events.Features.Commands
 
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
-        private readonly IBlobStore _blobStore;
-        private readonly IBackgroundJobClient _backgroundJobClient;
-        private readonly IImageProcessor _imageProcessor;
 
-        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient, IImageProcessor imageProcessor)
+        public CreateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
-            _blobStore = blobStore;
-            _backgroundJobClient = backgroundJobClient;
-            _imageProcessor = imageProcessor;
         }
 
         public async Task<CommandResponse> Handle(CreateEventCommand request, CancellationToken cancellationToken)
@@ -79,14 +69,11 @@ namespace Churchee.Module.Events.Features.Commands
 
             SuffixGeneration.AddUniqueSuffixIfNeeded(newEvent, _dataStore.GetRepository<Event>());
 
+            newEvent.SetImageInfo(string.IsNullOrEmpty(request.ImageFileName) ? string.Empty : request.ImageFileName, request.ImageAltTag);
+
             repo.Create(newEvent);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
-
-            if (!string.IsNullOrEmpty(request.ImageFileName) && request.ImageData.Length > 0)
-            {
-                _backgroundJobClient.Enqueue<EventImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, newEvent.Id, request.ImageFileName, request.ImageData, CancellationToken.None));
-            }
 
             return new CommandResponse();
         }

@@ -12,6 +12,8 @@ namespace Churchee.Module.Events.Features.Queries
 
         public string ImageUrl { get; set; }
 
+        public string ImageAltTag { get; set; }
+
         public string LocationName { get; private set; }
 
         public string City { get; private set; }
@@ -61,6 +63,13 @@ namespace Churchee.Module.Events.Features.Queries
                 }
 
                 _response.ImageUrl = imageUrl;
+
+                return this;
+            }
+
+            public Builder SetImageAltTag(string imageAltTag)
+            {
+                _response.ImageAltTag = imageAltTag;
 
                 return this;
             }
