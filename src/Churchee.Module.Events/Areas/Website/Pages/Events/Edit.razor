@@ -96,7 +96,7 @@
         InputModel.Country = response.Country;
         InputModel.Latitude = response.Latitude;
         InputModel.Longitude = response.Longitude;
-        InputModel.ImageUpload = new ImageUploadType
+        InputModel.Image = new ImageUploadType
         {
             ThumbnailUrl = response.ImageUrl.StartsWith("/_content") ? response.ImageUrl : $"{TenantResolver.GetCDNPrefix()}{response.ImageUrl.Replace(".webp", "_t.webp")}",
             Description = response.ImageAltTag,
@@ -117,7 +117,7 @@
             .SetTitle(InputModel.Title)
             .SetDescription(InputModel.Description)
             .SetContent(InputModel.Content)
-            .SetImageInfo(InputModel.ImageUpload.FileName, InputModel.ImageUpload.Description)
+            .SetImageInfo(InputModel.Image.FileName, InputModel.Image.Description)
             .SetLocationName(InputModel.LocationName)
             .SetCity(InputModel.City)
             .SetStreet(InputModel.Street)

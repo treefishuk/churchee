@@ -22,11 +22,14 @@
 
         if(deconstructed != null)
         {
+            ExistingImage = deconstructed.Url;
             Model = new ImageUploadType { Path = "/img/pages",  Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
         }
     }
 
     public ImageUploadType Model { get; set; } = new();
+
+    public string ExistingImage { get; set; }
 
     [Inject]
     protected ITenantResolver TenantResolver { get; set; } = default!;
@@ -44,15 +47,18 @@
     public Guid? PageId { get; set; }
 
     [Parameter] 
-    public Func<ChunkedUploadRequest, Task<string>> OnUpload { get; set; }
-
-    [Parameter] 
     public EventCallback<string> OnChanged { get; set; }
 
     private async Task HandleModelChange(ImageUploadType newValue)
     {
+        string imagePath = ExistingImage;
 
-        var data = new ImageSimple { AltText = newValue.Description, Url = newValue.FileName, ThumbnailPath = newValue.ThumbnailUrl };
+        if (!string.IsNullOrEmpty(newValue.FileName))
+        {
+            imagePath = new Uri(newValue.FileName).AbsolutePath;
+        }
+
+        var data = new ImageSimple { AltText = newValue.Description, Url = imagePath, ThumbnailPath = newValue.ThumbnailUrl };
 
         Value = JsonSerializer.Serialize(data);
 
