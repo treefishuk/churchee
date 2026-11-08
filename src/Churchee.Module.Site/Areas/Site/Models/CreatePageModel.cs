@@ -1,4 +1,5 @@
-﻿using Churchee.Module.UI.Models;
+﻿using Churchee.Common.ValueTypes;
+using Churchee.Module.UI.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Areas.Site.Models
@@ -13,6 +14,12 @@ namespace Churchee.Module.Site.Areas.Site.Models
             PageType = new DropdownInput();
             Parent = new DropdownInput();
             Order = 10;
+            Image = new ImageUploadType()
+            {
+                SupportedFileTypes = ".jpg,.jpeg,.png,.gif",
+                Path = "/img/pages",
+                ThumbnailUrl = "/_content/Churchee.Module.UI/img/opengraph-placeholder.png"
+            };
         }
 
         [Required]
@@ -32,6 +39,9 @@ namespace Churchee.Module.Site.Areas.Site.Models
 
         [Required]
         public int Order { get; set; }
+
+        [DataType(DataTypes.ImageUpload)]
+        public ImageUploadType Image { get; set; }
 
     }
 }

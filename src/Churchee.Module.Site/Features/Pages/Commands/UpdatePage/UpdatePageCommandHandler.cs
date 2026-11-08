@@ -1,13 +1,10 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Queue;
-using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Common.ValueTypes;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Hangfire;
 using System.Text.Json;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
@@ -16,18 +13,12 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
     {
 
         private readonly IDataStore _storage;
-        private readonly IImageProcessor _imageProcessor;
-        private readonly IJobService _jobService;
         private readonly ICurrentUser _currentUser;
-        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public UpdatePageCommandHandler(IDataStore storage, IImageProcessor imageProcessor, IJobService jobService, ICurrentUser currentUser, IBackgroundJobClient backgroundJobClient)
+        public UpdatePageCommandHandler(IDataStore storage, ICurrentUser currentUser)
         {
             _storage = storage;
-            _imageProcessor = imageProcessor;
-            _jobService = jobService;
             _currentUser = currentUser;
-            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<CommandResponse> Handle(UpdatePageCommand request, CancellationToken cancellationToken)
@@ -38,7 +29,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
             page.UpdateInfo(request.Title, request.Description, request.ParentId, request.Order);
 
-            page.SetImageInfo(request.ImageFileName, string.Empty);
+            page.SetImageInfo(string.IsNullOrEmpty(request.ImageFileName) ? page.ImageUrl : request.ImageFileName, request.ImageAltTag);
 
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 

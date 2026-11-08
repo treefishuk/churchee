@@ -183,8 +183,8 @@
             Image = new Common.ValueTypes.ImageUploadType
             {
                 ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{result.ImageThumbnail}",
-                ShowDescription = false,
-                Path = "/img/pages"
+                Path = "/img/pages",
+                Description = result.ImageAltTag
             }
 
         };
@@ -232,7 +232,7 @@
             .SetOrder(InputModel.Order)
             .SetContent(content)
             .SetProperties(properties)
-            .SetImage(InputModel.Image.FileName ?? string.Empty)
+            .SetImage(InputModel.Image.FileName ?? string.Empty, InputModel.Image.Description)
             .Build();
 
         var result = await Mediator.Send(command, default);

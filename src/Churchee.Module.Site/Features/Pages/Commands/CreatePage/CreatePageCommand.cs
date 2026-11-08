@@ -21,5 +21,10 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 
         public Guid PageTypeId { get; }
 
+        public string ImagePath { get; set; }
+
+        public string ImageFileName { get; set; }
+
+        public string ImageAltTag { get; set; }
     }
 }

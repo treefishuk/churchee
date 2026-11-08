@@ -23,6 +23,8 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
         public string ImageFileName { get; set; }
 
+        public string ImageAltTag { get; set; }
+
         public List<KeyValuePair<Guid, string>> Content { get; set; }
 
         public List<KeyValuePair<Guid, string>> Properties { get; set; }
@@ -49,14 +51,14 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
                 return this;
             }
 
-            public Builder SetImage(string imageFileName)
+            public Builder SetImage(string imageFileName, string imageAltTag)
             {
-                if (string.IsNullOrEmpty(imageFileName))
+                if (!string.IsNullOrEmpty(imageFileName))
                 {
-                    return this;
+                    _command.ImageFileName = imageFileName.GetFullPathWithoutExtension();
                 }
 
-                _command.ImageFileName = imageFileName.GetFullPathWithoutExtension();
+                _command.ImageAltTag = imageAltTag;
 
                 return this;
             }

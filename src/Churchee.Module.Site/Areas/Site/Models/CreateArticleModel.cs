@@ -35,7 +35,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         [DataType(DataType.Date)]
         public DateTime? PublishOnDate { get; set; }
 
-        [DataType(DataTypes.ChunkedImageUpload)]
+        [DataType(DataTypes.ImageUpload)]
         public ImageUploadType Image { get; set; }
 
         [Required]
