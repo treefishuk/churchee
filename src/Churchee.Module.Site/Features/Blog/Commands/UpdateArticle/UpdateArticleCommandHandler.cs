@@ -39,7 +39,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
             entity.SetContent(request.Content);
             entity.SetPublishDate(request.PublishOnDate);
 
-            entity.SetImageInfo(request.ImagePath, string.Empty);
+            entity.SetImageInfo(string.IsNullOrEmpty(request.ImagePath) ? entity.ImageUrl : request.ImagePath, request.ImageAltTag);
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 

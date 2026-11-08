@@ -12,7 +12,12 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Title = string.Empty;
             Description = string.Empty;
             Content = "<p></p>";
-            Image = new ImageUploadType() { SupportedFileTypes = ".jpg,.jpeg,.png,.gif", Path = "/img/articles/" };
+            Image = new ImageUploadType()
+            {
+                SupportedFileTypes = ".jpg,.jpeg,.png,.gif",
+                Path = "/img/articles",
+                ThumbnailUrl = "/_content/Churchee.Module.UI/img/opengraph-placeholder.png"
+            };
         }
 
         [Required]

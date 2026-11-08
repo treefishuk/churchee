@@ -4,7 +4,6 @@ using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
-using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Site.Specifications;
@@ -44,7 +43,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
             newArticle.SetPublishDate(request.PublishOnDate);
 
-            await ProcessImage(request, applicationTenantId, newArticle, cancellationToken);
+            newArticle.SetImageInfo(request.ImageFileName, request.ImageAltTag);
 
             SuffixGeneration.AddUniqueSuffixIfNeeded(newArticle, _dataStore.GetRepository<Article>());
 
@@ -64,28 +63,6 @@ namespace Churchee.Module.Site.Features.Blog.Commands
             string slug = request.Title.ToURL();
 
             return $"{parentUrl}/{slug}";
-        }
-
-        private async Task ProcessImage(CreateArticleCommand request, Guid applicationTenantId, Article newArticle, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(request.TempImagePath) || string.IsNullOrEmpty(request.ImageFileName))
-            {
-                return;
-            }
-
-            await using var tempFileStream = File.OpenRead(request.TempImagePath);
-
-            using var webPStream = await _imageProcessor.ConvertToWebP(tempFileStream, cancellationToken);
-
-            string imagePath = Path.Combine(request.ImagePath, $"{Path.GetFileNameWithoutExtension(request.ImageFileName).ToDevName()}.webp");
-
-            string webPPath = await _blobStore.SaveAsync(applicationTenantId, imagePath, webPStream, false, cancellationToken);
-
-            File.Delete(request.TempImagePath);
-
-            _jobService.QueueJob<ImageCropsGenerator>(x => x.CreateCropsAsync(applicationTenantId, webPPath, true, CancellationToken.None));
-
-            newArticle.SetImageInfo(webPPath.Replace(".webp", ""), request.ImageAltTag);
         }
     }
 }

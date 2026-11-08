@@ -12,7 +12,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
             Title = string.Empty;
             Description = string.Empty;
             Content = "<p></p>";
-            Image = new ImageUploadType() { ThumbnailUrl = string.Empty, Path = "articles/" };
+            Image = new ImageUploadType() { ThumbnailUrl = string.Empty, Path = "/img/articles" };
         }
 
         [Required]

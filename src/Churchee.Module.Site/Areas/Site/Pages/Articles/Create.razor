@@ -62,7 +62,7 @@
             Content = InputModel.Content,
             ParentPageId = Guid.Parse(InputModel.Parent?.Value),
             ImageAltTag = InputModel.Image?.Description,
-            ImageFileName = InputModel.Image?.File?.Name,
+            ImageFileName = InputModel.Image?.FileName,
             ImagePath = InputModel.Image?.Path
         };
 
