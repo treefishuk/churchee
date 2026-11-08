@@ -282,7 +282,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
 
             button.Click();
 
-            var openImageUploadEditorBtn = cut.Find(".rz-html-editor-button[Title=\"Insert Image\"]");
+            var openImageUploadEditorBtn = cut.Find(".rz-button[Title=\"Insert Image\"]");
 
             openImageUploadEditorBtn.Click();
 
