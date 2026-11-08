@@ -19,8 +19,6 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
         public int Order { get; set; }
 
-        public byte[] ImageBytes { get; set; }
-
         public string ImageFileName { get; set; }
 
         public string ImageAltTag { get; set; }
