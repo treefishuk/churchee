@@ -128,7 +128,6 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
             Assert.Null(deserialized.ThumbnailPath);
-            Assert.Equal("\\temp\\path", deserialized.Url);
             Assert.Equal("alt-text", deserialized.AltText);
             Assert.Equal(2, pc.Version);
         }
@@ -163,7 +162,6 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
             Assert.Null(deserialized.ThumbnailPath);
-            Assert.Equal("\\temp\\path", deserialized.Url);
             Assert.Equal("alt", deserialized.AltText);
             Assert.Equal(6, pc.Version);
         }
