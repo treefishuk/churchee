@@ -97,7 +97,7 @@ namespace Churchee.Module.UI.Components
 
             string fileName = Path.GetFileNameWithoutExtension(upload.FileName);
 
-            await using var inputStream = file.OpenReadStream(long.MaxValue);
+            await using var inputStream = file.OpenReadStream(long.MaxValue, token);
 
             await using var originalImageStream = new MemoryStream();
 

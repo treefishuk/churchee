@@ -1,6 +1,4 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Queue;
-using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
@@ -14,17 +12,11 @@ namespace Churchee.Module.Site.Features.Blog.Commands
     {
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
-        private readonly IJobService _jobService;
-        private readonly IImageProcessor _imageProcessor;
-        private readonly IBlobStore _blobStore;
 
-        public CreateArticleCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IJobService jobService, IImageProcessor imageProcessor, IBlobStore blobStore)
+        public CreateArticleCommandHandler(IDataStore dataStore, ICurrentUser currentUser)
         {
             _dataStore = dataStore;
-            _currentUser = currentUser;
-            _jobService = jobService;
-            _imageProcessor = imageProcessor;
-            _blobStore = blobStore;
+            _currentUser = currentUser; ;
         }
 
         public async Task<CommandResponse> Handle(CreateArticleCommand request, CancellationToken cancellationToken)

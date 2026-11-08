@@ -65,7 +65,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
                 if (pageContent != null && pageContent.PageTypeContent.Type == "Image")
                 {
-                    await CreateFinalImagesForPageContent(applicationTenantId, item, pageContent, cancellationToken);
+                    await CreateFinalImagesForPageContent(item, pageContent);
                 }
 
                 else
@@ -79,7 +79,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
         }
 
-        private async Task CreateFinalImagesForPageContent(Guid applicationTenantId, KeyValuePair<Guid, string> item, PageContent pageContent, CancellationToken cancellationToken)
+        private async Task CreateFinalImagesForPageContent(KeyValuePair<Guid, string> item, PageContent pageContent)
         {
             var imageData = string.IsNullOrEmpty(pageContent.Value) ? new ImageSimple() : JsonSerializer.Deserialize<ImageSimple>(pageContent.Value);
 

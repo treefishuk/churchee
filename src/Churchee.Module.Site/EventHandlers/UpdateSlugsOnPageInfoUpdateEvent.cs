@@ -56,7 +56,7 @@ namespace Churchee.Module.Site.EventHandlers
 
             if (page.ParentId != null)
             {
-                parentSlug = await repo.GetQueryable().Where(w => w.Id == page.ParentId).Select(s => s.Url).FirstOrDefaultAsync();
+                parentSlug = await repo.GetQueryable().Where(w => w.Id == page.ParentId).Select(s => s.Url).FirstOrDefaultAsync(cancellationToken);
             }
 
             string slug = $"{parentSlug}/{page.Title.ToURL()}";
