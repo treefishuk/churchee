@@ -1,7 +1,9 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Churchee.Common.Abstractions.Auth;
+using Churchee.Common.Abstractions.Queue;
 using Churchee.Common.Abstractions.Utilities;
+using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.UI.Models;
 using Microsoft.AspNetCore.Components;
@@ -16,6 +18,8 @@ namespace Churchee.Test.Helpers.Blazor
 {
     public abstract partial class BasePageTests : BunitContext
     {
+        protected Mock<IJobService> MockJobService;
+        protected Mock<IBlobStore> MockBlobStore;
         protected Mock<ICurrentUser> MockCurrentUser;
         protected Mock<IDistributedCache> MockDistributedCache;
         protected CustomNotificationService NotificationService;
@@ -58,6 +62,17 @@ namespace Churchee.Test.Helpers.Blazor
 
             MockImageProcessor = new Mock<IImageProcessor>();
             Services.AddSingleton(MockImageProcessor.Object);
+
+            MockBlobStore = new Mock<IBlobStore>();
+            Services.AddSingleton(MockBlobStore.Object);
+
+            MockJobService = new Mock<IJobService>();
+            Services.AddSingleton(MockJobService.Object);
+
+
+            var contextMenuService = new ContextMenuService(new BunitNavigationManager(this));
+            Services.AddSingleton(contextMenuService);
+
         }
 
         protected void SetInitialUrl<TComponent>() where TComponent : IComponent

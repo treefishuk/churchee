@@ -28,7 +28,7 @@ namespace Churchee.Module.UI.Tests.Components
             // Ensure the component picks up the ImageUpload path:
             // Use the string-based DataType attribute to set the custom data type to DataTypes.ImageUpload.
             [DataType(DataTypes.ImageUpload)]
-            public Upload Photo { get; set; } = new Upload();
+            public ImageUploadType Photo { get; set; } = new ImageUploadType();
         }
 
         [Fact]

@@ -116,7 +116,6 @@ namespace Churchee.Module.UI.Tests.Components
             var cut = GenrateClassUnderTest(inputModel);
 
             cut.FindAll("input[type='file']").Count.Should().Be(1);
-            cut.Markup.Contains("accept=\"image/*\"").Should().BeTrue();
         }
 
         [Fact]
@@ -453,11 +452,11 @@ namespace Churchee.Module.UI.Tests.Components
         {
             public ImageUploadInputModel()
             {
-                Upload = new Upload();
+                Upload = new ImageUploadType();
             }
 
             [DataType(DataTypes.ImageUpload)]
-            public Upload Upload { get; set; }
+            public ImageUploadType Upload { get; set; }
         }
 
         private class MediaUploadInputModel

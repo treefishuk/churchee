@@ -65,7 +65,7 @@
             PublishOnDate = data.PublishOnDate,
             Image = new Common.ValueTypes.ImageUploadType
             {
-                ThumbnailUrl = data.ImageThumbnail.StartsWith("/_content") ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{data.ImageThumbnail}",
+                ThumbnailUrl = (!string.IsNullOrEmpty(data.ImageThumbnail) && data.ImageThumbnail.StartsWith("/_content")) ? data.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{data.ImageThumbnail}",
                 Path = "/img/articles",
                 Description = data.ImageAltTag
             }

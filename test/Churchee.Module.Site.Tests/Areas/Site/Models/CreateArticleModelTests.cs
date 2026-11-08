@@ -20,7 +20,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             Assert.Equal("<p></p>", model.Content);
             Assert.NotNull(model.Image);
             Assert.Equal(".jpg,.jpeg,.png,.gif", model.Image.SupportedFileTypes);
-            Assert.Equal(string.Empty, model.Image.ThumbnailUrl);
+            Assert.Equal("/_content/Churchee.Module.UI/img/opengraph-placeholder.png", model.Image.ThumbnailUrl);
             Assert.Equal("/img/articles", model.Image.Path);
             Assert.Null(model.Parent);
             Assert.Null(model.PublishOnDate);

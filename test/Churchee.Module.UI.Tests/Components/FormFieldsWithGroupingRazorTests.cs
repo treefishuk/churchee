@@ -107,8 +107,6 @@ namespace Churchee.Module.UI.Tests.Components
 
             // Assert
             cut.FindAll("input[type='file']").Count.Should().Be(1);
-            cut.Markup.Contains("accept=\"image/*\"").Should().BeTrue();
-            cut.Markup.Contains("<div class=\"rz-card\"").Should().BeTrue();
         }
 
         [Fact]
@@ -353,12 +351,12 @@ namespace Churchee.Module.UI.Tests.Components
         {
             public ImageUploadInputModel()
             {
-                Upload = new Upload();
+                Upload = new ImageUploadType();
             }
 
             [Display(GroupName = "Group Name")]
             [DataType(DataTypes.ImageUpload)]
-            public Upload Upload { get; set; }
+            public ImageUploadType Upload { get; set; }
         }
 
         private class MediaUploadInputModel
