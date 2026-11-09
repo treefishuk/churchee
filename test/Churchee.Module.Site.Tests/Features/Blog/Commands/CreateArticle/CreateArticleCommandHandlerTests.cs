@@ -55,7 +55,7 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.CreateArticle
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parentUrl);
 
-            var handler = new CreateArticleCommandHandler(dataStoreMock.Object, currentUserMock.Object, jobServiceMock.Object, imageProcessorMock.Object, blobStoreMock.Object);
+            var handler = new CreateArticleCommandHandler(dataStoreMock.Object, currentUserMock.Object);
             var command = new CreateArticleCommand
             {
                 Title = "Test Article",
