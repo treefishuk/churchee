@@ -16,7 +16,7 @@ namespace Churchee.Module.Site.Features.Blog.Commands
         public CreateArticleCommandHandler(IDataStore dataStore, ICurrentUser currentUser)
         {
             _dataStore = dataStore;
-            _currentUser = currentUser; ;
+            _currentUser = currentUser;
         }
 
         public async Task<CommandResponse> Handle(CreateArticleCommand request, CancellationToken cancellationToken)

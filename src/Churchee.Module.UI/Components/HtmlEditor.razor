@@ -56,10 +56,12 @@
         args.Html = CleanClipboardHtml(args.Html);
     }
 
-    string CleanClipboardHtml(string input)
+    private static string CleanClipboardHtml(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
+        {
             return input;
+        }
 
         var parser = new HtmlParser();
         var doc = parser.ParseDocument(input);

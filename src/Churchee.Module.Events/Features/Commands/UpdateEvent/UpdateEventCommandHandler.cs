@@ -21,8 +21,6 @@ namespace Churchee.Module.Events.Features.Commands
 
         public async Task<CommandResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
         {
-            var applicationTenantId = await _currentUser.GetApplicationTenantId();
-
             var entity = await _dataStore.GetRepository<Event>().FirstOrDefaultAsync(new EventByIdIncludingDatesSpecification(request.Id), cancellationToken);
 
             entity.SetImageInfo(string.IsNullOrEmpty(request.ImageFileName) ? entity.ImageUrl : request.ImageFileName, request.ImageAltTag);

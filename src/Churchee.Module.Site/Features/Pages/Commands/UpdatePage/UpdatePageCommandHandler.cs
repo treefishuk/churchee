@@ -79,7 +79,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 
         }
 
-        private async Task CreateFinalImagesForPageContent(KeyValuePair<Guid, string> item, PageContent pageContent)
+        private static async Task CreateFinalImagesForPageContent(KeyValuePair<Guid, string> item, PageContent pageContent)
         {
             var imageData = string.IsNullOrEmpty(pageContent.Value) ? new ImageSimple() : JsonSerializer.Deserialize<ImageSimple>(pageContent.Value);
 

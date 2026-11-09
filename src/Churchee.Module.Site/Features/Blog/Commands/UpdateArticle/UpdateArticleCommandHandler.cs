@@ -20,8 +20,6 @@ namespace Churchee.Module.Site.Features.Blog.Commands
 
         public async Task<CommandResponse> Handle(UpdateArticleCommand request, CancellationToken cancellationToken)
         {
-            var applicationTenantId = await _currentUser.GetApplicationTenantId();
-
             var articleRepo = _dataStore.GetRepository<Article>();
 
             var entity = await articleRepo.FirstOrDefaultAsync(new ArticleFromIdSpecification(request.Id), cancellationToken: cancellationToken);
