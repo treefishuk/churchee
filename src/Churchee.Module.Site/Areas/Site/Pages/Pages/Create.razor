@@ -69,7 +69,9 @@
 
         if (result.IsSuccess)
         {
-            NavigationManager.NavigateTo("/management/pages");
+            NotificationService.Notify(result, "Page Added Successfully");
+
+            NavigationManager.NavigateTo($"/management/pages/edit/{result.PageId}");
         }
 
     }

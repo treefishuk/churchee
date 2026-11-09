@@ -1,9 +1,8 @@
-﻿using Churchee.Common.ResponseTypes;
-using Churchee.CQRS.Abstractions;
+﻿using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 {
-    public class CreatePageCommand : IRequest<CommandResponse>
+    public class CreatePageCommand : IRequest<CreatePageCommandResponse>
     {
         public CreatePageCommand(string title, string description, string pageTypeId, string parentId)
         {
