@@ -46,12 +46,6 @@
         await ValueChanged.InvokeAsync(value);
     }
 
-    private async Task OnChange(string value)
-    {
-        Value = value;
-        await Change.InvokeAsync(value);
-    }
-
     void OnPaste(HtmlEditorPasteEventArgs args)
     {
         if (string.IsNullOrEmpty(args.Html))
