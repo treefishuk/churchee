@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="stylesheet" href="/_content/Churchee.Module.UI/css/admin.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="Churchee.Presentation.Admin.styles.css?v=0308" />
+    <link rel="stylesheet" href="Churchee.Presentation.Admin.styles.css" asp-append-version="true" />
     <HeadOutlet @rendermode="@RenderMode.InteractiveServer" />
 </head>
 
@@ -21,8 +21,8 @@
     <script src="_content/BlazorMonaco/jsInterop.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
-    <script src="_framework/blazor.web.js"></script>
-    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+    <script src="_framework/blazor.web.js" asp-append-version="true"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js" asp-append-version="true"></script>
 
     @foreach (var registration in scriptRegistrations){
         @foreach (var scriptSrc in registration.Scripts)

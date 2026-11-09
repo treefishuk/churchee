@@ -15,16 +15,11 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
 {
     public class UpdatePageCommandHandlerUpdateContentTests
     {
-        private UpdatePageCommandHandler CreateHandler(
-            Mock<IImageProcessor>? imageProcessor = null,
-            Mock<IJobService>? jobService = null)
+        private UpdatePageCommandHandler CreateHandler()
         {
             var storage = new Mock<Churchee.Common.Storage.IDataStore>();
-            var ip = imageProcessor ?? new Mock<IImageProcessor>();
-            var js = jobService ?? new Mock<IJobService>();
             var currentUser = new Mock<ICurrentUser>();
-
-            return new UpdatePageCommandHandler(storage.Object, ip.Object, js.Object, currentUser.Object);
+            return new UpdatePageCommandHandler(storage.Object, currentUser.Object);
         }
 
 
@@ -43,7 +38,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             storageMock.Setup(s => s.GetRepository<Page>()).Returns(pageRepoMock.Object);
             storageMock.Setup(s => s.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var handler = new UpdatePageCommandHandler(storageMock.Object, imageProcessorMock.Object, jobServiceMock.Object, currentUserMock.Object);
+            var handler = new UpdatePageCommandHandler(storageMock.Object, currentUserMock.Object);
 
             var cmd = new UpdatePageCommand.Builder()
                 .SetTitle("new title")
@@ -106,21 +101,20 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
         }
 
         [Fact]
-        public async Task UpdateContent_ImageType_WithNoTempUrl_OnlyUpdatesAltTextAndSerializes()
+        public async Task UpdateContent_ImageType_WithUploadedImage_UpdatesUrlAndAltText()
         {
             // Arrange
             var handler = CreateHandler();
             var page = new Page(Guid.NewGuid(), "t", "u", "m", Guid.NewGuid(), null, false);
 
             var contentId = Guid.NewGuid();
-            // existing image data (empty)
             page.AddContent(contentId, Guid.NewGuid(), string.Empty, 1);
 
             var pct = new PageTypeContent(contentId, page.ApplicationTenantId, "Image", true, "ImageName", 0, null, "Help Text");
             var pageContent = page.PageContent.First();
             pageContent.PageTypeContent = pct;
 
-            var newImage = new ImageSimple { Url = "/img/original", TempUrl = string.Empty, AltText = "alt-text" };
+            var newImage = new ImageSimple { ThumbnailPath = "/img/original", Url = "/temp/path.png", AltText = "alt-text" };
             var updates = new List<KeyValuePair<Guid, string>>
             {
                 new KeyValuePair<Guid, string>(contentId, JsonSerializer.Serialize(newImage))
@@ -133,20 +127,16 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var pc = page.PageContent.First();
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
-            Assert.Equal("/img/original", deserialized.Url);
-            Assert.Equal(string.Empty, deserialized.TempUrl);
+            Assert.Null(deserialized.ThumbnailPath);
             Assert.Equal("alt-text", deserialized.AltText);
-            Assert.Equal(2, pc.Version); // incremented
+            Assert.Equal(2, pc.Version);
         }
 
         [Fact]
-        public async Task UpdateContent_ImageType_WithTempUrl_CallsImageProcessorAndQueuesJob()
+        public async Task UpdateContent_ImageType_UpdatesValueAndIncrementsVersion()
         {
             // Arrange
-            var imageProcessorMock = new Mock<IImageProcessor>();
-            var jobServiceMock = new Mock<IJobService>();
-
-            var handler = CreateHandler(imageProcessorMock, jobServiceMock);
+            var handler = CreateHandler();
             var applicationTenantId = Guid.NewGuid();
 
             var page = new Page(applicationTenantId, "t", "u", "m", Guid.NewGuid(), null, false);
@@ -158,38 +148,22 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var pageContent = page.PageContent.First();
             pageContent.PageTypeContent = pct;
 
-            var newImage = new ImageSimple { Url = "file.png", TempUrl = "/temp/path.png", AltText = "alt" };
+            var newImage = new ImageSimple { ThumbnailPath = "file.png", Url = "/temp/path.png", AltText = "alt" };
             var updates = new List<KeyValuePair<Guid, string>>
             {
                 new KeyValuePair<Guid, string>(contentId, JsonSerializer.Serialize(newImage))
             };
 
-            var returnedFinalUrl = "/img/pages/final.webp";
-            imageProcessorMock
-                .Setup(x => x.ConvertTempImageToFullImage(newImage.TempUrl, newImage.Url, It.IsAny<string>(), applicationTenantId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(returnedFinalUrl);
-
             // Act
             await handler.UpdateContent(updates, page, applicationTenantId, CancellationToken.None);
 
             // Assert
-            imageProcessorMock.Verify(x => x.ConvertTempImageToFullImage(
-                It.Is<string>(p => p == newImage.TempUrl),
-                It.Is<string>(f => f == newImage.Url),
-                It.IsAny<string>(),
-                It.Is<Guid>(g => g == applicationTenantId),
-                It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            jobServiceMock.Verify(x => x.QueueJob<Churchee.ImageProcessing.Jobs.ImageCropsGenerator>(It.IsAny<System.Linq.Expressions.Expression<Func<Churchee.ImageProcessing.Jobs.ImageCropsGenerator, Task>>>()), Times.Once);
-
             var pc = page.PageContent.First();
             var deserialized = JsonSerializer.Deserialize<ImageSimple>(pc.Value);
             Assert.NotNull(deserialized);
-            Assert.Equal(returnedFinalUrl.Replace(".webp", ""), deserialized.Url);
-            Assert.Equal(string.Empty, deserialized.TempUrl);
+            Assert.Null(deserialized.ThumbnailPath);
             Assert.Equal("alt", deserialized.AltText);
-            Assert.Equal(6, pc.Version); // incremented
+            Assert.Equal(6, pc.Version);
         }
     }
 }

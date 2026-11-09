@@ -1,8 +1,8 @@
 ﻿using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Models;
 using Churchee.Module.Events.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Events.Features.Queries
 {
@@ -37,6 +37,7 @@ namespace Churchee.Module.Events.Features.Queries
                 .SetDescription(entity.Description)
                 .SetContent(entity.Content)
                 .SetImageUrl(entity.ImageUrl)
+                .SetImageAltTag(entity.ImageAltTag)
                 .SetLocationName(entity.LocationName)
                 .SetCity(entity.City)
                 .SetStreet(entity.Street)

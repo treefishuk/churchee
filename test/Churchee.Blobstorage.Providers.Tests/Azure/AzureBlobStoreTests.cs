@@ -21,6 +21,12 @@ namespace Churchee.Blobstorage.Providers.Tests.Azure
                 .WithPortBinding(10000, true)
                 .WithPortBinding(10001, true)
                 .WithPortBinding(10002, true)
+                .WithCommand(
+                    "azurite",
+                    "--blobHost", "0.0.0.0",
+                    "--queueHost", "0.0.0.0",
+                    "--tableHost", "0.0.0.0",
+                    "--skipApiVersionCheck")
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(10000))
                 .Build();
 

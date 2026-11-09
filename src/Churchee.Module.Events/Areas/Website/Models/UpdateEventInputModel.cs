@@ -11,7 +11,7 @@ namespace Churchee.Module.Events.Areas.Website.Models
         {
             Title = string.Empty;
             Description = string.Empty;
-            ImageUpload = new Upload();
+            Image = new ImageUploadType();
             LocationName = string.Empty;
             City = string.Empty;
             Street = string.Empty;
@@ -33,7 +33,7 @@ namespace Churchee.Module.Events.Areas.Website.Models
         public string Content { get; set; }
 
         [DataType(DataTypes.ImageUpload)]
-        public Upload ImageUpload { get; set; }
+        public ImageUploadType Image { get; set; }
 
         public string LocationName { get; set; }
 

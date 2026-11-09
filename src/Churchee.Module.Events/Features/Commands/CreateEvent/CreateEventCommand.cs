@@ -17,7 +17,7 @@ namespace Churchee.Module.Events.Features.Commands
 
         public string ImageFileName { get; private set; }
 
-        public byte[] ImageData { get; private set; } = Array.Empty<byte>();
+        public string ImageAltTag { get; private set; }
 
         public string LocationName { get; private set; }
 
@@ -67,15 +67,10 @@ namespace Churchee.Module.Events.Features.Commands
                 return this;
             }
 
-            public Builder SetImageFileName(string imageFileName)
+            public Builder SetImageInfo(string imageFileName, string imageAltTag)
             {
                 _command.ImageFileName = imageFileName ?? string.Empty;
-                return this;
-            }
-
-            public Builder SetImageData(byte[] imageData)
-            {
-                _command.ImageData = imageData ?? Array.Empty<byte>();
+                _command.ImageAltTag = imageAltTag ?? string.Empty;
                 return this;
             }
 

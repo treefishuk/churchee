@@ -7,6 +7,7 @@ $splitbutton-sizes: xs, sm, md, lg;
 .rz-splitbutton {
   box-sizing: border-box;
   display: inline-flex;
+  border-radius: var(--rz-button-border-radius);
 
   .rz-button-icon-only {
     .rz-button-text {
@@ -40,6 +41,10 @@ $splitbutton-sizes: xs, sm, md, lg;
   list-style: none;
   padding: 0;
   margin: 0;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .rz-menuitem {
@@ -47,7 +52,8 @@ $splitbutton-sizes: xs, sm, md, lg;
 
   .rz-menuitem-link {
     color: inherit;
-    display: block;
+    display: flex;
+    align-items: center;
     text-decoration: none;
 
     &:hover {
@@ -57,7 +63,6 @@ $splitbutton-sizes: xs, sm, md, lg;
 
   .rz-menuitem-icon {
     @extend %rzi;
-    vertical-align: top;
     margin-inline: var(--rz-menu-item-icon-margin-inline);
   }
 }
@@ -79,4 +84,16 @@ $splitbutton-sizes: xs, sm, md, lg;
       content: 'arrow_drop_down';
     }
   }
+}
+
+.rz-input-xs .rz-menuitem-icon {
+  font-size: 1rem;
+}
+
+.rz-input-sm .rz-menuitem-icon {
+  font-size: 1rem;
+}
+
+.rz-input-lg .rz-menuitem-icon {
+  font-size: 1.5rem;
 }

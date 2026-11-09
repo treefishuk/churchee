@@ -4,9 +4,7 @@
 @using Churchee.Common.ValueTypes
 @using Churchee.Module.Events.Areas.Website.Models
 @using Churchee.Module.Events.Components
-@using Churchee.Module.Events.Models
 @using Churchee.Module.UI.Components
-@using Churchee.Module.UI.Models
 @using Churchee.Module.Events.Features.Queries
 @using Churchee.Module.Events.Features.Commands
 @using Microsoft.AspNetCore.Components.Forms
@@ -93,12 +91,17 @@
         InputModel.Content = response.Content;
         InputModel.LocationName = response.LocationName;
         InputModel.City = response.City;
-        InputModel.Street = response.Street;
+        InputModel.Street = response.Street;    
         InputModel.PostCode = response.PostCode;
         InputModel.Country = response.Country;
         InputModel.Latitude = response.Latitude;
         InputModel.Longitude = response.Longitude;
-        InputModel.ImageUpload = new Upload();
+        InputModel.Image = new ImageUploadType
+        {
+            ThumbnailUrl = response.ImageUrl.StartsWith("/_content") ? response.ImageUrl : $"{TenantResolver.GetCDNPrefix()}{response.ImageUrl.Replace(".webp", "_t.webp")}",
+            Description = response.ImageAltTag,
+            Path = "/img/events"
+        };
         InputModel.Dates = response.Dates;
     }
 
@@ -114,8 +117,7 @@
             .SetTitle(InputModel.Title)
             .SetDescription(InputModel.Description)
             .SetContent(InputModel.Content)
-            .SetImageFileName(InputModel.ImageUpload.FileName)
-            .SetImageData(InputModel.ImageUpload.FileBytes)
+            .SetImageInfo(InputModel.Image.FileName, InputModel.Image.Description)
             .SetLocationName(InputModel.LocationName)
             .SetCity(InputModel.City)
             .SetStreet(InputModel.Street)

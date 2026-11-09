@@ -198,7 +198,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Jobs
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => o.ToString() == "Error Syncing Facebook Events" && t.Name == "FormattedLogValues"),
+                    It.Is<It.IsAnyType>((o, t) => o!.ToString() == "Error Syncing Facebook Events" && t.Name == "FormattedLogValues"),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

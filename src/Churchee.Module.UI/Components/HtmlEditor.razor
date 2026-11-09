@@ -1,0 +1,97 @@
+﻿@using AngleSharp.Html.Parser
+@using Radzen
+@using Radzen.Blazor
+
+<RadzenHtmlEditor Value="@Value" ValueChanged=@OnValueChanged" Change=Change Style=$"height: {Height}px" Paste="OnPaste">
+    <RadzenHtmlEditorFormatBlock />
+    <RadzenHtmlEditorUndo />
+    <RadzenHtmlEditorRedo />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorBold />
+    <RadzenHtmlEditorItalic />
+    <RadzenHtmlEditorUnderline />
+    <RadzenHtmlEditorStrikeThrough />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorRemoveFormat />
+    <RadzenHtmlEditorUnorderedList />
+    <RadzenHtmlEditorOrderedList />
+    <RadzenHtmlEditorSource />
+    @ChildContent
+</RadzenHtmlEditor>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public int Height { get; set; } = 250;
+
+    [Parameter]
+    public EventCallback<string> Change { get; set; }
+
+    [Parameter]
+    public EventCallback<HtmlEditorExecuteEventArgs> Execute { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private async Task OnValueChanged(string value)
+    {
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+
+    void OnPaste(HtmlEditorPasteEventArgs args)
+    {
+        if (string.IsNullOrEmpty(args.Html))
+        {
+            return;
+        }
+
+        args.Html = CleanClipboardHtml(args.Html);
+    }
+
+    internal static string CleanClipboardHtml(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return input;
+        }
+
+        var parser = new HtmlParser();
+        var doc = parser.ParseDocument(input);
+
+        foreach (var element in doc.All)
+        {
+            element.RemoveAttribute("style");
+            element.RemoveAttribute("class");
+            element.RemoveAttribute("align");
+            element.RemoveAttribute("color");
+            element.RemoveAttribute("face");
+            element.RemoveAttribute("size");
+            element.RemoveAttribute("dir");
+            element.RemoveAttribute("id");
+        }
+
+        foreach (var wrapper in doc.QuerySelectorAll("span, font, div"))
+        {
+            if (wrapper.ParentElement is not null)
+            {
+                while (wrapper.FirstChild != null)
+                {
+                    wrapper.ParentElement.InsertBefore(wrapper.FirstChild, wrapper);
+                }
+
+                wrapper.Remove();
+            }
+        }
+
+        return doc.Body?.InnerHtml ?? doc.DocumentElement?.InnerHtml ?? string.Empty;
+    }
+
+}

@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Google.Apis.Auth.AspNetCore3" Version="1.74.0" />
+	  <PackageReference Include="Google.Apis.Auth.AspNetCore3" Version="1.78.0" />
 	</ItemGroup>
 
 </Project>

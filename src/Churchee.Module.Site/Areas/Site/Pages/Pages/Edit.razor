@@ -1,8 +1,7 @@
 ﻿@page "/management/pages/edit/{Id:guid}"
 @inherits BasePage
-@using Churchee.Common.ValueTypes
 @using Churchee.Module.Site.Areas.Site.Models
-@using Churchee.Module.Site.Features.Pages.Commands.CreatePermenantImageFromTemp
+@using Churchee.Module.Site.Components
 @using Churchee.Module.Site.Features.Pages.Commands.UpdatePage
 @using Churchee.Module.Site.Features.Pages.Queries
 @using Churchee.Module.Site.Helpers
@@ -58,22 +57,7 @@
                                     <ChildContent>
                                         @if (item.Type == EditorType.RichTextEditor)
                                         {
-                                            <RadzenHtmlEditor @bind-Value=@item.Value style="height: 300px;">
-                                            <RadzenHtmlEditorFormatBlock />
-                                            <RadzenHtmlEditorUndo />
-                                            <RadzenHtmlEditorRedo />
-                                            <RadzenHtmlEditorSeparator />
-                                            <RadzenHtmlEditorBold />
-                                            <RadzenHtmlEditorItalic />
-                                            <RadzenHtmlEditorUnderline />
-                                            <RadzenHtmlEditorStrikeThrough />
-                                            <RadzenHtmlEditorSeparator />
-                                            <RadzenHtmlEditorRemoveFormat />
-                                            <RadzenHtmlEditorSource />
-                                            <RadzenHtmlEditorUnorderedList />
-                                            <RadzenHtmlEditorOrderedList />
-                                            <RadzenHtmlEditorLink />
-                                            </RadzenHtmlEditor>
+                                            <HtmlEditor @bind-Value=@item.Value Height="300"></HtmlEditor>
                                         }
                                         @if (item.Type == EditorType.Number)
                                         {
@@ -93,7 +77,7 @@
 
                                         @if (item.Type == EditorType.Image)
                                         {
-                                            <PageImage @bind-Value=@item.Value PageId="@Id" Name="@item.DevName" OnUpload="OnImageUpload" />
+                                            <PageImage @bind-Value=@item.Value PageId="@Id" Name="@item.DevName" />
                                         }
 
 
@@ -191,13 +175,14 @@
                 Title = result.ParentName,
                 Value = result.ParentId?.ToString().ToUpperInvariant(),
                 Data = dropdownData ?? new List<DropdownInput>(),
-                Enabled = result.Url == "/" ? false : true
+                Enabled = result.Url == "/" ? false : true  
             },
             ContentItems =  result.ContentItems.ToList(),
-            Image = new Common.ValueTypes.ChunkedImageUploadType
+            Image = new Common.ValueTypes.ImageUploadType
             {
-                ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}/{result.ImageThumbnail}",
-                ShowDescription = false
+                ThumbnailUrl = result.ImageThumbnail.StartsWith("/_content") ? result.ImageThumbnail : $"{TenantResolver.GetCDNPrefix()}{result.ImageThumbnail}",
+                Path = "/img/pages",
+                Description = result.ImageAltTag
             }
 
         };
@@ -245,7 +230,7 @@
             .SetOrder(InputModel.Order)
             .SetContent(content)
             .SetProperties(properties)
-            .SetImage(InputModel.Image.TempFilePath, InputModel.Image.File?.Name ?? string.Empty)
+            .SetImage(InputModel.Image.FileName ?? string.Empty, InputModel.Image.Description)
             .Build();
 
         var result = await Mediator.Send(command, default);
@@ -271,10 +256,4 @@
         NavigationManager.NavigateTo("/management/pages");
     }
 
-    private async Task<string> OnImageUpload(ChunkedUploadRequest upload)
-    {
-        var command = new CreatePermenantImageFromTempCommand(upload);
-
-        return await Mediator.Send(command, default);
-    }
 }

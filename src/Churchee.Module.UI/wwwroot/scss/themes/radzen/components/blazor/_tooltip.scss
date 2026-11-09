@@ -13,6 +13,10 @@ $tooltip-font-size: var(--rz-body-font-size) !default;
   left: 0;
 }
 
+.rz-tooltip:has(.rz-chart-tooltip) {
+  pointer-events: none;
+}
+
 .rz-tooltip-content {
   background: var(--rz-tooltip-background-color);
   color: var(--rz-tooltip-color);
@@ -20,7 +24,8 @@ $tooltip-font-size: var(--rz-body-font-size) !default;
   padding: var(--rz-tooltip-padding);
   border-radius: var(--rz-tooltip-border-radius);
   font-size: var(--rz-tooltip-font-size);
-  white-space: nowrap;
+  white-space: normal;
+  max-width: min(30rem, 90vw);
 }
 
 .rz-tooltip .rz-top-tooltip-content {
@@ -89,4 +94,8 @@ $tooltip-font-size: var(--rz-body-font-size) !default;
   transform: translate(-50%, -10px) rotate(45deg);
   border-bottom: inherit;
   border-right: inherit;
+}
+
+.rz-tooltip .rz-mouse-tooltip-content {
+  margin-bottom: 0;
 }

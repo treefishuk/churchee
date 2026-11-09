@@ -30,7 +30,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.CreateEvent
                 .SetStart(startDate)
                 .SetEnd(endDate)
                 .SetContent(content)
-                .SetImageFileName(imageFileName)
+                .SetImageInfo(imageFileName, string.Empty)
                 .SetLocationName(locationName)
                 .SetCity(city)
                 .SetStreet(street)

@@ -29,6 +29,7 @@ namespace Churchee.Module.Site.Features.Pages.Queries
                 Published = s.Published,
                 Order = s.Order,
                 ImageThumbnail = string.IsNullOrEmpty(s.ImageUrl) ? "/_content/Churchee.Module.UI/img/opengraph-placeholder.png" : s.ImageUrl + "_t.webp",
+                ImageAltTag = s.ImageAltTag,
                 ContentItems = s.PageContent
                     .OrderBy(o => o.PageTypeContent.Order)
                     .Select(m => new GetPageDetailsResponseContentItem

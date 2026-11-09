@@ -28,7 +28,7 @@ namespace Churchee.Module.UI.Tests.Components
             // Ensure the component picks up the ImageUpload path:
             // Use the string-based DataType attribute to set the custom data type to DataTypes.ImageUpload.
             [DataType(DataTypes.ImageUpload)]
-            public Upload Photo { get; set; } = new Upload();
+            public ImageUploadType Photo { get; set; } = new ImageUploadType();
         }
 
         [Fact]
@@ -40,12 +40,15 @@ namespace Churchee.Module.UI.Tests.Components
             var prop = typeof(TestModel).GetProperty(nameof(TestModel.Photo))!;
 
             // Act
-            var cut = Render<FormFieldItem>(parameters => parameters
-                .Add(p => p.Prop, prop)
-                .Add(p => p.InputModel, model)
-                .Add(p => p.EditContext, editContext)
-                .Add(p => p.OnValueChanged, EventCallback.Factory.Create<object>(this, (_) => { }))
-            );
+            var cut = Render<CascadingValue<EditContext>>(parameters => parameters
+                .Add(p => p.Value, editContext)
+                .AddChildContent<FormFieldItem>(child => child
+                    .Add(p => p.Prop, prop)
+                    .Add(p => p.InputModel, model)
+                    .Add(p => p.EditContext, editContext)
+                    .Add(p => p.OnValueChanged,
+                        EventCallback.Factory.Create<object>(this, _ => { }))
+                ));
 
             // Assert: RadzenFileInput should render an <input type="file"> element
             var fileInput = cut.FindAll("input[type='file']");
@@ -60,15 +63,20 @@ namespace Churchee.Module.UI.Tests.Components
             var editContext = new EditContext(model);
             var prop = typeof(TestModel).GetProperty(nameof(TestModel.Photo))!;
 
-            var cut = Render<FormFieldItem>(parameters => parameters
-                .Add(p => p.Prop, prop)
-                .Add(p => p.InputModel, model)
-                .Add(p => p.EditContext, editContext)
-                .Add(p => p.OnValueChanged, EventCallback.Factory.Create<object>(this, (_) => { }))
-            );
+
+            // Act
+            var cut = Render<CascadingValue<EditContext>>(parameters => parameters
+                .Add(p => p.Value, editContext)
+                .AddChildContent<FormFieldItem>(child => child
+                    .Add(p => p.Prop, prop)
+                    .Add(p => p.InputModel, model)
+                    .Add(p => p.EditContext, editContext)
+                    .Add(p => p.OnValueChanged,
+                        EventCallback.Factory.Create<object>(this, _ => { }))
+                ));
 
             // Use reflection to invoke the private OnFileError method
-            var instance = cut.Instance;
+            var instance = cut.FindComponent<FormFieldItem>().Instance;
 
             // Create args that contain the "File too large" message to trigger the specific branch
             var uploadErrorType = typeof(UploadErrorEventArgs);
@@ -76,7 +84,7 @@ namespace Churchee.Module.UI.Tests.Components
             args!.Message = "File too large";
 
             // Act
-            cut.Instance.OnFileError(args, "FileInput");
+            instance.OnFileError(args, "FileInput");
 
             // Assert
             NotificationService.Notifications.Should().ContainSingle(n => n.Severity == NotificationSeverity.Error && n.Summary.StartsWith("File size to large"));

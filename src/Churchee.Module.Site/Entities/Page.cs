@@ -45,7 +45,7 @@ namespace Churchee.Module.Site.Entities
             ParentId = parentId;
             Order = order;
 
-            AddDomainEvent(new PageInfoUpdatedEvent(Id));
+            AddDomainEvent(new PageInfoUpdatedEvent(ApplicationTenantId, Id));
         }
 
         public void UpdateContent(List<KeyValuePair<Guid, string>> content)

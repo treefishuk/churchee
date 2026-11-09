@@ -9,11 +9,13 @@ namespace Churchee.Module.Site.Tests.Events
         {
             // Arrange
             var pageId = Guid.NewGuid();
+            var tenantId = Guid.NewGuid();
 
             // Act
-            var evt = new PageInfoUpdatedEvent(pageId);
+            var evt = new PageInfoUpdatedEvent(tenantId, pageId);
 
             // Assert
+            Assert.Equal(tenantId, evt.ApplicationTenantId);
             Assert.Equal(pageId, evt.PageId);
         }
     }

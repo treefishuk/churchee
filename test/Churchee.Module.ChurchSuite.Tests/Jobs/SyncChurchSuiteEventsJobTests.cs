@@ -277,7 +277,7 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
             _logger.Verify(l => l.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, _) => o.ToString()!.Contains("Failed to get feed")),
+                    It.Is<It.IsAnyType>((o, _) => o!.ToString()!.Contains("Failed to get feed")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
@@ -329,7 +329,7 @@ namespace Churchee.Module.ChurchSuite.Tests.Jobs
             _logger.Verify(l => l.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, _) => o.ToString()!.Contains("Error downloading churchSuite Event image")),
+                    It.Is<It.IsAnyType>((o, _) => o!.ToString()!.Contains("Error downloading churchSuite Event image")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

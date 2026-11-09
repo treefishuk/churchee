@@ -1,9 +1,9 @@
 ﻿using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Specifications;
-using Churchee.CQRS.Abstractions;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 {
@@ -32,6 +32,8 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
             string url = $"{path}/{slug}";
 
             var newPage = new Page(applicationTenantId, request.Title, url, request.Description, request.PageTypeId, request.ParentId, true);
+
+            newPage.SetImageInfo(string.IsNullOrEmpty(request.ImageFileName) ? string.Empty : request.ImageFileName.GetFullPathWithoutExtension(), request.ImageAltTag);
 
             repo.Create(newPage);
 

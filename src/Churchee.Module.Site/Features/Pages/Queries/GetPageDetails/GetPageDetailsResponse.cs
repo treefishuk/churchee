@@ -18,6 +18,9 @@
 
         public string ImageThumbnail { get; set; }
 
+        public string ImageAltTag { get; set; }
+
+
         public IEnumerable<GetPageDetailsResponseContentItem> ContentItems { get; set; }
 
 

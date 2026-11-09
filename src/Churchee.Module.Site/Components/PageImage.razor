@@ -1,0 +1,67 @@
+﻿@using Churchee.Common.Abstractions.Auth
+@using Churchee.Common.ValueTypes
+@using Churchee.Module.UI.Components
+@using Microsoft.AspNetCore.Components;
+@using System.Text.Json
+
+<ImageUpload Model="@Model" ModelChanged="HandleModelChange"/>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+
+        if (string.IsNullOrEmpty(Value))
+        {
+            Model = new ImageUploadType() { Path = "/img/pages", ApplicationTenantId = TenantResolver.GetTenantId() };
+
+            return;
+        }
+
+        var deconstructed = JsonSerializer.Deserialize<ImageSimple>(Value);
+
+        if(deconstructed != null)
+        {
+            ExistingImage = deconstructed.Url;
+            Model = new ImageUploadType { Path = "/img/pages",  Description = deconstructed.AltText, ThumbnailUrl = $"{TenantResolver.GetCDNPrefix()}{deconstructed.Url}" + "_t.webp", SupportedFileTypes = ".jpg,.jpeg,.png,.gif" };
+        }
+    }
+
+    public ImageUploadType Model { get; set; } = new();
+
+    public string ExistingImage { get; set; }
+
+    [Inject]
+    protected ITenantResolver TenantResolver { get; set; } = default!;
+
+    [Parameter] 
+    public string Value { get; set; }
+
+    [Parameter] 
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public Guid? PageId { get; set; }
+
+    [Parameter] 
+    public EventCallback<string> OnChanged { get; set; }
+
+    private async Task HandleModelChange(ImageUploadType newValue)
+    {
+        string imagePath = ExistingImage;
+
+        if (!string.IsNullOrEmpty(newValue.FileName))
+        {
+            imagePath = new Uri(newValue.FileName).AbsolutePath;
+        }
+
+        var data = new ImageSimple { AltText = newValue.Description, Url = imagePath, ThumbnailPath = newValue.ThumbnailUrl };
+
+        Value = JsonSerializer.Serialize(data);
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

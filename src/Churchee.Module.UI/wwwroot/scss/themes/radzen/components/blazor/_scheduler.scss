@@ -38,7 +38,11 @@ $scheduler-view-selected-border-color: $scheduler-view-selected-background-color
 $scheduler-header-background-color: var(--rz-base-200) !default;
 $scheduler-header-font-size: 0.75rem !default;
 $scheduler-header-font-size-small: 0.5rem !default;
+$scheduler-header-agenda-font-size: 1.5rem !default;
+$scheduler-header-agenda-font-weight: 600 !default;
+$scheduler-header-agenda-font-size-small: 1rem !default;
 $scheduler-header-text-transform: uppercase !default;
+$scheduler-header-agenda-text-transform: none !default;
 $scheduler-header-color: inherit !default;
 $scheduler-header-border: var(--rz-border-normal) !default;
 $scheduler-header-padding: 0.5rem 0 !default;
@@ -66,6 +70,8 @@ $scheduler-year-slot-title-width: 100% !default;
 $scheduler-year-slot-title-border-radius: 0.25rem !default;
 $scheduler-planner-slot-width: 3rem !default;
 $scheduler-planner-slot-height: 4.5rem !default;
+$scheduler-resource-group-height: 24rem !default;
+$scheduler-resource-group-min-width: 40rem !default;
 $scheduler-focus-outline: var(--rz-outline-focus) !default;
 $scheduler-focus-outline-offset: calc(-1 * var(--rz-outline-width)) !default;
 $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
@@ -85,14 +91,17 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
   overflow: hidden;
   background-clip: border-box;
 
-  a.rz-event-list-btn {
-    position: absolute;
-    padding-inline-start: 0.25rem;
+  .rz-event-list-btn {
     color: var(--rz-scheduler-event-list-button-color);
     font-size: var(--rz-scheduler-event-list-button-font-size);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    margin-inline-start: auto;
 
     &:hover {
-      cursor: pointer;
       color: var(--rz-scheduler-event-list-button-color);
       text-decoration: underline;
     }
@@ -145,6 +154,49 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
   cursor: pointer;
 }
 
+.rz-event-resize {
+  position: absolute;
+  inset-inline: 0;
+  height: 0.375rem;
+  cursor: ns-resize;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    margin-inline: auto;
+    width: 2rem;
+    max-width: 50%;
+    height: 0.25rem;
+    border-radius: 0.125rem;
+    background: var(--rz-scheduler-event-color);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  &.rz-event-resize-start {
+    inset-block-start: 0;
+
+    &::after {
+      inset-block-start: 0.125rem;
+    }
+  }
+
+  &.rz-event-resize-end {
+    inset-block-end: 0;
+
+    &::after {
+      inset-block-end: 0.125rem;
+    }
+  }
+}
+
+.rz-event:hover .rz-event-resize::after,
+.rz-event-resize:hover::after {
+  opacity: 0.6;
+}
+
 .rz-event-content {
   background: var(--rz-scheduler-event-background-color);
   border-radius: var(--rz-scheduler-border-radius);
@@ -173,6 +225,28 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
     font-size: var(--rz-scheduler-toolbar-title-font-size);
     font-weight: var(--rz-scheduler-toolbar-title-font-weight);
     color: var(--rz-scheduler-toolbar-title-color);
+
+    .rz-scheduler-nav-title-button {
+      font-size: var(--rz-scheduler-toolbar-title-font-size);
+      font-weight: var(--rz-scheduler-toolbar-title-font-weight);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+  }
+}
+
+// The popup is moved to the body when it opens, so it cannot be nested in .rz-scheduler-nav.
+.rz-scheduler-nav-title-popup {
+  display: none;
+  position: absolute;
+  width: 20rem;
+  outline: 0;
+  --rz-datepicker-calendar-transition: none;
+
+  // The popup blurs what is behind it, so the picker must not blur a second time.
+  .rz-datepicker-inline {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
@@ -235,6 +309,49 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
   }
 }
 
+.rz-event-agenda {
+  position: unset;
+
+  .rz-event-agenda-title {
+    font-weight: bold;
+  }
+
+  .rz-event-agenda-time {
+    font-style: italic;
+  }
+}
+
+.rz-view-content-agenda {
+  display: flex;
+  flex-direction: column;
+}
+
+.rz-slot-header-agenda {
+  width: 10%;
+  min-width: 10%;
+  margin-top: 1.5rem;
+
+  .rz-slot-header-agenda-day-title {
+    font-size: var(--rz-scheduler-header-agenda-font-size-small);
+    text-transform: var(--rz-scheduler-header-agenda-text-transform);
+    color: var(--rz-scheduler-header-color);
+    text-align: center;
+  }
+
+  .rz-slot-header-agenda-day-number {
+    font-size: var(--rz-scheduler-header-agenda-font-size);
+    font-weight: var(--rz-scheduler-header-agenda-font-weight);
+    text-transform: var(--rz-scheduler-header-text-transform);
+    color: var(--rz-scheduler-header-color);
+    text-align: center;
+  }
+}
+
+.rz-slot-agenda {
+  width: 85%;
+  min-width: 85%;
+}
+
 .rz-slots {
   flex: 1;
   font-size: 1rem;
@@ -288,6 +405,10 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
       padding: var(--rz-scheduler-today-button-padding);
       font-size: var(--rz-scheduler-today-button-font-size);
       text-transform: var(--rz-scheduler-today-button-text-transform);
+    }
+
+    &.rz-zoom-to-fit {
+      margin-inline-start: var(--rz-scheduler-today-button-margin-inline-start);
     }
 
     &.rz-prev {
@@ -446,6 +567,204 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
   
 }
 
+// Resource groups (GroupByResource)
+
+.rz-resource-groups {
+  flex: auto;
+  height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+
+  .rz-resource-group {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+
+    .rz-view {
+      flex: none;
+    }
+
+    .rz-view > .rz-view-header:first-child {
+      border-block-start: none;
+    }
+
+    .rz-view-content {
+      height: auto;
+    }
+
+    .rz-view-header {
+      overflow-y: visible;
+    }
+
+    .rz-month-view .rz-view-content {
+      height: 0;
+    }
+
+    .rz-month-view,
+    .rz-planner-view,
+    .rz-timeline-view,
+    .rz-year-view {
+      height: var(--rz-scheduler-resource-group-height);
+    }
+  }
+
+  .rz-resource-group-children {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+  }
+
+  &.rz-resource-groups-horizontal,
+  .rz-resource-group-children.rz-resource-groups-horizontal {
+    flex-direction: row;
+
+    > .rz-resource-group {
+      flex: 1;
+      border-inline-end: 1px solid var(--rz-scheduler-border-color);
+
+      &:last-child {
+        border-inline-end: none;
+      }
+
+      .rz-view {
+        min-width: var(--rz-scheduler-resource-group-min-width);
+      }
+
+      .rz-month-view,
+      .rz-planner-view,
+      .rz-timeline-view,
+      .rz-year-view {
+        height: auto;
+        flex: auto;
+      }
+    }
+  }
+}
+
+.rz-resource-group-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 3;
+  flex: none;
+  padding: 0.5rem;
+  padding-inline-start: calc(0.5rem + var(--rz-scheduler-resource-group-depth, 0) * 1rem);
+  font-size: var(--rz-scheduler-header-font-size);
+  font-weight: 600;
+  text-transform: var(--rz-scheduler-header-text-transform);
+  background-color: var(--rz-scheduler-header-background-color);
+  border-block-start: var(--rz-scheduler-header-border);
+  border-block-end: var(--rz-scheduler-header-border);
+  color: var(--rz-scheduler-header-color);
+}
+
+.rz-resource-group .rz-resource-group .rz-resource-group-header {
+  position: static;
+}
+
+.rz-resource-group-children > .rz-resource-group:first-child > .rz-resource-group-header,
+.rz-resource-group-children.rz-resource-groups-horizontal > .rz-resource-group > .rz-resource-group-header {
+  border-block-start: none;
+}
+
+.rz-resource-group-title {
+  position: sticky;
+  inset-inline-start: calc(0.5rem + var(--rz-scheduler-resource-group-depth, 0) * 1rem);
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Resource View
+
+.rz-resource-view {
+  .rz-slot:nth-of-type(2) {
+    border-block-start: none;
+  }
+
+  .rz-view-header {
+    overflow-y: scroll;
+    scrollbar-width: auto;
+  }
+
+  .rz-view-header:not(.rz-resource-all-day) .rz-slot-header + .rz-slot-header {
+    border-inline-start: 1px solid var(--rz-scheduler-border-color);
+  }
+
+  .rz-view-header + .rz-view-header {
+    border-block-start: none;
+  }
+
+  > .rz-view-header:first-child {
+    border-block-start: var(--rz-scheduler-header-border) !important;
+  }
+}
+
+// All-day row
+
+.rz-resource-all-day {
+  border-block-start: none;
+
+  .rz-slot-header {
+    cursor: pointer;
+    min-height: 1.75rem;
+    padding: 1px;
+    border-inline-start: 1px solid var(--rz-scheduler-border-color);
+    text-transform: none;
+  }
+
+  .rz-slot-hour-header + .rz-slot-header {
+    border-inline-start-color: transparent;
+  }
+
+  .rz-resource-all-day-label {
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: var(--rz-scheduler-header-font-size);
+    padding: 0 0.25rem;
+    text-transform: var(--rz-scheduler-header-text-transform);
+    border-inline-end: 1px solid var(--rz-scheduler-border-color);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .rz-events {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-height: 100%;
+  }
+
+  .rz-resource-all-day-event {
+    display: contents;
+  }
+
+  .rz-event {
+    position: static;
+    text-align: start;
+  }
+}
+
+.rz-resource-view:has(.rz-resource-view-content:focus-visible) {
+  .rz-resource-all-day {
+    .rz-slot-header.rz-state-focused {
+      outline: var(--rz-scheduler-focus-outline);
+      outline-offset: var(--rz-scheduler-focus-outline-offset);
+    }
+  }
+}
+
+.rz-resource-view-content:focus-visible {
+  .rz-slot.rz-state-focused {
+    outline: var(--rz-scheduler-focus-outline);
+    outline-offset: var(--rz-scheduler-focus-outline-offset);
+  }
+}
+
 // Month View
 
 .rz-month-view {
@@ -457,10 +776,18 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
   .rz-slot {
     flex: 1;
     height: 100%;
+    cursor: pointer;
+    align-items: flex-start;
 
     &:first-child {
       border-inline-start: none;
     }
+  }
+
+  .rz-slot-title {
+    display: flex;
+    align-items: baseline;
+    flex: 1;
   }
 }
 
@@ -531,6 +858,13 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
       }
     }
   }
+
+  .rz-slot-title {
+    display: flex;
+    align-items: baseline;
+    flex: 1;
+  }
+
 }
 
 // Timeline View
@@ -595,6 +929,13 @@ $scheduler-highlight-background-color: rgba(255,220,40,.2) !default;
       }
     }
   }
+
+  .rz-slot-title {
+    display: flex;
+    align-items: baseline;
+    flex: 1;
+  }
+
 }
 
 // Year View

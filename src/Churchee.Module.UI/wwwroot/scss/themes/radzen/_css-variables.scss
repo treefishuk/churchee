@@ -67,6 +67,16 @@
   --rz-transition-all: #{$rz-transition-all};
   --rz-expander-transition: #{$rz-expander-transition};
 
+  /* Motion easing & duration tokens (Material 3) */
+  --rz-easing-emphasized: #{$rz-easing-emphasized};
+  --rz-easing-emphasized-decelerate: #{$rz-easing-emphasized-decelerate};
+  --rz-easing-emphasized-accelerate: #{$rz-easing-emphasized-accelerate};
+  --rz-easing-spring: #{$rz-easing-spring};
+  --rz-duration-short: #{$rz-duration-short};
+  --rz-duration-medium: #{$rz-duration-medium};
+  --rz-duration-long: #{$rz-duration-long};
+  --rz-ripple-duration: #{$rz-ripple-duration};
+
   /* Layout Body */
   --rz-layout-body-margin: #{$layout-body-margin};
   --rz-layout-body-padding: #{$layout-body-padding};
@@ -146,6 +156,10 @@
   --rz-button-active-background-size: #{$button-active-background-size};
   --rz-button-disabled-opacity: #{$button-disabled-opacity};
   --rz-button-empty-opacity: #{$button-empty-opacity};
+  --rz-button-size-xs: #{$button-size-xs};
+  --rz-button-size-sm: #{$button-size-sm};
+  --rz-button-size-md: #{$button-size-md};
+  --rz-button-size-lg: #{$button-size-lg};
 
   /* Card */
   --rz-card-padding: #{$card-padding};
@@ -180,6 +194,8 @@
 
   /* Chart */
   --rz-chart-axis-color: #{$chart-axis-color};
+  --rz-chart-grid-line-color: #{$chart-grid-line-color};
+  --rz-chart-area-opacity: #{$chart-area-opacity};
   --rz-chart-axis-label-color: #{$chart-axis-label-color};
   --rz-chart-axis-font-size: #{$chart-axis-font-size};
   --rz-chart-legend-font-size: #{$chart-legend-font-size};
@@ -189,9 +205,56 @@
   --rz-chart-tooltip-color: #{$chart-tooltip-color};
   --rz-chart-tooltip-border-radius: #{$chart-tooltip-border-radius};
   --rz-chart-tooltip-font-size: #{$chart-tooltip-font-size};
+  --rz-chart-tooltip-max-width: #{$chart-tooltip-max-width};
   --rz-chart-tooltip-item-border-radius: #{$chart-tooltip-item-border-radius};
   --rz-chart-tooltip-item-hover-background-color: #{$chart-tooltip-item-hover-background-color};
   --rz-chart-marker-stroke: #{$chart-marker-stroke};
+
+  /* Range Navigator */
+  --rz-range-nav-height: #{$range-nav-height};
+  --rz-range-nav-compact-height: #{$range-nav-compact-height};
+  --rz-range-nav-border-radius: #{$range-nav-border-radius};
+  --rz-range-nav-border: #{$range-nav-border};
+  --rz-range-nav-shade-background-color: #{$range-nav-shade-background-color};
+  --rz-range-nav-shade-opacity: #{$range-nav-shade-opacity};
+  --rz-range-nav-compact-background-color: #{$range-nav-compact-background-color};
+  --rz-range-nav-compact-border-radius: #{$range-nav-compact-border-radius};
+  --rz-range-nav-compact-window-background-color: #{$range-nav-compact-window-background-color};
+  --rz-range-nav-handle-width: #{$range-nav-handle-width};
+  --rz-range-nav-handle-border-radius: #{$range-nav-handle-border-radius};
+  --rz-range-nav-handle-background-color: #{$range-nav-handle-background-color};
+  --rz-range-nav-handle-hover-background-color: #{$range-nav-handle-hover-background-color};
+  --rz-range-nav-handle-height: #{$range-nav-handle-height};
+  --rz-range-nav-handle-shadow: #{$range-nav-handle-shadow};
+  --rz-range-nav-handle-hover-shadow: #{$range-nav-handle-hover-shadow};
+
+  /* Chat */
+  --rz-chat-background-color: #{$rz-chat-background-color};
+  --rz-chat-border: #{$rz-chat-border};
+  --rz-chat-border-radius: #{$rz-chat-border-radius};
+  --rz-chat-header-padding-block: #{$rz-chat-header-padding-block};
+  --rz-chat-header-padding-inline: #{$rz-chat-header-padding-inline};
+  --rz-chat-header-background-color: #{$rz-chat-header-background-color};
+  --rz-chat-header-bottom-border: #{$rz-chat-header-bottom-border};
+  --rz-chat-header-shadow: #{$rz-chat-header-shadow};
+  --rz-chat-header-title-font-size: #{$rz-chat-header-title-font-size};
+  --rz-chat-header-title-font-weight: #{$rz-chat-header-title-font-weight};
+  --rz-chat-message-user-color: #{$rz-chat-message-user-color};
+  --rz-chat-message-user-background-color: #{$rz-chat-message-user-background-color};
+  --rz-chat-message-assistant-color: #{$rz-chat-message-assistant-color};
+  --rz-chat-message-assistant-background-color: #{$rz-chat-message-assistant-background-color};
+  --rz-chat-message-text-padding: #{$rz-chat-message-text-padding};
+  --rz-chat-message-text-border-radius: #{$rz-chat-message-text-border-radius};
+  --rz-chat-avatar-size: #{$rz-chat-avatar-size};
+  --rz-chat-avatar-border-radius: #{$rz-chat-avatar-border-radius};
+  --rz-chat-avatar-font-size: #{$rz-chat-avatar-font-size};
+  --rz-chat-avatar-font-weight: #{$rz-chat-avatar-font-weight};
+  --rz-chat-message-info-padding: #{$rz-chat-message-info-padding};
+  --rz-chat-message-callout-radius: #{$rz-chat-message-callout-radius};
+  --rz-chat-tool-call-border: #{$rz-chat-tool-call-border};
+  --rz-chat-tool-call-border-radius: #{$rz-chat-tool-call-border-radius};
+  --rz-chat-tool-call-background-color: #{$rz-chat-tool-call-background-color};
+  --rz-chat-tool-call-color: #{$rz-chat-tool-call-color};
 
   /* Checkbox */
   --rz-checkbox-width: #{$checkbox-width};
@@ -229,6 +292,23 @@
   --rz-chip-gap: #{$chip-gap};
   --rz-chip-border-radius: #{$chip-border-radius};
   --rz-chip-font-size: #{$chip-font-size};
+  --rz-chip-icon-size: #{$chip-icon-size};
+  --rz-chip-font-weight: #{$chip-font-weight};
+  --rz-chip-border-width: #{$chip-border-width};
+  --rz-chip-selected-outline: #{$chip-selected-outline};
+  --rz-chip-selected-outline-offset: #{$chip-selected-outline-offset};
+  --rz-chip-sm-gap: #{$chip-sm-gap};
+  --rz-chip-sm-font-size: #{$chip-sm-font-size};
+  --rz-chip-sm-icon-size: #{$chip-sm-icon-size};
+  --rz-chip-sm-padding-block: #{$chip-sm-padding-block};
+  --rz-chip-sm-padding-inline: #{$chip-sm-padding-inline};
+  --rz-chip-xs-gap: #{$chip-xs-gap};
+  --rz-chip-xs-font-size: #{$chip-xs-font-size};
+  --rz-chip-xs-icon-size: #{$chip-xs-icon-size};
+  --rz-chip-xs-padding-block: #{$chip-xs-padding-block};
+  --rz-chip-xs-padding-inline: #{$chip-xs-padding-inline};
+  --rz-chip-list-gap: #{$chip-list-gap};
+  --rz-chip-disabled-opacity: #{$chip-disabled-opacity};
 
   /* ColorPicker */
   --rz-colorpicker-panel-border: #{$colorpicker-panel-border};
@@ -240,10 +320,21 @@
   --rz-colorpicker-focus-outline: #{$colorpicker-focus-outline};
   --rz-colorpicker-focus-outline-offset: #{$colorpicker-focus-outline-offset};
   --rz-colorpicker-value-border-radius: #{$colorpicker-value-border-radius};
+  --rz-colorpicker-value-size-xs: #{$colorpicker-value-size-xs};
+  --rz-colorpicker-value-size-sm: #{$colorpicker-value-size-sm};
+  --rz-colorpicker-value-size-md: #{$colorpicker-value-size-md};
+  --rz-colorpicker-value-size-lg: #{$colorpicker-value-size-lg};
+  --rz-colorpicker-value-size: var(--rz-colorpicker-value-size-md);
+  --rz-colorpicker-trigger-icon-size-xs: #{$colorpicker-trigger-icon-size-xs};
+  --rz-colorpicker-trigger-icon-size-sm: #{$colorpicker-trigger-icon-size-sm};
+  --rz-colorpicker-trigger-icon-size-md: #{$colorpicker-trigger-icon-size-md};
+  --rz-colorpicker-trigger-icon-size-lg: #{$colorpicker-trigger-icon-size-lg};
+  --rz-colorpicker-trigger-icon-size: var(--rz-colorpicker-trigger-icon-size-md);
   --rz-colorpicker-items-gap: #{$colorpicker-items-gap};
   --rz-colorpicker-item-size: #{$colorpicker-item-size};
   --rz-colorpicker-item-border-radius: #{$colorpicker-item-border-radius};
   --rz-colorpicker-item-shadow: #{$colorpicker-item-shadow};
+  --rz-colorpicker-item-selected-transform: #{$colorpicker-item-selected-transform};
   --rz-colorpicker-handle-size: #{$colorpicker-handle-size};
   --rz-colorpicker-handle-border: #{$colorpicker-handle-border};
   --rz-colorpicker-handle-shadow: #{$colorpicker-handle-shadow};
@@ -276,8 +367,11 @@
   --rz-datalist-item-background-color: #{$datalist-item-background-color};
 
   /* DatePicker */
-  --rz-datepicker-trigger-icon-width: #{$datepicker-trigger-icon-width};
-  --rz-datepicker-trigger-icon-height: #{$datepicker-trigger-icon-height};
+  --rz-datepicker-trigger-icon-size-xs: #{$datepicker-trigger-icon-size-xs};
+  --rz-datepicker-trigger-icon-size-sm: #{$datepicker-trigger-icon-size-sm};
+  --rz-datepicker-trigger-icon-size-md: #{$datepicker-trigger-icon-size-md};
+  --rz-datepicker-trigger-icon-size-lg: #{$datepicker-trigger-icon-size-lg};
+  --rz-datepicker-trigger-icon-size: var(--rz-datepicker-trigger-icon-size-md);
   --rz-datepicker-line-height: #{$datepicker-line-height};
   --rz-datepicker-trigger-icon-color: #{$datepicker-trigger-icon-color};
   --rz-datepicker-trigger-icon-hover-color: #{$datepicker-trigger-icon-hover-color};
@@ -303,12 +397,15 @@
   --rz-datepicker-calendar-header-color: #{$datepicker-calendar-header-color};
   --rz-datepicker-calendar-font-size: #{$datepicker-calendar-font-size};
   --rz-datepicker-calendar-color: #{$datepicker-calendar-color};
+  --rz-datepicker-calendar-other-month-color: #{$datepicker-calendar-other-month-color};
   --rz-datepicker-calendar-hover-color: #{$datepicker-calendar-hover-color};
   --rz-datepicker-calendar-hover-background-color: #{$datepicker-calendar-hover-background-color};
   --rz-datepicker-calendar-selected-color: #{$datepicker-calendar-selected-color};
   --rz-datepicker-calendar-selected-background-color: #{$datepicker-calendar-selected-background-color};
   --rz-datepicker-calendar-selected-hover-color: #{$datepicker-calendar-selected-hover-color};
   --rz-datepicker-calendar-selected-hover-background-color: #{$datepicker-calendar-selected-hover-background-color};
+  --rz-datepicker-calendar-range-color: #{$datepicker-calendar-range-color};
+  --rz-datepicker-calendar-range-background-color: #{$datepicker-calendar-range-background-color};
   --rz-datepicker-calendar-border: #{$datepicker-calendar-border};
   --rz-datepicker-calendar-border-radius: #{$datepicker-calendar-border-radius};
   --rz-datepicker-calendar-transition: #{$datepicker-calendar-transition};
@@ -358,6 +455,12 @@
   --rz-dialog-mask-zindex: #{$dialog-mask-zindex};
   --rz-dialog-zindex: #{$dialog-zindex};
   --rz-dialog-transition: #{$dialog-transition};
+  --rz-dialog-resize-bar-color: #{$dialog-resize-bar-color};
+  --rz-dialog-resize-bar-background-color: #{$dialog-resize-bar-background-color};
+  --rz-dialog-resize-bar-hover-opacity: #{$dialog-resize-bar-hover-opacity};
+  --rz-dialog-resize-bar-thickness: #{$dialog-resize-bar-thickness};
+  --rz-dialog-resize-bar-length: #{$dialog-resize-bar-length};
+  --rz-dialog-resize-bar-handle-size: #{$dialog-resize-bar-handle-size};
 
   /* DropDown */
   --rz-dropdown-trigger-icon-width: #{$dropdown-trigger-icon-width};
@@ -396,17 +499,15 @@
   --rz-editor-border: #{$editor-border};
   --rz-editor-border-radius: #{$editor-border-radius};
   --rz-editor-toolbar-background-color: #{$editor-toolbar-background-color};
-  --rz-editor-toolbar-item-margin: #{$editor-toolbar-item-margin};
-  --rz-editor-button-padding: #{$editor-button-padding};
-  --rz-editor-button-background-color: #{$editor-button-background-color};
-  --rz-editor-button-color: #{$editor-button-color};
-  --rz-editor-button-disabled-color: #{$editor-button-disabled-color};
-  --rz-editor-button-selected-background-color: #{$editor-button-selected-background-color};
-  --rz-editor-button-selected-color: #{$editor-button-selected-color};
-  --rz-editor-separator-background-color: #{$editor-separator-background-color};
   --rz-editor-content-background-color: #{$editor-content-background-color};
   --rz-editor-focus-outline: #{$editor-focus-outline};
   --rz-editor-focus-outline-offset: #{$editor-focus-outline-offset};
+  --rz-editor-image-handle-size: #{$editor-image-handle-size};
+  --rz-editor-image-handle-background-color: #{$editor-image-handle-background-color};
+  --rz-editor-image-handle-border: #{$editor-image-handle-border};
+  --rz-editor-image-handles-border: #{$editor-image-handles-border};
+  --rz-editor-image-size-background-color: #{$editor-image-size-background-color};
+  --rz-editor-image-size-color: #{$editor-image-size-color};
 
   /* Fieldset */
   --rz-fieldset-border: #{$fieldset-border};
@@ -429,6 +530,19 @@
   --rz-fieldset-toggle-focus-outline: #{$fieldset-toggle-focus-outline};
   --rz-fieldset-toggle-focus-outline-offset: #{$fieldset-toggle-focus-outline-offset};
 
+  /* Fab */
+  --rz-fab-inset-block-start: #{$fab-inset-block-start};
+  --rz-fab-inset-block-end: #{$fab-inset-block-end};
+  --rz-fab-inset-inline-start: #{$fab-inset-inline-start};
+  --rz-fab-inset-inline-end: #{$fab-inset-inline-end};
+  --rz-fab-zindex: #{$fab-zindex};
+  --rz-fab-border-radius: #{$fab-border-radius};
+  --rz-fab-active-border-radius: #{$fab-active-border-radius};
+  --rz-fab-shadow: #{$fab-shadow};
+  --rz-fab-hover-shadow: #{$fab-hover-shadow};
+  --rz-fab-active-shadow: #{$fab-active-shadow};
+  --rz-fabmenu-offset: #{$fabmenu-offset};
+  
   /* Footer */
   --rz-footer-padding: #{$footer-padding};
   --rz-footer-background-color: #{$footer-background-color};
@@ -453,6 +567,26 @@
   --rz-form-field-filled-focus-border: #{$form-field-filled-focus-border};
   --rz-form-field-filled-border-radius: #{$form-field-filled-border-radius};
   --rz-form-field-filled-label-floating-top: #{$form-field-filled-label-floating-top};
+  --rz-form-field-filled-height-xs: #{$form-field-filled-height-xs};
+  --rz-form-field-filled-height-sm: #{$form-field-filled-height-sm};
+  --rz-form-field-filled-height-md: #{$form-field-filled-height-md};
+  --rz-form-field-filled-height-lg: #{$form-field-filled-height-lg};
+  --rz-form-field-filled-padding-block-xs: #{$form-field-filled-padding-block-xs};
+  --rz-form-field-filled-padding-block-sm: #{$form-field-filled-padding-block-sm};
+  --rz-form-field-filled-padding-block-md: #{$form-field-filled-padding-block-md};
+  --rz-form-field-filled-padding-block-lg: #{$form-field-filled-padding-block-lg};
+  --rz-form-field-filled-padding-inline-xs: #{$form-field-filled-padding-inline-xs};
+  --rz-form-field-filled-padding-inline-sm: #{$form-field-filled-padding-inline-sm};
+  --rz-form-field-filled-padding-inline-md: #{$form-field-filled-padding-inline-md};
+  --rz-form-field-filled-padding-inline-lg: #{$form-field-filled-padding-inline-lg};
+  --rz-form-field-filled-label-floating-top-xs: #{$form-field-filled-label-floating-top-xs};
+  --rz-form-field-filled-label-floating-top-sm: #{$form-field-filled-label-floating-top-sm};
+  --rz-form-field-filled-label-floating-top-md: #{$form-field-filled-label-floating-top-md};
+  --rz-form-field-filled-label-floating-top-lg: #{$form-field-filled-label-floating-top-lg};
+  --rz-form-field-filled-label-floating-font-size-xs: #{$form-field-filled-label-floating-font-size-xs};
+  --rz-form-field-filled-label-floating-font-size-sm: #{$form-field-filled-label-floating-font-size-sm};
+  --rz-form-field-filled-label-floating-font-size-md: #{$form-field-filled-label-floating-font-size-md};
+  --rz-form-field-filled-label-floating-font-size-lg: #{$form-field-filled-label-floating-font-size-lg};
   --rz-form-field-filled-hover-shadow: #{$form-field-filled-hover-shadow};
   --rz-form-field-filled-focus-shadow: #{$form-field-filled-focus-shadow};
   --rz-form-field-filled-underline-display: #{$form-field-filled-underline-display};
@@ -583,8 +717,11 @@
   --rz-grid-detail-template-background-color: #{$grid-detail-template-background-color};
   --rz-grid-loading-indicator-color: #{$grid-loading-indicator-color};
   --rz-grid-loading-indicator-background-color: #{$grid-loading-indicator-background-color};
+  --rz-grid-loading-indicator-background-opacity: #{$grid-loading-indicator-background-opacity};
   --rz-grid-frozen-cell-border: #{$grid-frozen-cell-border};
   --rz-grid-frozen-cell-background-color: #{$grid-frozen-cell-background-color};
+  --rz-grid-frozen-stripe-background-color: #{$grid-frozen-stripe-background-color};
+  --rz-grid-frozen-stripe-odd-background-color: #{$grid-frozen-stripe-odd-background-color};
   --rz-grid-state-transition: #{$grid-state-transition};
   --rz-grid-group-header-padding: #{$grid-group-header-padding};
   --rz-grid-group-header-gap: #{$grid-group-header-gap};
@@ -599,6 +736,13 @@
   --rz-column-drag-handle-hover-color: #{$column-drag-handle-hover-color};
   --rz-column-drag-handle-margin-inline: #{$column-drag-handle-margin-inline};
   --rz-column-draggable-shadow: #{$column-draggable-shadow};
+
+  /* Gantt */
+  --rz-gantt-row-height: #{$gantt-row-height};
+  --rz-gantt-border: #{$gantt-border};
+  --rz-gantt-border-radius: #{$gantt-border-radius};
+  --rz-gantt-background-color: #{$gantt-background-color};
+  --rz-gantt-event-border-radius: #{$gantt-event-border-radius};
 
   /* Header */
   --rz-header-background-color: #{$header-background-color};
@@ -616,9 +760,27 @@
   --rz-icon-grade: #{$rz-icon-grade};
   --rz-icon-optical-size: #{$rz-icon-optical-size};
 
+  /* Input sizing per size */
+  --rz-input-size-xs: #{$input-size-xs};
+  --rz-input-size-sm: #{$input-size-sm};
+  --rz-input-size-md: #{$input-size-md};
+  --rz-input-size-lg: #{$input-size-lg};
+  --rz-input-padding-block-xs: #{$input-padding-block-xs};
+  --rz-input-padding-block-sm: #{$input-padding-block-sm};
+  --rz-input-padding-block-md: #{$input-padding-block-md};
+  --rz-input-padding-block-lg: #{$input-padding-block-lg};
+  --rz-input-padding-inline-xs: #{$input-padding-inline-xs};
+  --rz-input-padding-inline-sm: #{$input-padding-inline-sm};
+  --rz-input-padding-inline-md: #{$input-padding-inline-md};
+  --rz-input-padding-inline-lg: #{$input-padding-inline-lg};
+  --rz-input-font-size-xs: #{$input-font-size-xs};
+  --rz-input-font-size-sm: #{$input-font-size-sm};
+  --rz-input-font-size-md: #{$input-font-size-md};
+  --rz-input-font-size-lg: #{$input-font-size-lg};
+
   /* Input */
   --rz-input-font-size: #{$input-font-size};
-  --rz-input-height: #{$input-height};
+  --rz-input-height: var(--rz-input-size-md);
   --rz-input-line-height: #{$input-line-height};
   --rz-input-padding-block: #{$input-padding-block};
   --rz-input-padding-inline: #{$input-padding-inline};
@@ -741,11 +903,31 @@
 
   /* Numeric */
   --rz-numeric-line-height: #{$numeric-line-height};
-  --rz-numeric-input-padding-block: #{$numeric-input-padding-block};
-  --rz-numeric-input-padding-inline: #{$numeric-input-padding-inline};
-  --rz-numeric-button-width: #{$numeric-button-width};
-  --rz-numeric-button-height: #{$numeric-button-height};
-  --rz-numeric-button-offset: #{$numeric-button-offset};
+  --rz-numeric-input-padding-block-xs: #{$numeric-input-padding-block-xs};
+  --rz-numeric-input-padding-block-sm: #{$numeric-input-padding-block-sm};
+  --rz-numeric-input-padding-block-md: #{$numeric-input-padding-block-md};
+  --rz-numeric-input-padding-block-lg: #{$numeric-input-padding-block-lg};
+  --rz-numeric-input-padding-block: var(--rz-numeric-input-padding-block-md);
+  --rz-numeric-input-padding-inline-xs: #{$numeric-input-padding-inline-xs};
+  --rz-numeric-input-padding-inline-sm: #{$numeric-input-padding-inline-sm};
+  --rz-numeric-input-padding-inline-md: #{$numeric-input-padding-inline-md};
+  --rz-numeric-input-padding-inline-lg: #{$numeric-input-padding-inline-lg};
+  --rz-numeric-input-padding-inline: var(--rz-numeric-input-padding-inline-md);
+  --rz-numeric-button-width-xs: #{$numeric-button-width-xs};
+  --rz-numeric-button-width-sm: #{$numeric-button-width-sm};
+  --rz-numeric-button-width-md: #{$numeric-button-width-md};
+  --rz-numeric-button-width-lg: #{$numeric-button-width-lg};
+  --rz-numeric-button-width: var(--rz-numeric-button-width-md);
+  --rz-numeric-button-height-xs: #{$numeric-button-height-xs};
+  --rz-numeric-button-height-sm: #{$numeric-button-height-sm};
+  --rz-numeric-button-height-md: #{$numeric-button-height-md};
+  --rz-numeric-button-height-lg: #{$numeric-button-height-lg};
+  --rz-numeric-button-height: var(--rz-numeric-button-height-md);
+  --rz-numeric-button-offset-xs: #{$numeric-button-offset-xs};
+  --rz-numeric-button-offset-sm: #{$numeric-button-offset-sm};
+  --rz-numeric-button-offset-md: #{$numeric-button-offset-md};
+  --rz-numeric-button-offset-lg: #{$numeric-button-offset-lg};
+  --rz-numeric-button-offset: var(--rz-numeric-button-offset-md);
   --rz-numeric-button-border-radius: #{$numeric-button-border-radius};
   --rz-numeric-button-background-color: #{$numeric-button-background-color};
   --rz-numeric-button-disabled-background-color: #{$numeric-button-disabled-background-color};
@@ -813,6 +995,7 @@
   --rz-panel-menu-item-2nd-level-margin-inline: #{$panel-menu-item-2nd-level-margin-inline};
   --rz-panel-menu-item-2nd-level-border-radius: #{$panel-menu-item-2nd-level-border-radius};
   --rz-panel-menu-item-2nd-level-offset: #{$panel-menu-item-2nd-level-offset};
+  --rz-panel-menu-item-nested-offset: #{$panel-menu-item-nested-offset};
   --rz-panel-menu-item-2nd-level-font-size: #{$panel-menu-item-2nd-level-font-size};
   --rz-panel-menu-item-2nd-level-font-weight: #{$panel-menu-item-2nd-level-font-weight};
   --rz-panel-menu-item-2nd-level-color: #{$panel-menu-item-2nd-level-color};
@@ -883,6 +1066,7 @@
   --rz-progressbar-circular-stroke-width:  #{$progressbar-circular-stroke-width};
   --rz-progressbar-circular-value-stroke-width:  #{$progressbar-circular-value-stroke-width};
   --rz-progressbar-circular-value-endpoint:  #{$progressbar-circular-value-endpoint};
+  --rz-progressbar-buffer-opacity:  #{$progressbar-buffer-opacity};
 
   /* Radio */
   --rz-radio-width: #{$radio-width};
@@ -918,6 +1102,16 @@
   --rz-rating-disabled-opacity: #{$rating-disabled-opacity};
   --rz-rating-ban-icon: #{$rating-ban-icon};
   --rz-rating-ban-icon-color: #{$rating-ban-icon-color};
+
+  /* Sankey Diagram */
+  --rz-sankey-node-stroke-width: #{$rz-sankey-node-stroke-width};
+  --rz-sankey-link-stroke-width: #{$rz-sankey-link-stroke-width};
+  --rz-sankey-link-opacity: #{$rz-sankey-link-opacity};
+  --rz-sankey-link-hover-opacity: #{$rz-sankey-link-hover-opacity};
+  --rz-sankey-label-font-size: #{$rz-sankey-label-font-size};
+  --rz-sankey-label-color: #{$rz-sankey-label-color};
+  --rz-sankey-label-stroke: #{$rz-sankey-label-stroke};
+  --rz-sankey-label-stroke-width: #{$rz-sankey-label-stroke-width};
 
   /* Scheduler */
   --rz-scheduler-border: #{$scheduler-border};
@@ -958,6 +1152,9 @@
   --rz-scheduler-header-background-color: #{$scheduler-header-background-color};
   --rz-scheduler-header-font-size: #{$scheduler-header-font-size};
   --rz-scheduler-header-font-size-small: #{$scheduler-header-font-size-small};
+  --rz-scheduler-header-agenda-font-size: #{$scheduler-header-agenda-font-size};
+  --rz-scheduler-header-agenda-font-weight: #{$scheduler-header-agenda-font-weight};
+  --rz-scheduler-header-agenda-font-size-small: #{$scheduler-header-agenda-font-size-small};
   --rz-scheduler-header-text-transform: #{$scheduler-header-text-transform};
   --rz-scheduler-header-color: #{$scheduler-header-color};
   --rz-scheduler-header-border: #{$scheduler-header-border};
@@ -986,6 +1183,8 @@
   --rz-scheduler-year-slot-title-border-radius: #{$scheduler-year-slot-title-border-radius};
   --rz-scheduler-planner-slot-width: #{$scheduler-planner-slot-width};
   --rz-scheduler-planner-slot-height: #{$scheduler-planner-slot-height};
+  --rz-scheduler-resource-group-height: #{$scheduler-resource-group-height};
+  --rz-scheduler-resource-group-min-width: #{$scheduler-resource-group-min-width};
   --rz-scheduler-focus-outline: #{$scheduler-focus-outline};
   --rz-scheduler-focus-outline-offset: #{$scheduler-focus-outline-offset};
   --rz-scheduler-highlight-background-color: #{$scheduler-highlight-background-color};
@@ -1003,6 +1202,35 @@
   --rz-security-code-input-font-size: #{$rz-security-code-input-font-size};
   --rz-security-code-input-font-weight: #{$rz-security-code-input-font-weight};
   --rz-security-code-input-line-height: #{$rz-security-code-input-line-height};
+
+  /* VirtualKeyboard */
+  --rz-virtual-keyboard-panel-background-color: #{$rz-virtual-keyboard-panel-background-color};
+  --rz-virtual-keyboard-panel-padding: #{$rz-virtual-keyboard-panel-padding};
+  --rz-virtual-keyboard-panel-border-radius: #{$rz-virtual-keyboard-panel-border-radius};
+  --rz-virtual-keyboard-panel-shadow: #{$rz-virtual-keyboard-panel-shadow};
+  --rz-virtual-keyboard-key-gap: #{$rz-virtual-keyboard-key-gap};
+  --rz-virtual-keyboard-key-min-width: #{$rz-virtual-keyboard-key-min-width};
+  --rz-virtual-keyboard-key-height: #{$rz-virtual-keyboard-key-height};
+  --rz-virtual-keyboard-key-border-radius: #{$rz-virtual-keyboard-key-border-radius};
+  --rz-virtual-keyboard-key-shadow: #{$rz-virtual-keyboard-key-shadow};
+  --rz-virtual-keyboard-key-font-size: #{$rz-virtual-keyboard-key-font-size};
+  --rz-virtual-keyboard-key-background-color: #{$rz-virtual-keyboard-key-background-color};
+  --rz-virtual-keyboard-key-color: #{$rz-virtual-keyboard-key-color};
+  --rz-virtual-keyboard-key-hover-background-color: #{$rz-virtual-keyboard-key-hover-background-color};
+  --rz-virtual-keyboard-key-active-background-color: #{$rz-virtual-keyboard-key-active-background-color};
+  --rz-virtual-keyboard-key-action-background-color: #{$rz-virtual-keyboard-key-action-background-color};
+  --rz-virtual-keyboard-key-action-color: #{$rz-virtual-keyboard-key-action-color};
+  --rz-virtual-keyboard-key-selected-background-color: #{$rz-virtual-keyboard-key-selected-background-color};
+  --rz-virtual-keyboard-key-selected-color: #{$rz-virtual-keyboard-key-selected-color};
+
+  /* SignaturePad */
+  --rz-signature-pad-border: #{$rz-signature-pad-border};
+  --rz-signature-pad-border-radius: #{$rz-signature-pad-border-radius};
+  --rz-signature-pad-background-color: #{$rz-signature-pad-background-color};
+  --rz-signature-pad-placeholder-color: #{$rz-signature-pad-placeholder-color};
+  --rz-signature-pad-clear-color: #{$rz-signature-pad-clear-color};
+  --rz-signature-pad-clear-hover-color: #{$rz-signature-pad-clear-hover-color};
+
 
   /* SelectBar */
   --rz-selectbar-background-color: #{$selectbar-background-color};
@@ -1037,6 +1265,12 @@
   --rz-sidebar-border-inline-end: #{$sidebar-border-inline-end};
   --rz-sidebar-background-color: #{$sidebar-background-color};
   --rz-sidebar-color: #{$sidebar-color};
+
+  /* Skeleton */
+  --rz-skeleton-background-color: #{$skeleton-background-color};
+  --rz-skeleton-animation-color: #{$skeleton-animation-color};
+  --rz-skeleton-border-radius: #{$skeleton-border-radius};
+  --rz-skeleton-animation-duration: #{$skeleton-animation-duration};
 
   /* Slider */
   --rz-slider-background-color: #{$slider-background-color};
@@ -1140,27 +1374,49 @@
   --rz-tabs-icon-font-size: #{$tabs-icon-font-size};
   --rz-tabs-icon-margin-inline: #{$tabs-icon-margin-inline};
   --rz-tabs-transition: #{$tabs-transition};
+  --rz-tabs-more-min-width: #{$tabs-more-min-width};
+  --rz-tabs-more-max-height: #{$tabs-more-max-height};
+  --rz-tabs-close-font-size: #{$tabs-close-font-size};
+  --rz-tabs-close-margin-inline: #{$tabs-close-margin-inline};
+  --rz-tabs-close-border-radius: #{$tabs-close-border-radius};
+  --rz-tabs-close-hover-background-color: #{$tabs-close-hover-background-color};
 
   /* Textarea */
   --rz-text-area-padding-block: #{$text-area-padding-block};
   --rz-text-area-padding-inline: #{$text-area-padding-inline};
 
+  /* TileLayout */
+  --rz-tile-layout-item-background-color: #{$tile-background-color};
+  --rz-tile-layout-item-border: #{$tile-border};
+  --rz-tile-layout-item-border-radius: #{$tile-border-radius};
+  --rz-tile-layout-item-shadow: #{$tile-shadow};
+  --rz-tile-layout-item-header-background-color: #{$tile-header-background-color};
+  --rz-tile-layout-overlay-background-color: #{$tile-overlay-background-color};
+  --rz-tile-layout-overlay-border-color: #{$tile-overlay-border-color};
+
   /* Timeline */
   --rz-timeline-item-padding: #{$rz-timeline-item-padding};
   --rz-timeline-axis-size: #{$rz-timeline-axis-size};
   --rz-timeline-point-size: #{$rz-timeline-point-size};
+  --rz-timeline-point-font-size: #{$rz-timeline-point-font-size};
+  --rz-timeline-point-ring-width: #{$rz-timeline-point-ring-width};
+  --rz-timeline-point-ring-tint: #{$rz-timeline-point-ring-tint};
   --rz-timeline-point-border: #{$rz-timeline-point-border};
   --rz-timeline-point-border-radius: #{$rz-timeline-point-border-radius};
   --rz-timeline-point-background-color: #{$rz-timeline-point-background-color};
   --rz-timeline-point-color: #{$rz-timeline-point-color};
   --rz-timeline-line-color: #{$rz-timeline-line-color};
   --rz-timeline-line-width: #{$rz-timeline-line-width};
+  --rz-timeline-line-gap: #{$rz-timeline-line-gap};
   --rz-timeline-line-border-radius: #{$rz-timeline-line-border-radius};
 
   /* TimestampPicker */
   --rz-timespanpicker-line-height: #{$timespanpicker-line-height};
-  --rz-timespanpicker-trigger-icon-width: #{$timespanpicker-trigger-icon-width};
-  --rz-timespanpicker-trigger-icon-height: #{$timespanpicker-trigger-icon-height};
+  --rz-timespanpicker-trigger-icon-size-xs: #{$timespanpicker-trigger-icon-size-xs};
+  --rz-timespanpicker-trigger-icon-size-sm: #{$timespanpicker-trigger-icon-size-sm};
+  --rz-timespanpicker-trigger-icon-size-md: #{$timespanpicker-trigger-icon-size-md};
+  --rz-timespanpicker-trigger-icon-size-lg: #{$timespanpicker-trigger-icon-size-lg};
+  --rz-timespanpicker-trigger-icon-size: var(--rz-timespanpicker-trigger-icon-size-md);
   --rz-timespanpicker-trigger-icon-color: #{$timespanpicker-trigger-icon-color};
   --rz-timespanpicker-trigger-icon-hover-color: #{$timespanpicker-trigger-icon-hover-color};
   --rz-timespanpicker-focus-outline: #{$timespanpicker-focus-outline};
@@ -1251,4 +1507,11 @@
   --rz-upload-cancel-background-color: #{$upload-cancel-background-color};
   --rz-upload-cancel-color: #{$upload-cancel-color};
   --rz-upload-button-background-color: #{$upload-button-background-color};
+
+  /* Spreadsheet */
+  --rz-spreadsheet-tab-font-size: #{$spreadsheet-tab-font-size};
+  --rz-spreadsheet-cell-border: #{$spreadsheet-cell-border};
+  --rz-spreadsheet-header-background-color: #{$spreadsheet-header-background-color};
+  --rz-spreadsheet-header-active-background-color: #{$spreadsheet-header-active-background-color};
+  --rz-spreadsheet-splitter-background-color: #{$spreadsheet-splitter-background-color};
 }

@@ -61,9 +61,8 @@
             PublishOnDate = InputModel.PublishOnDate,
             Content = InputModel.Content,
             ParentPageId = Guid.Parse(InputModel.Parent?.Value),
-            TempImagePath = InputModel.Image?.TempFilePath,
             ImageAltTag = InputModel.Image?.Description,
-            ImageFileName = InputModel.Image?.File?.Name,
+            ImageFileName = InputModel.Image?.FileName,
             ImagePath = InputModel.Image?.Path
         };
 

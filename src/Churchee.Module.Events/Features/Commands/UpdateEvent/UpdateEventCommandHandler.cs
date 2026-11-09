@@ -1,12 +1,9 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.Abstractions.Utilities;
 using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Events.Entities;
-using Churchee.Module.Events.Jobs;
 using Churchee.Module.Events.Specifications;
-using Hangfire;
 
 namespace Churchee.Module.Events.Features.Commands
 {
@@ -15,24 +12,18 @@ namespace Churchee.Module.Events.Features.Commands
 
         private readonly IDataStore _dataStore;
         private readonly ICurrentUser _currentUser;
-        private readonly IBlobStore _blobStore;
-        private readonly IBackgroundJobClient _backgroundJobClient;
-        private readonly IImageProcessor _imageProcessor;
 
-        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser, IBlobStore blobStore, IBackgroundJobClient backgroundJobClient, IImageProcessor imageProcessor)
+        public UpdateEventCommandHandler(IDataStore dataStore, ICurrentUser currentUser)
         {
             _dataStore = dataStore;
             _currentUser = currentUser;
-            _blobStore = blobStore;
-            _backgroundJobClient = backgroundJobClient;
-            _imageProcessor = imageProcessor;
         }
 
         public async Task<CommandResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
         {
-            var applicationTenantId = await _currentUser.GetApplicationTenantId();
-
             var entity = await _dataStore.GetRepository<Event>().FirstOrDefaultAsync(new EventByIdIncludingDatesSpecification(request.Id), cancellationToken);
+
+            entity.SetImageInfo(string.IsNullOrEmpty(request.ImageFileName) ? entity.ImageUrl : request.ImageFileName, request.ImageAltTag);
 
             entity.UpdateInformation(title: request.Title,
                                    description: request.Description,
@@ -47,11 +38,6 @@ namespace Churchee.Module.Events.Features.Commands
                                    longitude: request.Longitude);
 
             UpdateEventDates(request, entity);
-
-            if (!string.IsNullOrEmpty(request.ImageFileName) && request.ImageData.Length > 0)
-            {
-                _backgroundJobClient.Enqueue<EventImageProcessingJob>(x => x.ProcessAsync(applicationTenantId, entity.Id, request.ImageFileName, request.ImageData, CancellationToken.None));
-            }
 
             await _dataStore.SaveChangesAsync(cancellationToken);
 

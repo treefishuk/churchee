@@ -12,10 +12,9 @@ namespace Churchee.Common.Tests.ValueTypes
         public void Constructor_InitializesPropertiesToEmptyStrings()
         {
             // Act
-            var model = new ChunkedImageUploadType();
+            var model = new ImageUploadType();
 
             // Assert
-            model.TempFilePath.Should().BeEmpty();
             model.Path.Should().BeEmpty();
         }
 
@@ -23,7 +22,7 @@ namespace Churchee.Common.Tests.ValueTypes
         public void Validate_ReturnsRequiredError_WhenFileIsNull_AndRequiredAttributePresent()
         {
             // Arrange
-            var model = new ChunkedImageUploadType
+            var model = new ImageUploadType
             {
                 File = null,
                 Description = "desc"
@@ -45,7 +44,7 @@ namespace Churchee.Common.Tests.ValueTypes
         {
             // Arrange
             var browserFileMock = new Mock<IBrowserFile>();
-            var model = new ChunkedImageUploadType
+            var model = new ImageUploadType
             {
                 File = browserFileMock.Object,
                 Description = "desc"
@@ -66,7 +65,7 @@ namespace Churchee.Common.Tests.ValueTypes
         public void Validate_ReturnsNoError_WhenRequiredAttributeNotPresent()
         {
             // Arrange
-            var model = new ChunkedImageUploadType
+            var model = new ImageUploadType
             {
                 File = null,
                 Description = "desc"
@@ -84,7 +83,7 @@ namespace Churchee.Common.Tests.ValueTypes
         public void Description_IsRequired()
         {
             // Arrange
-            var model = new ChunkedImageUploadType
+            var model = new ImageUploadType
             {
                 Description = null
             };
@@ -96,7 +95,7 @@ namespace Churchee.Common.Tests.ValueTypes
 
             // Assert
             isValid.Should().BeFalse();
-            validationResults.Should().ContainSingle(r => r.MemberNames.Contains(nameof(ChunkedImageUploadType.Description)));
+            validationResults.Should().ContainSingle(r => r.MemberNames.Contains(nameof(ImageUploadType.Description)));
         }
     }
 }
