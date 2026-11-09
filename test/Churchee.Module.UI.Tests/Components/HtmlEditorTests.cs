@@ -1,9 +1,9 @@
-using System.Reflection;
 using AngleSharp.Html.Parser;
 using Bunit;
 using Churchee.Module.UI.Components;
 using Churchee.Test.Helpers.Blazor;
 using Microsoft.AspNetCore.Components;
+using System.Reflection;
 
 namespace Churchee.Module.UI.Tests.Components
 {
@@ -12,14 +12,8 @@ namespace Churchee.Module.UI.Tests.Components
         [Fact]
         public void CleanClipboardHtml_RemovesUnsafeAttributes_AndUnwrapsInlineContainers()
         {
-            var cut = Render<HtmlEditor>();
-            var method = typeof(HtmlEditor).GetMethod("CleanClipboardHtml", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            Assert.NotNull(method);
-
             var input = "<div style=\"color:red\" class=\"foo\" align=\"center\"><span id=\"a\" style=\"font-weight:bold\">Hello</span> <font face=\"Arial\">world</font><div>!</div></div>";
-            var result = (string)method.Invoke(cut.Instance, new object[] { input })!;
-
+            var result = HtmlEditor.CleanClipboardHtml(input);
             var document = new HtmlParser().ParseDocument(result);
             var text = document.Body?.TextContent.Replace("\r", " ").Replace("\n", " ").Replace("  ", " ").Trim();
 
