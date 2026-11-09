@@ -1,6 +1,7 @@
 ﻿@using Churchee.Module.UI.Models
 @using Radzen.Blazor
 @using Microsoft.AspNetCore.Components.Routing
+@implements IDisposable
 @inject NavigationManager NavigationManager
 @inject CurrentPage currentPage;
 
@@ -83,8 +84,20 @@
     protected override void OnInitialized()
     {
         SetBreadCrumbs();
+        currentPage.Changed += HandleCurrentPageChanged;
 
         NavigationManager.LocationChanged += LocationChanged;
         base.OnInitialized();
+    }
+
+    private void HandleCurrentPageChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        currentPage.Changed -= HandleCurrentPageChanged;
+        NavigationManager.LocationChanged -= LocationChanged;
     }
 }
