@@ -9,7 +9,7 @@
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     	<LangVersion>Latest</LangVersion>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
         <PackageReference Include="Meziantou.Analyzer" Version="2.0.257">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
