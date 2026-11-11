@@ -36,4 +36,8 @@
     <Using Include="Churchee.Module.Events" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Jobs\" />
+  </ItemGroup>
+
 </Project>

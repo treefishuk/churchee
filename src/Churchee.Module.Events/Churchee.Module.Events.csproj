@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Churchee.Module.Tenancy\Churchee.Module.Tenancy.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Jobs\" />
+  </ItemGroup>
+
 </Project>
