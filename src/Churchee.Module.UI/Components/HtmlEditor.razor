@@ -1,8 +1,9 @@
 ﻿@using AngleSharp.Html.Parser
+@using Churchee.Common.Abstractions.Auth
 @using Radzen
 @using Radzen.Blazor
 
-<RadzenHtmlEditor Value="@Value" ValueChanged=@OnValueChanged" Change=Change Style=$"height: {Height}px" Paste="OnPaste">
+<RadzenHtmlEditor Value="@Value" ValueChanged="OnValueChanged" Change="@Change" Style="@(Height > 0 ? $"min-height: {Height}px" : string.IsNullOrEmpty(Value) ? "min-height: 400px": "")" Paste="@OnPaste">
     <RadzenHtmlEditorFormatBlock />
     <RadzenHtmlEditorUndo />
     <RadzenHtmlEditorRedo />
@@ -15,11 +16,20 @@
     <RadzenHtmlEditorRemoveFormat />
     <RadzenHtmlEditorUnorderedList />
     <RadzenHtmlEditorOrderedList />
-    <RadzenHtmlEditorSource />
+
+    @if (CurrentUser.HasRole("Developer") || CurrentUser.HasRole("SysAdmin"))
+    {
+        <RadzenHtmlEditorSource />
+    }
+
     @ChildContent
 </RadzenHtmlEditor>
 
 @code {
+
+
+    [Inject]
+    public ICurrentUser CurrentUser { get; set; } = default!;
 
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
@@ -29,7 +39,7 @@
     public string Value { get; set; } = string.Empty;
 
     [Parameter]
-    public int Height { get; set; } = 250;
+    public int Height { get; set; } = 0;
 
     [Parameter]
     public EventCallback<string> Change { get; set; }

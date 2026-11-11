@@ -12,6 +12,12 @@
 
 <PageName></PageName>
 
+<SectionContent SectionName="top-bar">
+    <div class="rz-breadcrumb-item">
+        <a class="rz-button rz-button-sm rz-success" href="/management/reviews/create">Create</a>
+    </div>
+</SectionContent>
+
 <Grid TItem="GetListingQueryResponseItem" IsLoading=isLoading Data=listingData LoadData="@LoadData" ShowEdit="false" ImagePrefix="@(imagePrefix)"></Grid>
 
 @code {
