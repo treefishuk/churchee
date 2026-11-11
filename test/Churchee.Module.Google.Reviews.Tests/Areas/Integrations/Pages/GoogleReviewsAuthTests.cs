@@ -46,7 +46,7 @@ namespace Churchee.Module.Google.Reviews.Tests.Areas.Integrations.Pages
 
             // Assert - response was redirected to the expected path
             context.Response.Headers.TryGetValue("Location", out var locationHeader).Should().BeTrue();
-            locationHeader.First()!.Should().Be("/management/integrations/google-reviews");
+            locationHeader[0]!.Should().Be("/management/integrations/google-reviews");
         }
     }
 }

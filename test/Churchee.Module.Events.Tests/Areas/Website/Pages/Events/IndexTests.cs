@@ -52,8 +52,8 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 
             //assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Event Deleted");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Event Deleted");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -76,8 +76,8 @@ namespace Churchee.Module.Events.Tests.Areas.Website.Pages.Events
 
             //assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Error: Could not remove Event");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Error: Could not remove Event");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         private void SetupGetListingQueryResponse()

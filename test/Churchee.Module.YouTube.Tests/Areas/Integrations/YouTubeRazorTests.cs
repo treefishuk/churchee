@@ -136,8 +136,8 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations.Pages
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/integrations/youtube");
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("YouTube sync configured, syncing will being shortly");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("YouTube sync configured, syncing will being shortly");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -172,8 +172,8 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed to enable Videos");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed to enable Videos");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -211,8 +211,8 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed to shedule sync");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed to shedule sync");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
 
@@ -240,8 +240,8 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Sync Scheduled");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Sync Scheduled");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -271,8 +271,8 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("A sync is already queued or running. Please wait 10 mins and try again");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("A sync is already queued or running. Please wait 10 mins and try again");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -295,8 +295,8 @@ namespace Churchee.Module.YouTube.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Integration Disabled");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Integration Disabled");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
     }

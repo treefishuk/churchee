@@ -86,8 +86,8 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("E-mail address already registered");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("E-mail address already registered");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -117,8 +117,8 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Password found in leaked passwords database. Please try something else");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Password found in leaked passwords database. Please try something else");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -154,8 +154,8 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed To Create Contributor");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed To Create Contributor");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -247,8 +247,8 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed To assign password to Contributor");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed To assign password to Contributor");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
     }
 }

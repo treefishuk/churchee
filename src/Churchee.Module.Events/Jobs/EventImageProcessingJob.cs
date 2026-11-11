@@ -3,7 +3,6 @@ using Churchee.Common.Storage;
 using Churchee.ImageProcessing.Jobs;
 using Churchee.Module.Events.Entities;
 using Churchee.Module.Events.Specifications;
-using Hangfire;
 
 namespace Churchee.Module.Events.Jobs
 {
@@ -12,15 +11,13 @@ namespace Churchee.Module.Events.Jobs
         private readonly IDataStore _dataStore;
         private readonly IBlobStore _blobStore;
         private readonly IImageProcessor _imageProcessor;
-        private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly ImageCropsGenerator _imageCropsGenerator;
 
-        public EventImageProcessingJob(IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor, IBackgroundJobClient backgroundJobClient)
+        public EventImageProcessingJob(IDataStore dataStore, IBlobStore blobStore, IImageProcessor imageProcessor)
         {
             _dataStore = dataStore;
             _blobStore = blobStore;
             _imageProcessor = imageProcessor;
-            _backgroundJobClient = backgroundJobClient;
             _imageCropsGenerator = new ImageCropsGenerator(blobStore, imageProcessor);
         }
 

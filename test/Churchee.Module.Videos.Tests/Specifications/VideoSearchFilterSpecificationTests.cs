@@ -44,7 +44,7 @@ namespace Churchee.Module.Videos.Specifications
 
             // Assert
             filtered.Should().HaveCount(1);
-            filtered.First().Title.Should().Be("Test Video");
+            filtered[0].Title.Should().Be("Test Video");
         }
 
         [Fact]

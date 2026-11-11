@@ -1,0 +1,2 @@
+# CA1707: Allow Underscores in Test names
+dotnet_diagnostic.CA1054.severity = none

@@ -124,8 +124,8 @@ namespace Churchee.Module.ChurchSuite.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Integration Configured");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Integration Configured");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -160,8 +160,8 @@ namespace Churchee.Module.ChurchSuite.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed to configure integration. Please check the subdomain and try again.");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed to configure integration. Please check the subdomain and try again.");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
 
@@ -189,8 +189,8 @@ namespace Churchee.Module.ChurchSuite.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("ChurchSuite Sync Queued");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("ChurchSuite Sync Queued");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
 
@@ -222,8 +222,8 @@ namespace Churchee.Module.ChurchSuite.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed to sync");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed to sync");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -245,8 +245,8 @@ namespace Churchee.Module.ChurchSuite.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Integration Disabled");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Integration Disabled");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -272,8 +272,8 @@ namespace Churchee.Module.ChurchSuite.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed to disable Integration");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed to disable Integration");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
     }

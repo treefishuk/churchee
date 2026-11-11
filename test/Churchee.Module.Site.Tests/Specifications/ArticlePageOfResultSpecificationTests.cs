@@ -18,7 +18,7 @@ namespace Churchee.Module.Site.Tests.Specifications
             var results = spec.Evaluate(list).ToList();
 
             Assert.Single(results);
-            Assert.Equal("Apple", results.First().Title);
+            Assert.Equal("Apple", results[0].Title);
         }
     }
 }

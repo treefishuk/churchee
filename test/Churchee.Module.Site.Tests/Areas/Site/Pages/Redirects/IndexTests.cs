@@ -51,8 +51,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Redirects
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Redirect Deleted");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Redirect Deleted");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -75,8 +75,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Redirects
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Error: Could not remove Redirect");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Error: Could not remove Redirect");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
 

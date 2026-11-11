@@ -25,7 +25,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Registrations
             mainMenuItem.Order.Should().Be(100);
             mainMenuItem.Children.Should().HaveCount(1);
 
-            var childMenuItem = mainMenuItem.Children.First();
+            var childMenuItem = mainMenuItem.Children[0];
             childMenuItem.Name.Should().Be("Spotify Podcasts");
             childMenuItem.Path.Should().Be("/management/integrations/spotify");
             childMenuItem.Icon.Should().Be("graphic_eq");

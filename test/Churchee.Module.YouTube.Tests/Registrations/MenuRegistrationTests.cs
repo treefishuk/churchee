@@ -12,7 +12,7 @@ namespace Churchee.Module.YouTube.Tests.Registrations
             var items = registration.MenuItems.ToList();
 
             Assert.NotEmpty(items);
-            var root = items.First();
+            var root = items[0];
             Assert.Equal("Integrations", root.Name);
             Assert.Contains(root.Children, c => c.Name == "YouTube Videos");
         }
