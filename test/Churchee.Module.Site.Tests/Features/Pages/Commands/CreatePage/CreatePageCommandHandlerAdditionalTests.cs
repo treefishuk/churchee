@@ -1,6 +1,5 @@
 using Churchee.Common.Abstractions.Auth;
 using Churchee.Common.Abstractions.Storage;
-using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Features.Pages.Commands.CreatePage;
@@ -35,7 +34,7 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.CreatePage
 
             repoMock.Verify(r => r.Create(It.IsAny<Page>()), Times.Once);
             storageMock.Verify(s => s.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-            Assert.IsType<CommandResponse>(result);
+            Assert.IsType<CreatePageCommandResponse>(result);
         }
     }
 }
