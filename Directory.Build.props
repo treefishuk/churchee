@@ -1,6 +1,5 @@
 <Project>
     <PropertyGroup>
-        <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <AnalysisLevel>latest</AnalysisLevel>
         <AnalysisMode>All</AnalysisMode> 
@@ -9,7 +8,7 @@
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     	<LangVersion>Latest</LangVersion>
     </PropertyGroup>
-    <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+   	 <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
         <PackageReference Include="Meziantou.Analyzer" Version="2.0.257">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
