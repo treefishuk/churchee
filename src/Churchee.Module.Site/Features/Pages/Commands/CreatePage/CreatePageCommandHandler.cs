@@ -1,5 +1,4 @@
 ﻿using Churchee.Common.Abstractions.Auth;
-using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
 using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
@@ -7,7 +6,7 @@ using Churchee.Module.Site.Specifications;
 
 namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 {
-    public class CreatePageCommandHandler : IRequestHandler<CreatePageCommand, CommandResponse>
+    public class CreatePageCommandHandler : IRequestHandler<CreatePageCommand, CreatePageCommandResponse>
     {
 
         private readonly IDataStore _storage;
@@ -19,7 +18,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
             _currentUser = currentUser;
         }
 
-        public async Task<CommandResponse> Handle(CreatePageCommand request, CancellationToken cancellationToken)
+        public async Task<CreatePageCommandResponse> Handle(CreatePageCommand request, CancellationToken cancellationToken)
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
@@ -39,7 +38,7 @@ namespace Churchee.Module.Site.Features.Pages.Commands.CreatePage
 
             await _storage.SaveChangesAsync(cancellationToken);
 
-            return new CommandResponse();
+            return new CreatePageCommandResponse(newPage.Id);
         }
 
         private async Task<string> GetUrlPath(Guid? parentId, CancellationToken cancellationToken)

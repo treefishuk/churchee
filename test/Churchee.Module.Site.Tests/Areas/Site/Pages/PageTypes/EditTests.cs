@@ -61,8 +61,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.PageTypes
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Saved Successfully");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Saved Successfully");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]

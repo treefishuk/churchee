@@ -98,8 +98,8 @@ namespace Churchee.Module.Jotform.Tests.Areas.Integrations.Pages
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/integrations/jotform");
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Saved Successfully");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Saved Successfully");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
 
@@ -134,8 +134,8 @@ namespace Churchee.Module.Jotform.Tests.Areas.Integrations.Pages
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/integrations/jotform");
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Invalid API Key");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Invalid API Key");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
     }
 }

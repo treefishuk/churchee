@@ -99,4 +99,16 @@
     background: none; /* prevent double-styling */
     padding: 0;
     color: inherit;
-} 
+}
+
+.rz-html-editor{
+
+    resize: vertical;
+}
+
+.rz-form-field-content:hover, .rz-form-field-content:focus, .rz-form-field-content:focus-within {
+
+    .rz-html-editor {
+        border: var(--rz-editor-border) !important;
+    }
+}

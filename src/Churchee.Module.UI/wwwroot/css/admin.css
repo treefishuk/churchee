@@ -32386,3 +32386,11 @@ img {
   padding: 0;
   color: inherit;
 }
+
+.rz-html-editor {
+  resize: vertical;
+}
+
+.rz-form-field-content:hover .rz-html-editor, .rz-form-field-content:focus .rz-html-editor, .rz-form-field-content:focus-within .rz-html-editor {
+  border: var(--rz-editor-border) !important;
+}

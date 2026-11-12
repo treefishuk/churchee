@@ -1,0 +1,36 @@
+﻿@page "/management/reviews/create"
+@inherits BasePage
+@using Churchee.Common.Abstractions.Auth
+@using Churchee.Module.Reviews.Features.Commands
+@using Churchee.Module.Reviews.Models
+@using Churchee.Module.UI.Components
+@using Radzen
+
+
+<PageName Name="Create Review"></PageName>
+
+<Form InputModel="@InputModel" OnSave=@(async () => await ValidSubmitForm()) />
+
+@code {
+    public CreateReviewInputModel InputModel { get; set; } = new();
+
+    [Inject]
+    private ICurrentUser CurrentUser { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        InputModel = new CreateReviewInputModel();
+    }
+    
+    private async Task ValidSubmitForm()
+    {
+        var createEventsResult = await Mediator.Send(new CreateReviewCommand(InputModel.Rating, InputModel.ReviewerName, InputModel.Comment));
+
+        if (createEventsResult.IsSuccess)
+        {
+            NotificationService.Notify(NotificationSeverity.Success, "Review Created");
+
+            NavigationManager.NavigateTo("/management/reviews");
+        }
+    }
+}

@@ -178,8 +178,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             cut.Find("#unPublishBtn").Should().NotBeNull();
 
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Article Published");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Article Published");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -205,8 +205,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Error: Could not publish Article");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Error: Could not publish Article");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -232,8 +232,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Error: Could not remove publication");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Error: Could not remove publication");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -260,8 +260,8 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Articles
             cut.Find("#publishBtn").Should().NotBeNull();
 
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Article removed from publication");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Article removed from publication");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]

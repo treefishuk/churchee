@@ -1,6 +1,5 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
-using Churchee.Common.ResponseTypes;
 using Churchee.Module.Site.Features.Pages.Commands.CreatePage;
 using Churchee.Module.Site.Features.Pages.Queries;
 using Churchee.Module.Site.Features.PageTypes.Queries;
@@ -72,9 +71,11 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Pages
             instance.InputModel.Parent = new DropdownInput { Value = Guid.NewGuid().ToString() };
             instance.InputModel.PageType = new DropdownInput { Value = Guid.NewGuid().ToString() };
 
+            var newId = Guid.NewGuid();
+
             // Setup Mediator to return success 
             MockMediator.Setup(m => m.Send(It.IsAny<CreatePageCommand>(), default))
-                .ReturnsAsync(new CommandResponse());
+                .ReturnsAsync(new CreatePageCommandResponse(newId));
 
             // Act
             var button = cut.Find("#submitFormBtn");
@@ -82,7 +83,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Pages.Pages
 
             // Assert
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
-            navMan.Uri.Should().Be("http://localhost/management/pages");
+            navMan.Uri.Should().Be($"http://localhost/management/pages/edit/{newId}");
         }
     }
 }

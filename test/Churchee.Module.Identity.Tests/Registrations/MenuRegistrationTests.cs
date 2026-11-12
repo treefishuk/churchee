@@ -25,7 +25,7 @@ namespace Churchee.Module.Identity.Tests.Registrations
             mainMenuItem.Order.Should().Be(1000);
             mainMenuItem.Children.Should().HaveCount(1);
 
-            var childMenuItem = mainMenuItem.Children.First();
+            var childMenuItem = mainMenuItem.Children[0];
             childMenuItem.Name.Should().Be("Contributors");
             childMenuItem.Path.Should().Be("/management/configuration/contributors");
             childMenuItem.Icon.Should().Be("supervisor_account");

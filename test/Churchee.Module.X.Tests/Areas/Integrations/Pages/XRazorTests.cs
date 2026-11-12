@@ -139,8 +139,8 @@ namespace Churchee.Module.X.Tests.Areas.Integrations.Pages
             var navMan = Services.GetRequiredService<BunitNavigationManager>();
             navMan.Uri.Should().Be("http://localhost/management/integrations/x");
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("X configured, syncing will being shortly");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("X configured, syncing will being shortly");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
         [Fact]
@@ -175,8 +175,8 @@ namespace Churchee.Module.X.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Failed to enable Tweets Sync");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Error);
+            NotificationService.Notifications[0].Summary.Should().Be("Failed to enable Tweets Sync");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Error);
         }
 
         [Fact]
@@ -203,8 +203,8 @@ namespace Churchee.Module.X.Tests.Areas.Integrations.Pages
 
             // Assert
             NotificationService.Notifications.Count.Should().Be(1);
-            NotificationService.Notifications.First().Summary.Should().Be("Integration Disabled");
-            NotificationService.Notifications.First().Severity.Should().Be(NotificationSeverity.Success);
+            NotificationService.Notifications[0].Summary.Should().Be("Integration Disabled");
+            NotificationService.Notifications[0].Severity.Should().Be(NotificationSeverity.Success);
         }
 
     }

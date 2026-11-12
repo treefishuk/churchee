@@ -26,7 +26,7 @@ namespace Churchee.Module.X.Tests.Registrations
             mainMenuItem.Order.Should().Be(100);
             mainMenuItem.Children.Count.Should().Be(1);
 
-            var childMenuItem = mainMenuItem.Children.First();
+            var childMenuItem = mainMenuItem.Children[0];
             childMenuItem.Name.Should().Be("X/Twitter Sync");
             childMenuItem.Path.Should().Be("/management/integrations/x");
             childMenuItem.Icon.Should().Be("message");
