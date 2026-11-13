@@ -14,7 +14,7 @@ namespace Churchee.Common.Tests.Validation
             _faker = new Faker();
         }
 
-        [GeneratedRegex(RegexPatterns.Name, RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(RegexPattern.Name, RegexOptions.ExplicitCapture)]
         private static partial Regex NameRegex();
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Churchee.Common.Tests.Validation
             match.Should().BeTrue();
         }
 
-        [GeneratedRegex(RegexPatterns.Phone, RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(RegexPattern.Phone, RegexOptions.ExplicitCapture)]
         private static partial Regex PhoneRegex();
 
         [Fact]
@@ -59,7 +59,7 @@ namespace Churchee.Common.Tests.Validation
             match.Should().BeTrue();
         }
 
-        [GeneratedRegex(RegexPatterns.SingleLowercaseWord, RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(RegexPattern.SingleLowercaseWord, RegexOptions.ExplicitCapture)]
         private static partial Regex SingleLowercaseWordRegex();
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Churchee.Common.Tests.Validation
             match.Should().BeFalse();
         }
 
-        [GeneratedRegex(RegexPatterns.BasicText, RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(RegexPattern.BasicText, RegexOptions.ExplicitCapture)]
         private static partial Regex BasicTextRegex();
 
         [Fact]
