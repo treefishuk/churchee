@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Churchee.Common.ValueTypes
+﻿namespace Churchee.Common.ValueTypes
 {
     public class MultiSelectItem
     {

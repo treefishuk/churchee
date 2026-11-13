@@ -3,8 +3,6 @@ using Churchee.Common.Abstractions.Storage;
 using Churchee.Common.Helpers;
 using Churchee.Common.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
 
 namespace Churchee.Common.Extensions
 {

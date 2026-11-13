@@ -1,6 +1,6 @@
 ﻿namespace System.ComponentModel.DataAnnotations
 {
-    public static class RegexPattern
+    public static class RegexPatterns
     {
         public const string Name = "^[a-zA-Z][a-zA-Z\\s']{0,20}[a-zA-Z]";
 

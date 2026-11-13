@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Churchee.Common.Abstractions.Utilities
+﻿namespace Churchee.Common.Abstractions.Utilities
 {
     public interface IMapper
     {

@@ -29,7 +29,7 @@ namespace Churchee.Module.Site.Areas.Site.Models
         public string LinkUrl { get; set; }
 
         [Display(Name = "Class")]
-        [RegularExpression(pattern: RegexPattern.SingleLowercaseWord, ErrorMessage = "Must be a single camelcase string")]
+        [RegularExpression(pattern: RegexPatterns.SingleLowercaseWord, ErrorMessage = "Must be a single camelcase string")]
         public string CssClass { get; set; }
 
         [Required]

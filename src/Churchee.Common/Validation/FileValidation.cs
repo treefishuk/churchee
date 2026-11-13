@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.IO;
+﻿using System.Collections.Immutable;
 
 namespace Churchee.Common.Validation
 {
@@ -12,89 +10,44 @@ namespace Churchee.Common.Validation
 
         public static bool BeValidPdf(string base64File)
         {
-            if (string.IsNullOrWhiteSpace(base64File))
-            {
-                return false;
-            }
-
-            try
-            {
-                // Remove data URI prefix if present
-                string[] parts = base64File.Split(',');
-                string base64 = parts.Length > 1 ? parts[1] : parts[0];
-                byte[] bytes = Convert.FromBase64String(base64);
-
-                // PDF files start with "%PDF-"
-                string pdfHeader = System.Text.Encoding.ASCII.GetString(bytes, 0, Math.Min(5, bytes.Length));
-                return pdfHeader == "%PDF-";
-            }
-            catch
-            {
-                return false;
-            }
+            return HasFileSignature(base64File, 0, "%PDF-"u8);
         }
 
         public static bool BeValidMp3(string base64File)
         {
-            if (string.IsNullOrWhiteSpace(base64File))
-            {
-                return false;
-            }
-
-            try
-            {
-                string[] parts = base64File.Split(',');
-                string base64 = parts.Length > 1 ? parts[1] : parts[0];
-                byte[] bytes = Convert.FromBase64String(base64);
-
-                // Check for "ID3" at the start
-                if (bytes.Length >= 3)
-                {
-                    string header = System.Text.Encoding.ASCII.GetString(bytes, 0, 3);
-                    if (header == "ID3")
-                    {
-                        return true;
-                    }
-                }
-
-                // Check for frame sync (0xFF 0xFB)
-                return bytes.Length >= 2 && bytes[0] == 0xFF && (bytes[1] & 0xE0) == 0xE0;
-            }
-            catch
-            {
-                return false;
-            }
+            return HasFileSignature(base64File, 0, "ID3"u8) || HasMp3FrameSync(base64File);
         }
 
-        public static bool BeValidMp4(string base64File)
+        private static bool HasMp3FrameSync(string? base64File)
         {
             if (string.IsNullOrWhiteSpace(base64File))
             {
                 return false;
             }
 
+            int commaIndex = base64File.IndexOf(',', StringComparison.InvariantCultureIgnoreCase);
+            string base64 = commaIndex >= 0
+                ? base64File[(commaIndex + 1)..]
+                : base64File;
+
             try
             {
-                string[] parts = base64File.Split(',');
-                string base64 = parts.Length > 1 ? parts[1] : parts[0];
                 byte[] bytes = Convert.FromBase64String(base64);
 
-                // "ftyp" is usually at offset 4
-                if (bytes.Length >= 8)
-                {
-                    string ftyp = System.Text.Encoding.ASCII.GetString(bytes, 4, 4);
-                    if (ftyp == "ftyp")
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
+                return bytes.Length >= 2 &&
+                       bytes[0] == 0xFF &&
+                       (bytes[1] & 0xE0) == 0xE0;
             }
-            catch
+            catch (FormatException)
             {
                 return false;
             }
+        }
+
+
+        public static bool BeValidMp4(string base64File)
+        {
+            return HasFileSignature(base64File, 4, "ftyp"u8);
         }
 
         public static bool IsImageFile(string filePath)
@@ -112,7 +65,38 @@ namespace Churchee.Common.Validation
             }
 
             string extension = Path.GetExtension(filePath)?.ToLowerInvariant();
-            return ImageFormats.Contains(extension);
+            return ImageFormats.Contains(extension, StringComparer.InvariantCultureIgnoreCase);
         }
+
+
+        private static bool HasFileSignature(
+            string base64File,
+            int offset,
+            ReadOnlySpan<byte> signature)
+        {
+            if (string.IsNullOrWhiteSpace(base64File))
+            {
+                return false;
+            }
+
+            // Remove data URI prefix if present
+            int commaIndex = base64File.IndexOf(',', StringComparison.InvariantCultureIgnoreCase);
+            string base64 = commaIndex >= 0
+                ? base64File[(commaIndex + 1)..]
+                : base64File;
+
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(base64);
+
+                return bytes.Length >= offset + signature.Length &&
+                       bytes.AsSpan(offset, signature.Length).SequenceEqual(signature);
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
+﻿using System.Text.RegularExpressions;
 using System.Web;
 
 namespace System
@@ -19,6 +16,11 @@ namespace System
 
         public static string ToSentence(this string variableName)
         {
+            if (string.IsNullOrEmpty(variableName))
+            {
+                return string.Empty;
+            }
+
             char[] chars = variableName.ToCharArray();
 
             return new string(chars.SelectMany((c, i) => i != 0 && char.IsUpper(c) && !char.IsUpper(chars[i - 1]) ? [' ', c] : new char[] { c }).ToArray());
@@ -26,12 +28,12 @@ namespace System
 
         public static string ToCamelCase(this string str)
         {
-            if (str == null)
+            if (string.IsNullOrEmpty(str))
             {
-                return null;
+                return string.Empty;
             }
 
-            if (str.Contains(' '))
+            if (str.Contains(' ', StringComparison.InvariantCultureIgnoreCase))
             {
                 str = str.ToPascalCase();
             }
@@ -101,6 +103,8 @@ namespace System
 
         public static string GetLast(this string[] array)
         {
+            ArgumentNullException.ThrowIfNull(array);
+
             var index = array.Length - 1;
 
             return array[index];

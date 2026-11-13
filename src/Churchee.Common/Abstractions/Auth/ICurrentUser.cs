@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Churchee.Common.Abstractions.Auth
+﻿namespace Churchee.Common.Abstractions.Auth
 {
     public interface ICurrentUser
     {

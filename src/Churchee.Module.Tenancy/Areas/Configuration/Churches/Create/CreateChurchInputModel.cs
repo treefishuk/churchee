@@ -11,7 +11,7 @@ namespace Churchee.Module.Tenancy.Areas.Configuration.Churches.Create
         }
 
         [Required]
-        [RegularExpression(pattern: RegexPattern.BasicText, ErrorMessage = "only spaces, apostrophe, uppercase and lowercase letters supported")]
+        [RegularExpression(pattern: RegexPatterns.BasicText, ErrorMessage = "only spaces, apostrophe, uppercase and lowercase letters supported")]
         public string Name { get; set; }
 
         public int? CharityNumber { get; set; }

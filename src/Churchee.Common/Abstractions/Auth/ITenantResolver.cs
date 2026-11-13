@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Churchee.Common.Abstractions.Auth
+﻿namespace Churchee.Common.Abstractions.Auth
 {
     public interface ITenantResolver
     {

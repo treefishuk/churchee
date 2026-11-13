@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -36,6 +35,8 @@ namespace Churchee.Common.Converters
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
+            ArgumentNullException.ThrowIfNull(writer);
+
             writer.WriteStringValue(value.ToString());
         }
     }

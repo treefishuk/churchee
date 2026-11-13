@@ -16,7 +16,7 @@
             }
 
             // Must not start with //
-            return !url.StartsWith("//");
+            return !url.StartsWith("//", StringComparison.InvariantCultureIgnoreCase);
         }
 
     }

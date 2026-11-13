@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Churchee.Common.Abstractions.Entities
+﻿namespace Churchee.Common.Abstractions.Entities
 {
     public interface ITenantedEntity
     {

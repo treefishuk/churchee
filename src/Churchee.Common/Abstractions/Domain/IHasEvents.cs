@@ -1,6 +1,4 @@
 ﻿using Churchee.CQRS.Abstractions;
-using System;
-using System.Collections.Generic;
 
 namespace Churchee.Common.Abstractions.Entities
 {

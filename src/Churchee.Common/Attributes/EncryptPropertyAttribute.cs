@@ -1,7 +1,5 @@
-﻿using System;
-
-namespace Churchee.Common.Attributes
+﻿namespace Churchee.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class EncryptPropertyAttribute : Attribute;
+    public sealed class EncryptPropertyAttribute : Attribute;
 }
