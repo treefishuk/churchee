@@ -148,7 +148,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 return [];
             }
 
-            var total = dailyDevices.Sum(x => x.Views);
+            int total = dailyDevices.Sum(x => x.Views);
 
             return [.. dailyDevices
                 .GroupBy(x => x.Device)
@@ -176,7 +176,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 return [];
             }
 
-            var total = referrers.Sum(x => x.Views);
+            int total = referrers.Sum(x => x.Views);
 
             return [.. referrers
                 .GroupBy(x => x.Referrer)

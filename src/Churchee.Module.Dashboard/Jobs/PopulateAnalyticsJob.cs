@@ -27,7 +27,7 @@ namespace Churchee.Module.Dashboard.Jobs
 
             const int batchSize = 1000;
 
-            var skip = 0;
+            int skip = 0;
 
             while (true)
             {

@@ -132,8 +132,8 @@ namespace Churchee.Module.UI.Components
 
         private async Task UpdateProgressAsync(int value, CancellationToken ct)
         {
-            var current = uploadProgress;
-            var target = Math.Clamp(value, 0, 100);
+            double current = uploadProgress;
+            int target = Math.Clamp(value, 0, 100);
 
             if (target <= current)
             {
@@ -142,7 +142,7 @@ namespace Churchee.Module.UI.Components
                 return;
             }
 
-            for (var i = (int)Math.Ceiling(current); i <= target; i++)
+            for (int i = (int)Math.Ceiling(current); i <= target; i++)
             {
                 uploadProgress = i;
                 await InvokeAsync(StateHasChanged);

@@ -28,7 +28,7 @@ namespace Churchee.Module.Identity.Tests.Models
             var validationContext = new ValidationContext(model);
 
             // Act
-            var isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
+            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
 
             // Assert
             isValid.Should().BeTrue();

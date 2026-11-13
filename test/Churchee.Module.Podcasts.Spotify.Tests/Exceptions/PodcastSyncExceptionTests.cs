@@ -18,7 +18,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Exceptions
         public void Constructor_ShouldInitializeWithMessage()
         {
             // Arrange
-            var message = "Test message";
+            string message = "Test message";
 
             // Act
             var exception = new PodcastSyncException(message);
@@ -32,7 +32,7 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Exceptions
         public void Constructor_ShouldInitializeWithMessageAndInnerException()
         {
             // Arrange
-            var message = "Test message";
+            string message = "Test message";
             var innerException = new Exception("Inner exception");
 
             // Act

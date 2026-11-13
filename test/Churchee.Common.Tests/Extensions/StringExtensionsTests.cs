@@ -11,7 +11,7 @@ namespace Churchee.Common.Tests.Extensions
             string sut = "Do a thing";
 
             //act
-            var result = sut.ToTitleCase();
+            string result = sut.ToTitleCase();
 
             //assert
             result.Should().Be("Do A Thing");
@@ -25,7 +25,7 @@ namespace Churchee.Common.Tests.Extensions
             string sut = "DoThatThing";
 
             //act
-            var result = sut.ToSentence();
+            string result = sut.ToSentence();
 
             //assert
             result.Should().Be("Do That Thing");
@@ -38,7 +38,7 @@ namespace Churchee.Common.Tests.Extensions
             string sut = "Do A Thing";
 
             //act
-            var result = sut.ToCamelCase();
+            string result = sut.ToCamelCase();
 
             //assert
             result.Should().Be("doAThing");
@@ -51,7 +51,7 @@ namespace Churchee.Common.Tests.Extensions
             string sut = "";
 
             //act
-            var result = sut.ToCamelCase();
+            string result = sut.ToCamelCase();
 
             //assert
             result.Should().BeEmpty();
@@ -64,7 +64,7 @@ namespace Churchee.Common.Tests.Extensions
             string? sut = null;
 
             //act
-            var result = sut.ToCamelCase();
+            string result = sut.ToCamelCase();
 
             //assert
             result.Should().BeNull();
@@ -77,7 +77,7 @@ namespace Churchee.Common.Tests.Extensions
             string sut = "do a thing";
 
             //act
-            var result = sut.ToPascalCase();
+            string result = sut.ToPascalCase();
 
             //assert
             result.Should().Be("DoAThing");
@@ -90,7 +90,7 @@ namespace Churchee.Common.Tests.Extensions
             string sut = "";
 
             //act
-            var result = sut.ToPascalCase();
+            string result = sut.ToPascalCase();
 
             //assert
             result.Should().BeEmpty();
@@ -103,7 +103,7 @@ namespace Churchee.Common.Tests.Extensions
             string? sut = null;
 
             //act
-            var result = sut.ToPascalCase();
+            string result = sut.ToPascalCase();
 
             //assert
             result.Should().BeNull();
@@ -122,7 +122,7 @@ namespace Churchee.Common.Tests.Extensions
         public void StringExtensions_AddSuffix_ReturnsExpected(string input, string expected)
         {
             //act
-            var result = input.AddSuffix();
+            string result = input.AddSuffix();
 
             //assert
             result.Should().Be(expected);
@@ -136,7 +136,7 @@ namespace Churchee.Common.Tests.Extensions
         public void StringExtensions_ToUrl_ReturnsValidUrl(string input, string expected)
         {
             //act
-            var result = input.ToURL();
+            string result = input.ToURL();
 
             //assert
             result.Should().Be(expected);

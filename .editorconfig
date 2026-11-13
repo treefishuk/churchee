@@ -271,6 +271,12 @@ dotnet_diagnostic.CA1848.severity = none
 # MA0007: Trailing Commas
 dotnet_diagnostic.MA0007.severity = none
 
+# CA1716: Identifiers should not match keywords
+dotnet_diagnostic.CA1716.severity = none
+
+# IDE0305: Simplify collection initialization
+dotnet_diagnostic.IDE0305.severity = none
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion

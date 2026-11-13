@@ -9,9 +9,9 @@ namespace Churchee.Module.Site.Tests.Features.Blog.Commands.CreateArticle
         {
             // Arrange
             var command = new CreateArticleCommand();
-            var title = "Test Title";
-            var description = "Test Description";
-            var content = "Test Content";
+            string title = "Test Title";
+            string description = "Test Description";
+            string content = "Test Content";
             var publishOnDate = DateTime.UtcNow;
             var parentPageId = Guid.NewGuid();
 

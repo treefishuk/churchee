@@ -105,7 +105,7 @@ namespace System
         {
             ArgumentNullException.ThrowIfNull(array);
 
-            var index = array.Length - 1;
+            int index = array.Length - 1;
 
             return array[index];
         }

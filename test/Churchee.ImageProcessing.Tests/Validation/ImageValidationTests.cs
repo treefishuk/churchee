@@ -10,10 +10,10 @@ namespace Churchee.ImageProcessing.Tests.Validation
         public void BeAValidImageExtension_ShouldReturnTrue_WhenExtensionIsValid()
         {
             // Arrange
-            var extension = ".jpg";
+            string extension = ".jpg";
 
             // Act
-            var result = ImageValidation.BeAValidImageExtension(extension);
+            bool result = ImageValidation.BeAValidImageExtension(extension);
 
             // Assert
             result.Should().BeTrue();
@@ -23,10 +23,10 @@ namespace Churchee.ImageProcessing.Tests.Validation
         public void BeAValidImageExtension_ShouldReturnFalse_WhenExtensionIsInvalid()
         {
             // Arrange
-            var extension = ".bmp";
+            string extension = ".bmp";
 
             // Act
-            var result = ImageValidation.BeAValidImageExtension(extension);
+            bool result = ImageValidation.BeAValidImageExtension(extension);
 
             // Assert
             result.Should().BeFalse();
@@ -39,7 +39,7 @@ namespace Churchee.ImageProcessing.Tests.Validation
             string base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAANSURBVBhXY2BgYPgPAAEEAQBwIGULAAAAAElFTkSuQmCC";
 
             // Act
-            var result = ImageValidation.BeValidImage(base64Image);
+            bool result = ImageValidation.BeValidImage(base64Image);
 
             // Assert
             result.Should().BeTrue();
@@ -52,7 +52,7 @@ namespace Churchee.ImageProcessing.Tests.Validation
             string base64Image = "NotABase64Image";
 
             // Act
-            var result = ImageValidation.BeValidImage(base64Image);
+            bool result = ImageValidation.BeValidImage(base64Image);
 
             // Assert
             result.Should().BeFalse();
@@ -62,7 +62,7 @@ namespace Churchee.ImageProcessing.Tests.Validation
         public void BeValidImage_ShouldReturnFalse_WhenStringIsEmpty()
         {
             // Act  
-            var result = ImageValidation.BeValidImage(string.Empty);
+            bool result = ImageValidation.BeValidImage(string.Empty);
 
             // Assert
             result.Should().BeFalse();
@@ -76,7 +76,7 @@ namespace Churchee.ImageProcessing.Tests.Validation
             string extension = ".png";
 
             // Act
-            var result = ImageValidation.BeExpectedFormat(base64Image, extension);
+            bool result = ImageValidation.BeExpectedFormat(base64Image, extension);
 
             // Assert
             result.Should().BeTrue();
@@ -90,7 +90,7 @@ namespace Churchee.ImageProcessing.Tests.Validation
             string extension = ".jpg";
 
             // Act
-            var result = ImageValidation.BeExpectedFormat(base64Image, extension);
+            bool result = ImageValidation.BeExpectedFormat(base64Image, extension);
 
             // Assert
             result.Should().BeFalse();

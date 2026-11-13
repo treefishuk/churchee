@@ -65,7 +65,7 @@ namespace Churchee.CQRS.Tests.Resgistration
 
             var sender = provider.GetRequiredService<ISender>();
 
-            var response = await sender.Send<string>(new TestRequest());
+            string response = await sender.Send<string>(new TestRequest());
 
             response.Should().Be("ok");
         }
@@ -104,7 +104,7 @@ namespace Churchee.CQRS.Tests.Resgistration
 
             var sender = provider.GetRequiredService<ISender>();
 
-            var response = await sender.Send<string>(new TestRequest());
+            string response = await sender.Send<string>(new TestRequest());
 
             response.Should().Be("pref-ok");
         }
@@ -132,7 +132,7 @@ namespace Churchee.CQRS.Tests.Resgistration
 
             var sender = provider.GetRequiredService<ISender>();
 
-            var response = await sender.Send<string>(new TestRequest());
+            string response = await sender.Send<string>(new TestRequest());
 
             response.Should().Be("mock-ok");
 

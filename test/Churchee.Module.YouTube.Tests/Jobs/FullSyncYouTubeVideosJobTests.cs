@@ -66,7 +66,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             var responseContent = new GetYouTubeVideosApiResponse();
 
-            var serializedContent = JsonSerializer.Serialize(responseContent);
+            string serializedContent = JsonSerializer.Serialize(responseContent);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent));
 
@@ -105,7 +105,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             var responseContent = GetTestResponseContent(channelId);
 
-            var serializedContent = JsonSerializer.Serialize(responseContent);
+            string serializedContent = JsonSerializer.Serialize(responseContent);
 
             var messageHandler = new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent);
 
@@ -144,7 +144,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             var responseContent = GetTestResponseContent(channelId);
 
-            var serializedContent = JsonSerializer.Serialize(responseContent);
+            string serializedContent = JsonSerializer.Serialize(responseContent);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent));
 
@@ -181,7 +181,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             var responseContent = GetTestResponseContent(channelId);
 
-            var serializedContent = JsonSerializer.Serialize(responseContent);
+            string serializedContent = JsonSerializer.Serialize(responseContent);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent));
 
@@ -218,7 +218,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             var responseContent = GetTestResponseContent(channelId);
 
-            var serializedContent = JsonSerializer.Serialize(responseContent);
+            string serializedContent = JsonSerializer.Serialize(responseContent);
 
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent));
 
@@ -259,7 +259,7 @@ namespace Churchee.Module.YouTube.Tests.Jobs
 
             var responseContent = GetTestResponseContent(channelId);
 
-            var serializedContent = JsonSerializer.Serialize(responseContent);
+            string serializedContent = JsonSerializer.Serialize(responseContent);
 
             var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, serializedContent);
 

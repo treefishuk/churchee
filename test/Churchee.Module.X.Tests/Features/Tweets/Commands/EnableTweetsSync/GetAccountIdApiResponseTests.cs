@@ -15,7 +15,7 @@
             };
 
             // Act
-            var id = response.GetId();
+            string id = response.GetId();
 
             // Assert
             Assert.Equal("12345", id);
@@ -31,7 +31,7 @@
             };
 
             // Act
-            var id = response.GetId();
+            string id = response.GetId();
 
             // Assert
             Assert.Equal(string.Empty, id);

@@ -12,7 +12,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Registrations
         {
             // Arrange
             var services = new ServiceCollection();
-            var facebookApiUrl = "https://graph.facebook.com/";
+            string facebookApiUrl = "https://graph.facebook.com/";
             var inMemorySettings = new Dictionary<string, string?>
             {
                 {"Facebook:Api", facebookApiUrl}

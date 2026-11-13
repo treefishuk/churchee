@@ -178,7 +178,7 @@ namespace Churchee.Module.YouTube.Features.YouTube.Commands.EnableYouTubeSync
 
             var root = doc.RootElement;
 
-            var playlist = root
+            string playlist = root
                 .GetProperty("items")[0]
                 .GetProperty("contentDetails")
                 .GetProperty("relatedPlaylists")

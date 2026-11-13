@@ -17,10 +17,10 @@ namespace Churchee.Module.Site.Tests.Entities
         public void Constructor_SetsProperties()
         {
             // Arrange
-            var type = "text";
-            var isRequired = true;
-            var name = "Content Name";
-            var order = 2;
+            string type = "text";
+            bool isRequired = true;
+            string name = "Content Name";
+            int order = 2;
 
             // Act
             var content = new PageTypeContent(_ContentId, _TenantId, type, isRequired, name, order, null, "Help Text");
@@ -41,10 +41,10 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var content = new PageTypeContent(_ContentId, _TenantId, "text", false, "Old Name", 1, null, "Old Help Text");
-            var newIsRequired = true;
-            var newName = "New Name";
-            var newType = "html";
-            var newOrder = 5;
+            bool newIsRequired = true;
+            string newName = "New Name";
+            string newType = "html";
+            int newOrder = 5;
 
             // Act
             content.UpdateDetails(newIsRequired, newName, newType, newOrder, null, "New Help Text");

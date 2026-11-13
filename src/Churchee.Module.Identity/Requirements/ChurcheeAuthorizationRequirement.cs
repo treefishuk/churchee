@@ -25,7 +25,7 @@ namespace Churchee.Module.Identity.Requirements
             }
 
             var user = context.User;
-            var userIsAnonymous =
+            bool userIsAnonymous =
                 user?.Identity == null ||
                 !user.Identities.Any(i => i.IsAuthenticated);
             if (!userIsAnonymous)

@@ -57,7 +57,7 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
         public async Task GetAccountId_ReturnsAccountId_WhenResponseIsSuccess()
         {
             // Arrange
-            var accountsJson = JsonSerializer.Serialize(new
+            string accountsJson = JsonSerializer.Serialize(new
             {
                 accounts = new[] { new { name = "accounts/ACCOUNT123" } }
             });
@@ -74,7 +74,7 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
             // Act - call private method via reflection
             var method = typeof(GoogleReviewsSyncJob).GetMethod("GetAccountId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var task = (Task<string>)method!.Invoke(job, new object[] { client, CancellationToken.None })!;
-            var accountId = await task;
+            string accountId = await task;
 
             // Assert
             accountId.Should().Be("ACCOUNT123");
@@ -104,7 +104,7 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
         public async Task GetLocationId_ReturnsLocationId_WhenMatchFound()
         {
             // Arrange
-            var locationsJson = JsonSerializer.Serialize(new
+            string locationsJson = JsonSerializer.Serialize(new
             {
                 locations = new[] { new { name = "locations/LOC123" } }
             });
@@ -121,7 +121,7 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
             var cut = CreateJob();
 
             // Act
-            var locationId = await cut.GetLocationId(client, "acct", Guid.NewGuid(), CancellationToken.None);
+            string locationId = await cut.GetLocationId(client, "acct", Guid.NewGuid(), CancellationToken.None);
 
             // Assert
             locationId.Should().Be("LOC123");
@@ -288,7 +288,7 @@ namespace Churchee.Module.Google.Reviews.Tests.Jobs
         public async Task ConvertImageToLocalImage_UpdatesReviewerImageUrl_OnSuccess()
         {
             // Arrange
-            var imageBytes = new byte[] { 1, 2, 3, 4 };
+            byte[] imageBytes = new byte[] { 1, 2, 3, 4 };
             var response = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new ByteArrayContent(imageBytes)

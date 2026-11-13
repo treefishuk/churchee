@@ -8,8 +8,8 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
         public void Constructor_SetsProperties()
         {
             // Arrange
-            var domain = "https://example.com";
-            var pageId = "123456";
+            string domain = "https://example.com";
+            string pageId = "123456";
 
             // Act
             var query = new GetAuthUrlQuery(domain, pageId);

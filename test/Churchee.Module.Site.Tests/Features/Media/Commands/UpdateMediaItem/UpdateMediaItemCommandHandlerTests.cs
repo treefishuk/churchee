@@ -152,7 +152,7 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.UpdateMediaItem
                 imageProcessorMock.Object
             );
 
-            var base64 = "data:image/png;base64," + Convert.ToBase64String(new byte[] { 1, 2, 3 });
+            string base64 = "data:image/png;base64," + Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
             var command = new UpdateMediaItemCommand.Builder()
                 .SetId(mediaItem.Id)
@@ -229,7 +229,7 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.UpdateMediaItem
                 imageProcessorMock.Object
             );
 
-            var base64 = "data:application/pdf;base64," + Convert.ToBase64String(new byte[] { 1, 2, 3 });
+            string base64 = "data:application/pdf;base64," + Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
             var command = new UpdateMediaItemCommand.Builder()
                 .SetId(mediaItem.Id)

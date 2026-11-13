@@ -55,10 +55,10 @@ namespace Churchee.Module.Site.Tests.Entities
             // Arrange
             var pageType = new PageType(_Id, _SystemKey, _TenantId, true, "Type");
             var contentId = Guid.NewGuid();
-            var name = "Content Name";
-            var type = "text";
-            var required = true;
-            var order = 1;
+            string name = "Content Name";
+            string type = "text";
+            bool required = true;
+            int order = 1;
 
             // Act
             pageType.AddPageTypeContent(contentId, name, type, required, order, null, "Help Text");

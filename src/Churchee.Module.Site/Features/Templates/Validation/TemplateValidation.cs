@@ -39,11 +39,11 @@ namespace Churchee.Module.Site.Features.Templates.Validation
             };
 
             // Check for disallowed @inject statements
-            var injectPattern = @"@inject\s+(\w+)\s+(\w+)";
+            string injectPattern = @"@inject\s+(\w+)\s+(\w+)";
             var injectMatches = Regex.Matches(viewContent, injectPattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
             foreach (Match match in injectMatches)
             {
-                var serviceType = match.Groups[1].Value;
+                string serviceType = match.Groups[1].Value;
                 if (!allowedInjectServices.Contains(serviceType))
                 {
                     return false;
@@ -68,7 +68,7 @@ namespace Churchee.Module.Site.Features.Templates.Validation
 
         internal static bool NotContainsDisallowedEmbeds(string content)
         {
-            var embedPattern = @"<(iframe|object|embed)[^>]*>";
+            string embedPattern = @"<(iframe|object|embed)[^>]*>";
             var matches = Regex.Matches(content, embedPattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
 
             foreach (string tag in matches.Select(s => s.Value))

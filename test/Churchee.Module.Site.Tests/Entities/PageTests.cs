@@ -40,8 +40,8 @@ namespace Churchee.Module.Site.Tests.Entities
             // Arrange
             var page = CreatePage();
             var contentId = PageTypeContentId;
-            var contentValue = "Some content";
-            var version = 1;
+            string contentValue = "Some content";
+            int version = 1;
 
             // Act
             page.AddContent(contentId, PageId, contentValue, version);
@@ -60,10 +60,10 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var page = CreatePage();
-            var newTitle = "New Title";
-            var newDesc = "New Desc";
+            string newTitle = "New Title";
+            string newDesc = "New Desc";
             var newParentId = Guid.NewGuid();
-            var newOrder = 5;
+            int newOrder = 5;
 
             // Act
             page.UpdateInfo(newTitle, newDesc, newParentId, newOrder);
@@ -83,7 +83,7 @@ namespace Churchee.Module.Site.Tests.Entities
             var page = CreatePage();
             var contentId = PageTypeContentId;
             page.AddContent(contentId, PageId, "Old Value", 1);
-            var newValue = "New Value";
+            string newValue = "New Value";
             var updates = new List<KeyValuePair<Guid, string>>
             {
                 new KeyValuePair<Guid, string>(contentId, newValue)
@@ -103,9 +103,9 @@ namespace Churchee.Module.Site.Tests.Entities
             // Arrange
             var page = CreatePage();
             var contentId = PageTypeContentId;
-            var devName = "devName";
-            var value = "Content Value";
-            var version = 1;
+            string devName = "devName";
+            string value = "Content Value";
+            int version = 1;
 
             // Add PageContent with PageTypeContent.DevName
             var pageContent = new PageContent(contentId, PageId, value, version)
@@ -124,7 +124,7 @@ namespace Churchee.Module.Site.Tests.Entities
             Assert.False(string.IsNullOrEmpty(page.PublishedData));
 
             // Check that PublishedData contains the devName and value
-            var json = page.PublishedData;
+            string json = page.PublishedData;
             Assert.Contains(devName, json);
             Assert.Contains(value, json);
         }

@@ -80,7 +80,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
 
         private static UpdateEventCommand GetCommand()
         {
-            Guid id = Guid.NewGuid();
+            var id = Guid.NewGuid();
             string title = "Updated Title";
             string description = "Longer more descriptive text";
             string content = "Some meaningful content";

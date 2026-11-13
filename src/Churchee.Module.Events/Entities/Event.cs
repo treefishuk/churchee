@@ -7,7 +7,6 @@ namespace Churchee.Module.Events.Entities
         public Event()
         {
             Title = string.Empty;
-            Description = string.Empty;
             LocationName = string.Empty;
             City = string.Empty;
             Street = string.Empty;

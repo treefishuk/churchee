@@ -59,11 +59,11 @@ namespace Churchee.Common.Tests.ValueTypes
         {
             // Arrange
             var upload = new Upload();
-            var expectedPath = "/uploads/file.txt";
+            string expectedPath = "/uploads/file.txt";
 
             // Act
             upload.Path = expectedPath;
-            var actualPath = upload.Path;
+            string actualPath = upload.Path;
 
             // Assert
             Assert.Equal(expectedPath, actualPath);
@@ -74,11 +74,11 @@ namespace Churchee.Common.Tests.ValueTypes
         {
             // Arrange
             var upload = new Upload();
-            var expectedTypes = new[] { ".jpg", ".png", ".pdf" };
+            string[] expectedTypes = new[] { ".jpg", ".png", ".pdf" };
 
             // Act
             upload.SupportedFileTypes = expectedTypes.ToString();
-            var actualTypes = upload.SupportedFileTypes;
+            string? actualTypes = upload.SupportedFileTypes;
 
             // Assert
             Assert.Equal(expectedTypes.ToString(), actualTypes);
