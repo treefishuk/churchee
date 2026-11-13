@@ -268,6 +268,9 @@ dotnet_diagnostic.CA1056.severity = none
 # CA1848: Use the LoggerMessage delegates
 dotnet_diagnostic.CA1848.severity = none
 
+# MA0007: Trailing Commas
+dotnet_diagnostic.MA0007.severity = none
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion

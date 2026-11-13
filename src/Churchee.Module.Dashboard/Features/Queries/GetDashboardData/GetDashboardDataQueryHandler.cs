@@ -21,6 +21,8 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         public async Task<GetDashboardDataResponse> Handle(GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(request);
+
             try
             {
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
