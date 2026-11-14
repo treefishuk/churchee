@@ -277,6 +277,10 @@ dotnet_diagnostic.CA1716.severity = none
 # IDE0305: Simplify collection initialization
 dotnet_diagnostic.IDE0305.severity = none
 
+# MA0002: IEqualityComparer<string> or IComparer<string> is missing
+dotnet_diagnostic.MA0002.severity = none
+
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
