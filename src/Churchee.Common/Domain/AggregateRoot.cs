@@ -18,7 +18,7 @@ namespace Churchee.Common.Data
 
         private List<INotification> _domainEvents;
 
-        public List<INotification> DomainEvents => _domainEvents;
+        public ICollection<INotification> DomainEvents => _domainEvents;
 
         public void ClearDomainEvents()
         {

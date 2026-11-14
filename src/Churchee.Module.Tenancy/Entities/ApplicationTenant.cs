@@ -17,7 +17,7 @@ namespace Churchee.Module.Tenancy.Entities
 
         private readonly List<INotification> _domainEvents;
 
-        public List<INotification> DomainEvents => _domainEvents;
+        public ICollection<INotification> DomainEvents => _domainEvents;
 
         public void ClearDomainEvents()
         {

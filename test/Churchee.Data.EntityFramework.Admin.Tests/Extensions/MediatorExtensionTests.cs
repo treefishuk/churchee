@@ -91,7 +91,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests.Extensions
         {
             public int Id { get; set; }
 
-            public List<INotification> DomainEvents { get; } = new List<INotification>();
+            public ICollection<INotification> DomainEvents { get; } = new List<INotification>();
 
             public void AddDomainEvent(INotification eventItem)
             {
