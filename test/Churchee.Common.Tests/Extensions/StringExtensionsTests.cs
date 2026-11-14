@@ -58,7 +58,7 @@ namespace Churchee.Common.Tests.Extensions
         }
 
         [Fact]
-        public void StringExtensions_ToCamelCase_ReturnsNull_WhenNull()
+        public void StringExtensions_ToCamelCase_ReturnsEmpty_WhenNull()
         {
             //arrange
             string? sut = null;
@@ -67,7 +67,7 @@ namespace Churchee.Common.Tests.Extensions
             string result = sut.ToCamelCase();
 
             //assert
-            result.Should().BeNull();
+            result.Should().BeEmpty();
         }
 
         [Fact]
