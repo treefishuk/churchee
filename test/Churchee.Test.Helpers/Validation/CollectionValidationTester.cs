@@ -2,11 +2,11 @@
 
 namespace Churchee.Test.Helpers.Validation
 {
-    public class ListValidationTester<T>
+    public class CollectionValidationTester<T>
     {
-        private readonly IList<T> _instance;
+        private readonly ICollection<T> _instance;
 
-        public ListValidationTester(IList<T> instance)
+        public CollectionValidationTester(ICollection<T> instance)
         {
             _instance = instance;
         }

@@ -37,9 +37,9 @@
             return new DateTimeValidationTester(instance);
         }
 
-        public static ListValidationTester<T> Should<T>(this List<T> instance)
+        public static CollectionValidationTester<T> Should<T>(this ICollection<T> instance)
         {
-            return new ListValidationTester<T>(instance);
+            return new CollectionValidationTester<T>(instance);
         }
 
         public static AsyncMethodValidationTester Should(this Func<Task> instance)
