@@ -92,7 +92,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands
 
             Assert.False(result.IsSuccess);
             Assert.Single(result.Errors);
-            Assert.Equal("Failed to disable Facebook Sync", result.Errors[0].Description);
+            Assert.Equal("Failed to disable Facebook Sync", result.Errors.First().Description);
         }
     }
 }

@@ -53,8 +53,8 @@ namespace Churchee.Module.Site.Tests.Features.Media.Commands.UpdateMediaItem
             // Assert
             result.IsSuccess.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors[0].Property.Should().Be("Id");
-            result.Errors[0].Description.Should().Be("Not Found");
+            result.Errors.First().Property.Should().Be("Id");
+            result.Errors.First().Description.Should().Be("Not Found");
         }
 
         [Fact]

@@ -45,7 +45,7 @@ namespace Churchee.CQRS.Tests.Resgistration
         {
             private readonly string _prefix;
             public PrefixBehavior() => _prefix = "pref-";
-            public async Task<string> Handle(TestRequest request, RequestHandlerDelegate<string> next, CancellationToken cancellationToken)
+            public async Task<string> Handle(TestRequest request, RequestHandler<string> next, CancellationToken cancellationToken)
             {
                 var inner = await next();
                 return _prefix + inner;
@@ -116,8 +116,8 @@ namespace Churchee.CQRS.Tests.Resgistration
 
             // Demonstrate using Moq: create a mock behavior that calls next and prefixes.
             var mock = new Mock<IPipelineBehavior<TestRequest, string>>();
-            mock.Setup(m => m.Handle(It.IsAny<TestRequest>(), It.IsAny<RequestHandlerDelegate<string>>(), It.IsAny<CancellationToken>()))
-                .Returns(async (TestRequest req, RequestHandlerDelegate<string> next, CancellationToken ct) =>
+            mock.Setup(m => m.Handle(It.IsAny<TestRequest>(), It.IsAny<RequestHandler<string>>(), It.IsAny<CancellationToken>()))
+                .Returns(async (TestRequest req, RequestHandler<string> next, CancellationToken ct) =>
                 {
                     var inner = await next();
                     return "mock-" + inner;
@@ -136,7 +136,7 @@ namespace Churchee.CQRS.Tests.Resgistration
 
             response.Should().Be("mock-ok");
 
-            mock.Verify(m => m.Handle(It.IsAny<TestRequest>(), It.IsAny<RequestHandlerDelegate<string>>(), It.IsAny<CancellationToken>()), Times.Once);
+            mock.Verify(m => m.Handle(It.IsAny<TestRequest>(), It.IsAny<RequestHandler<string>>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
