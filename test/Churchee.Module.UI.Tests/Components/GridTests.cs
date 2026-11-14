@@ -15,7 +15,9 @@ namespace Churchee.Module.UI.Tests.Components
     public class GridTests : BasePageTests
     {
         // Simple POCO used as the grid's TItem in tests
-        private class TestItem
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Required for testing")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Required for testing")]
+        public class TestItem
         {
             public Guid Id { get; set; }
 
