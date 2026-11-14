@@ -27,15 +27,18 @@ namespace Churchee.Module.Dashboard.Jobs
 
             const int batchSize = 1000;
 
-            int skip = 0;
+            DateTime? lastViewedAt = null;
+            Guid? lastPageViewId = null;
 
             while (true)
             {
                 var datePageViews = await pageViewRepository
-                    .GetListAsync(new PageViewsAfterDateBatchSpecification(pageViewStartDate, batchSize, skip),
+                    .GetListAsync(new PageViewsAfterDateBatchSpecification(pageViewStartDate, batchSize, lastViewedAt, lastPageViewId),
                         x => new PageViewAggregate
                         {
+                            Id = x.Id,
                             ApplicationTenantId = x.ApplicationTenantId,
+                            ViewedAt = x.ViewedAt,
                             Date = DateOnly.FromDateTime(x.ViewedAt.Date),
                             IpAddress = string.IsNullOrWhiteSpace(x.IpAddress) ? string.Empty : x.IpAddress.Trim(),
                             Device = NormalizeDevice(x.Device),
@@ -50,7 +53,9 @@ namespace Churchee.Module.Dashboard.Jobs
                     break;
                 }
 
-                skip += datePageViews.Count;
+                var lastPageView = datePageViews[^1];
+                lastViewedAt = lastPageView.ViewedAt;
+                lastPageViewId = lastPageView.Id;
 
                 var previousIpsByTenant = new Dictionary<Guid, HashSet<string>>();
                 var dailyAnalytics = new List<AnalyticsDaily>();
@@ -261,7 +266,7 @@ namespace Churchee.Module.Dashboard.Jobs
 
         private static string NormalizeUrl(string value)
         {
-            return string.IsNullOrWhiteSpace(value) ? "/" : value.Trim().ToLower();
+            return string.IsNullOrWhiteSpace(value) ? "/" : value.Trim().ToLowerInvariant();
         }
 
         private static string NormalizeReferrer(string value)
@@ -271,7 +276,9 @@ namespace Churchee.Module.Dashboard.Jobs
 
         private sealed class PageViewAggregate
         {
+            public Guid Id { get; set; }
             public Guid ApplicationTenantId { get; set; }
+            public DateTime ViewedAt { get; set; }
             public DateOnly Date { get; set; }
             public string IpAddress { get; set; } = string.Empty;
             public string Device { get; set; } = string.Empty;
