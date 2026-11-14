@@ -41,7 +41,7 @@ namespace Churchee.Module.Hangfire.Tests.Filters
             var context = new AspNetCoreDashboardContext(storage, options, httpContext);
 
             // Act
-            var result = filter.Authorize(context);
+            bool result = filter.Authorize(context);
 
             // Assert
             result.Should().BeTrue();
@@ -76,7 +76,7 @@ namespace Churchee.Module.Hangfire.Tests.Filters
             var context = new AspNetCoreDashboardContext(storage, options, httpContext);
 
             // Act
-            var result = filter.Authorize(context);
+            bool result = filter.Authorize(context);
 
             // Assert
             result.Should().BeFalse();
@@ -112,7 +112,7 @@ namespace Churchee.Module.Hangfire.Tests.Filters
             var context = new AspNetCoreDashboardContext(storage, options, httpContext);
 
             // Act
-            var result = filter.Authorize(context);
+            bool result = filter.Authorize(context);
 
             // Assert
             result.Should().BeFalse();

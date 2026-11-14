@@ -1,7 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Entities;
 using Churchee.CQRS.Abstractions;
-using System;
-using System.Collections.Generic;
 
 namespace Churchee.Common.Data
 {
@@ -20,7 +18,7 @@ namespace Churchee.Common.Data
 
         private List<INotification> _domainEvents;
 
-        public List<INotification> DomainEvents => _domainEvents;
+        public ICollection<INotification> DomainEvents => _domainEvents;
 
         public void ClearDomainEvents()
         {

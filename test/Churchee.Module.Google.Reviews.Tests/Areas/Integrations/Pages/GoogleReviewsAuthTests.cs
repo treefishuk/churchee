@@ -16,8 +16,8 @@ namespace Churchee.Module.Google.Reviews.Tests.Areas.Integrations.Pages
         public void OnInitializedAsync_InvokesEnableCommand_AndRedirects()
         {
             // Arrange
-            var code = "abc123";
-            var state = "stateX";
+            string code = "abc123";
+            string state = "stateX";
 
             // Prepare an HttpContext with scheme/host and track redirects
             var context = new DefaultHttpContext();

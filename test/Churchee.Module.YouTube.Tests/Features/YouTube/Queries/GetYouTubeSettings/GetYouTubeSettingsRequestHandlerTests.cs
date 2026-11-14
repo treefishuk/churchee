@@ -14,8 +14,8 @@ namespace Churchee.Module.YouTube.Tests.Features.YouTube.Queries
         {
             // Arrange
             var expectedTenant = Guid.NewGuid();
-            var expectedHandle = "SomeHandle";
-            var expectedPage = "VideosPage";
+            string expectedHandle = "SomeHandle";
+            string expectedPage = "VideosPage";
             var expectedLastRun = DateTime.UtcNow;
 
             var mockCurrentUser = new Mock<ICurrentUser>();

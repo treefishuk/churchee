@@ -20,8 +20,8 @@ namespace Churchee.Module.Site.Tests.Entities
             // Arrange
             var pageTypeContentId = Guid.NewGuid();
             var pageId = Guid.NewGuid();
-            var value = "Test Value";
-            var version = 3;
+            string value = "Test Value";
+            int version = 3;
 
             // Act
             var content = new PageContent(pageTypeContentId, pageId, value, version);

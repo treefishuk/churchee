@@ -18,7 +18,7 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
 
         public async Task<TResponse> Handle(
             TRequest request,
-            RequestHandlerDelegate<TResponse> next,
+            RequestHandler<TResponse> next,
             CancellationToken cancellationToken)
         {
 

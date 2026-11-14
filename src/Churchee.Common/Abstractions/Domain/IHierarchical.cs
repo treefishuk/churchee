@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Churchee.Common.Abstractions.Entities
+﻿namespace Churchee.Common.Abstractions.Entities
 {
     public interface IHierarchical<T>
     {

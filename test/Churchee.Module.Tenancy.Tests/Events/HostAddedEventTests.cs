@@ -8,7 +8,7 @@ namespace Churchee.Module.Tenancy.Tests.Events
         public void Constructor_ShouldInitializeProperties()
         {
             // Arrange
-            var host = "test.example.com";
+            string host = "test.example.com";
             var tenantId = Guid.NewGuid();
 
             // Act

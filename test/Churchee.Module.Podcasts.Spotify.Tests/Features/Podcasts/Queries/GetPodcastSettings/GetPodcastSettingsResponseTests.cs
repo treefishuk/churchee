@@ -9,8 +9,8 @@ namespace Churchee.Module.Podcasts.Spotify.Tests.Features.Podcasts.Queries.GetPo
         public void GetPodcastSettingsResponse_ShouldReturnCorrectValues()
         {
             // Arrange
-            var spotifyUrl = "https://www.spotify.com";
-            var nameForContent = "Spotify";
+            string spotifyUrl = "https://www.spotify.com";
+            string nameForContent = "Spotify";
             var lastRun = DateTime.Now;
 
             // Act

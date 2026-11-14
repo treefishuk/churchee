@@ -16,7 +16,7 @@ namespace Churchee.Common.Tests.Extensions
             var stream = new MemoryStream(Encoding.UTF8.GetBytes("Test"));
 
             //act
-            var bytes = stream.ConvertStreamToByteArray();
+            byte[] bytes = stream.ConvertStreamToByteArray();
             string byteString = System.Text.Encoding.Default.GetString(bytes);
 
             bytes.Should().NotBeNull();

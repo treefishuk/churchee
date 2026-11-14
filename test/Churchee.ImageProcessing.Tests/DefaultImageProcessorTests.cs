@@ -85,7 +85,7 @@ namespace Churchee.ImageProcessing.Tests
             // Arrange
             string fileName = "My File.PNG";
             string folderName = "images";
-            Guid tenantId = Guid.NewGuid();
+            var tenantId = Guid.NewGuid();
 
             string tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.png");
 
@@ -108,7 +108,7 @@ namespace Churchee.ImageProcessing.Tests
             var processor = GetDefaultImageProcessor(mockBlobStore, mockLogger);
 
             // Act
-            var result = await processor.ConvertTempImageToFullImage(tempPath, fileName, folderName, tenantId, CancellationToken.None);
+            string result = await processor.ConvertTempImageToFullImage(tempPath, fileName, folderName, tenantId, CancellationToken.None);
 
             // Assert
             result.Should().Be(expectedImagePath);
@@ -132,9 +132,9 @@ namespace Churchee.ImageProcessing.Tests
             var processor = GetDefaultImageProcessor(mockBlobStore, mockLogger);
 
             // Act
-            var result1 = await processor.ConvertTempImageToFullImage(string.Empty, "file.png", "images", Guid.NewGuid(), CancellationToken.None);
-            var result2 = await processor.ConvertTempImageToFullImage("path", string.Empty, "images", Guid.NewGuid(), CancellationToken.None);
-            var result3 = await processor.ConvertTempImageToFullImage("path", "file.png", string.Empty, Guid.NewGuid(), CancellationToken.None);
+            string result1 = await processor.ConvertTempImageToFullImage(string.Empty, "file.png", "images", Guid.NewGuid(), CancellationToken.None);
+            string result2 = await processor.ConvertTempImageToFullImage("path", string.Empty, "images", Guid.NewGuid(), CancellationToken.None);
+            string result3 = await processor.ConvertTempImageToFullImage("path", "file.png", string.Empty, Guid.NewGuid(), CancellationToken.None);
 
             // Assert
             result1.Should().BeEmpty();
@@ -150,7 +150,7 @@ namespace Churchee.ImageProcessing.Tests
             // Arrange
             string fileName = "Test.PNG";
             string folderName = "images";
-            Guid tenantId = Guid.NewGuid();
+            var tenantId = Guid.NewGuid();
 
             string tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.png");
 
@@ -171,7 +171,7 @@ namespace Churchee.ImageProcessing.Tests
             var processor = GetDefaultImageProcessor(mockBlobStore, mockLogger);
 
             // Act
-            var result = await processor.ConvertTempImageToFullImage(tempPath, fileName, folderName, tenantId, CancellationToken.None);
+            string result = await processor.ConvertTempImageToFullImage(tempPath, fileName, folderName, tenantId, CancellationToken.None);
 
             // Assert
             result.Should().BeEmpty();

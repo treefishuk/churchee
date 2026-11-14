@@ -1,7 +1,7 @@
 ﻿namespace System.ComponentModel.DataAnnotations
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class NotEmptyGuidAttribute : ValidationAttribute
+    public sealed class NotEmptyGuidAttribute : ValidationAttribute
     {
         public override bool IsValid(object value)
         {

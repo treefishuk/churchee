@@ -10,7 +10,7 @@ namespace Churchee.Module.Events.Tests.Features.Commands.UpdateEvent
         public void UpdateEventCommand_PropertiesSet()
         {
             //arrange
-            Guid id = Guid.NewGuid();
+            var id = Guid.NewGuid();
             string title = "Text";
             string description = "Lomger more descriptive text";
             DateTime startDate = DateTime.Now.AddDays(2);

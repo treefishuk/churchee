@@ -1,5 +1,5 @@
-﻿using Churchee.Test.Helpers.Validation;
-using System.ComponentModel.DataAnnotations;
+﻿using Churchee.Common.Extensions;
+using Churchee.Test.Helpers.Validation;
 
 namespace Churchee.Common.Tests.Extensions
 {

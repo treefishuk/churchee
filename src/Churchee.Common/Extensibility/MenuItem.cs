@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Churchee.Common.Extensibility
+﻿namespace Churchee.Common.Extensibility
 {
     public class MenuItem
     {
@@ -11,7 +8,7 @@ namespace Churchee.Common.Extensibility
             ArgumentException.ThrowIfNullOrEmpty(path);
             ArgumentException.ThrowIfNullOrEmpty(icon);
 
-            if (!path.StartsWith("/management"))
+            if (!path.StartsWith("/management", StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new FormatException("Path must start with /management");
             }

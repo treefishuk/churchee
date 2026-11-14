@@ -16,7 +16,7 @@
         {
             get
             {
-                var fileName = Path.GetFileNameWithoutExtension(MediaUrl);
+                string fileName = Path.GetFileNameWithoutExtension(MediaUrl);
 
                 return MediaUrl.Replace(fileName, $"{fileName}_s");
             }

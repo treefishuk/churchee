@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Churchee.Common.Storage
+﻿namespace Churchee.Common.Storage
 {
     public interface ISettingStore
     {

@@ -17,7 +17,7 @@ namespace Churchee.Common.Tests.Converters
         public void Read_FallbackParse_AssumesUniversalAndAdjustsToUtc()
         {
             // Non-o format that should be parsed using the fallback path
-            var input = "2021-05-01 12:34:56";
+            string input = "2021-05-01 12:34:56";
 
             string json = $"\"{input}\"";
 

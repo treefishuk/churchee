@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Churchee.Common.Extensions
+﻿namespace Churchee.Common.Extensions
 {
     public static class DateTimeExtensions
     {

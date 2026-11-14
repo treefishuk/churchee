@@ -8,7 +8,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Specifications
         [Fact]
         public void GetEventByFacebookIdSpecification_Should_Return_SingleResult()
         {
-            Guid tenantId = Guid.NewGuid();
+            var tenantId = Guid.NewGuid();
 
             var events = new List<Event>
             {

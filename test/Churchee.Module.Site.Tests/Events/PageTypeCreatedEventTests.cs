@@ -9,7 +9,7 @@ namespace Churchee.Module.Site.Tests.Events
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var name = "Test Page Type";
+            string name = "Test Page Type";
 
             // Act
             var evt = new PageTypeCreatedEvent(tenantId, name);

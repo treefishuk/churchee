@@ -22,7 +22,7 @@ namespace Churchee.Module.Logging.Features.Queries
 
         public async Task<DataTableResponse<GetLogListingResponseItem>> Handle(GetLogListingQuery request, CancellationToken cancellationToken)
         {
-            var count = await _logsDBContext.Set<Log>().CountAsync(cancellationToken);
+            int count = await _logsDBContext.Set<Log>().CountAsync(cancellationToken);
 
             string orderby = $"{request.OrderBy} {request.OrderByDirection}";
 

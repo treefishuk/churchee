@@ -8,7 +8,7 @@ namespace Churchee.Module.Tenancy.Tests.Entities
         public void Constructor_ShouldInitializeProperties()
         {
             // Arrange
-            var featureName = "Test Feature";
+            string featureName = "Test Feature";
             var tenantId = Guid.NewGuid();
 
             // Act

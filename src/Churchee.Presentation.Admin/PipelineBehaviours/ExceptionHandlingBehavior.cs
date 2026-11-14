@@ -15,7 +15,7 @@ namespace Churchee.Presentation.Admin.PipelineBehaviours
             _logger = logger;
         }
 
-        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+        public async Task<TResponse> Handle(TRequest request, RequestHandler<TResponse> next, CancellationToken cancellationToken)
         {
             try
             {

@@ -10,15 +10,15 @@ namespace Churchee.Module.Podcasts.Tests.Entities
         {
             // Arrange
             var applicationTenantId = Guid.NewGuid();
-            var audioUri = "http://example.com/audio.mp3";
+            string audioUri = "http://example.com/audio.mp3";
             var publishedDate = DateTime.UtcNow;
-            var sourceName = "SourceName";
-            var sourceId = "SourceId";
-            var title = "Podcast Title";
-            var description = "Podcast Description";
-            var imageUrl = "http://example.com/image.jpg";
-            var thumbnailUrl = "http://example.com/thumbnail.jpg";
-            var podcastsUrl = "podcasts";
+            string sourceName = "SourceName";
+            string sourceId = "SourceId";
+            string title = "Podcast Title";
+            string description = "Podcast Description";
+            string imageUrl = "http://example.com/image.jpg";
+            string thumbnailUrl = "http://example.com/thumbnail.jpg";
+            string podcastsUrl = "podcasts";
             var podcastDetailPageTypeId = Guid.NewGuid();
 
             // Act

@@ -99,7 +99,7 @@ namespace Churchee.Module.UI.Tests.Components
         {
             await using var stream = new MemoryStream([0x00, 0x01, 0x02, 0x03]);
 
-            var result = await ImageUpload.ToBase64ImageAsync(stream, "image/png");
+            string result = await ImageUpload.ToBase64ImageAsync(stream, "image/png");
 
             Assert.Equal("data:image/png;base64,AAECAw==", result);
         }
@@ -112,7 +112,7 @@ namespace Churchee.Module.UI.Tests.Components
             var method = typeof(ImageUpload).GetMethod("GenerateThumbnailPreviewAsync", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.NotNull(method);
 
-            var result = await (Task<string>)method.Invoke(cut.Instance, [new MemoryStream(), 180, CancellationToken.None])!;
+            string result = await (Task<string>)method.Invoke(cut.Instance, [new MemoryStream(), 180, CancellationToken.None])!;
 
             Assert.Equal(string.Empty, result);
         }

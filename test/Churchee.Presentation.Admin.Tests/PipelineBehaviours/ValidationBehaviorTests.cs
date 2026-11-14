@@ -74,11 +74,11 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
             result.Errors.Should().HaveCount(2);
 
             // The ValidationBehavior trims property name prefix up to the first '.' so expect "Something" and "Other"
-            result.Errors[0].Property.Should().Be("Something");
-            result.Errors[0].Description.Should().Be("First error");
+            result.Errors.First().Property.Should().Be("Something");
+            result.Errors.First().Description.Should().Be("First error");
 
-            result.Errors[1].Property.Should().Be("Other");
-            result.Errors[1].Description.Should().Be("Second error");
+            result.Errors.ElementAt(1).Property.Should().Be("Other");
+            result.Errors.ElementAt(1).Description.Should().Be("Second error");
         }
 
         [Fact]

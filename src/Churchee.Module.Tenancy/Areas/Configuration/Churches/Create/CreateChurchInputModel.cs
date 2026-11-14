@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Churchee.Common.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Tenancy.Areas.Configuration.Churches.Create
 {

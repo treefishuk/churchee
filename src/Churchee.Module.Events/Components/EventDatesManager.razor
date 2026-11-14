@@ -1,6 +1,5 @@
 ﻿@using Churchee.Module.Events.Models
 @using Churchee.Module.UI.Models
-@using Microsoft.AspNetCore.Components.Routing
 @using Radzen
 @using Radzen.Blazor
 
@@ -19,7 +18,7 @@
 
     </RadzenFormField>
 
-    <RadzenToggleButton Style="margin-top: 10px;" TValue="bool" @bind-Value="Recouring" Text="@(Recouring ? "Add Single" : "Add Multiple")"></RadzenToggleButton>
+    <RadzenToggleButton Style="margin-top: 10px;" @bind-Value="Recouring" Text="@(Recouring ? "Add Single" : "Add Multiple")"></RadzenToggleButton>
 
     @if(Recouring){
 

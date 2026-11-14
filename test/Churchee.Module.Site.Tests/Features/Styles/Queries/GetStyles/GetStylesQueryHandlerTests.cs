@@ -37,7 +37,7 @@ namespace Churchee.Module.Site.Tests.Features.Styles.Queries.GetStyles
                  .ReturnsAsync(cssStyles);
 
             // Act
-            var result = await _handler.Handle(new GetStylesQuery(), CancellationToken.None);
+            string result = await _handler.Handle(new GetStylesQuery(), CancellationToken.None);
 
             result.Should().NotBeNull();
             result.Should().Be(styles);

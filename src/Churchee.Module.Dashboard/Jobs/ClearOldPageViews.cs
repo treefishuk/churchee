@@ -20,7 +20,7 @@ namespace Churchee.Module.Dashboard.Jobs
 
             using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            timeoutCts.CancelAfter(TimeSpan.FromMinutes(10));
+            timeoutCts.CancelAfter(TimeSpan.FromMinutes(30));
 
             var token = timeoutCts.Token;
 
@@ -28,7 +28,7 @@ namespace Churchee.Module.Dashboard.Jobs
 
             while (!token.IsCancellationRequested)
             {
-                var deleted = await repository.PermanentDeleteBatchAsync(new OldPageViewSpecification(), batchSize, token);
+                int deleted = await repository.PermanentDeleteBatchAsync(new OldPageViewSpecification(), batchSize, token);
 
                 if (deleted == 0)
                 {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Churchee.Common.ResponseTypes
+﻿namespace Churchee.Common.ResponseTypes
 {
     public class CommandResponse
     {
@@ -14,7 +12,7 @@ namespace Churchee.Common.ResponseTypes
             Errors.Add(new ValidationError(error, propertyName));
         }
 
-        public List<ValidationError> Errors { get; }
+        public ICollection<ValidationError> Errors { get; }
 
         public bool IsSuccess => Errors.Count == 0;
     }

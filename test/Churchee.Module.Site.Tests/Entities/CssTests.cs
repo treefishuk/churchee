@@ -22,7 +22,7 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var css = new Css(Guid.NewGuid());
-            var styles = "body { color: red; }";
+            string styles = "body { color: red; }";
 
             // Act
             css.SetStyles(styles);
@@ -36,7 +36,7 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var css = new Css(Guid.NewGuid());
-            var minified = "body{color:red;}";
+            string minified = "body{color:red;}";
 
             // Act
             css.SetMinifiedStyles(minified);

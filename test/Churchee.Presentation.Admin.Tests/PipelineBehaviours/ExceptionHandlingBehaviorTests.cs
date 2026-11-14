@@ -72,7 +72,7 @@ namespace Churchee.Presentation.Admin.Tests.PipelineBehaviours
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeFalse();
             result.Errors.Count.Should().NotBe(0);
-            result.Errors[0].Description.Should().Contain("Oh dear something has gone wrong");
+            result.Errors.First().Description.Should().Contain("Oh dear something has gone wrong");
 
             loggerMock.Verify(l => l.Log(
                 LogLevel.Error,

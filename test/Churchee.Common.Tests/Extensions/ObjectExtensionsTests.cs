@@ -12,7 +12,7 @@ namespace Churchee.Common.Tests.Extensions
             var cut = new TrueTestClass();
 
             //act
-            var result = cut.ImplementsInterface<ITrackable>();
+            bool result = cut.ImplementsInterface<ITrackable>();
 
             //assert
             result.Should().BeTrue();
@@ -25,7 +25,7 @@ namespace Churchee.Common.Tests.Extensions
             var cut = new FalseTestClass();
 
             //act
-            var result = cut.ImplementsInterface<ITrackable>();
+            bool result = cut.ImplementsInterface<ITrackable>();
 
             //assert
             result.Should().BeFalse();

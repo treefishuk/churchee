@@ -45,10 +45,10 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
 
                 // For more information on how to enable account confirmation and password reset please
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                string code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                var callbackUrl = Url.Page(
+                string callbackUrl = Url.Page(
                     "ResetPassword",
                     pageHandler: null,
                     values: new { area = "Account", code },
@@ -60,7 +60,7 @@ namespace Churchee.Module.Identity.Areas.Account.Pages
                     return Page();
                 }
 
-                var message = "Reset Password Link: " + callbackUrl;
+                string message = "Reset Password Link: " + callbackUrl;
 
                 await _emailSender.SendEmailAsync(user.Email, user.UserName, "Reset your password", message, message);
 

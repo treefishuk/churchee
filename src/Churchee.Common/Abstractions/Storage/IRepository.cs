@@ -1,17 +1,10 @@
 ﻿using Ardalis.Specification;
 using Churchee.Common.Abstractions.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Churchee.Common.Abstractions.Storage
 {
-    public interface IRepository;
-
-    public interface IRepository<T> : IRepository where T : class, IEntity
+    public interface IRepository<T> where T : class, IEntity
     {
         IQueryable<T> GetQueryable();
 

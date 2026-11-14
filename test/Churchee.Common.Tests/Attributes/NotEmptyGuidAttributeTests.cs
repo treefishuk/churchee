@@ -13,7 +13,7 @@ namespace Churchee.Common.Tests.Attributes
             var guid = Guid.NewGuid();
 
             // Act
-            var result = _attribute.IsValid(guid);
+            bool result = _attribute.IsValid(guid);
 
             // Assert
             Assert.True(result);
@@ -26,7 +26,7 @@ namespace Churchee.Common.Tests.Attributes
             var guid = Guid.Empty;
 
             // Act
-            var result = _attribute.IsValid(guid);
+            bool result = _attribute.IsValid(guid);
 
             // Assert
             Assert.False(result);
@@ -36,10 +36,10 @@ namespace Churchee.Common.Tests.Attributes
         public void IsValid_ReturnsFalse_ForNonGuidType()
         {
             // Arrange
-            var value = "not a guid";
+            string value = "not a guid";
 
             // Act
-            var result = _attribute.IsValid(value);
+            bool result = _attribute.IsValid(value);
 
             // Assert
             Assert.False(result);
@@ -49,7 +49,7 @@ namespace Churchee.Common.Tests.Attributes
         public void IsValid_ReturnsFalse_ForNull()
         {
             // Act
-            var result = _attribute.IsValid(null);
+            bool result = _attribute.IsValid(null);
 
             // Assert
             Assert.False(result);
@@ -59,10 +59,10 @@ namespace Churchee.Common.Tests.Attributes
         public void FormatErrorMessage_ReturnsExpectedMessage()
         {
             // Arrange
-            var propertyName = "TestProperty";
+            string propertyName = "TestProperty";
 
             // Act
-            var message = _attribute.FormatErrorMessage(propertyName);
+            string message = _attribute.FormatErrorMessage(propertyName);
 
             // Assert
             Assert.Equal("TestProperty must not be an empty GUID.", message);

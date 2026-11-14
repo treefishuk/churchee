@@ -9,7 +9,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         public void Constructor_ShouldInitializePasswordProperty()
         {
             // Arrange
-            var password = "TestPassword";
+            string password = "TestPassword";
 
             // Act
             var command = new CheckPasswordAgainstHibpCommand(password);

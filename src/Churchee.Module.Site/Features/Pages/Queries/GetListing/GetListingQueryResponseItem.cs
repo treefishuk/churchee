@@ -1,4 +1,5 @@
 ﻿using Churchee.Common.Abstractions.Queries;
+using Churchee.Common.Extensions;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Site.Features.Pages.Queries

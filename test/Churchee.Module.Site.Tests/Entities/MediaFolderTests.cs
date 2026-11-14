@@ -9,8 +9,8 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var tenantId = Guid.NewGuid();
-            var name = "Images";
-            var supportedFileTypes = ".jpg,.png";
+            string name = "Images";
+            string supportedFileTypes = ".jpg,.png";
 
             // Act
             var folder = new MediaFolder(tenantId, name, supportedFileTypes);
@@ -30,7 +30,7 @@ namespace Churchee.Module.Site.Tests.Entities
             // Arrange
             var tenantId = Guid.NewGuid();
             var parent = new MediaFolder(tenantId, "Parent", ".jpg,.png");
-            var childName = "Child";
+            string childName = "Child";
 
             // Act
             var child = new MediaFolder(tenantId, childName, parent);

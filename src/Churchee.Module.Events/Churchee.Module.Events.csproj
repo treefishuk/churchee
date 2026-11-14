@@ -11,6 +11,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Templates\**\*.cshtml" />
+    <None Remove="Templates\**\*.cshtml" />
+    <RazorGenerate Remove="Templates\**\*.cshtml" />
+    <EmbeddedResource Include="Templates\**\*.cshtml">
+      <LogicalName>Churchee.Module.Events.Templates.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

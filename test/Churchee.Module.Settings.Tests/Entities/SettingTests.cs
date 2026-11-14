@@ -11,8 +11,8 @@ namespace Churchee.Module.Settings.Tests.Entities
             // Arrange
             var id = Guid.NewGuid();
             var applicationTenantId = Guid.NewGuid();
-            var description = "Test Description";
-            var value = "Test Value";
+            string description = "Test Description";
+            string value = "Test Value";
 
             // Act
             var setting = new Setting(id, applicationTenantId, description, value);
@@ -29,7 +29,7 @@ namespace Churchee.Module.Settings.Tests.Entities
         {
             // Arrange
             var setting = new Setting(Guid.NewGuid(), Guid.NewGuid(), "Initial Description", "Initial Value");
-            var newDescription = "Updated Description";
+            string newDescription = "Updated Description";
 
             // Act
             setting.Description = newDescription;
@@ -43,7 +43,7 @@ namespace Churchee.Module.Settings.Tests.Entities
         {
             // Arrange
             var setting = new Setting(Guid.NewGuid(), Guid.NewGuid(), "Initial Description", "Initial Value");
-            var newValue = "Updated Value";
+            string newValue = "Updated Value";
 
             // Act
             setting.Value = newValue;

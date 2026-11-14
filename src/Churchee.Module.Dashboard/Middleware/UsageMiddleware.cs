@@ -23,6 +23,9 @@ namespace Churchee.Module.Dashboard.Middleware
         public async Task InvokeAsync(HttpContext context, ITenantResolver tenantResolver)
         {
 
+            ArgumentNullException.ThrowIfNull(context);
+            ArgumentNullException.ThrowIfNull(tenantResolver);
+
             if (tenantResolver.GetTenantId() != Guid.Empty)
             {
                 // Fire-and-forget background task, do not await or capture context
@@ -49,7 +52,7 @@ namespace Churchee.Module.Dashboard.Middleware
                 }
 
                 // Exit early for requests with no user agent, this is to avoid logging requests from bots or crawlers
-                if (string.IsNullOrEmpty(userAgent) || userAgent.Contains("bot") || userAgent.Contains("crawler"))
+                if (string.IsNullOrEmpty(userAgent) || userAgent.Contains("bot", StringComparison.OrdinalIgnoreCase) || userAgent.Contains("crawler", StringComparison.OrdinalIgnoreCase))
                 {
                     return;
                 }

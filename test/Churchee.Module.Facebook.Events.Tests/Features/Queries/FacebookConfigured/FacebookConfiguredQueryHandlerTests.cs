@@ -40,7 +40,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             var query = new FacebookConfiguredQuery();
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            bool result = await handler.Handle(query, CancellationToken.None);
 
             // Assert
             Assert.True(result);
@@ -66,7 +66,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             var query = new FacebookConfiguredQuery();
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            bool result = await handler.Handle(query, CancellationToken.None);
 
             // Assert
             Assert.False(result);
@@ -89,7 +89,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Queries
             var query = new FacebookConfiguredQuery();
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            bool result = await handler.Handle(query, CancellationToken.None);
 
             // Assert
             Assert.False(result);

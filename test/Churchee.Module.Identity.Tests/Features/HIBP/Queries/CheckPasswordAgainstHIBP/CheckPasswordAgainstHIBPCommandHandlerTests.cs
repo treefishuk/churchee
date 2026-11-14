@@ -52,7 +52,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         {
             // Arrange
             var command = new CheckPasswordAgainstHibpCommand("password");
-            var responseContent = "1E4C9B93F3F0682250B6CF8331B7EE68FD8:1000\r\n";
+            string responseContent = "1E4C9B93F3F0682250B6CF8331B7EE68FD8:1000\r\n";
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, responseContent));
             _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
@@ -68,7 +68,7 @@ namespace Churchee.Module.Identity.Tests.Features.HIBP.Queries.CheckPasswordAgai
         {
             // Arrange
             var command = new CheckPasswordAgainstHibpCommand("password");
-            var responseContent = "1F4C9B93F3F0681150B6CF8331B7EE68FD8:0\r\n";
+            string responseContent = "1F4C9B93F3F0681150B6CF8331B7EE68FD8:0\r\n";
             var httpClient = new HttpClient(new FakeHttpMessageHandler(HttpStatusCode.OK, responseContent));
             _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
 

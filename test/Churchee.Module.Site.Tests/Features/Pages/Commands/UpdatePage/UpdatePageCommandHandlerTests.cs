@@ -60,8 +60,8 @@ namespace Churchee.Module.Site.Tests.Features.Pages.Commands.UpdatePage
             var handler = CreateHandler();
             var page = new Page(Guid.NewGuid(), "t", "u", "m", Guid.NewGuid(), null, false);
             page.AddContent(Guid.NewGuid(), Guid.NewGuid(), "original", 1);
-            var originalValue = page.PageContent.First().Value;
-            var originalVersion = page.PageContent.First().Version;
+            string originalValue = page.PageContent.First().Value;
+            int originalVersion = page.PageContent.First().Version;
 
             // Act
             await handler.UpdateContent(null, page, Guid.NewGuid(), CancellationToken.None);

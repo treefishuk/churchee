@@ -11,7 +11,7 @@ namespace Churchee.Module.Tokens.Tests.Specifications
         public void Constructor_ShouldInitializeQueryCorrectly()
         {
             // Arrange
-            var key = "TestKey";
+            string key = "TestKey";
             var applicationTenantId = Guid.NewGuid();
 
             // Act
@@ -29,7 +29,7 @@ namespace Churchee.Module.Tokens.Tests.Specifications
         public void Constructor_ShouldIgnoreQueryFilters()
         {
             // Arrange
-            var key = "TestKey";
+            string key = "TestKey";
             var applicationTenantId = Guid.NewGuid();
 
             // Act
@@ -43,7 +43,7 @@ namespace Churchee.Module.Tokens.Tests.Specifications
         public void Constructor_ShouldSetAsNoTracking()
         {
             // Arrange
-            var key = "TestKey";
+            string key = "TestKey";
             var applicationTenantId = Guid.NewGuid();
 
             // Act

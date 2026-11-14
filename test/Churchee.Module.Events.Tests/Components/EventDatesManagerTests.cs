@@ -79,7 +79,7 @@ namespace Churchee.Module.Events.Tests.Components
             // assert
             cut.Instance.Dates.Count.Should().Be(4);
 
-            for (var i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 var expected = start.AddDays(7 * i);
                 cut.Instance.Dates?[i].Start.Should().Be(expected);

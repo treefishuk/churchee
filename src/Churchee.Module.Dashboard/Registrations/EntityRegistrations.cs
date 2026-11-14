@@ -8,6 +8,23 @@ namespace Churchee.Module.Dashboard.Registrations
     {
         public void RegisterEntities(ModelBuilder modelBuilder)
         {
+            ArgumentNullException.ThrowIfNull(modelBuilder);
+
+            PageView(modelBuilder);
+
+            AnalyticsDaily(modelBuilder);
+
+            AnalyticsDailyDevices(modelBuilder);
+
+            AnalyticsDailyPages(modelBuilder);
+
+            AnalyticsDailyReferrers(modelBuilder);
+
+            AnalyticsHourly(modelBuilder);
+        }
+
+        private static void PageView(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<PageView>(etb =>
             {
                 // Primary key
@@ -44,67 +61,10 @@ namespace Churchee.Module.Dashboard.Registrations
                    .HasDatabaseName("IX_PageViews_AppTenant_ViewedHour");
 
             });
+        }
 
-            modelBuilder.Entity<AnalyticsDaily>(etb =>
-            {
-                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
-                   .HasDatabaseName("IX_AnalyticsDaily_AppTenant_Date");
-
-                etb.HasIndex(i => new
-                {
-                    i.ApplicationTenantId,
-                    i.Date
-                })
-                .IsUnique()
-                .HasDatabaseName("UX_AnalyticsDaily_Tenant_Date");
-            });
-
-            modelBuilder.Entity<AnalyticsDailyDevices>(etb =>
-            {
-                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
-                   .HasDatabaseName("IX_AnalyticsDailyDevices_AppTenant_Date");
-
-                etb.HasIndex(i => new
-                {
-                    i.ApplicationTenantId,
-                    i.Date,
-                    i.Device
-                })
-                .IsUnique()
-                .HasDatabaseName("UX_AnalyticsDailyDevices_Tenant_Date_Device");
-            });
-
-            modelBuilder.Entity<AnalyticsDailyPages>(etb =>
-            {
-                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
-                   .HasDatabaseName("IX_AnalyticsDailyPages_AppTenant_Date");
-
-                etb.HasIndex(i => new
-                {
-                    i.ApplicationTenantId,
-                    i.Date,
-                    i.Url
-                })
-                .IsUnique()
-                .HasDatabaseName("UX_AnalyticsDailyPages_Tenant_Date_Url");
-
-            });
-
-            modelBuilder.Entity<AnalyticsDailyReferrers>(etb =>
-            {
-                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
-                   .HasDatabaseName("IX_AnalyticsDailyReferrers_AppTenant_Date");
-
-                etb.HasIndex(i => new
-                {
-                    i.ApplicationTenantId,
-                    i.Date,
-                    i.Referrer
-                })
-                .IsUnique()
-                .HasDatabaseName("UX_AnalyticsDailyReferrers_Tenant_Date_Referrer");
-            });
-
+        private static void AnalyticsHourly(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<AnalyticsHourly>(etb =>
             {
                 etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
@@ -121,6 +81,77 @@ namespace Churchee.Module.Dashboard.Registrations
             });
         }
 
+        private static void AnalyticsDailyReferrers(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AnalyticsDailyReferrers>(etb =>
+            {
+                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
+                   .HasDatabaseName("IX_AnalyticsDailyReferrers_AppTenant_Date");
+
+                etb.HasIndex(i => new
+                {
+                    i.ApplicationTenantId,
+                    i.Date,
+                    i.Referrer
+                })
+                .IsUnique()
+                .HasDatabaseName("UX_AnalyticsDailyReferrers_Tenant_Date_Referrer");
+            });
+        }
+
+        private static void AnalyticsDailyPages(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AnalyticsDailyPages>(etb =>
+            {
+                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
+                   .HasDatabaseName("IX_AnalyticsDailyPages_AppTenant_Date");
+
+                etb.HasIndex(i => new
+                {
+                    i.ApplicationTenantId,
+                    i.Date,
+                    i.Url
+                })
+                .IsUnique()
+                .HasDatabaseName("UX_AnalyticsDailyPages_Tenant_Date_Url");
+
+            });
+        }
+
+        private static void AnalyticsDailyDevices(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AnalyticsDailyDevices>(etb =>
+            {
+                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
+                   .HasDatabaseName("IX_AnalyticsDailyDevices_AppTenant_Date");
+
+                etb.HasIndex(i => new
+                {
+                    i.ApplicationTenantId,
+                    i.Date,
+                    i.Device
+                })
+                .IsUnique()
+                .HasDatabaseName("UX_AnalyticsDailyDevices_Tenant_Date_Device");
+            });
+        }
+
+        private static void AnalyticsDaily(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AnalyticsDaily>(etb =>
+            {
+                etb.HasIndex(i => new { i.ApplicationTenantId, i.Deleted, i.Date })
+                   .HasDatabaseName("IX_AnalyticsDaily_AppTenant_Date");
+
+                etb.HasIndex(i => new
+                {
+                    i.ApplicationTenantId,
+                    i.Date
+                })
+                .IsUnique()
+                .HasDatabaseName("UX_AnalyticsDaily_Tenant_Date");
+            });
+        }
     }
 
 }

@@ -26,7 +26,7 @@ namespace Churchee.Module.Podcasts.Tests.Features.Commands.PodcastsEnabled
         public async Task PodcastsEnabledCommandHandler_EnablesPodcasts()
         {
             //arrange
-            var pageNameForPodcasts = "Podcasts";
+            string pageNameForPodcasts = "Podcasts";
             var command = new PodcastsEnabledCommand(pageNameForPodcasts);
 
             var mockEventRepository = new Mock<IRepository<PageType>>();

@@ -1,4 +1,4 @@
-﻿namespace System.ComponentModel.DataAnnotations
+﻿namespace Churchee.Common.Validation
 {
     public static class RegexPattern
     {

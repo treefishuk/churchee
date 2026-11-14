@@ -12,7 +12,7 @@ namespace Churchee.Common.Tests.Extensions
             // Arrange
             var service = new NotificationService();
             var commandResponse = new CommandResponse();
-            var successMessage = "Whoop Whoop";
+            string successMessage = "Whoop Whoop";
 
             // Act
             service.Notify(commandResponse, successMessage);
@@ -29,7 +29,7 @@ namespace Churchee.Common.Tests.Extensions
             var service = new NotificationService();
             var commandResponse = new CommandResponse();
             commandResponse.AddError("Failure", "Here");
-            var successMessage = "Whoop Whoop";
+            string successMessage = "Whoop Whoop";
 
             // Act
             service.Notify(commandResponse, successMessage);

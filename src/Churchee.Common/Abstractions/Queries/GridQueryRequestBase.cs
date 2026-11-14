@@ -1,5 +1,4 @@
 ﻿using Churchee.CQRS.Abstractions;
-using System;
 
 namespace Churchee.Common.Abstractions.Queries
 {
@@ -26,13 +25,13 @@ namespace Churchee.Common.Abstractions.Queries
                 return;
             }
 
-            if (orderBy.Contains(' '))
+            if (orderBy.Contains(' ', StringComparison.OrdinalIgnoreCase))
             {
                 string[] split = orderBy.Split(" ");
                 OrderBy = split[0];
                 OrderByDirection = split[1].ToLowerInvariant();
 
-                if (OrderByDirection != "asc" && OrderByDirection != "desc")
+                if (!string.Equals(OrderByDirection, "asc", StringComparison.OrdinalIgnoreCase) && !string.Equals(OrderByDirection, "desc", StringComparison.OrdinalIgnoreCase))
                 {
                     throw new ArgumentOutOfRangeException(nameof(orderBy), message: "Unsupported order direction");
                 }

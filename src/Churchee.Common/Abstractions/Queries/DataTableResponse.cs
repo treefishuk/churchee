@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Churchee.Common.Abstractions
+﻿namespace Churchee.Common.Abstractions
 {
     public class DataTableResponse<T>
     {

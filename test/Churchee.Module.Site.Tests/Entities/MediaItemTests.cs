@@ -11,9 +11,9 @@ namespace Churchee.Module.Site.Tests.Entities
         public void Constructor_SetsProperties_Basic()
         {
             // Arrange
-            var title = "Test Title";
-            var url = "http://media.url";
-            var description = "Test Description";
+            string title = "Test Title";
+            string url = "http://media.url";
+            string description = "Test Description";
             Guid? mediaFolderId = FolderId;
 
             // Act
@@ -35,13 +35,13 @@ namespace Churchee.Module.Site.Tests.Entities
         public void Constructor_SetsProperties_Extended()
         {
             // Arrange
-            var title = "Test Title";
-            var url = "http://media.url";
-            var description = "Test Description";
-            var html = "<p>HTML</p>";
+            string title = "Test Title";
+            string url = "http://media.url";
+            string description = "Test Description";
+            string html = "<p>HTML</p>";
             Guid? mediaFolderId = FolderId;
-            var linkUrl = "http://link.url";
-            var cssClass = "media-class";
+            string linkUrl = "http://link.url";
+            string cssClass = "media-class";
 
             // Act
             var item = new MediaItem(TenantId, title, url, description, html, mediaFolderId, linkUrl, cssClass);
@@ -63,7 +63,7 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var item = new MediaItem(TenantId, "Title", "oldUrl", "desc");
-            var newUrl = "newUrl";
+            string newUrl = "newUrl";
 
             // Act
             item.UpdateMediaUrl(newUrl);
@@ -76,7 +76,7 @@ namespace Churchee.Module.Site.Tests.Entities
         public void UpdateMediaUrl_DoesNotUpdate_WhenNullOrEmpty()
         {
             // Arrange
-            var originalUrl = "originalUrl";
+            string originalUrl = "originalUrl";
             var item = new MediaItem(TenantId, "Title", originalUrl, "desc");
 
             // Act
@@ -92,12 +92,12 @@ namespace Churchee.Module.Site.Tests.Entities
         {
             // Arrange
             var item = new MediaItem(TenantId, "Title", "url", "desc", "html", FolderId, "link", "css");
-            var newTitle = "New Title";
-            var newDesc = "New Desc";
-            var newHtml = "<div>New</div>";
-            var newLink = "http://new.link";
-            var newCss = "new-css";
-            var newOrder = 42;
+            string newTitle = "New Title";
+            string newDesc = "New Desc";
+            string newHtml = "<div>New</div>";
+            string newLink = "http://new.link";
+            string newCss = "new-css";
+            int newOrder = 42;
 
             // Act
             item.UpdateDetails(newTitle, newDesc, newHtml, newLink, newCss, newOrder);

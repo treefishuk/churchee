@@ -33,4 +33,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\TestTemplate.cshtml" />
+  </ItemGroup>
+
 </Project>
