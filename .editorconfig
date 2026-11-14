@@ -280,6 +280,8 @@ dotnet_diagnostic.IDE0305.severity = none
 # MA0002: IEqualityComparer<string> or IComparer<string> is missing
 dotnet_diagnostic.MA0002.severity = none
 
+# CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+dotnet_diagnostic.CS8632.severity = error
 
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion

@@ -18,7 +18,7 @@ namespace Churchee.Common.Validation
             return HasFileSignature(base64File, 0, "ID3"u8) || HasMp3FrameSync(base64File);
         }
 
-        private static bool HasMp3FrameSync(string? base64File)
+        private static bool HasMp3FrameSync(string base64File)
         {
             if (string.IsNullOrWhiteSpace(base64File))
             {

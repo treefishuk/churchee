@@ -1,7 +1,9 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
+using Churchee.Common.Extensions;
 using Churchee.Module.UI.Components;
 using Churchee.Test.Helpers.Blazor;
+using Churchee.Test.Helpers.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +15,7 @@ namespace Churchee.Module.UI.Tests.Components
     public class GridTests : BasePageTests
     {
         // Simple POCO used as the grid's TItem in tests
-        public class TestItem
+        private class TestItem
         {
             public Guid Id { get; set; }
 
@@ -137,7 +139,7 @@ namespace Churchee.Module.UI.Tests.Components
             // Assert
             Assert.NotNull(btn);
             // The button's text equals the item's Id
-            Assert.Contains("noid", btn.TextContent);
+            btn.TextContent.Should().Contain("noid");
         }
 
         [Fact]
@@ -155,7 +157,7 @@ namespace Churchee.Module.UI.Tests.Components
             deleteBtn.Click();
 
             // Assert - component instance should have Deleted = true
-            Assert.True(((DeleteWrapper)cut.Instance).Deleted);
+            Assert.True(cut.Instance.Deleted);
         }
 
         [Fact]
@@ -186,7 +188,7 @@ namespace Churchee.Module.UI.Tests.Components
             await cut.InvokeAsync(async () => await gridComp.Instance.ReloadAsync());
 
             // Wait for either the LoadData callback to be triggered or a timeout
-            var completed = await Task.WhenAny(wrapperInstance.LoadCalled.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+            await Task.WhenAny(wrapperInstance.LoadCalled.Task, Task.Delay(TimeSpan.FromSeconds(5)));
 
             // Assert - LoadData callback was invoked
             Assert.True(wrapperInstance.LoadCalled.Task.IsCompleted, "Expected LoadData callback to be invoked by ReloadAsync.");
@@ -207,10 +209,10 @@ namespace Churchee.Module.UI.Tests.Components
             var anchors = cut.FindAll("a").Where(a => !string.IsNullOrEmpty(a.GetAttribute("href"))).ToArray();
 
             // Assert - at least one anchor should end with /details/{id}
-            var wrapperInstance = (DetailEditWrapper)cut.Instance;
+            var wrapperInstance = cut.Instance;
             string expectedSuffix = $"/details/{wrapperInstance.Item.Id}";
 
-            Assert.True(anchors.Any(a => a.GetAttribute("href")!.EndsWith(expectedSuffix)), $"Expected an anchor href to end with '{expectedSuffix}' but none found.");
+            Assert.True(anchors.Any(a => a.GetAttribute("href")!.EndsWith(expectedSuffix, StringComparison.Ordinal)), $"Expected an anchor href to end with '{expectedSuffix}' but none found.");
         }
 
         // wrapper class used by DetailAndEditLinks_UseCurrentUriPrefix

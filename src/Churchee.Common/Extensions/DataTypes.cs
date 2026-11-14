@@ -1,4 +1,4 @@
-﻿namespace System.ComponentModel.DataAnnotations
+﻿namespace Churchee.Common.Extensions
 {
     public static class DataTypes
     {

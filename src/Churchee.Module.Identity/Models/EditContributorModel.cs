@@ -1,4 +1,5 @@
-﻿using Churchee.Common.ValueTypes;
+﻿using Churchee.Common.Extensions;
+using Churchee.Common.ValueTypes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Identity.Models

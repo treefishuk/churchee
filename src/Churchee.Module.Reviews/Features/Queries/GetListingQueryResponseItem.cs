@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Churchee.Common.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Churchee.Module.Reviews.Features.Queries
 {

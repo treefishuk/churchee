@@ -1,6 +1,6 @@
 ﻿using Bogus;
+using Churchee.Common.Validation;
 using Churchee.Test.Helpers.Validation;
-using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Churchee.Common.Tests.Validation

@@ -17,7 +17,7 @@ namespace Churchee.Common.Tests.Helpers
         {
             var exception = Assert.Throws<InvalidOperationException>(() => EmbeddedResourceHelper.ReadTemplate("MissingTemplate"));
 
-            Assert.Contains(".Templates.MissingTemplate.cshtml", exception.Message);
+            Assert.Contains(".Templates.MissingTemplate.cshtml", exception.Message, StringComparison.Ordinal);
         }
     }
 }

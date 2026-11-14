@@ -16,7 +16,7 @@ namespace Churchee.Module.Dashboard.Specifications
             if (lastViewedAt.HasValue && lastId.HasValue)
             {
                 Query.Where(x => x.ViewedAt > lastViewedAt.Value ||
-                    x.ViewedAt == lastViewedAt.Value && x.Id.CompareTo(lastId.Value) > 0);
+                    (x.ViewedAt == lastViewedAt.Value && x.Id.CompareTo(lastId.Value) > 0));
             }
 
             Query.OrderBy(x => x.ViewedAt)
