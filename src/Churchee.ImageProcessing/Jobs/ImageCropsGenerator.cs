@@ -103,9 +103,9 @@ namespace Churchee.ImageProcessing.Jobs
 
         private async Task CreateImageCropAsync(Guid applicationTenantId, Image sourceImage, int width, bool overrideExisting, string imagePath, string extension, CancellationToken cancellationToken)
         {
-            var originalWidth = sourceImage.Width;
-            var cropWidth = Math.Min(width, originalWidth);
-            var cropX = (originalWidth - cropWidth) / 2;
+            int originalWidth = sourceImage.Width;
+            int cropWidth = Math.Min(width, originalWidth);
+            int cropX = (originalWidth - cropWidth) / 2;
 
             using var croppedImage = sourceImage.Clone(image =>
             {

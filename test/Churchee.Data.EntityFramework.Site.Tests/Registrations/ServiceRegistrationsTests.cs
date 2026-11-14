@@ -38,7 +38,7 @@ namespace Churchee.Data.EntityFramework.Site.Tests.Registrations
             var serviceRegistrations = new ServiceRegistrations();
 
             // Act
-            var priority = serviceRegistrations.Priority;
+            int priority = serviceRegistrations.Priority;
 
             // Assert
             priority.Should().Be(5000);

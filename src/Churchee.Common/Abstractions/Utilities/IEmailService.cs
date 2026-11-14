@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Churchee.Common.Abstractions.Utilities
+﻿namespace Churchee.Common.Abstractions.Utilities
 {
     public interface IEmailService
     {

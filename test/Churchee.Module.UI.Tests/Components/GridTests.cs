@@ -208,7 +208,7 @@ namespace Churchee.Module.UI.Tests.Components
 
             // Assert - at least one anchor should end with /details/{id}
             var wrapperInstance = (DetailEditWrapper)cut.Instance;
-            var expectedSuffix = $"/details/{wrapperInstance.Item.Id}";
+            string expectedSuffix = $"/details/{wrapperInstance.Item.Id}";
 
             Assert.True(anchors.Any(a => a.GetAttribute("href")!.EndsWith(expectedSuffix)), $"Expected an anchor href to end with '{expectedSuffix}' but none found.");
         }

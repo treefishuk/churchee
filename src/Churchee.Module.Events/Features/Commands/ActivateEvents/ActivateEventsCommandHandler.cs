@@ -1,9 +1,10 @@
-﻿using Churchee.Common.ResponseTypes;
+﻿using Churchee.Common.Helpers;
+using Churchee.Common.ResponseTypes;
 using Churchee.Common.Storage;
+using Churchee.CQRS.Abstractions;
 using Churchee.Module.Site.Entities;
 using Churchee.Module.Site.Helpers;
 using Churchee.Module.Tenancy.Entities;
-using Churchee.CQRS.Abstractions;
 using Page = Churchee.Module.Site.Entities.Page;
 
 namespace Churchee.Module.Events.Features.Commands
@@ -19,11 +20,13 @@ namespace Churchee.Module.Events.Features.Commands
 
         public async Task<CommandResponse> Handle(ActivateEventsCommand request, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(request);
+
             var tenant = await _dataStore.GetRepository<ApplicationTenant>().GetByIdAsync(request.ApplicationTenantId, cancellationToken);
 
-            Guid eventListingPageTypeId = Guid.NewGuid();
+            var eventListingPageTypeId = Guid.NewGuid();
 
-            Guid eventDetailsPageTypeId = Guid.NewGuid();
+            var eventDetailsPageTypeId = Guid.NewGuid();
 
             await CreatePageTypes(request.ApplicationTenantId, eventListingPageTypeId, eventDetailsPageTypeId);
 
@@ -38,121 +41,77 @@ namespace Churchee.Module.Events.Features.Commands
         {
             var pageRepo = _dataStore.GetRepository<Page>();
 
-            var alreadyExists = pageRepo.AnyWithFiltersDisabled(w => w.PageType.SystemKey == PageTypes.EventListingPageTypeId && w.ApplicationTenantId == request.ApplicationTenantId);
+            bool alreadyExists = pageRepo.AnyWithFiltersDisabled(w => w.PageType.SystemKey == PageTypes.EventListingPageTypeId && w.ApplicationTenantId == request.ApplicationTenantId);
 
-            if (!alreadyExists)
+            if (alreadyExists)
             {
-                var newListingPage = new Page(request.ApplicationTenantId, "Events", "/events", $"Upcomging Events for {tenant.Name}", eventListingPageTypeId, null, false);
-
-                pageRepo.Create(newListingPage);
-
-                await _dataStore.SaveChangesAsync();
+                return;
             }
+
+            var newListingPage = new Page(request.ApplicationTenantId, "Events", "/events", $"Upcomging Events for {tenant.Name}", eventListingPageTypeId, null, false);
+
+            pageRepo.Create(newListingPage);
+
+            await _dataStore.SaveChangesAsync();
         }
 
         private async Task CreatePageTypes(Guid applicationTenantId, Guid eventListingPageTypeId, Guid eventDetailsPageTypeId)
         {
             var pageTypeRepo = _dataStore.GetRepository<PageType>();
 
-            var alreadyExists = pageTypeRepo.AnyWithFiltersDisabled(w => w.SystemKey == PageTypes.EventDetailPageTypeId && w.ApplicationTenantId == applicationTenantId);
+            bool alreadyExists = pageTypeRepo.AnyWithFiltersDisabled(w => w.SystemKey == PageTypes.EventDetailPageTypeId && w.ApplicationTenantId == applicationTenantId);
 
-            if (!alreadyExists)
+            if (alreadyExists)
             {
-                var newDetailPageType = new PageType(eventDetailsPageTypeId, PageTypes.EventDetailPageTypeId, applicationTenantId, false, "Event Detail", false);
-
-                var newListingPageType = new PageType(eventListingPageTypeId, PageTypes.EventListingPageTypeId, applicationTenantId, true, "Event Listing", false);
-
-                newListingPageType.AddChildType(newDetailPageType);
-
-                pageTypeRepo.Create(newDetailPageType);
-
-                pageTypeRepo.Create(newListingPageType);
-
-                await _dataStore.SaveChangesAsync();
+                return;
             }
+
+            var newDetailPageType = new PageType(eventDetailsPageTypeId, PageTypes.EventDetailPageTypeId, applicationTenantId, false, "Event Detail", false);
+
+            var newListingPageType = new PageType(eventListingPageTypeId, PageTypes.EventListingPageTypeId, applicationTenantId, true, "Event Listing", false);
+
+            newListingPageType.AddChildType(newDetailPageType);
+
+            pageTypeRepo.Create(newDetailPageType);
+
+            pageTypeRepo.Create(newListingPageType);
+
+            await _dataStore.SaveChangesAsync();
         }
 
         private async Task CreateViewTemplates(Guid applicationTenantId)
         {
             var viewTemplatesRepo = _dataStore.GetRepository<ViewTemplate>();
 
-            if (!viewTemplatesRepo.GetQueryable().Any(a => a.Location == "/Views/Shared/EventListing.cshtml"))
-            {
-                var eventsListing = new ViewTemplate(applicationTenantId, "/Views/Shared/EventListing.cshtml", "");
-
-                eventsListing.SetContent($@"
-
-                    @{{
-                        ViewData[""Title""] = Model.Title;                        
-                        var page = ViewBag.Page; 
-                    }}
-
-                    <section>
-
-                        <div class=""container mb-5"">
-                            <h1>Events</h1>
-                            @await Component.InvokeAsync(""EventListing"", new {{page = page}})
-                        </div>
-
-                    </section>
-
-                ");
-
-                viewTemplatesRepo.Create(eventsListing);
-
-            }
-
-            if (!viewTemplatesRepo.GetQueryable().Any(a => a.Location == "/Views/Shared/EventDetail.cshtml"))
-            {
-
-                var eventDetail = new ViewTemplate(applicationTenantId, "/Views/Shared/EventDetail.cshtml", "");
-
-                eventDetail.SetContent($@"
-
-                    @{{
-                        ViewData[""Title""] = Model.Title;
-                    }}
-
-                    <section>
-
-                        <div class=""container mb-5"">
-                            @await Component.InvokeAsync(""EventDetail"", new {{path = Context.Request.Path.ToString()}})
-                        </div>
-
-                    </section>
-
-
-@section scripts{{
-
- <script>
-
-    var simpleMap = document.getElementById(""simple-map"");
-
-    if(simpleMap != null)
-    {{
-        var latitude = simpleMap.getAttribute(""data-latitude"");
-        var longitude = simpleMap.getAttribute(""data-latitude"");
-
-        var map = L.map('simple-map').setView([latitude, longitude], 16);
-
-        L.tileLayer('https://tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png?{{foo}}', {{ foo: 'bar', attribution: '&copy; <a href=""https://www.openstreetmap.org/copyright"">OpenStreetMap</a> contributors' }}).addTo(map);
-
-        var marker = L.marker([latitude, longitude]).addTo(map);
-
-    }}
-
-</script>
-
-}}
-
-
-                ");
-
-                viewTemplatesRepo.Create(eventDetail);
-
-            }
+            CreateEventListingViewTenmplate(applicationTenantId, viewTemplatesRepo);
+            CreateEventDetailViewTemplate(applicationTenantId, viewTemplatesRepo);
 
             await _dataStore.SaveChangesAsync();
+        }
+
+        private static void CreateEventDetailViewTemplate(Guid applicationTenantId, Common.Abstractions.Storage.IRepository<ViewTemplate> viewTemplatesRepo)
+        {
+            if (viewTemplatesRepo.GetQueryable().Any(a => a.Location == "/Views/Shared/EventDetail.cshtml"))
+            {
+                return;
+            }
+
+            var eventDetail = new ViewTemplate(applicationTenantId, "/Views/Shared/EventDetail.cshtml", EmbeddedResourceHelper.ReadTemplate("EventDetail"));
+
+            viewTemplatesRepo.Create(eventDetail);
+
+        }
+
+        private static void CreateEventListingViewTenmplate(Guid applicationTenantId, Common.Abstractions.Storage.IRepository<ViewTemplate> viewTemplatesRepo)
+        {
+            if (viewTemplatesRepo.GetQueryable().Any(a => a.Location == "/Views/Shared/EventListing.cshtml"))
+            {
+                return;
+            }
+
+            var eventsListing = new ViewTemplate(applicationTenantId, "/Views/Shared/EventListing.cshtml", EmbeddedResourceHelper.ReadTemplate("EventListing"));
+
+            viewTemplatesRepo.Create(eventsListing);
         }
 
     }

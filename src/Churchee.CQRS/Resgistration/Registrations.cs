@@ -13,6 +13,9 @@ namespace Churchee.CQRS.Resgistration
             var requestWrappers = new Dictionary<Type, IRequestHandlerBase>();
             var notificationWrappers = new Dictionary<Type, INotificationHandlerBase>();
 
+            ArgumentNullException.ThrowIfNull(services);
+            ArgumentNullException.ThrowIfNull(assemblies);
+
             foreach (var assembly in assemblies)
             {
                 AddTypesFromAssembly(services, assembly, requestWrappers, notificationWrappers);

@@ -31,13 +31,13 @@ namespace Churchee.Module.Dashboard.Tests.Entities
             // Arrange
             var applicationTenantId = Guid.NewGuid();
             var pageView = new PageView(applicationTenantId);
-            var ipAddress = "192.168.1.1";
-            var userAgent = "Mozilla/5.0";
-            var url = "http://example.com";
-            var device = "Desktop";
-            var os = "Windows";
-            var browser = "Chrome";
-            var referrer = "http://google.com";
+            string ipAddress = "192.168.1.1";
+            string userAgent = "Mozilla/5.0";
+            string url = "http://example.com";
+            string device = "Desktop";
+            string os = "Windows";
+            string browser = "Chrome";
+            string referrer = "http://google.com";
             var viewedAt = DateTime.UtcNow;
 
             // Act

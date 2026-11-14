@@ -26,7 +26,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public async Task GetApplicationTenantId_Should_Return_TenantId_When_Claim_Exists()
         {
             // Arrange
-            var userId = Guid.NewGuid().ToString();
+            string userId = Guid.NewGuid().ToString();
             var tenantId = Guid.NewGuid();
             var claims = new List<Claim>
             {
@@ -52,7 +52,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public async Task GetApplicationTenantId_Should_Return_Empty_Guid_When_Claim_Does_Not_Exist()
         {
             // Arrange
-            var userId = Guid.NewGuid().ToString();
+            string userId = Guid.NewGuid().ToString();
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, userId)
@@ -121,7 +121,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public void HasFeature_Should_Return_True_When_Feature_Claim_Exists()
         {
             // Arrange
-            var featureName = "TestFeature";
+            string featureName = "TestFeature";
             var claims = new List<Claim>
             {
                 new Claim(featureName, "true")
@@ -133,7 +133,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
             _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
             // Act
-            var result = _currentUser.HasFeature(featureName);
+            bool result = _currentUser.HasFeature(featureName);
 
             // Assert
             result.Should().BeTrue();
@@ -143,7 +143,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public void HasFeature_Should_Return_False_When_Feature_Claim_Does_Not_Exist()
         {
             // Arrange
-            var featureName = "TestFeature";
+            string featureName = "TestFeature";
             var claims = new List<Claim>();
             var identity = new ClaimsIdentity(claims);
             var principal = new ClaimsPrincipal(identity);
@@ -152,7 +152,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
             _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
             // Act
-            var result = _currentUser.HasFeature(featureName);
+            bool result = _currentUser.HasFeature(featureName);
 
             // Assert
             result.Should().BeFalse();
@@ -162,7 +162,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public void HasRole_Should_Return_True_When_User_Has_Role()
         {
             // Arrange
-            var roleName = "TestRole";
+            string roleName = "TestRole";
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Role, roleName)
@@ -174,7 +174,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
             _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
             // Act
-            var result = _currentUser.HasRole(roleName);
+            bool result = _currentUser.HasRole(roleName);
 
             // Assert
             result.Should().BeTrue();
@@ -184,7 +184,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public void HasRole_Should_Return_True_When_User_Is_SysAdmin()
         {
             // Arrange
-            var roleName = "TestRole";
+            string roleName = "TestRole";
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Role, "SysAdmin")
@@ -196,7 +196,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
             _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
             // Act
-            var result = _currentUser.HasRole(roleName);
+            bool result = _currentUser.HasRole(roleName);
 
             // Assert
             result.Should().BeTrue();
@@ -206,7 +206,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public void HasRole_Should_Return_False_When_User_Does_Not_Have_Role()
         {
             // Arrange
-            var roleName = "TestRole";
+            string roleName = "TestRole";
             var claims = new List<Claim>();
             var identity = new ClaimsIdentity(claims);
             var principal = new ClaimsPrincipal(identity);
@@ -215,7 +215,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
             _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
             // Act
-            var result = _currentUser.HasRole(roleName);
+            bool result = _currentUser.HasRole(roleName);
 
             // Assert
             result.Should().BeFalse();
@@ -225,7 +225,7 @@ namespace Churchee.Module.Identity.Tests.Infrastructure
         public void GetUserId_Return_String_When_Exists()
         {
             // Arrange
-            var userId = Guid.NewGuid().ToString();
+            string userId = Guid.NewGuid().ToString();
 
             var claims = new List<Claim>
             {

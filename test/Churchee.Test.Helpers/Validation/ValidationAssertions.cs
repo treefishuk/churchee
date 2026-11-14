@@ -37,10 +37,17 @@
             return new DateTimeValidationTester(instance);
         }
 
-        public static ListValidationTester<T> Should<T>(this List<T> instance)
+        public static CollectionValidationTester<T> Should<T>(this ICollection<T> instance)
         {
-            return new ListValidationTester<T>(instance);
+            return new CollectionValidationTester<T>(instance);
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0016:Prefer using collection abstraction instead of implementation", Justification = "Needed for specific List operations")]
+        public static CollectionValidationTester<T> Should<T>(this List<T> instance)
+        {
+            return new CollectionValidationTester<T>(instance);
+        }
+
 
         public static AsyncMethodValidationTester Should(this Func<Task> instance)
         {

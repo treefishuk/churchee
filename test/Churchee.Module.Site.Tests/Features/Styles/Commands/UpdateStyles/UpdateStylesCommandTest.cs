@@ -8,7 +8,7 @@ namespace Churchee.Module.Site.Tests.Features.Styles.Commands.UpdateStyles
         public void Constructor_ShouldInitializeCssProperty()
         {
             // Arrange
-            var css = "body { background-color: red; }";
+            string css = "body { background-color: red; }";
 
             // Act
             var command = new UpdateStylesCommand(css);
@@ -21,11 +21,11 @@ namespace Churchee.Module.Site.Tests.Features.Styles.Commands.UpdateStyles
         public void CssProperty_ShouldReturnInitializedValue()
         {
             // Arrange
-            var css = "body { background-color: blue; }";
+            string css = "body { background-color: blue; }";
             var command = new UpdateStylesCommand(css);
 
             // Act
-            var result = command.Css;
+            string result = command.Css;
 
             // Assert
             Assert.Equal(css, result);

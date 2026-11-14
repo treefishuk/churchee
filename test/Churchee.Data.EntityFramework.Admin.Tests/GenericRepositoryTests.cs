@@ -392,7 +392,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
 
             // Act
-            var count = await _repository.CountAsync(specification, CancellationToken.None);
+            int count = await _repository.CountAsync(specification, CancellationToken.None);
 
             // Assert
             Assert.Equal(2, count);
@@ -411,7 +411,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
 
             // Act
-            var count = await _repository.GetDistinctCountAsync(specification, e => e.Name, CancellationToken.None);
+            int count = await _repository.GetDistinctCountAsync(specification, e => e.Name, CancellationToken.None);
 
             // Assert
             Assert.Equal(2, count);
@@ -498,7 +498,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             var specification = new MockSpecification<TestEntity>(e => e.Name == "Entity 1");
 
             // Act
-            var result = await _repository.AnyAsync(specification, CancellationToken.None);
+            bool result = await _repository.AnyAsync(specification, CancellationToken.None);
 
             // Assert
             Assert.True(result);
@@ -568,7 +568,7 @@ namespace Churchee.Data.EntityFramework.Admin.Tests
             var repository = new GenericRepository<TestEntity>(sqliteContext);
             var specification = new MockSpecification<TestEntity>(e => e.Name.Contains("Entity"));
 
-            var deletedCount = await repository.PermanentDeleteBatchAsync(specification, 2, CancellationToken.None);
+            int deletedCount = await repository.PermanentDeleteBatchAsync(specification, 2, CancellationToken.None);
 
             Assert.Equal(2, deletedCount);
             Assert.Equal(2, await sqliteContext.TestEntities.CountAsync());

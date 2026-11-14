@@ -26,9 +26,9 @@ namespace Churchee.Module.Podcasts.Features.Commands
         {
             var applicationTenantId = await _currentUser.GetApplicationTenantId();
 
-            Guid listingTypeId = Guid.NewGuid();
+            var listingTypeId = Guid.NewGuid();
 
-            Guid detailPageTypeId = Guid.NewGuid();
+            var detailPageTypeId = Guid.NewGuid();
 
             string pageNameForPodcasts = await _settingStore.GetSettingValue(Settings.PodcastsNameId, applicationTenantId);
 
@@ -132,7 +132,7 @@ namespace Churchee.Module.Podcasts.Features.Commands
         {
             var pageTypeRepo = _dataStore.GetRepository<PageType>();
 
-            var alreadyExists = pageTypeRepo.AnyWithFiltersDisabled(w => w.SystemKey == PageTypes.PodcastDetailPageTypeId && w.ApplicationTenantId == applicationTenantId);
+            bool alreadyExists = pageTypeRepo.AnyWithFiltersDisabled(w => w.SystemKey == PageTypes.PodcastDetailPageTypeId && w.ApplicationTenantId == applicationTenantId);
 
             if (!alreadyExists)
             {

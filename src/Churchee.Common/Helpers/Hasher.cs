@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Security.Cryptography;
 
 namespace Churchee.Common.Helpers
 {
@@ -10,6 +6,11 @@ namespace Churchee.Common.Helpers
     {
         public static async Task<string> HashFirst64KbAsync(Stream stream, CancellationToken cancellationToken)
         {
+            if (stream == null)
+            {
+                return string.Empty;
+            }
+
             const int MaxBytes = 64 * 1024; // 64 KB
 
             using var sha = SHA256.Create();

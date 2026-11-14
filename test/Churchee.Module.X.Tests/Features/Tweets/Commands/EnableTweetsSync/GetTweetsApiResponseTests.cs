@@ -36,7 +36,7 @@
                 CreatedAt = new DateTime(2024, 1, 1, 12, 0, 0)
             };
 
-            var json = JsonSerializer.Serialize(tweet);
+            string json = JsonSerializer.Serialize(tweet);
             var deserialized = JsonSerializer.Deserialize<Tweet>(json);
 
             Assert.Equal("Hello", deserialized?.Text);
@@ -55,7 +55,7 @@
                 ]
             };
 
-            var json = JsonSerializer.Serialize(response);
+            string json = JsonSerializer.Serialize(response);
             var deserialized = JsonSerializer.Deserialize<GetTweetsApiResponse>(json);
 
             Assert.NotNull(deserialized?.Tweets);

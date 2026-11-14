@@ -13,7 +13,7 @@ namespace Churchee.Module.Facebook.Events.Registrations
         {
             var config = serviceProvider.GetRequiredService<IConfiguration>();
 
-            var facebookApiUrl = config.GetSection("Facebook").GetValue<string>("Api");
+            string facebookApiUrl = config.GetSection("Facebook").GetValue<string>("Api");
 
             if (string.IsNullOrEmpty(facebookApiUrl))
             {

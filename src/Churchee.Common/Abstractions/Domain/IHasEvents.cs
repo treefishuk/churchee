@@ -1,6 +1,4 @@
 ﻿using Churchee.CQRS.Abstractions;
-using System;
-using System.Collections.Generic;
 
 namespace Churchee.Common.Abstractions.Entities
 {
@@ -10,7 +8,7 @@ namespace Churchee.Common.Abstractions.Entities
 
         void RemoveDomainEvent(INotification eventItem);
 
-        public List<INotification> DomainEvents { get; }
+        public ICollection<INotification> DomainEvents { get; }
 
         void ClearDomainEvents();
     }

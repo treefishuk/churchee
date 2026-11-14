@@ -1,5 +1,4 @@
 ﻿using Churchee.Common.Extensibility;
-using System.Collections.Generic;
 
 namespace Churchee.Common.Abstractions.Extensibility
 {

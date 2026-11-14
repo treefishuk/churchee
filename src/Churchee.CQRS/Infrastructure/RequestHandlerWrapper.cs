@@ -23,7 +23,7 @@ namespace Churchee.CQRS.Infrastructure
 
             // Build the pipeline: handler at the core, behaviors wrapped outside in registration order.
             // Iterating in reverse means the first registered behavior runs outermost.
-            RequestHandlerDelegate<TResponse> pipeline = () => handler.Handle(typed, cancellationToken);
+            RequestHandler<TResponse> pipeline = () => handler.Handle(typed, cancellationToken);
 
             foreach (var behavior in behaviors.Reverse())
             {

@@ -1,5 +1,4 @@
 ﻿using Churchee.Common.Abstractions.Entities;
-using System;
 
 namespace Churchee.Common.Data
 {

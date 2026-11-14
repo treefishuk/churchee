@@ -72,7 +72,7 @@ namespace Churchee.Module.Facebook.Events.Tests.Features.Commands.SyncFacebookEv
 
             Assert.False(result.IsSuccess);
             Assert.Single(result.Errors);
-            Assert.Equal("Failed To Sync", result.Errors[0].Description);
+            Assert.Equal("Failed To Sync", result.Errors.First().Description);
         }
 
 

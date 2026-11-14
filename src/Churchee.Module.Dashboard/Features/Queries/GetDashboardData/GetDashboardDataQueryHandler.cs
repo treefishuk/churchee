@@ -21,6 +21,8 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
 
         public async Task<GetDashboardDataResponse> Handle(GetDashboardDataQuery request, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(request);
+
             try
             {
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -146,7 +148,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 return [];
             }
 
-            var total = dailyDevices.Sum(x => x.Views);
+            int total = dailyDevices.Sum(x => x.Views);
 
             return [.. dailyDevices
                 .GroupBy(x => x.Device)
@@ -174,7 +176,7 @@ namespace Churchee.Module.Dashboard.Features.Queries.GetDashboardData
                 return [];
             }
 
-            var total = referrers.Sum(x => x.Views);
+            int total = referrers.Sum(x => x.Views);
 
             return [.. referrers
                 .GroupBy(x => x.Referrer)

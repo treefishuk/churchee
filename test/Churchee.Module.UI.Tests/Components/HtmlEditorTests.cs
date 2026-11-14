@@ -12,10 +12,10 @@ namespace Churchee.Module.UI.Tests.Components
         [Fact]
         public void CleanClipboardHtml_RemovesUnsafeAttributes_AndUnwrapsInlineContainers()
         {
-            var input = "<div style=\"color:red\" class=\"foo\" align=\"center\"><span id=\"a\" style=\"font-weight:bold\">Hello</span> <font face=\"Arial\">world</font><div>!</div></div>";
-            var result = HtmlEditor.CleanClipboardHtml(input);
+            string input = "<div style=\"color:red\" class=\"foo\" align=\"center\"><span id=\"a\" style=\"font-weight:bold\">Hello</span> <font face=\"Arial\">world</font><div>!</div></div>";
+            string result = HtmlEditor.CleanClipboardHtml(input);
             var document = new HtmlParser().ParseDocument(result);
-            var text = document.Body?.TextContent.Replace("\r", " ").Replace("\n", " ").Replace("  ", " ").Trim();
+            string? text = document.Body?.TextContent.Replace("\r", " ").Replace("\n", " ").Replace("  ", " ").Trim();
 
             Assert.NotNull(text);
             Assert.Contains("Hello", text);

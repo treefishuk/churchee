@@ -1,6 +1,6 @@
-﻿using Xunit;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Xunit;
 
 namespace Churchee.Test.Helpers.Validation
 {
@@ -58,7 +58,5 @@ namespace Churchee.Test.Helpers.Validation
 
             Assert.Equal(expected, actual);
         }
-
-
     }
 }

@@ -65,7 +65,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
             var cut = Render<Create>();
             SetInitialUrl<Create>();
             var instance = cut.Instance;
-            var password = $"{Guid.NewGuid().ToString()}1A!";
+            string password = $"{Guid.NewGuid().ToString()}1A!";
 
 
             _userManager.Setup(a => a.FindByEmailAsync(It.IsAny<string>()))
@@ -97,7 +97,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
             var cut = Render<Create>();
             SetInitialUrl<Create>();
             var instance = cut.Instance;
-            var password = $"{Guid.NewGuid().ToString()}1A!";
+            string password = $"{Guid.NewGuid().ToString()}1A!";
 
             // Setup InputModel
             instance.InputModel.Password = password;
@@ -128,7 +128,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
             var cut = Render<Create>();
             SetInitialUrl<Create>();
             var instance = cut.Instance;
-            var password = $"{Guid.NewGuid().ToString()}1A!";
+            string password = $"{Guid.NewGuid().ToString()}1A!";
 
             var identityResult = IdentityResult.Failed(new IdentityError
             {
@@ -166,7 +166,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
             SetInitialUrl<Create>();
             var instance = cut.Instance;
 
-            var password = $"{Guid.NewGuid().ToString()}1A!";
+            string password = $"{Guid.NewGuid().ToString()}1A!";
 
             // Setup InputModel
             instance.InputModel.Password = password;
@@ -209,7 +209,7 @@ namespace Churchee.Module.Identity.Tests.Areas.Configuration.Pages.Contributors
             SetInitialUrl<Create>();
             var instance = cut.Instance;
 
-            var password = $"{Guid.NewGuid().ToString()}1A!";
+            string password = $"{Guid.NewGuid().ToString()}1A!";
 
             // Setup InputModel
             instance.InputModel.Password = password;

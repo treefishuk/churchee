@@ -10,16 +10,19 @@ namespace Churchee.CQRS.Behaviors
     {
         public async Task<TResponse> Handle(
             TRequest request,
-            RequestHandlerDelegate<TResponse> next,
+            RequestHandler<TResponse> next,
             CancellationToken cancellationToken)
         {
+
+            ArgumentNullException.ThrowIfNull(request);
+            ArgumentNullException.ThrowIfNull(next);
 
             if (!logger.IsEnabled(LogLevel.Information))
             {
                 return await next();
             }
 
-            var requestName = typeof(TRequest).Name;
+            string requestName = typeof(TRequest).Name;
 
             logger.LogInformation("Handling {RequestName}", requestName);
 

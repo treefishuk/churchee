@@ -19,7 +19,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
         public void ParameterizedConstructor_SetsStyles()
         {
             // Arrange
-            var css = "body { color: red; }";
+            string css = "body { color: red; }";
 
             // Act
             var model = new StylesInputModel(css);
@@ -37,7 +37,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             // Act
             var results = new List<ValidationResult>();
             var context = new ValidationContext(model, null, null);
-            var isValid = Validator.TryValidateObject(model, context, results, true);
+            bool isValid = Validator.TryValidateObject(model, context, results, true);
 
             // Assert
             Assert.True(isValid);

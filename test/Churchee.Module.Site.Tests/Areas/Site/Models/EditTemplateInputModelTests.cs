@@ -21,7 +21,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
         {
             // Arrange
             var id = Guid.NewGuid();
-            var content = "Test Content";
+            string content = "Test Content";
 
             // Act
             var model = new EditTemplateInputModel(id, content);
@@ -44,7 +44,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             // Act
             var results = new List<ValidationResult>();
             var context = new ValidationContext(model, null, null);
-            var isValid = Validator.TryValidateObject(model, context, results, true);
+            bool isValid = Validator.TryValidateObject(model, context, results, true);
 
             // Assert
             Assert.False(isValid);
@@ -65,7 +65,7 @@ namespace Churchee.Module.Site.Tests.Areas.Site.Models
             // Act
             var results = new List<ValidationResult>();
             var context = new ValidationContext(model, null, null);
-            var isValid = Validator.TryValidateObject(model, context, results, true);
+            bool isValid = Validator.TryValidateObject(model, context, results, true);
 
             // Assert
             Assert.True(isValid);

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Churchee.Common.Exceptions
+﻿namespace Churchee.Common.Exceptions
 {
     public class MissingConfigurationSettingException : Exception
     {
